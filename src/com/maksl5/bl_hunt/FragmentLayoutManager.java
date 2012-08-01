@@ -10,7 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
+/**
+ * 
+ * @author Maksl5[Markus Bensing]
+ *
+ */
 
 public class FragmentLayoutManager {
 

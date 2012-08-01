@@ -2,21 +2,15 @@ package com.maksl5.bl_hunt;
 
 
 
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -37,20 +31,19 @@ public class MainActivity extends FragmentActivity {
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
-	
-	ActionBarHandler actionBarHandler;
-	
+
+	public ActionBarHandler actionBarHandler;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.act_main);
-		// Create the adapter that will return a fragment for each of the three primary sections
+		// Create the adapter that will return a fragment for each of the primary sections
 		// of the app.
 
-		
 		actionBarHandler = new ActionBarHandler(this);
-		
+
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
@@ -58,17 +51,22 @@ public class MainActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		registerListener();
+
+
 	}
 
-	private void registerListener() {
+	/**
+	 * 
+	 */
 
+	private void registerListener() {
 
 		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
 
 			@Override
 			public void onPageSelected(int position) {
 
-				actionBarHandler.changePage(position +1);
+				actionBarHandler.changePage(position + 1);
 
 			}
 
@@ -76,8 +74,6 @@ public class MainActivity extends FragmentActivity {
 			public void onPageScrolled(	int position,
 										float positionOffset,
 										int positionOffsetPixels) {
-
-				
 
 			}
 
@@ -97,6 +93,16 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 
+	}
+	
+	public void viewsGotCreated() {
+		
+		// Setting up Views
+		TextView stateTextView = (TextView)findViewById(R.id.txt_discoveryState);
+
+		// Setting up DiscoveryManager
+		DiscoveryManager disMan = new DiscoveryManager(this, stateTextView);
+		disMan.startDiscoveryManager();
 	}
 
 	@Override
@@ -150,10 +156,7 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	/**
-	 * A dummy fragment representing a section of the app, but that simply displays dummy text.
-	 */
-	public static class CustomSectionFragment extends Fragment {
+	public class CustomSectionFragment extends Fragment {
 
 		public CustomSectionFragment() {
 
@@ -170,6 +173,17 @@ public class MainActivity extends FragmentActivity {
 			FragmentLayoutManager fragLayMan = new FragmentLayoutManager(inflater, container, args, this.getActivity());
 			return fragLayMan.getSpecificView();
 
+		}
+
+		@Override
+		public void onViewCreated(	View view,
+									Bundle savedInstanceState) {
+
+			
+			// TODO Auto-generated method stub
+			super.onViewCreated(view, savedInstanceState);
+			
+			viewsGotCreated();
 		}
 	}
 

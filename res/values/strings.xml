@@ -10,4 +10,10 @@
     <string name="str_menu_settings">Settings</string>
     <string name="str_mainActTitle">Blue Hunter</string>
 
+    <string name="str_discoveryState_running">Discovery running.</string>
+    <string name="str_discoveryState_stopped">Discovery stopped.</string>
+    <string name="str_discoveryState_btOff">Bluetooth off.</string>
+    <string name="str_discoveryState_finished">Discovery finished.</string>
+    <string name="str_discoveryState_error">Discovery error.</string>
+    <string name="str_discoveryState_off">Discovery off.</string>
 </resources>

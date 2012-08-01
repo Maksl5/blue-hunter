@@ -5,6 +5,22 @@
     android:layout_gravity="center"
     android:gravity="center"
     android:orientation="vertical" >
+
+    <TableRow
+        android:id="@+id/tableRow5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="@dimen/padding_xlarge" >
+
+        <TextView
+            android:id="@+id/txt_discoveryState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="D I S C O V E R Y  R U N N I N G ." />
+
+    </TableRow>
 
     <TableLayout
         android:layout_width="match_parent"
