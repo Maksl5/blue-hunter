@@ -39,13 +39,13 @@ public class FragmentLayoutManager {
 		case 1:
 			return parentInflater.inflate(R.layout.act_page_discovery, rootContainer, false);
 		case 2:
-
+			return parentInflater.inflate(R.layout.act_page_leaderboard, rootContainer, false);
 		case 3:
 
 		case 4:
-			
+
 		}
-		
+
 		return new View(parentContext);
 	}
 
