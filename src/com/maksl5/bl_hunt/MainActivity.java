@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,7 +37,9 @@ public class MainActivity extends FragmentActivity {
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
-
+	
+	ActionBarHandler actionBarHandler;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -44,11 +47,55 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.act_main);
 		// Create the adapter that will return a fragment for each of the three primary sections
 		// of the app.
+
+		
+		actionBarHandler = new ActionBarHandler(this);
+		
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
+
+		registerListener();
+	}
+
+	private void registerListener() {
+
+
+		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+
+			@Override
+			public void onPageSelected(int position) {
+
+				actionBarHandler.changePage(position +1);
+
+			}
+
+			@Override
+			public void onPageScrolled(	int position,
+										float positionOffset,
+										int positionOffsetPixels) {
+
+				
+
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+				switch (state) {
+
+				case ViewPager.SCROLL_STATE_DRAGGING:
+
+				case ViewPager.SCROLL_STATE_IDLE:
+
+				case ViewPager.SCROLL_STATE_SETTLING:
+
+				}
+
+			}
+		});
 
 	}
 
@@ -56,6 +103,7 @@ public class MainActivity extends FragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		getMenuInflater().inflate(R.menu.act_main, menu);
+		actionBarHandler.supplyMenu(menu);
 		return true;
 	}
 
@@ -117,11 +165,12 @@ public class MainActivity extends FragmentActivity {
 		public View onCreateView(	LayoutInflater inflater,
 									ViewGroup container,
 									Bundle savedInstanceState) {
-			
+
 			Bundle args = getArguments();
 			FragmentLayoutManager fragLayMan = new FragmentLayoutManager(inflater, container, args, this.getActivity());
 			return fragLayMan.getSpecificView();
 
 		}
 	}
+
 }
