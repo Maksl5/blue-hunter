@@ -2,6 +2,7 @@ package com.maksl5.bl_hunt;
 
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -69,7 +70,7 @@ public class MainActivity extends FragmentActivity {
 			public void onPageSelected(int position) {
 
 				int i = 0;
-				
+
 				actionBarHandler.changePage(position + 1);
 				viewsGotCreated();
 
@@ -207,6 +208,21 @@ public class MainActivity extends FragmentActivity {
 
 			viewsGotCreated();
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
+	 */
+	@Override
+	protected void onActivityResult(int requestCode,
+									int resultCode,
+									Intent intent) {
+
+		super.onActivityResult(requestCode, resultCode, intent);
+
+		if (requestCode == 64 & disMan != null) disMan.passEnableBTActivityResult(resultCode);
 	}
 
 }

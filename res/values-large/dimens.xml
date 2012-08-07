@@ -4,5 +4,7 @@
     <dimen name="padding_medium">16dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">32dp</dimen>
+    <dimen name="enable_bt_font_title">40sp</dimen>
+    <dimen name="enable_bt_layout_margin">66dp</dimen>
 
 </resources>

@@ -1,0 +1,10 @@
+<resources>
+
+    <dimen name="padding_small">10dp</dimen>
+    <dimen name="padding_medium">20dp</dimen>
+    <dimen name="padding_large">20dp</dimen>
+    <dimen name="padding_xlarge">40dp</dimen>
+    <dimen name="enable_bt_font_title">52sp</dimen>
+    <dimen name="enable_bt_layout_margin">78dp</dimen>
+
+</resources>

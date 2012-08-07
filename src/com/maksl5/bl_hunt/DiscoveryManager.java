@@ -5,6 +5,7 @@ package com.maksl5.bl_hunt;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.widget.TextView;
 
 
@@ -14,7 +15,11 @@ import android.widget.TextView;
  * 
  * 
  * Manages the complete device discovery. Easily construct the class with
- * {@code DiscoveryManager disMan = new DiscoveryManager(Activity, TextView);}
+ * <p>
+ * {@code DiscoveryManager disMan = new DiscoveryManager(Activity);}
+ * </p>
+ * 
+ * Supply the discovery state {@link TextView} with the {@link #supplyTextView(TextView)} method.
  * 
  * @author Maksl5[Markus Bensing]
  */
@@ -31,6 +36,11 @@ public class DiscoveryManager {
 
 	}
 
+	/**
+	 * Starts the {@link DiscoveryManager}, constructing all its subclasses and initializing the BluetoothDiscovery.
+	 * 
+	 * @return <b>false</b> - if the given TextView is null.
+	 */
 	public boolean startDiscoveryManager() {
 
 		if (stateTextView == null) return false;
@@ -44,6 +54,13 @@ public class DiscoveryManager {
 		return true;
 	}
 
+	/**
+	 * Supplies a new {@link TextView} to use for the discovery state.
+	 * 
+	 * @param txtView
+	 *            - Discovery state {@link TextView}
+	 * @return <b>false</b> - if the {@link TextView} is null.
+	 */
 	public boolean supplyTextView(TextView txtView) {
 
 		if (txtView == null) return false;
@@ -51,6 +68,14 @@ public class DiscoveryManager {
 		stateTextView = txtView;
 		return true;
 
+	}
+
+	public boolean passEnableBTActivityResult(int result) {
+
+		if (btHandler == null) return false;
+
+		btHandler.enableBluetoothResult(result);
+		return true;
 	}
 
 	/**
@@ -89,6 +114,11 @@ public class DiscoveryManager {
 			setDiscoveryStateTextView();
 		}
 
+		/**
+		 * @param state
+		 * @param context
+		 * @return
+		 */
 		public static String getDiscoveryState(	int state,
 												Context context) {
 
@@ -115,11 +145,17 @@ public class DiscoveryManager {
 			return getDiscoveryState(curDiscoveryState, context);
 		}
 
+		/**
+		 * @return
+		 */
 		public int getCurDiscoveryState() {
 
 			return curDiscoveryState;
 		}
 
+		/**
+		 * @return
+		 */
 		public String getCurDiscoveryStateText() {
 
 			return getDiscoveryState();
@@ -138,6 +174,10 @@ public class DiscoveryManager {
 			return newText.trim().toUpperCase();
 		}
 
+		/**
+		 * @param state
+		 * @return
+		 */
 		public boolean setDiscoveryStateTextView(int state) {
 
 			if (stateTextView == null) return false;
@@ -147,6 +187,9 @@ public class DiscoveryManager {
 			return true;
 		}
 
+		/**
+		 * @return
+		 */
 		public boolean setDiscoveryStateTextView() {
 
 			if (stateTextView == null) return false;
@@ -155,6 +198,10 @@ public class DiscoveryManager {
 			return true;
 		}
 
+		/**
+		 * @param state
+		 * @return
+		 */
 		public boolean setDiscoveryState(int state) {
 
 			if (state != (DISCOVERY_STATE_BT_OFF | DISCOVERY_STATE_ERROR | DISCOVERY_STATE_FINISHED | DISCOVERY_STATE_OFF | DISCOVERY_STATE_RUNNING | DISCOVERY_STATE_STOPPED))
@@ -175,14 +222,18 @@ public class DiscoveryManager {
 	private class BluetoothDiscoveryHandler {
 
 		private DiscoveryState disState;
-		private Activity parentActivity;
 		private BluetoothAdapter btAdapter;
 
 		private BluetoothDiscoveryHandler(DiscoveryState state) {
 
-			this.parentActivity = DiscoveryManager.this.parentActivity;
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
+
+			if (isBluetoothSupported()) {
+				if (!isBluetoothEnabled()) {
+					parentActivity.startActivityForResult(new Intent(parentActivity, EnableBluetoothActivity.class), 1);
+				}
+			}
 
 		}
 
@@ -212,6 +263,10 @@ public class DiscoveryManager {
 			else {
 				return false;
 			}
+		}
+
+		private void enableBluetoothResult(int result) {
+
 		}
 
 	}
