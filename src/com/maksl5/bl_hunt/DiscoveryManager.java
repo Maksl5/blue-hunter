@@ -3,15 +3,17 @@ package com.maksl5.bl_hunt;
 
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.widget.TextView;
+
+
 
 /**
  * 
  * 
- *
- * Manages the complete device discovery.
- * Easily construct the class with 
+ * 
+ * Manages the complete device discovery. Easily construct the class with
  * {@code DiscoveryManager disMan = new DiscoveryManager(Activity, TextView);}
  * 
  * @author Maksl5[Markus Bensing]
@@ -19,32 +21,47 @@ import android.widget.TextView;
 
 public class DiscoveryManager {
 
-	
-	Activity parentActivity;
-	TextView stateTextView;
-	BluetoothDiscoveryHandler btHandler;
+	private Activity parentActivity;
+	private static TextView stateTextView;
+	private BluetoothDiscoveryHandler btHandler;
 
-	public DiscoveryManager(Activity activity,
-			TextView stateTextView) {
+	public DiscoveryManager(Activity activity) {
 
 		parentActivity = activity;
-		this.stateTextView = stateTextView;
 
-		
 	}
-	
-	public void startDiscoveryManager() {
-		btHandler = new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, parentActivity));
+
+	public boolean startDiscoveryManager() {
+
+		if (stateTextView == null) return false;
+
+		if (btHandler == null) {
+			btHandler = new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, parentActivity));
+		}
+		else {
+			btHandler.forceSetStateText();
+		}
+		return true;
+	}
+
+	public boolean supplyTextView(TextView txtView) {
+
+		if (txtView == null) return false;
+
+		stateTextView = txtView;
+		return true;
+
 	}
 
 	/**
 	 * 
-	 * This class handles the discovery state of the device discovery. Construct with {@code new DiscoveryState(TextView, Context);}
+	 * This class handles the discovery state of the device discovery. Construct with
+	 * {@code new DiscoveryState(TextView, Context);}
 	 * 
 	 * @author Maksl5[Markus Bensing]
-	 *
+	 * 
 	 */
-	
+
 	public static class DiscoveryState {
 
 		public static final int DISCOVERY_STATE_RUNNING = 1;
@@ -54,20 +71,20 @@ public class DiscoveryManager {
 		public static final int DISCOVERY_STATE_ERROR = 10;
 		public static final int DISCOVERY_STATE_OFF = 0;
 
-		private TextView stateTxtView;
 		private int curDiscoveryState = DISCOVERY_STATE_OFF;
 		private Context context;
 
 		/**
 		 * 
-		 * @param stateTextView  The {@link TextView}, in which the discovery state should be shown.
-		 * @param con            The {@link Context} of the base package or activity.
+		 * @param stateTextView
+		 *            The {@link TextView}, in which the discovery state should be shown.
+		 * @param con
+		 *            The {@link Context} of the base package or activity.
 		 */
-		
+
 		public DiscoveryState(TextView stateTextView,
 				Context con) {
 
-			stateTxtView = stateTextView;
 			context = con;
 			setDiscoveryStateTextView();
 		}
@@ -105,7 +122,7 @@ public class DiscoveryManager {
 
 		public String getCurDiscoveryStateText() {
 
-			return formatStateText(getDiscoveryState());
+			return getDiscoveryState();
 		}
 
 		private static String formatStateText(String stateText) {
@@ -121,14 +138,21 @@ public class DiscoveryManager {
 			return newText.trim().toUpperCase();
 		}
 
-		public void setDiscoveryStateTextView(int state) {
+		public boolean setDiscoveryStateTextView(int state) {
 
-			stateTxtView.setText(formatStateText(getDiscoveryState(state, context)));
+			if (stateTextView == null) return false;
+
+			stateTextView.setText(getDiscoveryState(state, context));
+			stateTextView.invalidate();
+			return true;
 		}
 
-		public void setDiscoveryStateTextView() {
+		public boolean setDiscoveryStateTextView() {
 
-			stateTxtView.setText(formatStateText(getDiscoveryState()));
+			if (stateTextView == null) return false;
+
+			stateTextView.setText(formatStateText(getDiscoveryState()));
+			return true;
 		}
 
 		public boolean setDiscoveryState(int state) {
@@ -146,20 +170,50 @@ public class DiscoveryManager {
 	 * Handles the native Bluetooth events and manages Bluetooth related user input.
 	 * 
 	 * @author Maksl5[Markus Bensing]
-	 *
+	 * 
 	 */
 	private class BluetoothDiscoveryHandler {
-		
+
 		private DiscoveryState disState;
 		private Activity parentActivity;
-		
-		public BluetoothDiscoveryHandler(DiscoveryState state) {
-			
+		private BluetoothAdapter btAdapter;
+
+		private BluetoothDiscoveryHandler(DiscoveryState state) {
+
 			this.parentActivity = DiscoveryManager.this.parentActivity;
 			disState = state;
-			
+			btAdapter = BluetoothAdapter.getDefaultAdapter();
+
 		}
-	
+
+		private boolean isBluetoothSupported() {
+
+			if (btAdapter == null) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+
+		private boolean isBluetoothEnabled() {
+
+			if (isBluetoothSupported()) if (btAdapter.isEnabled()) return true;
+
+			return false;
+
+		}
+
+		private boolean forceSetStateText() {
+
+			if (disState.setDiscoveryStateTextView()) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
 	}
 
 }

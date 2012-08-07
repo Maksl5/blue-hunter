@@ -33,6 +33,7 @@ public class MainActivity extends FragmentActivity {
 	ViewPager mViewPager;
 
 	public ActionBarHandler actionBarHandler;
+	public DiscoveryManager disMan;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,15 +44,16 @@ public class MainActivity extends FragmentActivity {
 		// of the app.
 
 		actionBarHandler = new ActionBarHandler(this);
+		disMan = new DiscoveryManager(this);
 
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
+		mViewPager.setOffscreenPageLimit(4);
 
 		registerListener();
-
 
 	}
 
@@ -66,7 +68,10 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onPageSelected(int position) {
 
+				int i = 0;
+				
 				actionBarHandler.changePage(position + 1);
+				viewsGotCreated();
 
 			}
 
@@ -94,15 +99,33 @@ public class MainActivity extends FragmentActivity {
 		});
 
 	}
-	
-	public void viewsGotCreated() {
-		
-		// Setting up Views
-		TextView stateTextView = (TextView)findViewById(R.id.txt_discoveryState);
 
-		// Setting up DiscoveryManager
-		DiscoveryManager disMan = new DiscoveryManager(this, stateTextView);
-		disMan.startDiscoveryManager();
+	public void viewsGotCreated() {
+
+		int curPage = mViewPager.getCurrentItem();
+
+		switch (curPage + 1) {
+		case 1:
+			// Setting up Views
+			TextView stateTextView = (TextView) findViewById(R.id.txt_discoveryState);
+
+			// Setting up DiscoveryManager
+
+			if (!disMan.startDiscoveryManager()) {
+				if (!disMan.supplyTextView(stateTextView)) {
+
+					// ERROR
+				}
+				else {
+					disMan.startDiscoveryManager();
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+
 	}
 
 	@Override
@@ -179,10 +202,9 @@ public class MainActivity extends FragmentActivity {
 		public void onViewCreated(	View view,
 									Bundle savedInstanceState) {
 
-			
 			// TODO Auto-generated method stub
 			super.onViewCreated(view, savedInstanceState);
-			
+
 			viewsGotCreated();
 		}
 	}
