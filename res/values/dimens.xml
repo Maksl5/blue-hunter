@@ -6,5 +6,6 @@
     <dimen name="padding_xlarge">32dp</dimen>
     <dimen name="enable_bt_font_title">26sp</dimen>
     <dimen name="enable_bt_layout_margin">50dp</dimen>
-
+    <dimen name="enable_bt_font_text">12sp</dimen>
+    <dimen name="enable_bt_button_text">20sp</dimen>
 </resources>

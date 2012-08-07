@@ -4,8 +4,11 @@ package com.maksl5.bl_hunt;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.widget.TextView;
 
 
@@ -27,7 +30,7 @@ import android.widget.TextView;
 public class DiscoveryManager {
 
 	private Activity parentActivity;
-	private static TextView stateTextView;
+	private TextView stateTextView;
 	private BluetoothDiscoveryHandler btHandler;
 
 	public DiscoveryManager(Activity activity) {
@@ -47,6 +50,7 @@ public class DiscoveryManager {
 
 		if (btHandler == null) {
 			btHandler = new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, parentActivity));
+			registerReceiver();
 		}
 		else {
 			btHandler.forceSetStateText();
@@ -78,6 +82,24 @@ public class DiscoveryManager {
 		return true;
 	}
 
+	public void registerReceiver() {
+
+		IntentFilter filter = new IntentFilter();
+
+		filter.addAction(BluetoothDevice.ACTION_FOUND);
+		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+		filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+		parentActivity.registerReceiver(btHandler, filter);
+	}
+
+	public void unregisterReceiver() {
+
+		parentActivity.unregisterReceiver(btHandler);
+
+	}
+
 	/**
 	 * 
 	 * This class handles the discovery state of the device discovery. Construct with
@@ -93,11 +115,14 @@ public class DiscoveryManager {
 		public static final int DISCOVERY_STATE_STOPPED = 3;
 		public static final int DISCOVERY_STATE_BT_OFF = -1;
 		public static final int DISCOVERY_STATE_FINISHED = 2;
+		public static final int DISCOVERY_STATE_BT_ENABLING = 4;
 		public static final int DISCOVERY_STATE_ERROR = 10;
 		public static final int DISCOVERY_STATE_OFF = 0;
+		public static final int DISCOVERY_STATE_BT_DISABLING = 5;
 
 		private int curDiscoveryState = DISCOVERY_STATE_OFF;
 		private Context context;
+		private TextView stateTextView;
 
 		/**
 		 * 
@@ -110,7 +135,9 @@ public class DiscoveryManager {
 		public DiscoveryState(TextView stateTextView,
 				Context con) {
 
+			this.stateTextView = stateTextView;
 			context = con;
+
 			setDiscoveryStateTextView();
 		}
 
@@ -131,6 +158,10 @@ public class DiscoveryManager {
 				return formatStateText(context.getString(R.string.str_discoveryState_btOff));
 			case DISCOVERY_STATE_FINISHED:
 				return formatStateText(context.getString(R.string.str_discoveryState_finished));
+			case DISCOVERY_STATE_BT_ENABLING:
+				return formatStateText(context.getString(R.string.str_discoveryState_btEnabling));
+			case DISCOVERY_STATE_BT_DISABLING:
+				return formatStateText(context.getString(R.string.str_discoveryState_btDisabling));
 			case DISCOVERY_STATE_ERROR:
 				return formatStateText(context.getString(R.string.str_discoveryState_error));
 			case DISCOVERY_STATE_OFF:
@@ -183,7 +214,6 @@ public class DiscoveryManager {
 			if (stateTextView == null) return false;
 
 			stateTextView.setText(getDiscoveryState(state, context));
-			stateTextView.invalidate();
 			return true;
 		}
 
@@ -204,8 +234,8 @@ public class DiscoveryManager {
 		 */
 		public boolean setDiscoveryState(int state) {
 
-			if (state != (DISCOVERY_STATE_BT_OFF | DISCOVERY_STATE_ERROR | DISCOVERY_STATE_FINISHED | DISCOVERY_STATE_OFF | DISCOVERY_STATE_RUNNING | DISCOVERY_STATE_STOPPED))
-				return false;
+			// if (state != (DISCOVERY_STATE_BT_OFF | DISCOVERY_STATE_ERROR | DISCOVERY_STATE_FINISHED | DISCOVERY_STATE_OFF | DISCOVERY_STATE_RUNNING | DISCOVERY_STATE_STOPPED | DISCOVERY_STATE_BT_ENABLING | DISCOVERY_STATE_BT_DISABLING))
+			//	return false;
 
 			curDiscoveryState = state;
 			return true;
@@ -219,7 +249,7 @@ public class DiscoveryManager {
 	 * @author Maksl5[Markus Bensing]
 	 * 
 	 */
-	private class BluetoothDiscoveryHandler {
+	private class BluetoothDiscoveryHandler extends BroadcastReceiver {
 
 		private DiscoveryState disState;
 		private BluetoothAdapter btAdapter;
@@ -231,7 +261,7 @@ public class DiscoveryManager {
 
 			if (isBluetoothSupported()) {
 				if (!isBluetoothEnabled()) {
-					parentActivity.startActivityForResult(new Intent(parentActivity, EnableBluetoothActivity.class), 1);
+					parentActivity.startActivityForResult(new Intent(parentActivity, EnableBluetoothActivity.class), 64);
 				}
 			}
 
@@ -266,6 +296,59 @@ public class DiscoveryManager {
 		}
 
 		private void enableBluetoothResult(int result) {
+
+			switch (result) {
+			case 1:
+				enableBluetooth();
+				break;
+			case -1:
+
+				break;
+			default:
+				break;
+			}
+		}
+
+		private boolean enableBluetooth() {
+
+			if (btAdapter.enable()) return true;
+
+			return false;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
+		 */
+		@Override
+		public void onReceive(	Context context,
+								Intent intent) {
+
+			String action = intent.getAction();
+
+			if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+				int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
+
+				switch (newState) {
+				case BluetoothAdapter.STATE_OFF:
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
+					break;
+				case BluetoothAdapter.STATE_TURNING_ON:
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_ENABLING);
+					break;
+				case BluetoothAdapter.STATE_TURNING_OFF:
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_DISABLING);
+					break;
+				case BluetoothAdapter.STATE_ON:
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_OFF);
+					break;
+				default:
+					break;
+				}
+
+				disState.setDiscoveryStateTextView();
+			}
 
 		}
 

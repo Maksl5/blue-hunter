@@ -14,6 +14,14 @@
     <string name="str_discoveryState_stopped">Discovery stopped.</string>
     <string name="str_discoveryState_btOff">Bluetooth off.</string>
     <string name="str_discoveryState_finished">Discovery finished.</string>
+    <string name="str_discoveryState_btEnabling">Enabling Bluetooth...</string>
+    <string name="str_discoveryState_btDisabling">Disabling Bluetooth...</string>
     <string name="str_discoveryState_error">Discovery error.</string>
     <string name="str_discoveryState_off">Discovery off.</string>
+    
+    <string name="str_enableBT_title">Enable Bluetooth ?</string>
+    <string name="str_enableBT_text">This game requires Bluetooth to be enabled in order to run the device discovery and hunting Bluetooth devices. Do you want to enable Bluetooth and allow this application to use Bluetooth for the device discovery ?</string>
+    <string name="str_enableBT_yesButton">Yes</string>
+    <string name="str_enableBT_noButton">No</string>
+    
 </resources>

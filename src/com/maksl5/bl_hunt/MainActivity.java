@@ -35,6 +35,7 @@ public class MainActivity extends FragmentActivity {
 
 	public ActionBarHandler actionBarHandler;
 	public DiscoveryManager disMan;
+	public TextView disStateTextView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class MainActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(4);
 
+				
 		registerListener();
 
 	}
@@ -108,12 +110,11 @@ public class MainActivity extends FragmentActivity {
 		switch (curPage + 1) {
 		case 1:
 			// Setting up Views
-			TextView stateTextView = (TextView) findViewById(R.id.txt_discoveryState);
-
+			disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
 			// Setting up DiscoveryManager
 
 			if (!disMan.startDiscoveryManager()) {
-				if (!disMan.supplyTextView(stateTextView)) {
+				if (!disMan.supplyTextView(disStateTextView)) {
 
 					// ERROR
 				}
@@ -223,6 +224,16 @@ public class MainActivity extends FragmentActivity {
 		super.onActivityResult(requestCode, resultCode, intent);
 
 		if (requestCode == 64 & disMan != null) disMan.passEnableBTActivityResult(resultCode);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onDestroy()
+	 */
+	@Override
+	protected void onDestroy() {
+		disMan.unregisterReceiver();
+		// TODO Auto-generated method stub
+		super.onDestroy();
 	}
 
 }
