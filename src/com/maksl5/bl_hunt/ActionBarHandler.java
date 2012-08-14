@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
+import android.widget.Switch;
 
 
 
@@ -24,6 +25,8 @@ public class ActionBarHandler {
 	private ActionBar actBar;
 	private MenuInflater menuInflater;
 	private Menu menu;
+	
+	private Switch disSwitch;
 
 	public ActionBarHandler(Activity activity) {
 
@@ -35,7 +38,6 @@ public class ActionBarHandler {
 	public boolean changePage(int newPage) {
 
 		checkMenuNull();
-
 		menu.clear();
 
 		switch (newPage) {
@@ -54,6 +56,10 @@ public class ActionBarHandler {
 			menuInflater.inflate(R.menu.act_main, menu);
 			break;
 		}
+		
+		disSwitch = (Switch) menu.findItem(R.id.menu_switch);
+		
+		
 		return true;
 	}
 

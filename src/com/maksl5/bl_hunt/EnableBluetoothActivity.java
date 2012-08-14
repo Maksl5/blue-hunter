@@ -7,13 +7,10 @@ package com.maksl5.bl_hunt;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.provider.Contacts.Intents.UI;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.TextView;
 
 
 

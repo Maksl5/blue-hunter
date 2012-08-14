@@ -138,7 +138,7 @@ public class DiscoveryManager {
 			this.stateTextView = stateTextView;
 			context = con;
 
-			setDiscoveryStateTextView();
+			setDiscoveryState(DISCOVERY_STATE_OFF);
 		}
 
 		/**
@@ -206,21 +206,9 @@ public class DiscoveryManager {
 		}
 
 		/**
-		 * @param state
 		 * @return
 		 */
-		public boolean setDiscoveryStateTextView(int state) {
-
-			if (stateTextView == null) return false;
-
-			stateTextView.setText(getDiscoveryState(state, context));
-			return true;
-		}
-
-		/**
-		 * @return
-		 */
-		public boolean setDiscoveryStateTextView() {
+		private boolean setDiscoveryStateTextView() {
 
 			if (stateTextView == null) return false;
 
@@ -234,10 +222,13 @@ public class DiscoveryManager {
 		 */
 		public boolean setDiscoveryState(int state) {
 
-			// if (state != (DISCOVERY_STATE_BT_OFF | DISCOVERY_STATE_ERROR | DISCOVERY_STATE_FINISHED | DISCOVERY_STATE_OFF | DISCOVERY_STATE_RUNNING | DISCOVERY_STATE_STOPPED | DISCOVERY_STATE_BT_ENABLING | DISCOVERY_STATE_BT_DISABLING))
-			//	return false;
+			// if (state != (DISCOVERY_STATE_BT_OFF | DISCOVERY_STATE_ERROR | DISCOVERY_STATE_FINISHED |
+			// DISCOVERY_STATE_OFF | DISCOVERY_STATE_RUNNING | DISCOVERY_STATE_STOPPED | DISCOVERY_STATE_BT_ENABLING |
+			// DISCOVERY_STATE_BT_DISABLING))
+			// return false;
 
 			curDiscoveryState = state;
+			if (!setDiscoveryStateTextView()) return false;
 			return true;
 		}
 
@@ -281,13 +272,15 @@ public class DiscoveryManager {
 
 			if (isBluetoothSupported()) if (btAdapter.isEnabled()) return true;
 
+			disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
+
 			return false;
 
 		}
 
 		private boolean forceSetStateText() {
 
-			if (disState.setDiscoveryStateTextView()) {
+			if (disState.setDiscoveryState(disState.getCurDiscoveryState())) {
 				return true;
 			}
 			else {
@@ -302,7 +295,7 @@ public class DiscoveryManager {
 				enableBluetooth();
 				break;
 			case -1:
-
+				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
 				break;
 			default:
 				break;
@@ -347,7 +340,6 @@ public class DiscoveryManager {
 					break;
 				}
 
-				disState.setDiscoveryStateTextView();
 			}
 
 		}
