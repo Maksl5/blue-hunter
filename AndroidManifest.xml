@@ -1,28 +1,44 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="3"
-    android:versionName="pre_alpha_0.1_3_120814-1923">
+    android:versionCode="30"
+    android:versionName="pre_alpha_0.1.0.30_120814-2120" >
 
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="15" />
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/str_mainTitle"
-        android:theme="@style/AppTheme" android:hardwareAccelerated="true">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/str_mainActTitle" android:alwaysRetainTaskState="true" android:configChanges="orientation|screenSize" android:screenOrientation="user">
+            android:alwaysRetainTaskState="true"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/str_mainActTitle"
+            android:screenOrientation="user" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="EnableBluetoothActivity" android:theme="@style/EnableBluetoothTheme" android:configChanges="orientation|screenSize" android:screenOrientation="user"></activity>
+        <activity
+            android:name="EnableBluetoothActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="user"
+            android:theme="@style/EnableBluetoothTheme" >
+        </activity>
+        <activity
+            android:name="PreferenceActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/str_menu_settings"
+            android:screenOrientation="user" >
+        </activity>
     </application>
 
 </manifest>

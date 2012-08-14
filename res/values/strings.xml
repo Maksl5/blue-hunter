@@ -24,4 +24,8 @@
     <string name="str_enableBT_yesButton">Yes</string>
     <string name="str_enableBT_noButton">No</string>
     
+    <string name="str_Preference_Header_info">Info</string>
+    <string name="str_Preference_Header_info_sum">Shows some information about the game.</string>
+    <string name="str_Preferences_version_title">Version</string>
+    
 </resources>

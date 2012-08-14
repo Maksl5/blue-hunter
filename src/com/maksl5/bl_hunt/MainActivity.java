@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -69,7 +70,6 @@ public class MainActivity extends FragmentActivity {
 
 			@Override
 			public void onPageSelected(int position) {
-
 
 				actionBarHandler.changePage(position + 1);
 				viewsGotCreated();
@@ -134,6 +134,26 @@ public class MainActivity extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.act_main, menu);
 		actionBarHandler.supplyMenu(menu);
 		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			Intent intent = new Intent(this, PreferenceActivity.class);
+			startActivity(intent);
+
+			break;
+		default:
+			break;
+		}
+		return false;
 	}
 
 	/**
