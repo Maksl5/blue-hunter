@@ -2,7 +2,10 @@ package com.maksl5.bl_hunt;
 
 
 
+import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
+
 import android.content.Intent;
+import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -16,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 
@@ -36,12 +40,17 @@ public class MainActivity extends FragmentActivity {
 
 	public ActionBarHandler actionBarHandler;
 	public DiscoveryManager disMan;
+	public Authentification authentification;
+	
 	public TextView disStateTextView;
+	
+	private boolean destroyed;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		destroyed = false;
 		setContentView(R.layout.act_main);
 		// Create the adapter that will return a fragment for each of the primary sections
 		// of the app.
@@ -51,13 +60,33 @@ public class MainActivity extends FragmentActivity {
 
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
+		authentification = new Authentification(this);
+		
+		
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(4);
 
+		
+		
 		registerListener();
+		
+		
 
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+	
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	
 	}
 
 	/**
@@ -98,6 +127,25 @@ public class MainActivity extends FragmentActivity {
 
 			}
 		});
+		
+		authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
+			
+			@Override
+			public void onResult(	int requestId,
+									String resultString) {
+			
+				switch (requestId) {
+				case 1:
+					Toast.makeText(MainActivity.this, resultString, Toast.LENGTH_LONG).show();
+					break;
+
+				default:
+					break;
+				}
+				
+			}
+		});
+
 
 	}
 
@@ -133,6 +181,10 @@ public class MainActivity extends FragmentActivity {
 
 		getMenuInflater().inflate(R.menu.act_main, menu);
 		actionBarHandler.supplyMenu(menu);
+		actionBarHandler.changePage(1);
+		
+		NetworkThread serialSubmit = new NetworkThread(this);
+		serialSubmit.execute("checkSerial.php", "1", "s=" + Authentification.getSerialNumber(), "h=" + authentification.getSerialNumberHash());
 		return true;
 	}
 
@@ -252,8 +304,13 @@ public class MainActivity extends FragmentActivity {
 	protected void onDestroy() {
 
 		disMan.unregisterReceiver();
-		// TODO Auto-generated method stub
+		destroyed = true;
+
 		super.onDestroy();
+	}
+	
+	public boolean isDestroyed() {
+		return destroyed;
 	}
 
 }

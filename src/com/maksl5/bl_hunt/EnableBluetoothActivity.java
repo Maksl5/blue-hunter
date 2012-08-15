@@ -45,6 +45,19 @@ public class EnableBluetoothActivity extends Activity {
 		registerListeners();
 
 	}
+	
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+	
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
 
 	private void registerListeners() {
 

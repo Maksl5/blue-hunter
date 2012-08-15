@@ -32,6 +32,18 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 
 		loadHeadersFromResource(R.xml.preference_headers, target);
 	}
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+	
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
 
 	/**
 	 * @author Maksl5[Markus Bensing]

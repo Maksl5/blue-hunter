@@ -2,11 +2,14 @@ package com.maksl5.bl_hunt;
 
 
 
+import android.R.anim;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Switch;
 
@@ -25,8 +28,9 @@ public class ActionBarHandler {
 	private ActionBar actBar;
 	private MenuInflater menuInflater;
 	private Menu menu;
-	
+
 	private Switch disSwitch;
+	private ProgressBar progressBar;
 
 	public ActionBarHandler(Activity activity) {
 
@@ -56,10 +60,20 @@ public class ActionBarHandler {
 			menuInflater.inflate(R.menu.act_main, menu);
 			break;
 		}
-		
-		disSwitch = (Switch) menu.findItem(R.id.menu_switch);
-		
-		
+
+		disSwitch = (Switch) menu.findItem(R.id.menu_switch).getActionView();
+		disSwitch.setPadding(5, 0, 5, 0);
+
+		if (progressBar == null) {
+			progressBar =
+					(ProgressBar) menu.findItem(R.id.menu_progress).setActionView(new ProgressBar(parentActivity, null, android.R.attr.progressBarStyleSmall)).getActionView();
+			progressBar.setPadding(5, 0, 5, 0);
+			progressBar.setVisibility(ProgressBar.GONE);
+		}
+		else {
+			menu.findItem(R.id.menu_progress).setActionView(progressBar);
+		}
+
 		return true;
 	}
 
@@ -70,14 +84,20 @@ public class ActionBarHandler {
 	}
 
 	/**
-	 * @throws NullMenuException 
+	 * @throws NullMenuException
 	 * 
 	 */
 	private void checkMenuNull() {
-	
-		if(menu == null)
+
+		if (menu == null)
 			throw new NullMenuException("The Menu object is null. This is caused, because you either haven't supplied a Menu, or the supplied Menu was null. Read the class description to avoid this Exception.");
-		
+
+	}
+
+	public View getActionView(int resourceId) {
+
+		checkMenuNull();
+		return menu.findItem(resourceId).getActionView();
 	}
 
 	/**
@@ -92,6 +112,7 @@ public class ActionBarHandler {
 		private static final long serialVersionUID = 1L;
 
 		public NullMenuException(String msg) {
+
 			super(msg);
 		}
 
