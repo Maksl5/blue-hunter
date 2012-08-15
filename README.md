@@ -26,7 +26,7 @@ Blue Hunter is a level-up game, in which you have to search for Bluetooth device
 
 
 ## Development
-For sure the game is currently under development. But this doesn't prevents me from opening the source here to GitHub. Keep in mind, that classes that are written for security purposes of course are not published. Security does play an important role in this society, so please excuse me, that I will not share any of my hash/security algorithms or fields, that contain secure content. The peculiarity of this project is, that you can get the newest nightly available, right from my testing purposes from the [bin/](https://github.com/Maksl5/blue-hunter/tree/master/bin) folder. So you can always keep an eye on this and check out, what's new now. Updates of the .apk are very frequently. If I just worked on the project on a day, there will be the corresponding .apk available at this day.
+For sure the game is currently under development. But this doesn't prevents me from opening the source here to GitHub. Keep in mind, that classes that are written for security purposes of course are not published. Security does play an important role in this society, so please excuse me, that I will not share any of my hash/security algorithms or fields, that contain secure content. The peculiarity of this project is, that you can get the newest nightly available, right from my testing purposes pushed to the [bin/](https://github.com/Maksl5/blue-hunter/tree/master/bin) folder. So you can always keep an eye on this and check out, what's new now. Updates of the .apk are very frequently. If I just worked on the project on a day, there will be the corresponding .apk available at this day.
 
 
 ----------
@@ -68,6 +68,19 @@ At this point I want to ask you, if you think you can translate the game into yo
 >
 
 Thank you ! (Of course I will think about a worthy compensation for your work !)
+
+
+----------
+
+
+## Privacy
+Here I want to explain to you, what private information located on your device and got from other devices through Bluetooth is used by this game. This list contains and explains **ALL** gathered information from the game, you might worry about.
+
+ - **_Serial Number (S/N)_** - The game uses the serial number of your device, to determinate the installation of the game and to identify the unique game installation. The purpose of the use is, if you reset your Android to factory and after that install the game, it can automatically drag over the application data from the server, without user interaction.<br>
+_This information is send to the game server and stored in a database._
+
+
+All information gathered from the game and send to the game server into the database is completely nonpublic. The database is completely locked. The only person, who has access to this database is me ! No companies and no other persons have access and are allowed to gather information from this database in any way. Your stored information will not be used for any other purposes, that don't have to do with the game functionality and with statistic purposes !
 
 
 ----------
