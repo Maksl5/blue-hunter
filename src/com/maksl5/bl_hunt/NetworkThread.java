@@ -30,6 +30,7 @@ import com.maksl5.bl_hunt.R.id;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -124,8 +125,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 		result = reqIdMatcher.replaceFirst("");
 			
 		if (!mainActivity.isDestroyed()) {
-			ProgressBar progressBar = (ProgressBar) mainActivity.actionBarHandler.getActionView(R.id.menu_progress);
-			progressBar.setVisibility(ProgressBar.GONE);
+			MenuItem progressBar = mainActivity.actionBarHandler.getMenuItem(R.id.menu_progress);
+			progressBar.setVisible(false);
 		}
 		
 		mainActivity.authentification.fireOnNetworkResultAvailable(reqId, result);
@@ -141,8 +142,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 	protected void onPreExecute() {
 
 		if (!mainActivity.isDestroyed()) {
-			ProgressBar progressBar = (ProgressBar) mainActivity.actionBarHandler.getActionView(R.id.menu_progress);
-			progressBar.setVisibility(ProgressBar.VISIBLE);
+			MenuItem progressBar = mainActivity.actionBarHandler.getMenuItem(R.id.menu_progress);
+			progressBar.setVisible(true);
 		}
 
 	}

@@ -181,7 +181,7 @@ public class MainActivity extends FragmentActivity {
 
 		getMenuInflater().inflate(R.menu.act_main, menu);
 		actionBarHandler.supplyMenu(menu);
-		actionBarHandler.changePage(1);
+		actionBarHandler.initialize();
 		
 		NetworkThread serialSubmit = new NetworkThread(this);
 		serialSubmit.execute("checkSerial.php", "1", "s=" + Authentification.getSerialNumber(), "h=" + authentification.getSerialNumberHash());

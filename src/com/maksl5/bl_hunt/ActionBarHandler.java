@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Switch;
@@ -29,7 +30,7 @@ public class ActionBarHandler {
 	private MenuInflater menuInflater;
 	private Menu menu;
 
-	private Switch disSwitch;
+	private CompoundButton disSwitch;
 	private ProgressBar progressBar;
 
 	public ActionBarHandler(Activity activity) {
@@ -37,43 +38,47 @@ public class ActionBarHandler {
 		parentActivity = activity;
 		actBar = parentActivity.getActionBar();
 		menuInflater = parentActivity.getMenuInflater();
+		
+		
+	}
+
+	/**
+	 * 
+	 */
+	public void initialize() {
+
+		disSwitch = (CompoundButton) menu.findItem(R.id.menu_switch).getActionView();
+		disSwitch.setPadding(5, 0, 5, 0);
+
+		progressBar = new ProgressBar(parentActivity, null, android.R.attr.progressBarStyleSmall);
+		menu.findItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
+		
+		progressBar.setPadding(5, 0, 5, 0);
+		
+
+		changePage(1);
+
 	}
 
 	public boolean changePage(int newPage) {
 
 		checkMenuNull();
-		menu.clear();
 
 		switch (newPage) {
 		case 1:
-			menuInflater.inflate(R.menu.act_main, menu);
+			menu.findItem(R.id.menu_search).setVisible(false);
 			break;
 		case 2:
-			menuInflater.inflate(R.menu.act_main, menu);
-			menu.add("Search").setActionView(new SearchView(parentActivity)).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			menu.findItem(R.id.menu_search).setVisible(true);
 			break;
 		case 3:
-			menuInflater.inflate(R.menu.act_main, menu);
-			menu.add("Search").setActionView(new SearchView(parentActivity)).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			menu.findItem(R.id.menu_search).setVisible(true);
 			break;
 		case 4:
-			menuInflater.inflate(R.menu.act_main, menu);
+			menu.findItem(R.id.menu_search).setVisible(false);
 			break;
 		}
-
-		disSwitch = (Switch) menu.findItem(R.id.menu_switch).getActionView();
-		disSwitch.setPadding(5, 0, 5, 0);
-
-		if (progressBar == null) {
-			progressBar =
-					(ProgressBar) menu.findItem(R.id.menu_progress).setActionView(new ProgressBar(parentActivity, null, android.R.attr.progressBarStyleSmall)).getActionView();
-			progressBar.setPadding(5, 0, 5, 0);
-			progressBar.setVisibility(ProgressBar.GONE);
-		}
-		else {
-			menu.findItem(R.id.menu_progress).setActionView(progressBar);
-		}
-
+		
 		return true;
 	}
 
@@ -98,6 +103,11 @@ public class ActionBarHandler {
 
 		checkMenuNull();
 		return menu.findItem(resourceId).getActionView();
+	}
+	
+	public MenuItem getMenuItem(int resourceId) {
+		checkMenuNull();
+		return menu.findItem(resourceId);
 	}
 
 	/**
