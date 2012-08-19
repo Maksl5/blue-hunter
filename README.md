@@ -79,6 +79,9 @@ Here I want to explain to you, what private information located on your device a
  - **_Serial Number (S/N)_** - The game uses the serial number of your device, to determinate the installation of the game and to identify the unique game installation. The purpose of the use is, if you reset your Android to factory and after that install the game, it can automatically drag over the application data from the server, without user interaction.<br>
 _This information is sent to the game server and stored in a database._
 
+ - **_Version Code_** - This is the internal version code of the game. It is used to check, if a new nightly version is available.<br>
+_This information is sent to the game server and stored in a database._
+
 
 All information gathered from the game and send to the game server into the database is completely nonpublic. The database is completely locked. The only person, who has access to this database is me ! No companies and no other persons have access and are allowed to gather information from this database in any way. Your stored information will not be used for any other purposes, that don't have to do with the game functionality and with statistic purposes !
 

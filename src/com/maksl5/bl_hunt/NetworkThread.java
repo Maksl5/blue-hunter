@@ -42,12 +42,16 @@ import android.widget.Toast;
  */
 public class NetworkThread extends AsyncTask<String, Integer, String> {
 
-	MainActivity mainActivity;
+	private MainActivity mainActivity;
+	private NetworkMananger networkMananger;
 
-	public NetworkThread(MainActivity mainActivity) {
+	public NetworkThread(MainActivity mainActivity,
+			NetworkMananger networkMananger) {
 
 		super();
 		this.mainActivity = mainActivity;
+		this.networkMananger = networkMananger;
+		networkMananger.addRunningThread(this);
 	}
 
 	/*
@@ -58,11 +62,9 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 	@Override
 	protected String doInBackground(String... params) {
 
-		
 		String remoteFile = params[0];
 		int requestId = Integer.parseInt(params[1]);
-		
-		
+
 		try {
 
 			List<NameValuePair> postValues = new ArrayList<NameValuePair>();
@@ -72,21 +74,21 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 				Matcher matcher = pattern.matcher(params[i]);
 
 				matcher.matches();
-				
+
 				postValues.add(new BasicNameValuePair(matcher.group(1), matcher.group(2)));
 			}
 
-			URI httpUri = URI.create("http://maks.mph-p.de/blueHunter/" + remoteFile);
+			URI httpUri = URI.create(remoteFile);
 
 			HttpClient httpClient = new DefaultHttpClient();
 			HttpPost postRequest = new HttpPost(httpUri);
 
 			postRequest.setEntity(new UrlEncodedFormEntity(postValues));
-			
+
 			HttpResponse httpResponse = httpClient.execute(postRequest);
-			
+
 			String result = EntityUtils.toString(httpResponse.getEntity());
-			
+
 			return "<requestID='" + requestId + "' />" + result;
 		}
 		catch (UnsupportedEncodingException e) {
@@ -106,7 +108,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 		}
 
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/*
@@ -121,15 +123,12 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 		Matcher reqIdMatcher = reqIdPattern.matcher(result);
 		reqIdMatcher.find();
 		int reqId = Integer.parseInt(reqIdMatcher.group(1));
-		
+
 		result = reqIdMatcher.replaceFirst("");
-			
-		if (!mainActivity.isDestroyed()) {
-			MenuItem progressBar = mainActivity.actionBarHandler.getMenuItem(R.id.menu_progress);
-			progressBar.setVisible(false);
-		}
-		
+
 		mainActivity.authentification.fireOnNetworkResultAvailable(reqId, result);
+		
+		networkMananger.threadFinished(this);
 
 	}
 

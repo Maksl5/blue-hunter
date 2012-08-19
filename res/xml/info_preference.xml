@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <Preference android:title="@string/str_Preferences_version_title" android:key="pref_version"/>
+    <CheckBoxPreference android:key="pref_checkUpdate" android:defaultValue="true" android:title="@string/str_Preferences_checkUpdate_title" android:summary="@string/str_Preferences_checkUpdate_sum"/>
     
 
 </PreferenceScreen>

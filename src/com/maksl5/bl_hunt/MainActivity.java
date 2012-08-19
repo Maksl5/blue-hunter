@@ -5,6 +5,8 @@ package com.maksl5.bl_hunt;
 import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -41,6 +43,7 @@ public class MainActivity extends FragmentActivity {
 	public ActionBarHandler actionBarHandler;
 	public DiscoveryManager disMan;
 	public Authentification authentification;
+	public NetworkMananger netMananger;
 	
 	public TextView disStateTextView;
 	
@@ -60,7 +63,8 @@ public class MainActivity extends FragmentActivity {
 
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		authentification = new Authentification(this);
+		authentification = new Authentification(this, this);
+		netMananger = new NetworkMananger(this);
 		
 		
 		// Set up the ViewPager with the sections adapter.
@@ -73,7 +77,7 @@ public class MainActivity extends FragmentActivity {
 		registerListener();
 		
 		
-
+		
 	}
 
 	/* (non-Javadoc)
@@ -131,18 +135,16 @@ public class MainActivity extends FragmentActivity {
 		authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 			
 			@Override
-			public void onResult(	int requestId,
+			public boolean onResult(	int requestId,
 									String resultString) {
 			
 				switch (requestId) {
-				case 1:
+				case Authentification.NETRESULT_ID_SERIAL_CHECK:
 					Toast.makeText(MainActivity.this, resultString, Toast.LENGTH_LONG).show();
-					break;
-
-				default:
-					break;
+					return true;
 				}
 				
+				return false;
 			}
 		});
 
@@ -183,8 +185,18 @@ public class MainActivity extends FragmentActivity {
 		actionBarHandler.supplyMenu(menu);
 		actionBarHandler.initialize();
 		
-		NetworkThread serialSubmit = new NetworkThread(this);
-		serialSubmit.execute("checkSerial.php", "1", "s=" + Authentification.getSerialNumber(), "h=" + authentification.getSerialNumberHash());
+		int verCode = 0;
+		try {
+			verCode = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
+		}
+		catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		authentification.checkUpdate();
+		
+		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
+		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + verCode, "h=" + authentification.getSerialNumberHash());
 		return true;
 	}
 

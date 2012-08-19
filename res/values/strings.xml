@@ -27,5 +27,7 @@
     <string name="str_Preference_Header_info">Info</string>
     <string name="str_Preference_Header_info_sum">Shows some information about the game.</string>
     <string name="str_Preferences_version_title">Version</string>
+    <string name="str_Preferences_checkUpdate_title">Automatically check updates</string>
+    <string name="str_Preferences_checkUpdate_sum">Check automatically for new available nightly updates.</string>
     
 </resources>
