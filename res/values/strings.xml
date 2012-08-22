@@ -1,4 +1,10 @@
 <resources>
+<!--
+		Default English translation for Blue Hunter 
+		Author: Maksl5 [Markus Bensing].
+		2012 © Maksl5 [Markus Bensing].
+-->
+
 
     <string name="str_mainTitle">Blue Hunter</string>
     <string name="str_versionName">0.1_alpha</string>

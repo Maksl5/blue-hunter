@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+		Dutch translation for Blue Hunter 
+		Author: Marc.
+		2012 © Marc.
+-->
+
+
+
+<resources>
+    <string name="str_mainTitle">Blue Hunter</string>
+    <string name="str_versionName">0.1_alpha</string>
+    
+    <string name="str_pageTitle_main">Device Discovery</string>
+    <string name="str_pageTitle_leaderboard">Rankings</string>
+    <string name="str_pageTitle_foundDevices">Gevonden apparaten</string>
+    <string name="str_pageTitle_achievements">Doelen</string>
+    <string name="str_menu_settings">Instellingen</string>
+    <string name="str_mainActTitle">Blue Hunter</string>
+
+    <string name="str_discoveryState_running">Bezig met scannen.</string>
+    <string name="str_discoveryState_stopped">Scannen is gestopt.</string>
+    <string name="str_discoveryState_btOff">Bluetooth staat uit.</string>
+    <string name="str_discoveryState_finished">Scannen is afgelopen.</string>
+    <string name="str_discoveryState_btEnabling">Bluetooth aanzetten...</string>
+    <string name="str_discoveryState_btDisabling">Bluetooth uitzetten...</string>
+    <string name="str_discoveryState_error">Scan error.</string>
+    <string name="str_discoveryState_off">Scannen staat uit.</string>
+    
+    <string name="str_enableBT_title">Bluetooth aanzetten?</string>
+    <string name="str_enableBT_text">Dit spel vereist dat Bluetooth aan staat om te kunnen scannen voor apparaten. Wil je Bluetooth aanzetten en deze applicatie toestemming geven om Bluetooth te gebruiken om te scannen?</string>
+    <string name="str_enableBT_yesButton">Ja</string>
+    <string name="str_enableBT_noButton">Nee</string>
+    
+    <string name="str_Preference_Header_info">Informatie</string>
+    <string name="str_Preference_Header_info_sum">Laat wat informatie over het spel zien.</string>
+    <string name="str_Preferences_version_title">Versie</string>
+    <string name="str_Preferences_checkUpdate_title">Controleer automatisch for updates</string>
+    <string name="str_Preferences_checkUpdate_sum">Controleer automatisch voor nieuwe nightly updates.</string>
+    
+</resources>
