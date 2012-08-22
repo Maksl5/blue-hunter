@@ -212,7 +212,7 @@ public class DiscoveryManager {
 
 			if (stateTextView == null) return false;
 
-			stateTextView.setText(formatStateText(getDiscoveryState()));
+			stateTextView.setText(getDiscoveryState());
 			return true;
 		}
 
@@ -291,10 +291,10 @@ public class DiscoveryManager {
 		private void enableBluetoothResult(int result) {
 
 			switch (result) {
-			case 1:
+			case EnableBluetoothActivity.BT_ENABLE_RESULT_ENABLE:
 				enableBluetooth();
 				break;
-			case -1:
+			case EnableBluetoothActivity.BT_ENABLE_RESULT_NOT_ENABLE:
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
 				break;
 			default:

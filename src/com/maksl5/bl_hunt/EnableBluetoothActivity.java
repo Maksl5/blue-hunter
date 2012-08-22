@@ -20,6 +20,9 @@ import android.widget.Button;
  */
 public class EnableBluetoothActivity extends Activity {
 
+	public static final int BT_ENABLE_RESULT_ENABLE = 1;
+	public static final int BT_ENABLE_RESULT_NOT_ENABLE = -1;
+	
 	private Button yesButton;
 	private Button noButton;
 
@@ -66,7 +69,7 @@ public class EnableBluetoothActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 			
-				EnableBluetoothActivity.this.setResult(1);
+				EnableBluetoothActivity.this.setResult(BT_ENABLE_RESULT_ENABLE);
 				finish();
 				
 			}
@@ -80,7 +83,7 @@ public class EnableBluetoothActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 			
-				EnableBluetoothActivity.this.setResult(-1);
+				EnableBluetoothActivity.this.setResult(BT_ENABLE_RESULT_NOT_ENABLE);
 				finish();
 				
 			}
