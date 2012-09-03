@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="140"
-    android:versionName="pre_alpha_0.1.0.140_120822-1602" >
+    android:versionCode="159"
+    android:versionName="pre_alpha_0.1.0.159_120903-1419" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -36,9 +36,7 @@
         </activity>
         <activity
             android:name="PreferenceActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/str_menu_settings"
-            android:screenOrientation="user" >
+            android:label="@string/str_menu_settings">
         </activity>
     </application>
 

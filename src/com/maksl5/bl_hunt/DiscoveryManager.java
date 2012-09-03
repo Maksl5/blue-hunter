@@ -2,6 +2,12 @@ package com.maksl5.bl_hunt;
 
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -9,6 +15,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.DataSetObserver;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
+import android.widget.SimpleAdapter;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 
@@ -29,13 +45,13 @@ import android.widget.TextView;
 
 public class DiscoveryManager {
 
-	private Activity parentActivity;
+	private MainActivity mainActivity;
 	private TextView stateTextView;
 	private BluetoothDiscoveryHandler btHandler;
 
-	public DiscoveryManager(Activity activity) {
+	public DiscoveryManager(MainActivity activity) {
 
-		parentActivity = activity;
+		mainActivity = activity;
 
 	}
 
@@ -49,7 +65,7 @@ public class DiscoveryManager {
 		if (stateTextView == null) return false;
 
 		if (btHandler == null) {
-			btHandler = new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, parentActivity));
+			btHandler = new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, mainActivity));
 			registerReceiver();
 		}
 		else {
@@ -91,13 +107,17 @@ public class DiscoveryManager {
 		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
 		filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
 
-		parentActivity.registerReceiver(btHandler, filter);
+		mainActivity.registerReceiver(btHandler, filter);
 	}
 
 	public void unregisterReceiver() {
 
-		parentActivity.unregisterReceiver(btHandler);
+		mainActivity.unregisterReceiver(btHandler);
 
+	}
+	
+	public void stopDiscoveryManager () {
+		btHandler.stopDiscovery();
 	}
 
 	/**
@@ -245,22 +265,56 @@ public class DiscoveryManager {
 		private DiscoveryState disState;
 		private BluetoothAdapter btAdapter;
 
+		private CompoundButton discoveryButton;
+
+		private List<BluetoothDevice> foundDevices;
+		private List<HashMap<String, String>> listViewMaps;
+
 		private BluetoothDiscoveryHandler(DiscoveryState state) {
 
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
+			foundDevices = new ArrayList<BluetoothDevice>();
+			listViewMaps = new ArrayList<HashMap<String, String>>();
+
+			discoveryButton = (CompoundButton) mainActivity.actionBarHandler.getActionView(R.id.menu_switch);
+
+			requestBtEnable();
+
+			discoveryButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+				@Override
+				public void onCheckedChanged(	CompoundButton buttonView,
+												boolean isChecked) {
+
+					if (isChecked) {
+						runDiscovery();
+					}
+					else {
+						btAdapter.cancelDiscovery();
+						disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED);
+					}
+
+				}
+			});
+
+		}
+
+		private void requestBtEnable() {
+
 			if (isBluetoothSupported()) {
 				if (!isBluetoothEnabled()) {
-					parentActivity.startActivityForResult(new Intent(parentActivity, EnableBluetoothActivity.class), 64);
+					mainActivity.startActivityForResult(new Intent(mainActivity, EnableBluetoothActivity.class), 64);
 				}
 			}
-
 		}
 
 		private boolean isBluetoothSupported() {
 
 			if (btAdapter == null) {
+				discoveryButton.setEnabled(false);
+				discoveryButton.setChecked(false);
 				return false;
 			}
 			else {
@@ -309,6 +363,15 @@ public class DiscoveryManager {
 			return false;
 		}
 
+		private boolean runDiscovery() {
+
+			return btAdapter.startDiscovery();
+		}
+		
+		private boolean stopDiscovery() {
+			return btAdapter.cancelDiscovery();
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -341,9 +404,55 @@ public class DiscoveryManager {
 				}
 
 			}
+			else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+
+				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING);
+
+			}
+			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+
+				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
+				runDiscovery();
+
+			}
+			else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+
+				BluetoothDevice tempDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+
+				if (!foundDevices.contains(tempDevice)) {
+					foundDevices.add(tempDevice);
+
+					HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
+
+					if (tempDevice.getAddress() != null) {
+						tempDataHashMap.put("macAddress", tempDevice.getAddress());
+					}
+					else {
+						tempDataHashMap.put("macAddress", "--:--:--:--:--:--");
+					}
+
+					listViewMaps.add(tempDataHashMap);
+					
+					String[] from = { "macAddress" };
+					int[] to = { R.id.macTxtView };
+					
+					SimpleAdapter sAdapter = new SimpleAdapter(context, listViewMaps,R.layout.act_page_founddevices_row, from, to);
+					lv.setAdapter(sAdapter);
+
+				}
+				
+				
+				
+				
+				
+
+			}
+			
+			
+			
 
 		}
-
 	}
 
 }

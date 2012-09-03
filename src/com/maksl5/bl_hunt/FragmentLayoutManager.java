@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * 
@@ -45,7 +46,7 @@ public class FragmentLayoutManager {
 		case 2:
 			return parentInflater.inflate(R.layout.act_page_leaderboard, rootContainer, false);
 		case 3:
-
+			return parentInflater.inflate(R.layout.act_page_founddevices, rootContainer, false);
 		case 4:
 
 		}

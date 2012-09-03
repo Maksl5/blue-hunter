@@ -159,19 +159,7 @@ public class MainActivity extends FragmentActivity {
 
 		switch (curPage + 1) {
 		case 1:
-			// Setting up Views
-			if (disStateTextView == null) disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
-			// Setting up DiscoveryManager
 
-			if (!disMan.startDiscoveryManager()) {
-				if (!disMan.supplyTextView(disStateTextView)) {
-
-					// ERROR
-				}
-				else {
-					disMan.startDiscoveryManager();
-				}
-			}
 			break;
 
 		default:
@@ -186,6 +174,20 @@ public class MainActivity extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.act_main, menu);
 		actionBarHandler.supplyMenu(menu);
 		actionBarHandler.initialize();
+		
+		// Setting up Views
+		if (disStateTextView == null) disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
+		// Setting up DiscoveryManager
+
+		if (!disMan.startDiscoveryManager()) {
+			if (!disMan.supplyTextView(disStateTextView)) {
+
+				// ERROR
+			}
+			else {
+				disMan.startDiscoveryManager();
+			}
+		}
 		
 		int verCode = 0;
 		try {
@@ -318,6 +320,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onDestroy() {
 
 		disMan.unregisterReceiver();
+		disMan.stopDiscoveryManager();
 		destroyed = true;
 
 		super.onDestroy();
