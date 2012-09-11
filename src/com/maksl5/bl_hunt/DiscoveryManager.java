@@ -2,11 +2,13 @@ package com.maksl5.bl_hunt;
 
 
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -422,11 +424,37 @@ public class DiscoveryManager {
 
 				if (!foundDevices.contains(tempDevice)) {
 					foundDevices.add(tempDevice);
-
+					
 					HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
-
+					
+					
+					
+					//Manufacturer finding
+					
+					HashMap<String, String[]> macHashMap = MacAdressAllocations.getHashMap();
+					Set<String> keySet = macHashMap.keySet();
+					
+					boolean foundManufacturer = false;
+					
+					for (String key : keySet) {
+						String[] specificMacs = macHashMap.get(key);
+						
+						for (String mac : specificMacs) {
+							if(tempDevice.getAddress().startsWith(mac)) {
+								foundManufacturer = true;
+								tempDataHashMap.put("manufacturer", key);
+							}
+						}
+						
+					}
+					if(!foundManufacturer)
+						tempDataHashMap.put("manufacturer", "Unknown");
+					
+					
+		
 					if (tempDevice.getAddress() != null) {
 						tempDataHashMap.put("macAddress", tempDevice.getAddress());
+						
 					}
 					else {
 						tempDataHashMap.put("macAddress", "--:--:--:--:--:--");
@@ -434,8 +462,8 @@ public class DiscoveryManager {
 
 					listViewMaps.add(tempDataHashMap);
 					
-					String[] from = { "macAddress" };
-					int[] to = { R.id.macTxtView };
+					String[] from = { "macAddress", "manufacturer" };
+					int[] to = { R.id.macTxtView, R.id.manufacturerTxtView };
 					
 					SimpleAdapter sAdapter = new SimpleAdapter(context, listViewMaps,R.layout.act_page_founddevices_row, from, to);
 					lv.setAdapter(sAdapter);
