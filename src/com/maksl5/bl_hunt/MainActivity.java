@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +47,7 @@ public class MainActivity extends FragmentActivity {
 	public NetworkMananger netMananger;
 	
 	public TextView disStateTextView;
+	public TextView userInfoTextView;
 	
 	private boolean destroyed;
 
@@ -140,7 +142,15 @@ public class MainActivity extends FragmentActivity {
 				switch (requestId) {
 				case Authentification.NETRESULT_ID_SERIAL_CHECK:
 					Toast.makeText(MainActivity.this, resultString, Toast.LENGTH_LONG).show();
-					return true;
+				case Authentification.NETRESULT_ID_GET_USER_INFO:
+					userInfoTextView.setText(Html.fromHtml(resultString));
+					
+					TableRow userInfoRow =
+							(TableRow) findViewById(R.id.userInfoTableRow);
+					userInfoRow.setVisibility(TableRow.VISIBLE);
+					userInfoRow.invalidate();
+					userInfoRow.setVisibility(TableRow.INVISIBLE);
+
 				}
 				
 				return false;
@@ -168,9 +178,6 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		TableRow userInfoRow =
-				(TableRow) findViewById(R.id.userInfoTableRow);
-		userInfoRow.setVisibility(TableRow.GONE);
 		
 		getMenuInflater().inflate(R.menu.act_main, menu);
 		actionBarHandler.supplyMenu(menu);
@@ -202,6 +209,22 @@ public class MainActivity extends FragmentActivity {
 		
 		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
 		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + verCode, "h=" + authentification.getSerialNumberHash());
+		
+		
+		
+		TableRow userInfoRow =
+				(TableRow) findViewById(R.id.userInfoTableRow);
+		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
+		
+		NetworkThread getUserInfo = new NetworkThread(this, netMananger);
+		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
+		
+		
+		
+		
+		userInfoRow.setVisibility(TableRow.INVISIBLE);
+		
+		
 		return true;
 	}
 

@@ -149,7 +149,7 @@ public class ActionBarHandler implements OnNavigationListener {
 
 		final ViewPager parentView = (ViewPager) parentActivity.findViewById(R.id.pager);
 		final TableRow userInfoRow = (TableRow) parentActivity.findViewById(R.id.userInfoTableRow);
-		TextView txtTextView = (TextView) parentActivity.findViewById(R.id.userInfoTxtView);
+		TextView userInfoTextView = (TextView) parentActivity.findViewById(R.id.userInfoTxtView);
 		Animation animation;
 
 		switch (itemPosition) {
@@ -165,7 +165,7 @@ public class ActionBarHandler implements OnNavigationListener {
 				@Override
 				public void onAnimationStart(Animation animation) {
 
-					userInfoRow.setVisibility(TableRow.GONE);
+					userInfoRow.setVisibility(TableRow.INVISIBLE);
 					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
 
 					// TODO Auto-generated method stub

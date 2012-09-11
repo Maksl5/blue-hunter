@@ -60,6 +60,7 @@ At this point I want to ask you, if you think you can translate the game into yo
 ### Included Translations:
 
 > - English
+> - Dutch (Marc.)
 >
 
 ### Oncoming Translations:
@@ -81,6 +82,9 @@ _This information is sent to the game server and stored in a database._
 
  - **_Version Code_** - This is the internal version code of the game. It is used to check, if a new nightly version is available.<br>
 _This information is sent to the game server and stored in a database._
+
+ - **_Remote MAC Address_** - This is the MAC Address of devices which you will found. It is used to determinate the manufacturer of the device and to give you specific expierence values for each manufacturer. (Some devices are more rare than others.)<br>
+_This information is **NOT** sent to the game server and **NOT** stored in any database yet._
 
 
 All information gathered from the game and send to the game server into the database is completely nonpublic. The database is completely locked. The only person, who has access to this database is me ! No companies and no other persons have access and are allowed to gather information from this database in any way. Your stored information will not be used for any other purposes, that don't have to do with the game functionality and with statistic purposes !
