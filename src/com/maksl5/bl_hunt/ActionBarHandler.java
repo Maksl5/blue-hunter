@@ -40,7 +40,7 @@ import android.widget.TextView;
 public class ActionBarHandler implements OnNavigationListener {
 
 	private Activity parentActivity;
-	private ActionBar actBar;
+	public ActionBar actBar;
 	private MenuInflater menuInflater;
 	private Menu menu;
 
@@ -60,10 +60,10 @@ public class ActionBarHandler implements OnNavigationListener {
 		spinnerItems.add("User Information");
 
 		if (VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
-			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(actBar.getThemedContext(), R.layout.dropdown_list_item, spinnerItems), this);
+			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(actBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, spinnerItems), this);
 		}
 		else {
-			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(activity, R.layout.dropdown_list_item, spinnerItems), this);
+			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_dropdown_item, spinnerItems), this);
 		}
 
 		menuInflater = parentActivity.getMenuInflater();
@@ -150,6 +150,9 @@ public class ActionBarHandler implements OnNavigationListener {
 		final ViewPager parentView = (ViewPager) parentActivity.findViewById(R.id.pager);
 		final TableRow userInfoRow = (TableRow) parentActivity.findViewById(R.id.userInfoTableRow);
 		TextView userInfoTextView = (TextView) parentActivity.findViewById(R.id.userInfoTxtView);
+
+		final long id = itemId;
+
 		Animation animation;
 
 		switch (itemPosition) {
@@ -181,7 +184,9 @@ public class ActionBarHandler implements OnNavigationListener {
 
 				@Override
 				public void onAnimationEnd(Animation animation) {
+
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
+					
 					// TODO Auto-generated method stub
 
 				}
@@ -200,6 +205,7 @@ public class ActionBarHandler implements OnNavigationListener {
 
 				@Override
 				public void onAnimationStart(Animation animation) {
+
 					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
 					// TODO Auto-generated method stub
 
@@ -214,6 +220,7 @@ public class ActionBarHandler implements OnNavigationListener {
 
 				@Override
 				public void onAnimationEnd(Animation animation) {
+
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
 					userInfoRow.setVisibility(TableRow.VISIBLE);
 					// TODO Auto-generated method stub
@@ -225,6 +232,7 @@ public class ActionBarHandler implements OnNavigationListener {
 
 			break;
 		}
+
 		return false;
 	}
 
@@ -283,8 +291,6 @@ public class ActionBarHandler implements OnNavigationListener {
 
 				view.invalidate();
 				view.requestLayout();
-				
-				
 
 			}
 			else if (targetTop < initialTop) {
@@ -293,7 +299,7 @@ public class ActionBarHandler implements OnNavigationListener {
 				// view.setBottom(initialBot);
 				view.getLayoutParams().height =
 						view.getBottom() - (int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop);
-				
+
 				view.invalidate();
 				view.requestLayout();
 				view.forceLayout();

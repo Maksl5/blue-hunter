@@ -12,7 +12,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +41,7 @@ public class MainActivity extends FragmentActivity {
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
-	public CustomViewPager mViewPager;
+	public ViewPager mViewPager;
 
 	public ActionBarHandler actionBarHandler;
 	public DiscoveryManager disMan;
@@ -70,7 +72,7 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		// Set up the ViewPager with the sections adapter.
-		mViewPager = (CustomViewPager) findViewById(R.id.pager);
+		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(4);
 
@@ -142,15 +144,20 @@ public class MainActivity extends FragmentActivity {
 				switch (requestId) {
 				case Authentification.NETRESULT_ID_SERIAL_CHECK:
 					Toast.makeText(MainActivity.this, resultString, Toast.LENGTH_LONG).show();
+					break;
 				case Authentification.NETRESULT_ID_GET_USER_INFO:
 					userInfoTextView.setText(Html.fromHtml(resultString));
+					userInfoTextView.setVisibility(TextView.VISIBLE);
+					userInfoTextView.requestLayout();
+					userInfoTextView.invalidate();
+					
 					
 					TableRow userInfoRow =
 							(TableRow) findViewById(R.id.userInfoTableRow);
 					userInfoRow.setVisibility(TableRow.VISIBLE);
 					userInfoRow.invalidate();
 					userInfoRow.setVisibility(TableRow.INVISIBLE);
-
+					break;
 				}
 				
 				return false;
@@ -215,6 +222,7 @@ public class MainActivity extends FragmentActivity {
 		TableRow userInfoRow =
 				(TableRow) findViewById(R.id.userInfoTableRow);
 		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
+		
 		
 		NetworkThread getUserInfo = new NetworkThread(this, netMananger);
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));

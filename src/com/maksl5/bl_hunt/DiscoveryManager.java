@@ -57,7 +57,8 @@ public class DiscoveryManager {
 		if (stateTextView == null) return false;
 
 		if (btHandler == null) {
-			btHandler = new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, mainActivity));
+			btHandler =
+					new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, mainActivity));
 			registerReceiver();
 		}
 		else {
@@ -107,8 +108,9 @@ public class DiscoveryManager {
 		mainActivity.unregisterReceiver(btHandler);
 
 	}
-	
-	public void stopDiscoveryManager () {
+
+	public void stopDiscoveryManager() {
+
 		btHandler.stopDiscovery();
 	}
 
@@ -270,7 +272,8 @@ public class DiscoveryManager {
 			foundDevices = new ArrayList<BluetoothDevice>();
 			listViewMaps = new ArrayList<HashMap<String, String>>();
 
-			discoveryButton = (CompoundButton) mainActivity.actionBarHandler.getActionView(R.id.menu_switch);
+			discoveryButton =
+					(CompoundButton) mainActivity.actionBarHandler.getActionView(R.id.menu_switch);
 
 			requestBtEnable();
 
@@ -357,11 +360,16 @@ public class DiscoveryManager {
 
 		private boolean runDiscovery() {
 
-			return btAdapter.startDiscovery();
+			if (btAdapter != null) return btAdapter.startDiscovery();
+			
+			return false;
 		}
-		
+
 		private boolean stopDiscovery() {
-			return btAdapter.cancelDiscovery();
+
+			if (btAdapter != null) return btAdapter.cancelDiscovery();
+			
+			return false;
 		}
 
 		/*
@@ -376,7 +384,8 @@ public class DiscoveryManager {
 			String action = intent.getAction();
 
 			if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-				int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
+				int newState =
+						intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
 
 				switch (newState) {
 				case BluetoothAdapter.STATE_OFF:
@@ -409,75 +418,66 @@ public class DiscoveryManager {
 			}
 			else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 
-				BluetoothDevice tempDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				BluetoothDevice tempDevice =
+						intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				onDeviceFound(tempDevice);
 
-
-				}
-				
-				
-				
-				
-				
-
 			}
-		
+
+		}
+
 		public void onDeviceFound(BluetoothDevice btDevice) {
-			ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+
+			ListView lv =
+					(ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
 
 			if (!foundDevices.contains(btDevice)) {
 				foundDevices.add(btDevice);
-				
+
 				HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
-				
-				
-				
-				//Manufacturer finding
-				
+
+				// Manufacturer finding
+
 				HashMap<String, String[]> macHashMap = MacAdressAllocations.getHashMap();
 				Set<String> keySet = macHashMap.keySet();
-				
+
 				boolean foundManufacturer = false;
-				
+
 				for (String key : keySet) {
 					String[] specificMacs = macHashMap.get(key);
-					
+
 					for (String mac : specificMacs) {
-						if(btDevice.getAddress().startsWith(mac)) {
+						if (btDevice.getAddress().startsWith(mac)) {
 							foundManufacturer = true;
 							tempDataHashMap.put("manufacturer", key);
 							tempDataHashMap.put("exp", "+" + MacAdressAllocations.getExp(key) + " " + disState.context.getString(R.string.str_foundDevices_exp_abbreviation));
 						}
 					}
-					
+
 				}
-				if(!foundManufacturer)
-					tempDataHashMap.put("manufacturer", "Unknown");
-				
-				
-	
+				if (!foundManufacturer) tempDataHashMap.put("manufacturer", "Unknown");
+
 				if (btDevice.getAddress() != null) {
 					tempDataHashMap.put("macAddress", btDevice.getAddress());
-					
+
 				}
 				else {
 					tempDataHashMap.put("macAddress", "--:--:--:--:--:--");
 				}
 
 				listViewMaps.add(tempDataHashMap);
-				
-				String[] from = { "macAddress", "manufacturer", "exp" };
-				int[] to = { R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView };
-				
-				SimpleAdapter sAdapter = new SimpleAdapter(mainActivity, listViewMaps,R.layout.act_page_founddevices_row, from, to);
+
+				String[] from = {
+									"macAddress", "manufacturer", "exp" };
+				int[] to = {
+							R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView };
+
+				SimpleAdapter sAdapter =
+						new SimpleAdapter(mainActivity, listViewMaps, R.layout.act_page_founddevices_row, from, to);
 				lv.setAdapter(sAdapter);
-		}
-			
-			
-			
+			}
 
 		}
-		
 
 	}
 
