@@ -7,7 +7,6 @@ package com.maksl5.bl_hunt;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
 import android.view.MenuItem;
 
 

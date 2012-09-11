@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,14 +35,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
-import com.maksl5.bl_hunt.R.id;
-
-import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 
 
@@ -132,17 +125,17 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 		catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='" + requestId + "' />" + "NA(-1)(1)\n" + e.getMessage();
+			return "<requestID='" + requestId + "' />" + "Error=5\n" + e.getMessage();
 		}
 		catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='" + requestId + "' />" + "NA(-1)(2)\n" + e.getMessage();
+			return "<requestID='" + requestId + "' />" + "Error=4\n" + e.getMessage();
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='" + requestId + "' />" + "NA(-1)(3)\n" + e.getMessage();
+			return "<requestID='" + requestId + "' />" + "Error=1\n" + e.getMessage();
 		}
 
 		// TODO Auto-generated method stub

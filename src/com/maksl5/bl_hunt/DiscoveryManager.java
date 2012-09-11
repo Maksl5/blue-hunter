@@ -2,31 +2,21 @@ package com.maksl5.bl_hunt;
 
 
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.DataSetObserver;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.SimpleAdapter;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 
@@ -420,53 +410,8 @@ public class DiscoveryManager {
 			else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 
 				BluetoothDevice tempDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+				onDeviceFound(tempDevice);
 
-				if (!foundDevices.contains(tempDevice)) {
-					foundDevices.add(tempDevice);
-					
-					HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
-					
-					
-					
-					//Manufacturer finding
-					
-					HashMap<String, String[]> macHashMap = MacAdressAllocations.getHashMap();
-					Set<String> keySet = macHashMap.keySet();
-					
-					boolean foundManufacturer = false;
-					
-					for (String key : keySet) {
-						String[] specificMacs = macHashMap.get(key);
-						
-						for (String mac : specificMacs) {
-							if(tempDevice.getAddress().startsWith(mac)) {
-								foundManufacturer = true;
-								tempDataHashMap.put("manufacturer", key);
-							}
-						}
-						
-					}
-					if(!foundManufacturer)
-						tempDataHashMap.put("manufacturer", "Unknown");
-					
-					
-		
-					if (tempDevice.getAddress() != null) {
-						tempDataHashMap.put("macAddress", tempDevice.getAddress());
-						
-					}
-					else {
-						tempDataHashMap.put("macAddress", "--:--:--:--:--:--");
-					}
-
-					listViewMaps.add(tempDataHashMap);
-					
-					String[] from = { "macAddress", "manufacturer" };
-					int[] to = { R.id.macTxtView, R.id.manufacturerTxtView };
-					
-					SimpleAdapter sAdapter = new SimpleAdapter(context, listViewMaps,R.layout.act_page_founddevices_row, from, to);
-					lv.setAdapter(sAdapter);
 
 				}
 				
@@ -476,11 +421,64 @@ public class DiscoveryManager {
 				
 
 			}
+		
+		public void onDeviceFound(BluetoothDevice btDevice) {
+			ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+
+			if (!foundDevices.contains(btDevice)) {
+				foundDevices.add(btDevice);
+				
+				HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
+				
+				
+				
+				//Manufacturer finding
+				
+				HashMap<String, String[]> macHashMap = MacAdressAllocations.getHashMap();
+				Set<String> keySet = macHashMap.keySet();
+				
+				boolean foundManufacturer = false;
+				
+				for (String key : keySet) {
+					String[] specificMacs = macHashMap.get(key);
+					
+					for (String mac : specificMacs) {
+						if(btDevice.getAddress().startsWith(mac)) {
+							foundManufacturer = true;
+							tempDataHashMap.put("manufacturer", key);
+							tempDataHashMap.put("exp", "+" + MacAdressAllocations.getExp(key) + " " + disState.context.getString(R.string.str_foundDevices_exp_abbreviation));
+						}
+					}
+					
+				}
+				if(!foundManufacturer)
+					tempDataHashMap.put("manufacturer", "Unknown");
+				
+				
+	
+				if (btDevice.getAddress() != null) {
+					tempDataHashMap.put("macAddress", btDevice.getAddress());
+					
+				}
+				else {
+					tempDataHashMap.put("macAddress", "--:--:--:--:--:--");
+				}
+
+				listViewMaps.add(tempDataHashMap);
+				
+				String[] from = { "macAddress", "manufacturer", "exp" };
+				int[] to = { R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView };
+				
+				SimpleAdapter sAdapter = new SimpleAdapter(mainActivity, listViewMaps,R.layout.act_page_founddevices_row, from, to);
+				lv.setAdapter(sAdapter);
+		}
 			
 			
 			
 
 		}
+		
+
 	}
 
 }

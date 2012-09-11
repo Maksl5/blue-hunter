@@ -2,28 +2,26 @@ package com.maksl5.bl_hunt;
 
 
 
-import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
 
 
 
@@ -40,7 +38,7 @@ public class MainActivity extends FragmentActivity {
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
-	public ViewPager mViewPager;
+	public CustomViewPager mViewPager;
 
 	public ActionBarHandler actionBarHandler;
 	public DiscoveryManager disMan;
@@ -70,11 +68,10 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		// Set up the ViewPager with the sections adapter.
-		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager = (CustomViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(4);
 
-		
 		
 		registerListener();
 		
@@ -171,6 +168,10 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
+		TableRow userInfoRow =
+				(TableRow) findViewById(R.id.userInfoTableRow);
+		userInfoRow.setVisibility(TableRow.GONE);
+		
 		getMenuInflater().inflate(R.menu.act_main, menu);
 		actionBarHandler.supplyMenu(menu);
 		actionBarHandler.initialize();

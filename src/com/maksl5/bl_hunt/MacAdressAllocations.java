@@ -9,8 +9,6 @@ package com.maksl5.bl_hunt;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import android.text.GetChars;
-
 
 
 /**
@@ -29,23 +27,49 @@ public class MacAdressAllocations {
 		Field[] fields = MacAdressAllocations.class.getDeclaredFields();
 
 		for (Field field : fields) {
-
-			String[] macStrings;
-			try {
-				macStrings = (String[]) field.get(MacAdressAllocations.class);
-				hsHashMap.put(field.getName(), macStrings);
-			}
-			catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (field.getType().equals(String[].class)) {
+				String[] macStrings;
+				try {
+					macStrings = (String[]) field.get(MacAdressAllocations.class);
+					hsHashMap.put(field.getName().replace("_", " "), macStrings);
+				}
+				catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 		}
 		return hsHashMap;
+
+	}
+
+	public static int getExp(String manufacturer) {
+
+		int exp = 0;
+
+		try {
+			Field expField = MacAdressAllocations.class.getDeclaredField(manufacturer + "_exp");
+			exp = expField.getInt(MacAdressAllocations.class);
+		}
+		catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return exp;
 
 	}
 
@@ -183,17 +207,18 @@ public class MacAdressAllocations {
 										"B0:77:AC", "B0:79:94", "C8:AA:21", "CC:7D:37", "DC:45:17",
 										"E4:64:49", "E4:83:99", "E8:6D:52", "F8:7B:7A" };
 
-	static final String[] Sony = {
-									"20:54:76", "D0:51:62" };
+	static final String[] Sony_Mobile_Device = {
+												"20:54:76", "D0:51:62" };
 
-	static final String[] SonyComp = {
-										"00:01:4A", "00:04:1F", "00:13:15", "00:13:A9", "00:15:C1",
-										"00:19:C5", "00:1A:80", "00:1D:0D", "00:1D:BA", "00:1F:A7",
-										"00:22:A6", "00:24:8D", "00:24:BE", "08:00:46", "28:0D:FC",
-										"30:F9:ED", "3C:07:71", "54:42:49", "54:53:ED", "78:84:3C",
-										"A8:E3:EE", "F0:BF:97", "F8:D0:AC", "FC:0F:E6" };
+	static final String[] Sony_Computer = {
+											"00:01:4A", "00:04:1F", "00:13:15", "00:13:A9",
+											"00:15:C1", "00:19:C5", "00:1A:80", "00:1D:0D",
+											"00:1D:BA", "00:1F:A7", "00:22:A6", "00:24:8D",
+											"00:24:BE", "08:00:46", "28:0D:FC", "30:F9:ED",
+											"3C:07:71", "54:42:49", "54:53:ED", "78:84:3C",
+											"A8:E3:EE", "F0:BF:97", "F8:D0:AC", "FC:0F:E6" };
 
-	static final String[] SonyEricsson = {
+	static final String[] Sony_Ericsson = {
 											"00:0A:D9", "00:0E:07", "00:0F:DE", "00:12:EE",
 											"00:16:20", "00:16:B8", "00:18:13", "00:19:63",
 											"00:1A:75", "00:1B:59", "00:1C:A4", "00:1D:28",
@@ -263,9 +288,34 @@ public class MacAdressAllocations {
 								"98:4B:E1", "9C:8E:99", "B4:99:BA", "B8:AF:67", "D4:85:64",
 								"D8:D3:85", "F4:CE:46" };
 
-	static final String[] Gigybyte = {
+	static final String[] Gigabyte = {
 										"00:0D:61", "00:0F:EA", "00:16:E6", "00:1A:4D", "00:1D:7D",
 										"00:1F:D0", "00:20:ED", "00:24:1D", "1C:6F:65", "50:E5:49",
 										"6C:F0:49", "90:2B:34" };
+
+	static final String[] TomTom = {
+									"00:13:6C", "00:21:3E" };
+
+	static final int Unknown_exp = 12;
+	static final int Apple_exp = 5;
+	static final int Nokia_exp = 10;
+	static final int Samsung_exp = 5;
+	static final int LG_exp = 10;
+	static final int HTC_exp = 10;
+	static final int Motorola_exp = 10;
+	static final int Sony_Mobile_Device_exp = 15;
+	static final int Sony_Computer_exp = 10;
+	static final int Sony_Ericsson_exp = 5;
+	static final int BlackBerry_exp = 15;
+	static final int Acer_exp = 15;
+	static final int Huawei_exp = 20;
+	static final int ZTE_exp = 20;
+	static final int Panasonic_exp = 20;
+	static final int Asus_exp = 20;
+	static final int Google_exp = 10;
+	static final int Toshiba_exp = 20;
+	static final int HP_exp = 15;
+	static final int Gigabyte_exp = 25;
+	static final int TomTom_exp = 10;
 
 }
