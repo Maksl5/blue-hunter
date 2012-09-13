@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import android.app.DownloadManager.Request;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -83,11 +84,12 @@ public class DiscoveryManager {
 
 	}
 
-	public boolean passEnableBTActivityResult(int result) {
+	public boolean passEnableBTActivityResult(	int result,
+												int request) {
 
 		if (btHandler == null) return false;
 
-		btHandler.enableBluetoothResult(result);
+		btHandler.enableBluetoothResult(result, request);
 		return true;
 	}
 
@@ -264,6 +266,8 @@ public class DiscoveryManager {
 		private List<BluetoothDevice> foundDevices;
 		private List<HashMap<String, String>> listViewMaps;
 
+		private int requestId = 0;
+
 		private BluetoothDiscoveryHandler(DiscoveryState state) {
 
 			disState = state;
@@ -275,7 +279,7 @@ public class DiscoveryManager {
 			discoveryButton =
 					(CompoundButton) mainActivity.actionBarHandler.getActionView(R.id.menu_switch);
 
-			requestBtEnable();
+			requestBtEnable(false);
 
 			discoveryButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -284,11 +288,15 @@ public class DiscoveryManager {
 												boolean isChecked) {
 
 					if (isChecked) {
-						runDiscovery();
+						if (isBluetoothEnabled()) {
+							runDiscovery();
+						}
+						else {
+							requestBtEnable(true);
+						}
 					}
 					else {
-						btAdapter.cancelDiscovery();
-						disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED);
+						stopDiscovery();
 					}
 
 				}
@@ -296,11 +304,17 @@ public class DiscoveryManager {
 
 		}
 
-		private void requestBtEnable() {
+		private void requestBtEnable(boolean startDiscovery) {
 
 			if (isBluetoothSupported()) {
 				if (!isBluetoothEnabled()) {
-					mainActivity.startActivityForResult(new Intent(mainActivity, EnableBluetoothActivity.class), 64);
+					if (startDiscovery) {
+						mainActivity.startActivityForResult(new Intent(mainActivity, EnableBluetoothActivity.class), 128);
+					}
+					else {
+						mainActivity.startActivityForResult(new Intent(mainActivity, EnableBluetoothActivity.class), 64);
+					}
+
 				}
 			}
 		}
@@ -337,11 +351,13 @@ public class DiscoveryManager {
 			}
 		}
 
-		private void enableBluetoothResult(int result) {
+		private void enableBluetoothResult(	int result,
+											int request) {
 
 			switch (result) {
 			case EnableBluetoothActivity.BT_ENABLE_RESULT_ENABLE:
 				enableBluetooth();
+				requestId = request;
 				break;
 			case EnableBluetoothActivity.BT_ENABLE_RESULT_NOT_ENABLE:
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
@@ -360,15 +376,15 @@ public class DiscoveryManager {
 
 		private boolean runDiscovery() {
 
-			if (btAdapter != null) return btAdapter.startDiscovery();
-			
+			if (isBluetoothSupported()) return btAdapter.startDiscovery();
+
 			return false;
 		}
 
 		private boolean stopDiscovery() {
 
-			if (btAdapter != null) return btAdapter.cancelDiscovery();
-			
+			if (isBluetoothSupported()) return btAdapter.cancelDiscovery();
+
 			return false;
 		}
 
@@ -399,6 +415,9 @@ public class DiscoveryManager {
 					break;
 				case BluetoothAdapter.STATE_ON:
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_OFF);
+					if (requestId == 128) {
+						runDiscovery();
+					}
 					break;
 				default:
 					break;
@@ -413,7 +432,13 @@ public class DiscoveryManager {
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
-				runDiscovery();
+
+				if (discoveryButton.isChecked()) {
+					runDiscovery();
+				}
+				else {
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED);
+				}
 
 			}
 			else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -450,7 +475,7 @@ public class DiscoveryManager {
 						if (btDevice.getAddress().startsWith(mac)) {
 							foundManufacturer = true;
 							tempDataHashMap.put("manufacturer", key);
-							tempDataHashMap.put("exp", "+" + MacAdressAllocations.getExp(key) + " " + disState.context.getString(R.string.str_foundDevices_exp_abbreviation));
+							tempDataHashMap.put("exp", "+" + MacAdressAllocations.getExp(key.replace(" ", "_")) + " " + disState.context.getString(R.string.str_foundDevices_exp_abbreviation));
 						}
 					}
 

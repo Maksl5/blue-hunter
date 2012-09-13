@@ -33,6 +33,7 @@ public class Authentification {
 	public static final int NETRESULT_ID_SERIAL_CHECK = 1;
 	public static final int NETRESULT_ID_CHECK_UPDATE = 2;
 	public static final int NETRESULT_ID_GET_USER_INFO = 3;
+	public static final int NETRESULT_ID_UPDATED = 4;
 
 	public Authentification(Context con,
 			MainActivity mainActivity) {

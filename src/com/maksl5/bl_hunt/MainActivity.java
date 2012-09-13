@@ -214,10 +214,15 @@ public class MainActivity extends FragmentActivity {
 		}
 		authentification.checkUpdate();
 		
+		//Network Stuff
+		
+		
 		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
 		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + verCode, "h=" + authentification.getSerialNumberHash());
 		
 		
+		new DatabaseHelper(this, verCode).getWritableDatabase().close();
+	
 		
 		TableRow userInfoRow =
 				(TableRow) findViewById(R.id.userInfoTableRow);
@@ -340,7 +345,7 @@ public class MainActivity extends FragmentActivity {
 
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		if (requestCode == 64 & disMan != null) disMan.passEnableBTActivityResult(resultCode);
+		if ((requestCode == 64 | requestCode == 128) & disMan != null) disMan.passEnableBTActivityResult(resultCode, requestCode);
 	}
 
 	/*
