@@ -1,4 +1,8 @@
 <resources>
 
     <dimen name="enable_bt_font_text">16sp</dimen>
+    
+    <dimen name="foundDevices_secondary_text">13sp</dimen>
+    <dimen name="foundDevices_name_text">16sp</dimen>
+    <dimen name="foundDevices_manufacturer_text">11sp</dimen>
 </resources>

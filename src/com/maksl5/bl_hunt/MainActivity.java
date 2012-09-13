@@ -51,6 +51,8 @@ public class MainActivity extends FragmentActivity {
 	public TextView disStateTextView;
 	public TextView userInfoTextView;
 	
+	public int versionCode = 0;
+	
 	private boolean destroyed;
 
 	@Override
@@ -76,10 +78,17 @@ public class MainActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(4);
 
-		
+				try {
+			versionCode = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
+		}
+		catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
 		registerListener();
 		
-		
+
 		
 	}
 
@@ -108,7 +117,7 @@ public class MainActivity extends FragmentActivity {
 			public void onPageSelected(int position) {
 
 				actionBarHandler.changePage(position + 1);
-				viewsGotCreated();
+				
 
 			}
 
@@ -167,21 +176,6 @@ public class MainActivity extends FragmentActivity {
 
 	}
 
-	public void viewsGotCreated() {
-
-		int curPage = mViewPager.getCurrentItem();
-
-		switch (curPage + 1) {
-		case 1:
-
-			break;
-
-		default:
-			break;
-		}
-
-	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -204,24 +198,15 @@ public class MainActivity extends FragmentActivity {
 			}
 		}
 		
-		int verCode = 0;
-		try {
-			verCode = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
-		}
-		catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		authentification.checkUpdate();
 		
 		//Network Stuff
 		
 		
 		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
-		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + verCode, "h=" + authentification.getSerialNumberHash());
+		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + versionCode, "h=" + authentification.getSerialNumberHash());
 		
 		
-		new DatabaseHelper(this, verCode).getWritableDatabase().close();
+		new DatabaseManager(this, versionCode).close();
 	
 		
 		TableRow userInfoRow =
@@ -236,6 +221,7 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		userInfoRow.setVisibility(TableRow.INVISIBLE);
+		FragmentLayoutManager.refreshFoundDevicesList(this);
 		
 		
 		return true;
@@ -318,7 +304,7 @@ public class MainActivity extends FragmentActivity {
 									Bundle savedInstanceState) {
 
 			Bundle args = getArguments();
-			FragmentLayoutManager fragLayMan = new FragmentLayoutManager(inflater, container, args, this.getActivity());
+			FragmentLayoutManager fragLayMan = new FragmentLayoutManager(inflater, container, args, MainActivity.this);
 			return fragLayMan.getSpecificView();
 
 		}
@@ -329,7 +315,6 @@ public class MainActivity extends FragmentActivity {
 
 			super.onViewCreated(view, savedInstanceState);
 
-			viewsGotCreated();
 		}
 	}
 

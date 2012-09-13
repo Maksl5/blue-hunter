@@ -2,65 +2,114 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="@dimen/padding_medium" >
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/padding_medium" >
-
-        <TableRow
-            android:id="@+id/tableRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true" >
-
-            <TextView
-                android:id="@+id/macTxtView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="00:00:00:00:00"
-                android:textSize="@dimen/enable_bt_font_text" />
-        </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/tableRow" >
-
-            <TextView
-                android:id="@+id/manufacturerTxtView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/padding_small"
-                android:text="Manufacturer"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/text_holo_light_blue"
-                android:textStyle="italic" />
-        </TableRow>
-    </RelativeLayout>
-
     <TableRow
-        android:id="@+id/tableRow3"
+        android:id="@+id/tableRow4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/relativeLayout1"
-        android:layout_alignTop="@+id/relativeLayout1"
-        android:layout_toRightOf="@+id/relativeLayout1"
-        android:gravity="center|right"
-        android:padding="@dimen/padding_medium" >
-
-        <TextView
-            android:id="@+id/expTxtView"
+        android:layout_alignParentTop="true"
+        android:gravity="center" >
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/str_foundDevices_exp_abbreviation"
-            android:textColor="@color/text_holo_light_blue"
-            android:textSize="@dimen/enable_bt_font_text" />
+            android:padding="@dimen/padding_small" >
+
+            <TableRow
+                android:id="@+id/tableRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true" >
+
+                <TextView
+                    android:id="@+id/macTxtView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00:00:00:00"
+                    android:textSize="@dimen/foundDevices_secondary_text" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/tableRow" >
+
+                <TextView
+                    android:id="@+id/manufacturerTxtView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/padding_small"
+                    android:text="Manufacturer"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/text_holo_light_blue"
+                    android:textSize="@dimen/foundDevices_manufacturer_text"
+                    android:textStyle="italic" />
+
+            </TableRow>
+        </RelativeLayout>
+
+        <TableRow
+            android:id="@+id/TableRow01"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center|right"
+            android:padding="@dimen/padding_small" >
+
+            <TextView
+                android:id="@+id/rssiTxtView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/padding_medium"
+                android:text="RSSI: 175"
+                android:textColor="@color/text_holo_light_blue"
+                android:textSize="@dimen/foundDevices_secondary_text" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center|right"
+            android:padding="@dimen/padding_small" >
+
+            <TextView
+                android:id="@+id/expTxtView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_foundDevices_exp_abbreviation"
+                android:textColor="@color/text_holo_light_blue"
+                android:textSize="@dimen/foundDevices_secondary_text" />
+
+        </TableRow>
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableRow4"
+        android:background="@color/text_holo_light_blue"
+        android:gravity="center"
+        android:padding="@dimen/padding_small" >
+
+        <TextView
+            android:id="@+id/nameTxtView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Anna&apos;s iPhone"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/foundDevices_name_text" />
 
     </TableRow>
 

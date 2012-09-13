@@ -263,7 +263,8 @@ public class DiscoveryManager {
 
 		private CompoundButton discoveryButton;
 
-		private List<BluetoothDevice> foundDevices;
+		private List<String> foundDevices;
+		private List<BluetoothDevice> foundDevicesInCurDiscovery;
 		private List<HashMap<String, String>> listViewMaps;
 
 		private int requestId = 0;
@@ -273,7 +274,8 @@ public class DiscoveryManager {
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-			foundDevices = new ArrayList<BluetoothDevice>();
+			foundDevices = new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
+			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 			listViewMaps = new ArrayList<HashMap<String, String>>();
 
 			discoveryButton =
@@ -432,6 +434,13 @@ public class DiscoveryManager {
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
+				
+				for (BluetoothDevice btDevice : foundDevicesInCurDiscovery) {
+					new DatabaseManager(mainActivity, mainActivity.versionCode).addNameToDevice(btDevice.getAddress(), btDevice.getName());
+				}
+				
+				foundDevicesInCurDiscovery = null;
+				foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 
 				if (discoveryButton.isChecked()) {
 					runDiscovery();
@@ -445,61 +454,20 @@ public class DiscoveryManager {
 
 				BluetoothDevice tempDevice =
 						intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				onDeviceFound(tempDevice);
+				short RSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);
+				onDeviceFound(tempDevice, RSSI);
 
 			}
 
 		}
 
-		public void onDeviceFound(BluetoothDevice btDevice) {
+		public void onDeviceFound(BluetoothDevice btDevice, short RSSI) {
 
-			ListView lv =
-					(ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
-
-			if (!foundDevices.contains(btDevice)) {
-				foundDevices.add(btDevice);
-
-				HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
-
-				// Manufacturer finding
-
-				HashMap<String, String[]> macHashMap = MacAdressAllocations.getHashMap();
-				Set<String> keySet = macHashMap.keySet();
-
-				boolean foundManufacturer = false;
-
-				for (String key : keySet) {
-					String[] specificMacs = macHashMap.get(key);
-
-					for (String mac : specificMacs) {
-						if (btDevice.getAddress().startsWith(mac)) {
-							foundManufacturer = true;
-							tempDataHashMap.put("manufacturer", key);
-							tempDataHashMap.put("exp", "+" + MacAdressAllocations.getExp(key.replace(" ", "_")) + " " + disState.context.getString(R.string.str_foundDevices_exp_abbreviation));
-						}
-					}
-
-				}
-				if (!foundManufacturer) tempDataHashMap.put("manufacturer", "Unknown");
-
-				if (btDevice.getAddress() != null) {
-					tempDataHashMap.put("macAddress", btDevice.getAddress());
-
-				}
-				else {
-					tempDataHashMap.put("macAddress", "--:--:--:--:--:--");
-				}
-
-				listViewMaps.add(tempDataHashMap);
-
-				String[] from = {
-									"macAddress", "manufacturer", "exp" };
-				int[] to = {
-							R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView };
-
-				SimpleAdapter sAdapter =
-						new SimpleAdapter(mainActivity, listViewMaps, R.layout.act_page_founddevices_row, from, to);
-				lv.setAdapter(sAdapter);
+			if(!foundDevices.contains(btDevice.getAddress())) {
+				foundDevicesInCurDiscovery.add(btDevice);				
+				new DatabaseManager(mainActivity, mainActivity.versionCode).addNewDevice(btDevice.getAddress(), RSSI);
+				foundDevices = new DatabaseManager(mainActivity,mainActivity.versionCode).getMacAddresses();
+				FragmentLayoutManager.refreshFoundDevicesList(mainActivity);
 			}
 
 		}

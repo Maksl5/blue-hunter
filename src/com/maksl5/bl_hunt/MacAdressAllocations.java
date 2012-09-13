@@ -7,6 +7,7 @@ package com.maksl5.bl_hunt;
 
 
 import java.lang.reflect.Field;
+import java.security.PublicKey;
 import java.util.HashMap;
 
 
@@ -70,7 +71,34 @@ public class MacAdressAllocations {
 		}
 
 		return exp;
+		
+		
+	}
+	
+	public static HashMap<String, Integer> getExpHashMap() {
+		HashMap<String, Integer> hsHashMap = new HashMap<String, Integer>();
 
+		Field[] fields = MacAdressAllocations.class.getDeclaredFields();
+
+		for (Field field : fields) {
+			if (field.getType().equals(int.class)) {
+				int exp;
+				try {
+					exp = (Integer) field.get(MacAdressAllocations.class);
+					hsHashMap.put(field.getName(), exp);
+				}
+				catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
+		return hsHashMap;
 	}
 
 	static final String[] Apple = {

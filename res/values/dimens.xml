@@ -4,8 +4,14 @@
     <dimen name="padding_medium">8dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">32dp</dimen>
+    
     <dimen name="enable_bt_font_title">26sp</dimen>
     <dimen name="enable_bt_layout_margin">50dp</dimen>
     <dimen name="enable_bt_font_text">12sp</dimen>
     <dimen name="enable_bt_button_text">20sp</dimen>
+    
+        
+    <dimen name="foundDevices_secondary_text">12sp</dimen>
+    <dimen name="foundDevices_name_text">14sp</dimen>
+    <dimen name="foundDevices_manufacturer_text">12sp</dimen>
 </resources>
