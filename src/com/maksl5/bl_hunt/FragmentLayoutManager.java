@@ -7,11 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import android.R.integer;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;

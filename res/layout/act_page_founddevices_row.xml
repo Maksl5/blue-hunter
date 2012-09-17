@@ -25,12 +25,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true" >
-
+
                 <TextView
                     android:id="@+id/macTxtView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="00:00:00:00:00"
                     android:textSize="@dimen/foundDevices_secondary_text" />
 
             </TableRow>
@@ -41,13 +40,12 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/tableRow" >
-
+
                 <TextView
                     android:id="@+id/manufacturerTxtView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/padding_small"
-                    android:text="Manufacturer"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="@color/text_holo_light_blue"
                     android:textSize="@dimen/foundDevices_manufacturer_text"
@@ -62,13 +60,12 @@
             android:layout_height="match_parent"
             android:gravity="center|right"
             android:padding="@dimen/padding_small" >
-
+
             <TextView
                 android:id="@+id/rssiTxtView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingRight="@dimen/padding_medium"
-                android:text="RSSI: 175"
                 android:textColor="@color/text_holo_light_blue"
                 android:textSize="@dimen/foundDevices_secondary_text" />
 
@@ -80,12 +77,11 @@
             android:layout_height="match_parent"
             android:gravity="center|right"
             android:padding="@dimen/padding_small" >
-
+
             <TextView
                 android:id="@+id/expTxtView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/str_foundDevices_exp_abbreviation"
                 android:textColor="@color/text_holo_light_blue"
                 android:textSize="@dimen/foundDevices_secondary_text" />
 
@@ -100,14 +96,13 @@
         android:background="@color/text_holo_light_blue"
         android:gravity="center"
         android:padding="@dimen/padding_small" >
-
+
         <TextView
             android:id="@+id/nameTxtView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Anna&apos;s iPhone"
             android:textColor="#ffffff"
             android:textSize="@dimen/foundDevices_name_text" />
 

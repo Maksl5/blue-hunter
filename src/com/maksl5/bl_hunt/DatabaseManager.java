@@ -12,21 +12,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
-
-import android.R.integer;
 import android.app.Dialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.Html;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
 
 
 
