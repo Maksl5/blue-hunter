@@ -32,12 +32,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center" >
-
+
             <com.maksl5.bl_hunt.CustomUI.PatternProgressBar
                 android:id="@+id/progressBar1"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:indeterminate="false"
                 android:minHeight="1dip"
                 android:minWidth="200dip"
@@ -51,12 +52,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center" >
-
+
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/expIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="TextView" />
+
         </TableRow>
 
         <TableRow
@@ -64,12 +67,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center" >
-
+
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/lvlIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="TextView" />
+
         </TableRow>
 
         <TableRow

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -185,6 +186,21 @@ public class FragmentLayoutManager {
 		int scroll = lv.getFirstVisiblePosition();
 		lv.setAdapter(sAdapter);
 		lv.setSelection(scroll);
+	}
+	
+	public static void updateIndicatorViews(MainActivity mainActivity) {
+		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator); 
+		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
+		PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
+		
+		int exp = LevelSystem.getUserExp(mainActivity);
+		int level = LevelSystem.getLevel(exp);
+		
+		expTextView.setText(exp + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation) + " / " + LevelSystem.getLevelEndExp(level) + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+		lvlTextView.setText("Level " + level);
+		
+		progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
+		progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 	}
 
 }

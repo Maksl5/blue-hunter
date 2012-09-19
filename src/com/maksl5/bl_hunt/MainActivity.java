@@ -210,6 +210,7 @@ public class MainActivity extends FragmentActivity {
 
 		userInfoRow.setVisibility(TableRow.INVISIBLE);
 		FragmentLayoutManager.refreshFoundDevicesList(this);
+		FragmentLayoutManager.updateIndicatorViews(this);
 
 		PatternProgressBar progressBar = (PatternProgressBar) findViewById(R.id.progressBar1);
 
