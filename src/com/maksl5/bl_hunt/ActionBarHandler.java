@@ -57,7 +57,7 @@ public class ActionBarHandler implements OnNavigationListener {
 
 		List<String> spinnerItems = new ArrayList<String>();
 		spinnerItems.add((String) activity.getTitle());
-		spinnerItems.add("User Information");
+		spinnerItems.add(parentActivity.getString(R.string.str_actBar_userInfo));
 
 		if (VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
 			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(actBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, spinnerItems), this);

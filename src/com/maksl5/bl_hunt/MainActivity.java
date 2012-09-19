@@ -5,6 +5,8 @@ package com.maksl5.bl_hunt;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
 
 
 
@@ -45,12 +48,12 @@ public class MainActivity extends FragmentActivity {
 	public DiscoveryManager disMan;
 	public Authentification authentification;
 	public NetworkMananger netMananger;
-	
+
 	public TextView disStateTextView;
 	public TextView userInfoTextView;
-	
+
 	public int versionCode = 0;
-	
+
 	private boolean destroyed;
 
 	@Override
@@ -69,38 +72,38 @@ public class MainActivity extends FragmentActivity {
 
 		authentification = new Authentification(this, this);
 		netMananger = new NetworkMananger(this);
-		
-		
+
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(4);
 
-				try {
-			versionCode = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
+		try {
+			versionCode =
+					getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
 		}
 		catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-				
-		registerListener();
-		
 
-		
+		registerListener();
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.support.v4.app.FragmentActivity#onResume()
 	 */
 	@Override
 	protected void onResume() {
-	
+
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-	
+
 	}
 
 	/**
@@ -115,7 +118,6 @@ public class MainActivity extends FragmentActivity {
 			public void onPageSelected(int position) {
 
 				actionBarHandler.changePage(position + 1);
-				
 
 			}
 
@@ -141,13 +143,13 @@ public class MainActivity extends FragmentActivity {
 
 			}
 		});
-		
+
 		authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
-			
+
 			@Override
-			public boolean onResult(	int requestId,
+			public boolean onResult(int requestId,
 									String resultString) {
-			
+
 				switch (requestId) {
 				case Authentification.NETRESULT_ID_SERIAL_CHECK:
 					Toast.makeText(MainActivity.this, resultString, Toast.LENGTH_LONG).show();
@@ -157,33 +159,30 @@ public class MainActivity extends FragmentActivity {
 					userInfoTextView.setVisibility(TextView.VISIBLE);
 					userInfoTextView.requestLayout();
 					userInfoTextView.invalidate();
-					
-					
-					TableRow userInfoRow =
-							(TableRow) findViewById(R.id.userInfoTableRow);
+
+					TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
 					userInfoRow.setVisibility(TableRow.VISIBLE);
 					userInfoRow.invalidate();
 					userInfoRow.setVisibility(TableRow.INVISIBLE);
 					break;
 				}
-				
+
 				return false;
 			}
 		});
-
 
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		
 		getMenuInflater().inflate(R.menu.act_main, menu);
 		actionBarHandler.supplyMenu(menu);
 		actionBarHandler.initialize();
-		
+
 		// Setting up Views
-		if (disStateTextView == null) disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
+		if (disStateTextView == null)
+			disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
 		// Setting up DiscoveryManager
 
 		if (!disMan.startDiscoveryManager()) {
@@ -195,33 +194,26 @@ public class MainActivity extends FragmentActivity {
 				disMan.startDiscoveryManager();
 			}
 		}
-		
-		
-		//Network Stuff
-		
-		
+
+		// Network Stuff
+
 		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
 		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + versionCode, "h=" + authentification.getSerialNumberHash());
-		
-		
+
 		new DatabaseManager(this, versionCode).close();
-	
-		
-		TableRow userInfoRow =
-				(TableRow) findViewById(R.id.userInfoTableRow);
+
+		TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
 		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
-		
-		
+
 		NetworkThread getUserInfo = new NetworkThread(this, netMananger);
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
-		
-		
-		
-		
+
 		userInfoRow.setVisibility(TableRow.INVISIBLE);
 		FragmentLayoutManager.refreshFoundDevicesList(this);
-		
-		
+
+		PatternProgressBar progressBar = (PatternProgressBar) findViewById(R.id.progressBar1);
+
+
 		return true;
 	}
 
@@ -302,7 +294,8 @@ public class MainActivity extends FragmentActivity {
 									Bundle savedInstanceState) {
 
 			Bundle args = getArguments();
-			FragmentLayoutManager fragLayMan = new FragmentLayoutManager(inflater, container, args, MainActivity.this);
+			FragmentLayoutManager fragLayMan =
+					new FragmentLayoutManager(inflater, container, args, MainActivity.this);
 			return fragLayMan.getSpecificView();
 
 		}
@@ -328,7 +321,8 @@ public class MainActivity extends FragmentActivity {
 
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		if ((requestCode == 64 | requestCode == 128) & disMan != null) disMan.passEnableBTActivityResult(resultCode, requestCode);
+		if ((requestCode == 64 | requestCode == 128) & disMan != null)
+			disMan.passEnableBTActivityResult(resultCode, requestCode);
 	}
 
 	/*
@@ -345,8 +339,9 @@ public class MainActivity extends FragmentActivity {
 
 		super.onDestroy();
 	}
-	
+
 	public boolean isDestroyed() {
+
 		return destroyed;
 	}
 

@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.maksl5.bl_hunt.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.MainActivity.CustomSectionFragment;
+import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
 
 
 
@@ -74,8 +75,8 @@ public class FragmentLayoutManager {
 
 		ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
 
-
-		List<HashMap<String, String>> devices = new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
+		List<HashMap<String, String>> devices =
+				new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
 		List<HashMap<String, String>> listViewHashMaps = new ArrayList<HashMap<String, String>>();
 
 		HashMap<String, String[]> macHashMap = MacAdressAllocations.getHashMap();
@@ -108,81 +109,79 @@ public class FragmentLayoutManager {
 				tempDataHashMap.put("manufacturer", "Unknown");
 				tempDataHashMap.put("exp", String.valueOf(expHashMap.get("Unknown_exp")));
 			}
-			
-			
+
 			listViewHashMaps.add(tempDataHashMap);
-			
 
 		}
 
 		String[] from = {
 							"macAddress", "manufacturer", "exp", "RSSI", "name" };
-		int[] to = {
-					R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView, R.id.rssiTxtView, R.id.nameTxtView };
+		int[] to =
+				{
+					R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView, R.id.rssiTxtView,
+					R.id.nameTxtView };
 
 		SimpleAdapter sAdapter =
 				new SimpleAdapter(mainActivity, listViewHashMaps, R.layout.act_page_founddevices_row, from, to);
-		
-		
+
 		lv.setOnHierarchyChangeListener(new OnHierarchyChangeListener() {
-			
+
 			@Override
 			public void onChildViewRemoved(	View parent,
 											View child) {
-			
+
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onChildViewAdded(	View parent,
 											View child) {
-				
+
 				final TextView nameTextView = (TextView) child.findViewById(R.id.nameTxtView);
-				if(nameTextView.getText().equals("")) {
+				if (nameTextView.getText().equals("")) {
 					nameTextView.addTextChangedListener(new TextWatcher() {
-						
+
 						@Override
 						public void onTextChanged(	CharSequence s,
 													int start,
 													int before,
 													int count) {
-						if(!s.equals("")){
-							TableRow nameTableRow = (TableRow) nameTextView.getParent();
-							nameTableRow.setVisibility(TableRow.VISIBLE);
-							nameTextView.removeTextChangedListener(this);
-							
+
+							if (!s.equals("")) {
+								TableRow nameTableRow = (TableRow) nameTextView.getParent();
+								nameTableRow.setVisibility(TableRow.VISIBLE);
+								nameTextView.removeTextChangedListener(this);
+
+							}
+
 						}
-							
-						}
-						
+
 						@Override
 						public void beforeTextChanged(	CharSequence s,
 														int start,
 														int count,
 														int after) {
-						
+
 							// TODO Auto-generated method stub
-							
+
 						}
-						
+
 						@Override
 						public void afterTextChanged(Editable s) {
-						
 
-							
 						}
 					});
 					TableRow nameTableRow = (TableRow) nameTextView.getParent();
 					nameTableRow.setVisibility(TableRow.GONE);
-					
+
 				}
-			
+
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
+
 		int scroll = lv.getFirstVisiblePosition();
 		lv.setAdapter(sAdapter);
 		lv.setSelection(scroll);

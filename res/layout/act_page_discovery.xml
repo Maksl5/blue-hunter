@@ -32,12 +32,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center" >
-
-            <TextView
-                android:id="@+id/textView1"
+
+            <com.maksl5.bl_hunt.CustomUI.PatternProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:indeterminate="false"
+                android:minHeight="1dip"
+                android:minWidth="200dip"
+                android:progress="35"
+                android:progressDrawable="@drawable/bh_progress_bar" />
+
         </TableRow>
 
         <TableRow
