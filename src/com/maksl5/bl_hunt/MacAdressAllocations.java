@@ -70,11 +70,11 @@ public class MacAdressAllocations {
 		}
 
 		return exp;
-		
-		
+
 	}
-	
+
 	public static HashMap<String, Integer> getExpHashMap() {
+
 		HashMap<String, Integer> hsHashMap = new HashMap<String, Integer>();
 
 		Field[] fields = MacAdressAllocations.class.getDeclaredFields();
@@ -256,10 +256,12 @@ public class MacAdressAllocations {
 											"6C:23:B9", "84:00:D2", "8C:64:22", "90:C1:15",
 											"B8:F9:34" };
 
-	static final String[] BlackBerry =
-			{
-				"00:0F:86", "00:1C:CC", "00:25:57", "00:26:FF", "1C:69:A5", "34:BB:1F", "40:6F:2A",
-				"68:ED:43", "70:AA:B2", "F4:0B:93" };
+	static final String[] BlackBerry = {
+										"00:0F:86", "00:1C:CC", "00:25:57", "00:26:FF", "1C:69:A5",
+										"34:BB:1F", "40:6F:2A", "68:ED:43", "70:AA:B2", "F4:0B:93",
+										"00:23:7A", "14:74:11", "2C:A8:35", "30:69:4B", "30:7C:30",
+										"3C:74:37", "40:5F:BE", "40:6A:AB", "70:D4:F2", "80:60:07",
+										"A0:6C:EC", "A8:6A:6F", "CC:55:AD", "E8:3E:B6" };
 
 	static final String[] Acer = {
 									"00:01:24", "00:00:E2", "00:A0:60" };
@@ -323,6 +325,11 @@ public class MacAdressAllocations {
 	static final String[] TomTom = {
 									"00:13:6C", "00:21:3E" };
 
+	static final String[] Siemens = {
+										"00:01:E3", "00:0B:A3", "00:0D:41", "00:0E:8C", "00:19:28",
+										"00:1B:1B", "00:1F:F8", "00:23:41", "08:00:06", "40:EC:F8",
+										"78:9F:87", "88:4B:39" };
+
 	static final int Unknown_exp = 12;
 	static final int Apple_exp = 5;
 	static final int Nokia_exp = 10;
@@ -344,5 +351,6 @@ public class MacAdressAllocations {
 	static final int HP_exp = 15;
 	static final int Gigabyte_exp = 25;
 	static final int TomTom_exp = 10;
+	static final int Siemens_exp = 20;
 
 }

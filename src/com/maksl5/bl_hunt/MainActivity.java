@@ -214,7 +214,6 @@ public class MainActivity extends FragmentActivity {
 
 		PatternProgressBar progressBar = (PatternProgressBar) findViewById(R.id.progressBar1);
 
-
 		return true;
 	}
 
@@ -281,7 +280,7 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	public class CustomSectionFragment extends Fragment {
+	public static class CustomSectionFragment extends Fragment {
 
 		public CustomSectionFragment() {
 
@@ -295,9 +294,8 @@ public class MainActivity extends FragmentActivity {
 									Bundle savedInstanceState) {
 
 			Bundle args = getArguments();
-			FragmentLayoutManager fragLayMan =
-					new FragmentLayoutManager(inflater, container, args, MainActivity.this);
-			return fragLayMan.getSpecificView();
+
+			return FragmentLayoutManager.getSpecificView(args, inflater, container, container.getContext());
 
 		}
 

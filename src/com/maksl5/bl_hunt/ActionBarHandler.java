@@ -158,7 +158,7 @@ public class ActionBarHandler implements OnNavigationListener {
 		switch (itemPosition) {
 		case 0:
 
-			animation = new SizeAnimation(parentView, 0);
+			animation = new SizeAnimation(parentView, userInfoRow, 0);
 			animation.setDuration(1000);
 			animation.setFillAfter(true);
 
@@ -168,7 +168,6 @@ public class ActionBarHandler implements OnNavigationListener {
 				@Override
 				public void onAnimationStart(Animation animation) {
 
-					userInfoRow.setVisibility(TableRow.INVISIBLE);
 					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
 
 					// TODO Auto-generated method stub
@@ -185,8 +184,9 @@ public class ActionBarHandler implements OnNavigationListener {
 				@Override
 				public void onAnimationEnd(Animation animation) {
 
+					userInfoRow.setVisibility(TableRow.INVISIBLE);
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-					
+
 					// TODO Auto-generated method stub
 
 				}
@@ -196,7 +196,7 @@ public class ActionBarHandler implements OnNavigationListener {
 			break;
 		case 1:
 
-			animation = new SizeAnimation(parentView, userInfoRow.getMeasuredHeight());
+			animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
 			animation.setDuration(1000);
 			animation.setFillAfter(true);
 
@@ -206,6 +206,7 @@ public class ActionBarHandler implements OnNavigationListener {
 				@Override
 				public void onAnimationStart(Animation animation) {
 
+					userInfoRow.setVisibility(TableRow.VISIBLE);
 					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
 					// TODO Auto-generated method stub
 
@@ -222,7 +223,7 @@ public class ActionBarHandler implements OnNavigationListener {
 				public void onAnimationEnd(Animation animation) {
 
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-					userInfoRow.setVisibility(TableRow.VISIBLE);
+
 					// TODO Auto-generated method stub
 
 				}
@@ -258,13 +259,15 @@ public class ActionBarHandler implements OnNavigationListener {
 
 		int targetTop;
 		ViewPager view;
+		TableRow userRow;
 		int initialBot;
 		int initialTop;
 
-		public SizeAnimation(ViewPager view,
+		public SizeAnimation(ViewPager view, TableRow userRow,
 				int targetTop) {
 
 			this.view = view;
+			this.userRow = userRow;
 			this.targetTop = targetTop;
 			this.initialBot = view.getBottom();
 			this.initialTop = view.getTop();
@@ -285,7 +288,7 @@ public class ActionBarHandler implements OnNavigationListener {
 			else if (targetTop > initialTop) {
 
 				view.setTop((int) ((targetTop - initialTop) * interpolatedTime + initialTop));
-				// view.setBottom(initialBot);
+				userRow.setBottom((int) ((targetTop - initialTop) * interpolatedTime + initialTop));
 				view.getLayoutParams().height =
 						view.getBottom() - (int) ((targetTop - initialTop) * interpolatedTime + initialTop);
 
@@ -296,6 +299,7 @@ public class ActionBarHandler implements OnNavigationListener {
 			else if (targetTop < initialTop) {
 
 				view.setTop((int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop));
+				userRow.setBottom((int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop));
 				// view.setBottom(initialBot);
 				view.getLayoutParams().height =
 						view.getBottom() - (int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop);

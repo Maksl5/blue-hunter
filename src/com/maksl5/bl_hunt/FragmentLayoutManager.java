@@ -54,7 +54,7 @@ public class FragmentLayoutManager {
 
 	}
 
-	public View getSpecificView() {
+	public static View getSpecificView(Bundle params, LayoutInflater parentInflater, ViewGroup rootContainer, Context context) {
 
 		int sectionNumber = params.getInt(CustomSectionFragment.ARG_SECTION_NUMBER);
 
@@ -69,7 +69,7 @@ public class FragmentLayoutManager {
 
 		}
 
-		return new View(parentContext);
+		return new View(context);
 	}
 
 	public static void refreshFoundDevicesList(MainActivity mainActivity) {
@@ -108,7 +108,7 @@ public class FragmentLayoutManager {
 
 			if (!foundManufacturer) {
 				tempDataHashMap.put("manufacturer", "Unknown");
-				tempDataHashMap.put("exp", String.valueOf(expHashMap.get("Unknown_exp")));
+				tempDataHashMap.put("exp", "+" + expHashMap.get("Unknown_exp") + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
 			}
 
 			listViewHashMaps.add(tempDataHashMap);

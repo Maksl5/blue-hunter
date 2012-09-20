@@ -33,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:background="@color/text_holo_light_blue"
         android:gravity="center"
         android:visibility="visible" >
 
