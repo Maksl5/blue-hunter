@@ -36,6 +36,8 @@
     <string name="str_Preferences_version_title">Version</string>
     <string name="str_Preferences_checkUpdate_title">Automatically check updates</string>
     <string name="str_Preferences_checkUpdate_sum">Check automatically for new available nightly updates.</string>
+    <string name="str_Preferences_newUpdateAvailable_title">New update available</string>
+    <string name="str_Preferences_newUpdateAvailable_sum">A new update is available. Click here to download the new version.</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>

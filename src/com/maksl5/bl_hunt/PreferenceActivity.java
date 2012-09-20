@@ -8,11 +8,15 @@ package com.maksl5.bl_hunt;
 
 import java.util.List;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 
 
 
@@ -63,8 +67,37 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 			super.onCreate(savedInstanceState);
 
 			addPreferencesFromResource(R.xml.info_preference);
+			
+			if(!Authentification.newUpdateAvailable) {
+				Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
+				PreferenceScreen infoScreen = getPreferenceScreen();
+				infoScreen.removePreference(newUpdatePref);
+			}
 
 			initializeStaticPrefs();
+			registerListeners();
+		}
+
+		/**
+		 * 
+		 */
+		private void registerListeners() {
+			Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
+			if(newUpdatePref != null) {
+				newUpdatePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					
+					@Override
+					public boolean onPreferenceClick(Preference preference) {
+					
+						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Maksl5/blue-hunter/raw/master/bin/Blue%20Hunter.apk"));
+						startActivity(browserIntent);
+						
+						return true;
+					}
+				});
+			}
+			
+			
 		}
 
 		private void initializeStaticPrefs() {

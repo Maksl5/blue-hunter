@@ -34,6 +34,8 @@ public class Authentification {
 	public static final int NETRESULT_ID_CHECK_UPDATE = 2;
 	public static final int NETRESULT_ID_GET_USER_INFO = 3;
 	public static final int NETRESULT_ID_UPDATED = 4;
+	
+	public static boolean newUpdateAvailable = false;
 
 	public Authentification(Context con,
 			MainActivity mainActivity) {
@@ -121,6 +123,7 @@ public class Authentification {
 
 							if (verCode > getVersionCode(context)) {
 								Toast.makeText(context, "NEW NIGHTLY VERSION AVAILABLE\nCurrently installed build: " + getVersionCode(context) + "\nAvailable build: " + verCode, Toast.LENGTH_LONG).show();
+								newUpdateAvailable = true;
 							}
 						}
 						catch (IllegalStateException e) {
