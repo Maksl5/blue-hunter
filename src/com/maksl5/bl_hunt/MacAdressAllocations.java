@@ -329,6 +329,8 @@ public class MacAdressAllocations {
 										"00:01:E3", "00:0B:A3", "00:0D:41", "00:0E:8C", "00:19:28",
 										"00:1B:1B", "00:1F:F8", "00:23:41", "08:00:06", "40:EC:F8",
 										"78:9F:87", "88:4B:39" };
+	
+	static final String[] Qcom_Bluetooth_Module = { "00:0D:F0" } ;
 
 	static final int Unknown_exp = 12;
 	static final int Apple_exp = 5;
@@ -352,5 +354,6 @@ public class MacAdressAllocations {
 	static final int Gigabyte_exp = 25;
 	static final int TomTom_exp = 10;
 	static final int Siemens_exp = 20;
+	static final int Qcom_Bluetooth_Module_exp = 5;
 
 }
