@@ -294,7 +294,10 @@ public class DiscoveryManager {
 						}
 					}
 					else {
-						stopDiscovery();
+						if(isBluetoothEnabled()) {
+							stopDiscovery();
+						}
+						
 					}
 
 				}
@@ -359,6 +362,7 @@ public class DiscoveryManager {
 				break;
 			case EnableBluetoothActivity.BT_ENABLE_RESULT_NOT_ENABLE:
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
+				discoveryButton.setChecked(false);
 				break;
 			default:
 				break;
