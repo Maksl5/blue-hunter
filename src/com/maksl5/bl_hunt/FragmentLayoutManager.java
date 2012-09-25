@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -34,25 +33,6 @@ import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
  */
 
 public class FragmentLayoutManager {
-
-	private LayoutInflater parentInflater;
-	private ViewGroup rootContainer;
-	private Bundle params;
-	private Context parentContext;
-	private MainActivity mainActivity;
-
-	public FragmentLayoutManager(LayoutInflater inflater,
-			ViewGroup container,
-			Bundle args,
-			MainActivity mainActivity) {
-
-		parentInflater = inflater;
-		rootContainer = container;
-		params = args;
-		parentContext = mainActivity;
-		this.mainActivity = mainActivity;
-
-	}
 
 	public static View getSpecificView(Bundle params, LayoutInflater parentInflater, ViewGroup rootContainer, Context context) {
 

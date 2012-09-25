@@ -158,6 +158,9 @@ public class ActionBarHandler implements OnNavigationListener {
 		switch (itemPosition) {
 		case 0:
 
+			parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+			userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+			
 			animation = new SizeAnimation(parentView, userInfoRow, 0);
 			animation.setDuration(1000);
 			animation.setFillAfter(true);
@@ -186,7 +189,8 @@ public class ActionBarHandler implements OnNavigationListener {
 
 					userInfoRow.setVisibility(TableRow.INVISIBLE);
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-
+					parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+					userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
 					// TODO Auto-generated method stub
 
 				}
@@ -195,7 +199,10 @@ public class ActionBarHandler implements OnNavigationListener {
 			parentView.startAnimation(animation);
 			break;
 		case 1:
-
+			
+			parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+			userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+			
 			animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
 			animation.setDuration(1000);
 			animation.setFillAfter(true);
@@ -223,7 +230,8 @@ public class ActionBarHandler implements OnNavigationListener {
 				public void onAnimationEnd(Animation animation) {
 
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-
+					parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+					userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
 					// TODO Auto-generated method stub
 
 				}
@@ -286,11 +294,13 @@ public class ActionBarHandler implements OnNavigationListener {
 				return;
 			}
 			else if (targetTop > initialTop) {
+				
+				int top = (int) ((targetTop - initialTop) * interpolatedTime + initialTop);
 
-				view.setTop((int) ((targetTop - initialTop) * interpolatedTime + initialTop));
-				userRow.setBottom((int) ((targetTop - initialTop) * interpolatedTime + initialTop));
+				view.setTop(top);
+				userRow.setBottom(top);
 				view.getLayoutParams().height =
-						view.getBottom() - (int) ((targetTop - initialTop) * interpolatedTime + initialTop);
+						view.getBottom() - top;
 
 				view.invalidate();
 				view.requestLayout();
@@ -298,11 +308,13 @@ public class ActionBarHandler implements OnNavigationListener {
 			}
 			else if (targetTop < initialTop) {
 
-				view.setTop((int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop));
-				userRow.setBottom((int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop));
+				int top = (int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop);
+				
+				view.setTop(top);
+				userRow.setBottom(top);
 				// view.setBottom(initialBot);
 				view.getLayoutParams().height =
-						view.getBottom() - (int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop);
+						view.getBottom() - top;
 
 				view.invalidate();
 				view.requestLayout();
