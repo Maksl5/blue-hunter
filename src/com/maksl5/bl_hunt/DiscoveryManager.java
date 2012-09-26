@@ -6,12 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.R.bool;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Vibrator;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
@@ -463,14 +466,25 @@ public class DiscoveryManager {
 
 		public void onDeviceFound(BluetoothDevice btDevice, short RSSI) {
 
+						
 			if(!foundDevices.contains(btDevice.getAddress())) {
-				foundDevicesInCurDiscovery.add(btDevice);				
+				foundDevicesInCurDiscovery.add(btDevice);
+				attemptVibration();
 				new DatabaseManager(mainActivity, mainActivity.versionCode).addNewDevice(btDevice.getAddress(), RSSI);
 				foundDevices = new DatabaseManager(mainActivity,mainActivity.versionCode).getMacAddresses();
 				FragmentLayoutManager.refreshFoundDevicesList(mainActivity);
 				FragmentLayoutManager.updateIndicatorViews(mainActivity);
 			}
 
+		}
+		
+		public void attemptVibration() {
+			boolean bVibrate = PreferenceManager.getPref(mainActivity, "pref_vibrate", false);
+			if(bVibrate) {
+				Vibrator vibrator = (Vibrator) mainActivity.getSystemService(Service.VIBRATOR_SERVICE);
+				vibrator.vibrate(500);
+			}
+			
 		}
 
 	}

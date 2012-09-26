@@ -2,8 +2,13 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <header
+        android:fragment="com.maksl5.bl_hunt.PreferenceActivity$BehaviourFragment"
+        android:icon="@drawable/ic_settings_behaviour"
+        android:summary="@string/str_Preference_Header_behaviour_sum"
+        android:title="@string/str_Preference_Header_behaviour" />
+    <header
         android:fragment="com.maksl5.bl_hunt.PreferenceActivity$InfoFragment"
-        android:icon="@drawable/ic_menu_info_details"
+        android:icon="@drawable/ic_settings_info"
         android:summary="@string/str_Preference_Header_info_sum"
         android:title="@string/str_Preference_Header_info" />
 

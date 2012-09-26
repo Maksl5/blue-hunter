@@ -33,11 +33,15 @@
     
     <string name="str_Preference_Header_info">Info</string>
     <string name="str_Preference_Header_info_sum">Shows some information about the game.</string>
+    <string name="str_Preference_Header_behaviour">Behaviour</string>
+    <string name="str_Preference_Header_behaviour_sum">Manage the device specific behaviour of the game.</string>
     <string name="str_Preferences_version_title">Version</string>
     <string name="str_Preferences_checkUpdate_title">Automatically check updates</string>
     <string name="str_Preferences_checkUpdate_sum">Check automatically for new available nightly updates.</string>
     <string name="str_Preferences_newUpdateAvailable_title">New update available</string>
     <string name="str_Preferences_newUpdateAvailable_sum">A new update is available. Click here to download the new version.</string>
+    <string name="str_Preferences_vibrate_title">Vibrate</string>
+    <string name="str_Preferences_vibrate_sum">Vibrate when a new device is found.</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>

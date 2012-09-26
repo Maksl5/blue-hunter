@@ -117,4 +117,20 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 
 	}
 
+	
+	public static class BehaviourFragment extends PreferenceFragment {
+
+		/* (non-Javadoc)
+		 * @see android.preference.PreferenceFragment#onCreate(android.os.Bundle)
+		 */
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+
+			// TODO Auto-generated method stub
+			super.onCreate(savedInstanceState);
+			
+			addPreferencesFromResource(R.xml.behaviour_preference);
+		}
+		
+	}
 }

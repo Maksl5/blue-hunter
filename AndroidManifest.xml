@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="455"
-    android:versionName="pre_alpha_0.1.0.455_120926-0152" >
+    android:versionCode="463"
+    android:versionName="pre_alpha_0.1.0.463_120926-0315" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-feature android:name="android.hardware.bluetooth" android:required="true"/>
 
     <application
         android:hardwareAccelerated="true"
