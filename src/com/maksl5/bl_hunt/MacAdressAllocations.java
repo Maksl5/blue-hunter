@@ -331,7 +331,9 @@ public class MacAdressAllocations {
 										"78:9F:87", "88:4B:39" };
 	
 	static final String[] Qcom_Bluetooth_Module = { "00:0D:F0" } ;
-
+	static final String[] UGSI_Bluetooth_Module = { "00:10:C6", "00:16:41", "00:1A:6B", "00:1E:37", "00:21:86", "00:24:7E", "00:27:13", "40:2C:F4", "70:F3:95", "CC:52:AF", "E0:2A:82", "FC:4D:D4" };
+	static final String[] LiteOn_Bluetooth_Module = { "00:22:5F", "1C:65:9D", "20:68:9D", "44:6D:57", "68:A3:C4", "70:F1:A1", "74:DE:2B", "74:E5:43", "9C:B7:0D", "D0:DF:9A" } ;
+	
 	static final int Unknown_exp = 12;
 	static final int Apple_exp = 5;
 	static final int Nokia_exp = 10;
@@ -352,8 +354,10 @@ public class MacAdressAllocations {
 	static final int Toshiba_exp = 20;
 	static final int HP_exp = 15;
 	static final int Gigabyte_exp = 25;
-	static final int TomTom_exp = 10;
+	static final int TomTom_exp = 15;
 	static final int Siemens_exp = 20;
-	static final int Qcom_Bluetooth_Module_exp = 5;
+	static final int Qcom_Bluetooth_Module_exp = 20;
+	static final int UGSI_Bluetooth_Module_exp = 10;
+	static final int LiteOn_Bluetooth_Module_exp = 15;
 
 }
