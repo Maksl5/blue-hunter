@@ -59,7 +59,7 @@ public class ActionBarHandler implements OnNavigationListener {
 		spinnerItems.add((String) activity.getTitle());
 		spinnerItems.add(parentActivity.getString(R.string.str_actBar_userInfo));
 
-		if (VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
+		if (VERSION.SDK_INT >= 14) {
 			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(actBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, spinnerItems), this);
 		}
 		else {
@@ -158,8 +158,8 @@ public class ActionBarHandler implements OnNavigationListener {
 		switch (itemPosition) {
 		case 0:
 
-			parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-			userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+			//parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+			//userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
 			
 			animation = new SizeAnimation(parentView, userInfoRow, 0);
 			animation.setDuration(1000);
@@ -189,8 +189,8 @@ public class ActionBarHandler implements OnNavigationListener {
 
 					userInfoRow.setVisibility(TableRow.INVISIBLE);
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-					parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-					userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
+					//parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+					//userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
 					// TODO Auto-generated method stub
 
 				}
@@ -200,8 +200,8 @@ public class ActionBarHandler implements OnNavigationListener {
 			break;
 		case 1:
 			
-			parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-			userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+			//parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+			//userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
 			
 			animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
 			animation.setDuration(1000);
@@ -230,8 +230,8 @@ public class ActionBarHandler implements OnNavigationListener {
 				public void onAnimationEnd(Animation animation) {
 
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-					parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-					userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
+					//parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+					//userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
 					// TODO Auto-generated method stub
 
 				}

@@ -2,10 +2,15 @@ package com.maksl5.bl_hunt;
 
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -18,11 +23,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
 
 
@@ -46,6 +53,8 @@ public class MainActivity extends FragmentActivity {
 	public DiscoveryManager disMan;
 	public Authentification authentification;
 	public NetworkMananger netMananger;
+	public NotificationManager notificationManager;
+	public Notification.Builder stateNotificationBuilder;
 
 	public TextView disStateTextView;
 	public TextView userInfoTextView;
@@ -86,6 +95,15 @@ public class MainActivity extends FragmentActivity {
 		}
 
 		registerListener();
+
+		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		stateNotificationBuilder = new Notification.Builder(this);
+
+		stateNotificationBuilder.setOngoing(true);
+		stateNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+		stateNotificationBuilder.setAutoCancel(false);
+		stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
+		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
 	}
 
@@ -212,6 +230,8 @@ public class MainActivity extends FragmentActivity {
 
 		PatternProgressBar progressBar = (PatternProgressBar) findViewById(R.id.progressBar1);
 
+		updateNotification();
+
 		return true;
 	}
 
@@ -330,6 +350,8 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onDestroy() {
 
+		notificationManager.cancelAll();
+
 		disMan.unregisterReceiver();
 		disMan.stopDiscoveryManager();
 		destroyed = true;
@@ -340,6 +362,25 @@ public class MainActivity extends FragmentActivity {
 	public boolean isDestroyed() {
 
 		return destroyed;
+	}
+
+	public void updateNotification() {
+
+		int exp = LevelSystem.getUserExp(this);
+		int level = LevelSystem.getLevel(exp);
+
+		if (VERSION.SDK_INT >= 14)
+			stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
+
+		stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
+
+		if (VERSION.SDK_INT >= 16) {
+			notificationManager.notify(1, stateNotificationBuilder.build());
+		}
+		else {
+			notificationManager.notify(1, stateNotificationBuilder.getNotification());
+		}
+
 	}
 
 }

@@ -185,6 +185,31 @@ public class DiscoveryManager {
 
 			return "";
 		}
+		
+		public static String getUnformatedDiscoveryState(	int state,
+												Context context) {
+
+			switch (state) {
+			case DISCOVERY_STATE_RUNNING:
+				return context.getString(R.string.str_discoveryState_running);
+			case DISCOVERY_STATE_STOPPED:
+				return context.getString(R.string.str_discoveryState_stopped);
+			case DISCOVERY_STATE_BT_OFF:
+				return context.getString(R.string.str_discoveryState_btOff);
+			case DISCOVERY_STATE_FINISHED:
+				return context.getString(R.string.str_discoveryState_finished);
+			case DISCOVERY_STATE_BT_ENABLING:
+				return context.getString(R.string.str_discoveryState_btEnabling);
+			case DISCOVERY_STATE_BT_DISABLING:
+				return context.getString(R.string.str_discoveryState_btDisabling);
+			case DISCOVERY_STATE_ERROR:
+				return context.getString(R.string.str_discoveryState_error);
+			case DISCOVERY_STATE_OFF:
+				return context.getString(R.string.str_discoveryState_off);
+			}
+
+			return "";
+		}
 
 		private String getDiscoveryState() {
 
@@ -273,7 +298,8 @@ public class DiscoveryManager {
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-			foundDevices = new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
+			foundDevices =
+					new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 			listViewMaps = new ArrayList<HashMap<String, String>>();
 
@@ -297,10 +323,10 @@ public class DiscoveryManager {
 						}
 					}
 					else {
-						if(isBluetoothEnabled()) {
+						if (isBluetoothEnabled()) {
 							stopDiscovery();
 						}
-						
+
 					}
 
 				}
@@ -416,6 +442,7 @@ public class DiscoveryManager {
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_ENABLING);
 					break;
 				case BluetoothAdapter.STATE_TURNING_OFF:
+					discoveryButton.setChecked(false);
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_DISABLING);
 					break;
 				case BluetoothAdapter.STATE_ON:
@@ -432,16 +459,18 @@ public class DiscoveryManager {
 			else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
 
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING);
+				mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING, mainActivity));
+				mainActivity.notificationManager.notify(1, mainActivity.stateNotificationBuilder.build());
 
 			}
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
-				
+
 				for (BluetoothDevice btDevice : foundDevicesInCurDiscovery) {
 					new DatabaseManager(mainActivity, mainActivity.versionCode).addNameToDevice(btDevice.getAddress(), btDevice.getName());
 				}
-				
+
 				foundDevicesInCurDiscovery = null;
 				foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 
@@ -450,6 +479,8 @@ public class DiscoveryManager {
 				}
 				else {
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED);
+					mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, mainActivity));
+					mainActivity.notificationManager.notify(1, mainActivity.stateNotificationBuilder.build());
 				}
 
 			}
@@ -464,27 +495,33 @@ public class DiscoveryManager {
 
 		}
 
-		public void onDeviceFound(BluetoothDevice btDevice, short RSSI) {
+		public void onDeviceFound(	BluetoothDevice btDevice,
+									short RSSI) {
 
-						
-			if(!foundDevices.contains(btDevice.getAddress())) {
+			if (!foundDevices.contains(btDevice.getAddress())) {
 				foundDevicesInCurDiscovery.add(btDevice);
 				attemptVibration();
 				new DatabaseManager(mainActivity, mainActivity.versionCode).addNewDevice(btDevice.getAddress(), RSSI);
-				foundDevices = new DatabaseManager(mainActivity,mainActivity.versionCode).getMacAddresses();
+				foundDevices =
+						new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
 				FragmentLayoutManager.refreshFoundDevicesList(mainActivity);
 				FragmentLayoutManager.updateIndicatorViews(mainActivity);
+
+				mainActivity.updateNotification();
+
 			}
 
 		}
-		
+
 		public void attemptVibration() {
+
 			boolean bVibrate = PreferenceManager.getPref(mainActivity, "pref_vibrate", false);
-			if(bVibrate) {
-				Vibrator vibrator = (Vibrator) mainActivity.getSystemService(Service.VIBRATOR_SERVICE);
+			if (bVibrate) {
+				Vibrator vibrator =
+						(Vibrator) mainActivity.getSystemService(Service.VIBRATOR_SERVICE);
 				vibrator.vibrate(500);
 			}
-			
+
 		}
 
 	}
