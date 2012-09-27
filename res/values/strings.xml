@@ -20,7 +20,7 @@
     <string name="str_discoveryState_running">Discovery running.</string>
     <string name="str_discoveryState_stopped">Discovery stopped.</string>
     <string name="str_discoveryState_btOff">Bluetooth off.</string>
-    <string name="str_discoveryState_finished">Discovery finished.</string>
+    <string name="str_discoveryState_finished">Discovery finished.\nReactivating...</string>
     <string name="str_discoveryState_btEnabling">Enabling Bluetooth...</string>
     <string name="str_discoveryState_btDisabling">Disabling Bluetooth...</string>
     <string name="str_discoveryState_error">Discovery error.</string>
