@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -19,6 +20,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -176,6 +178,9 @@ public class MainActivity extends FragmentActivity {
 				case Authentification.NETRESULT_ID_GET_USER_INFO:
 					userInfoTextView.setText(Html.fromHtml(resultString));
 					userInfoTextView.setVisibility(TextView.VISIBLE);
+					userInfoTextView.setClickable(true);
+					userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
+					userInfoTextView.setLinkTextColor(Color.DKGRAY);
 					userInfoTextView.requestLayout();
 					userInfoTextView.invalidate();
 
