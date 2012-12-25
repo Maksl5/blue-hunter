@@ -235,8 +235,6 @@ public class MainActivity extends FragmentActivity {
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(this);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 
-		PatternProgressBar progressBar = (PatternProgressBar) findViewById(R.id.progressBar1);
-
 		updateNotification();
 
 		return true;
@@ -368,6 +366,7 @@ public class MainActivity extends FragmentActivity {
 		return destroyed;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void updateNotification() {
 
 		if (PreferenceManager.getPref(this, "pref_showNotification", true)) {
@@ -398,6 +397,7 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void alterNotification(boolean show) {
 
 		if (show) {

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -285,8 +284,6 @@ public class DiscoveryManager {
 
 		private List<String> foundDevices;
 		private List<BluetoothDevice> foundDevicesInCurDiscovery;
-		private List<HashMap<String, String>> listViewMaps;
-
 		private int requestId = 0;
 
 		private BluetoothDiscoveryHandler(DiscoveryState state) {
@@ -296,7 +293,6 @@ public class DiscoveryManager {
 
 			foundDevices = new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
-			listViewMaps = new ArrayList<HashMap<String, String>>();
 
 			discoveryButton = (CompoundButton) mainActivity.actionBarHandler.getActionView(R.id.menu_switch);
 

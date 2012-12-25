@@ -166,10 +166,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 		final ViewPager parentView = (ViewPager) mainActivity.findViewById(R.id.pager);
 		final TableRow userInfoRow = (TableRow) mainActivity.findViewById(R.id.userInfoTableRow);
-		TextView userInfoTextView = (TextView) mainActivity.findViewById(R.id.userInfoTxtView);
-
-		final long id = itemId;
-
+		
 		Animation animation;
 
 		switch (itemPosition) {

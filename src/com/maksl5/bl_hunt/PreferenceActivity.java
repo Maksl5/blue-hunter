@@ -163,8 +163,6 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 
 		private void initializeStaticPrefs() {
 
-			SharedPreferences sharedPrefs = getPreferenceManager().getSharedPreferences();
-
 			Preference infoPref = findPreference("pref_version");
 
 			try {
