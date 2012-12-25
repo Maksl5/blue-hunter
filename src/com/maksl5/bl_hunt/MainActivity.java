@@ -232,8 +232,8 @@ public class MainActivity extends FragmentActivity {
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
 		userInfoRow.setVisibility(TableRow.INVISIBLE);
-		FragmentLayoutManager.refreshFoundDevicesList(this);
-		FragmentLayoutManager.updateIndicatorViews(this);
+		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(this);
+		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 
 		PatternProgressBar progressBar = (PatternProgressBar) findViewById(R.id.progressBar1);
 
@@ -431,7 +431,7 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
 
-		FragmentLayoutManager.refreshFoundDevicesList(this);
+		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(this);
 
 	}
 

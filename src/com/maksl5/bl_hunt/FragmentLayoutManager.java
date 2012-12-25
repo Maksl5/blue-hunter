@@ -40,22 +40,8 @@ import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
 
 public class FragmentLayoutManager {
 
-	private static List<HashMap<String, String>> showedFdList = new ArrayList<HashMap<String, String>>();
-	private static List<HashMap<String, String>> completeFdList = new ArrayList<HashMap<String, String>>();
-
-	private static String[] from = { "macAddress",
-									"manufacturer",
-									"exp",
-									"RSSI",
-									"name",
-									"time" };
-	private static int[] to = { R.id.macTxtView,
-								R.id.manufacturerTxtView,
-								R.id.expTxtView,
-								R.id.rssiTxtView,
-								R.id.nameTxtView,
-								R.id.timeTxtView };
-
+	
+	
 	public static View getSpecificView(	Bundle params,
 										LayoutInflater parentInflater,
 										ViewGroup rootContainer,
@@ -77,108 +63,138 @@ public class FragmentLayoutManager {
 		return new View(context);
 	}
 
-	public static void refreshFoundDevicesList(final MainActivity mainActivity) {
+	/**
+	 * @author Maksl5
+	 *
+	 */
+	public static class FoundDevicesLayout {
 
-		ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+		private static List<HashMap<String, String>> showedFdList = new ArrayList<HashMap<String, String>>();
+		private static List<HashMap<String, String>> completeFdList = new ArrayList<HashMap<String, String>>();
+		private static String[] from = { "macAddress",
+		"manufacturer",
+		"exp",
+		"RSSI",
+		"name",
+		"time" };
+		private static int[] to = { R.id.macTxtView,
+		R.id.manufacturerTxtView,
+		R.id.expTxtView,
+		R.id.rssiTxtView,
+		R.id.nameTxtView,
+		R.id.timeTxtView };
+		public static void refreshFoundDevicesList(final MainActivity mainActivity) {
+		
+			ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+		
+			List<HashMap<String, String>> devices =
+					new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
+			List<HashMap<String, String>> listViewHashMaps = new ArrayList<HashMap<String, String>>();
+		
+			HashMap<String, String[]> macHashMap = MacAdressAllocations.getHashMap();
+			HashMap<String, Integer> expHashMap = MacAdressAllocations.getExpHashMap();
+		
+			Set<String> keySet = macHashMap.keySet();
+			for (HashMap<String, String> device : devices) {
+				HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
+		
+				tempDataHashMap.put("macAddress", device.get(DatabaseHelper.COLUMN_MAC_ADDRESS));
+				tempDataHashMap.put("name", device.get(DatabaseHelper.COLUMN_NAME));
+				tempDataHashMap.put("RSSI", "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI));
+		
+				Long time =
+						(device.get(DatabaseHelper.COLUMN_TIME) == null || device.get(DatabaseHelper.COLUMN_TIME).equals("null")) ? 0 : Long.parseLong(device.get(DatabaseHelper.COLUMN_TIME));
+				tempDataHashMap.put("time", DateFormat.getDateTimeInstance().format(new Date(time)));
+		
+				boolean foundManufacturer = false;
+		
+				for (String key : keySet) {
+					String[] specificMacs = macHashMap.get(key);
+		
+					for (String mac : specificMacs) {
+						if (device.get(DatabaseHelper.COLUMN_MAC_ADDRESS).startsWith(mac)) {
+							foundManufacturer = true;
+							tempDataHashMap.put("manufacturer", key);
+							tempDataHashMap.put("exp", "+" + expHashMap.get(key.replace(" ", "_") + "_exp") + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+						}
+					}
+		
+				}
+		
+				if (!foundManufacturer) {
+					tempDataHashMap.put("manufacturer", "Unknown");
+					tempDataHashMap.put("exp", "+" + expHashMap.get("Unknown_exp") + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+				}
+		
+				listViewHashMaps.add(tempDataHashMap);
+		
+			}
+		
+			SimpleAdapter sAdapter =
+					new SimpleAdapter(mainActivity, listViewHashMaps, R.layout.act_page_founddevices_row, from, to);
+			showedFdList = listViewHashMaps;
+		
+			if (!completeFdList.equals(listViewHashMaps)) {
+				completeFdList = listViewHashMaps;
+			}
+		
+			ListenerClass listenerClass = new FragmentLayoutManager().new ListenerClass();
+		
+			// lv.setOnHierarchyChangeListener(listenerClass);
+		
+			int scroll = lv.getFirstVisiblePosition();
+			lv.setAdapter(sAdapter);
+			lv.setSelection(scroll);
+		}
 
-		List<HashMap<String, String>> devices =
-				new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
-		List<HashMap<String, String>> listViewHashMaps = new ArrayList<HashMap<String, String>>();
-
-		HashMap<String, String[]> macHashMap = MacAdressAllocations.getHashMap();
-		HashMap<String, Integer> expHashMap = MacAdressAllocations.getExpHashMap();
-
-		Set<String> keySet = macHashMap.keySet();
-		for (HashMap<String, String> device : devices) {
-			HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
-
-			tempDataHashMap.put("macAddress", device.get(DatabaseHelper.COLUMN_MAC_ADDRESS));
-			tempDataHashMap.put("name", device.get(DatabaseHelper.COLUMN_NAME));
-			tempDataHashMap.put("RSSI", "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI));
-
-			Long time =
-					(device.get(DatabaseHelper.COLUMN_TIME) == null || device.get(DatabaseHelper.COLUMN_TIME).equals("null")) ? 0 : Long.parseLong(device.get(DatabaseHelper.COLUMN_TIME));
-			tempDataHashMap.put("time", DateFormat.getDateTimeInstance().format(new Date(time)));
-
-			boolean foundManufacturer = false;
-
-			for (String key : keySet) {
-				String[] specificMacs = macHashMap.get(key);
-
-				for (String mac : specificMacs) {
-					if (device.get(DatabaseHelper.COLUMN_MAC_ADDRESS).startsWith(mac)) {
-						foundManufacturer = true;
-						tempDataHashMap.put("manufacturer", key);
-						tempDataHashMap.put("exp", "+" + expHashMap.get(key.replace(" ", "_") + "_exp") + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+		public static void filterFoundDevices(	String text,
+												MainActivity mainActivity) {
+		
+			List<HashMap<String, String>> searchedList = new ArrayList<HashMap<String, String>>();
+			ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+			SimpleAdapter sAdapter;
+		
+			if (text.equalsIgnoreCase("[unknown]")) {
+		
+				for (HashMap<String, String> hashMap : completeFdList) {
+					if (hashMap.get("manufacturer").equals("Unknown")) {
+						searchedList.add(hashMap);
 					}
 				}
-
+				sAdapter = new SimpleAdapter(mainActivity, searchedList, R.layout.act_page_founddevices_row, from, to);
 			}
-
-			if (!foundManufacturer) {
-				tempDataHashMap.put("manufacturer", "Unknown");
-				tempDataHashMap.put("exp", "+" + expHashMap.get("Unknown_exp") + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+			else {
+				sAdapter = new SimpleAdapter(mainActivity, completeFdList, R.layout.act_page_founddevices_row, from, to);
 			}
-
-			listViewHashMaps.add(tempDataHashMap);
-
+		
+			lv.setAdapter(sAdapter);
+		
 		}
-
-		SimpleAdapter sAdapter =
-				new SimpleAdapter(mainActivity, listViewHashMaps, R.layout.act_page_founddevices_row, from, to);
-		showedFdList = listViewHashMaps;
-
-		if (!completeFdList.equals(listViewHashMaps)) {
-			completeFdList = listViewHashMaps;
-		}
-
-		ListenerClass listenerClass = new FragmentLayoutManager().new ListenerClass();
-
-		// lv.setOnHierarchyChangeListener(listenerClass);
-
-		int scroll = lv.getFirstVisiblePosition();
-		lv.setAdapter(sAdapter);
-		lv.setSelection(scroll);
+	
 	}
 
-	public static void filterFoundDevices(	String text,
-											MainActivity mainActivity) {
+	/**
+	 * @author Maksl5
+	 *
+	 */
+	public static class DeviceDiscoveryLayout {
 
-		List<HashMap<String, String>> searchedList = new ArrayList<HashMap<String, String>>();
-		ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
-		SimpleAdapter sAdapter;
-
-		if (text.equalsIgnoreCase("[unknown]")) {
-
-			for (HashMap<String, String> hashMap : completeFdList) {
-				if (hashMap.get("manufacturer").equals("Unknown")) {
-					searchedList.add(hashMap);
-				}
-			}
-			sAdapter = new SimpleAdapter(mainActivity, searchedList, R.layout.act_page_founddevices_row, from, to);
+		public static void updateIndicatorViews(MainActivity mainActivity) {
+		
+			TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
+			TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
+			PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
+		
+			int exp = LevelSystem.getUserExp(mainActivity);
+			int level = LevelSystem.getLevel(exp);
+		
+			expTextView.setText(exp + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation) + " / " + LevelSystem.getLevelEndExp(level) + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+			lvlTextView.setText("Level " + level);
+		
+			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
+			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 		}
-		else {
-			sAdapter = new SimpleAdapter(mainActivity, completeFdList, R.layout.act_page_founddevices_row, from, to);
-		}
-
-		lv.setAdapter(sAdapter);
-
-	}
-
-	public static void updateIndicatorViews(MainActivity mainActivity) {
-
-		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
-		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
-		PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
-
-		int exp = LevelSystem.getUserExp(mainActivity);
-		int level = LevelSystem.getLevel(exp);
-
-		expTextView.setText(exp + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation) + " / " + LevelSystem.getLevelEndExp(level) + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
-		lvlTextView.setText("Level " + level);
-
-		progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
-		progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
+	
 	}
 
 	private class ListenerClass implements OnHierarchyChangeListener {

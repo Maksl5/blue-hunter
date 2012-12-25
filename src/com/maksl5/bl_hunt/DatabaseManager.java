@@ -168,7 +168,7 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_NAME, name);
 
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
-		FragmentLayoutManager.refreshFoundDevicesList(mainActivity);
+		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(mainActivity);
 		close();
 
 	}

@@ -504,8 +504,8 @@ public class DiscoveryManager {
 				new DatabaseManager(mainActivity, mainActivity.versionCode).addNewDevice(btDevice.getAddress(), RSSI);
 				foundDevices =
 						new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
-				FragmentLayoutManager.refreshFoundDevicesList(mainActivity);
-				FragmentLayoutManager.updateIndicatorViews(mainActivity);
+				FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(mainActivity);
+				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(mainActivity);
 
 				mainActivity.updateNotification();
 
