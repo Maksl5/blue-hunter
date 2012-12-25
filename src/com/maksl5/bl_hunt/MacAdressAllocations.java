@@ -23,31 +23,6 @@ public class MacAdressAllocations {
 	private static HashMap<String, String[ ]> manufacturerMacs = null;
 	private static HashMap<String, Integer> manufacturerExps = null;
 
-	static {
-		HashMap<String, String[ ]> hsHashMap = new HashMap<String, String[ ]>();
-
-		Field[ ] fields = MacAdressAllocations.class.getDeclaredFields();
-
-		for (Field field : fields) {
-			if (field.getType().equals(String[ ].class)) {
-				String[ ] macStrings;
-				try {
-					macStrings = (String[ ]) field.get(MacAdressAllocations.class);
-					hsHashMap.put(field.getName().replace("_", " "), macStrings);
-				}
-				catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		}
-		manufacturerMacs = hsHashMap;
-	}
 
 	public static HashMap<String, String[ ]> getHashMap() {
 
