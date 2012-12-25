@@ -85,7 +85,6 @@
                 android:text="@string/str_enableBT_text"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="@dimen/enable_bt_font_text" />
-
         </RelativeLayout>
     </RelativeLayout>
 

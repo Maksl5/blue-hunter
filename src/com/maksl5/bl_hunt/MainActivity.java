@@ -12,7 +12,6 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -26,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +32,7 @@ import android.widget.Toast;
 import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
+
 
 
 public class MainActivity extends FragmentActivity {
@@ -108,7 +107,8 @@ public class MainActivity extends FragmentActivity {
 		stateNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
 		stateNotificationBuilder.setAutoCancel(false);
 		stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
-		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
+		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+																																	| Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
 	}
 
@@ -143,9 +143,7 @@ public class MainActivity extends FragmentActivity {
 			}
 
 			@Override
-			public void onPageScrolled(	int position,
-										float positionOffset,
-										int positionOffsetPixels) {
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
 			}
 
@@ -154,11 +152,11 @@ public class MainActivity extends FragmentActivity {
 
 				switch (state) {
 
-				case ViewPager.SCROLL_STATE_DRAGGING:
+					case ViewPager.SCROLL_STATE_DRAGGING:
 
-				case ViewPager.SCROLL_STATE_IDLE:
+					case ViewPager.SCROLL_STATE_IDLE:
 
-				case ViewPager.SCROLL_STATE_SETTLING:
+					case ViewPager.SCROLL_STATE_SETTLING:
 
 				}
 
@@ -168,27 +166,26 @@ public class MainActivity extends FragmentActivity {
 		authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
 			@Override
-			public boolean onResult(int requestId,
-									String resultString) {
+			public boolean onResult(int requestId, String resultString) {
 
 				switch (requestId) {
-				case Authentification.NETRESULT_ID_SERIAL_CHECK:
-					Toast.makeText(MainActivity.this, resultString, Toast.LENGTH_LONG).show();
-					break;
-				case Authentification.NETRESULT_ID_GET_USER_INFO:
-					userInfoTextView.setText(Html.fromHtml(resultString));
-					userInfoTextView.setVisibility(TextView.VISIBLE);
-					userInfoTextView.setClickable(true);
-					userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
-					userInfoTextView.setLinkTextColor(Color.DKGRAY);
-					userInfoTextView.requestLayout();
-					userInfoTextView.invalidate();
+					case Authentification.NETRESULT_ID_SERIAL_CHECK:
+						Toast.makeText(MainActivity.this, resultString, Toast.LENGTH_LONG).show();
+						break;
+					case Authentification.NETRESULT_ID_GET_USER_INFO:
+						userInfoTextView.setText(Html.fromHtml(resultString));
+						userInfoTextView.setVisibility(View.VISIBLE);
+						userInfoTextView.setClickable(true);
+						userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
+						userInfoTextView.setLinkTextColor(Color.DKGRAY);
+						userInfoTextView.requestLayout();
+						userInfoTextView.invalidate();
 
-					TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
-					userInfoRow.setVisibility(TableRow.VISIBLE);
-					userInfoRow.invalidate();
-					userInfoRow.setVisibility(TableRow.INVISIBLE);
-					break;
+						TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
+						userInfoRow.setVisibility(View.VISIBLE);
+						userInfoRow.invalidate();
+						userInfoRow.setVisibility(View.INVISIBLE);
+						break;
 				}
 
 				return false;
@@ -221,7 +218,10 @@ public class MainActivity extends FragmentActivity {
 		// Network Stuff
 
 		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
-		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + versionCode, "h=" + authentification.getSerialNumberHash());
+		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s="
+																																		+ Authentification.getSerialNumber(), "v="
+																																												+ versionCode, "h="
+																																																+ authentification.getSerialNumberHash());
 
 		new DatabaseManager(this, versionCode).close();
 
@@ -231,7 +231,7 @@ public class MainActivity extends FragmentActivity {
 		NetworkThread getUserInfo = new NetworkThread(this, netMananger);
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
-		userInfoRow.setVisibility(TableRow.INVISIBLE);
+		userInfoRow.setVisibility(View.INVISIBLE);
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(this);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 
@@ -251,15 +251,15 @@ public class MainActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-		case R.id.menu_settings:
-			Intent intent = new Intent(this, PreferenceActivity.class);
-			startActivity(intent);
-			break;
-		case R.id.menu_info:
+			case R.id.menu_settings:
+				Intent intent = new Intent(this, PreferenceActivity.class);
+				startActivity(intent);
+				break;
+			case R.id.menu_info:
 
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 		return false;
 	}
@@ -294,14 +294,14 @@ public class MainActivity extends FragmentActivity {
 		public CharSequence getPageTitle(int position) {
 
 			switch (position) {
-			case 0:
-				return getString(R.string.str_pageTitle_main).toUpperCase();
-			case 1:
-				return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
-			case 2:
-				return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
-			case 3:
-				return getString(R.string.str_pageTitle_achievements).toUpperCase();
+				case 0:
+					return getString(R.string.str_pageTitle_main).toUpperCase();
+				case 1:
+					return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
+				case 2:
+					return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
+				case 3:
+					return getString(R.string.str_pageTitle_achievements).toUpperCase();
 			}
 			return null;
 		}
@@ -316,9 +316,7 @@ public class MainActivity extends FragmentActivity {
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
 		@Override
-		public View onCreateView(	LayoutInflater inflater,
-									ViewGroup container,
-									Bundle savedInstanceState) {
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 			Bundle args = getArguments();
 
@@ -327,8 +325,7 @@ public class MainActivity extends FragmentActivity {
 		}
 
 		@Override
-		public void onViewCreated(	View view,
-									Bundle savedInstanceState) {
+		public void onViewCreated(View view, Bundle savedInstanceState) {
 
 			super.onViewCreated(view, savedInstanceState);
 
@@ -341,14 +338,12 @@ public class MainActivity extends FragmentActivity {
 	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
 	 */
 	@Override
-	protected void onActivityResult(int requestCode,
-									int resultCode,
-									Intent intent) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		if ((requestCode == 64 | requestCode == 128) & disMan != null)
-			disMan.passEnableBTActivityResult(resultCode, requestCode);
+		if ((requestCode == 64 | requestCode == 128)
+			& disMan != null) disMan.passEnableBTActivityResult(resultCode, requestCode);
 	}
 
 	/*
@@ -381,9 +376,18 @@ public class MainActivity extends FragmentActivity {
 			int level = LevelSystem.getLevel(exp);
 
 			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
+				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level)
+														- LevelSystem.getLevelStartExp(level), exp
+																								- LevelSystem.getLevelStartExp(level), false);
 
-			stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
+			stateNotificationBuilder.setContentText("Level "
+													+ level
+													+ "\t"
+													+ exp
+													+ " / "
+													+ LevelSystem.getLevelEndExp(level)
+													+ " "
+													+ getString(R.string.str_foundDevices_exp_abbreviation));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
@@ -402,9 +406,18 @@ public class MainActivity extends FragmentActivity {
 			int level = LevelSystem.getLevel(exp);
 
 			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
+				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level)
+														- LevelSystem.getLevelStartExp(level), exp
+																								- LevelSystem.getLevelStartExp(level), false);
 
-			stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
+			stateNotificationBuilder.setContentText("Level "
+													+ level
+													+ "\t"
+													+ exp
+													+ " / "
+													+ LevelSystem.getLevelEndExp(level)
+													+ " "
+													+ getString(R.string.str_foundDevices_exp_abbreviation));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());

@@ -24,8 +24,8 @@
             android:gravity="center"
             android:textColor="#ffffff"
             android:textSize="@dimen/foundDevices_name_text" />
-
     </TableRow>
+
     <TableRow
         android:id="@+id/tableRow4"
         android:layout_width="match_parent"
@@ -50,7 +50,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/foundDevices_secondary_text" />
-
             </TableRow>
 
             <TableRow
@@ -69,7 +68,6 @@
                     android:textColor="@color/text_holo_light_blue"
                     android:textSize="@dimen/foundDevices_manufacturer_text"
                     android:textStyle="italic" />
-
             </TableRow>
         </RelativeLayout>
 
@@ -126,11 +124,8 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textSize="@dimen/foundDevices_time_text"
                     android:textStyle="italic" />
-
             </TableRow>
-
         </RelativeLayout>
-
     </TableRow>
 
 </RelativeLayout>

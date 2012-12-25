@@ -31,6 +31,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
@@ -49,8 +50,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 	private MainActivity mainActivity;
 	private NetworkMananger networkMananger;
 
-	public NetworkThread(MainActivity mainActivity,
-			NetworkMananger networkMananger) {
+	public NetworkThread(MainActivity mainActivity, NetworkMananger networkMananger) {
 
 		super();
 		this.mainActivity = mainActivity;
@@ -66,8 +66,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 	@Override
 	protected String doInBackground(String... params) {
 
-		String remoteFile = params[0];
-		int requestId = Integer.parseInt(params[1]);
+		String remoteFile = params[ 0 ];
+		int requestId = Integer.parseInt(params[ 1 ]);
 		boolean https = false;
 
 		if (remoteFile.startsWith("https")) https = true;
@@ -78,7 +78,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 			for (int i = 2; i < params.length; i++) {
 				Pattern pattern = Pattern.compile("(.+)=(.+)", Pattern.CASE_INSENSITIVE);
-				Matcher matcher = pattern.matcher(params[i]);
+				Matcher matcher = pattern.matcher(params[ i ]);
 
 				matcher.matches();
 
@@ -90,7 +90,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 			// SSL Implementation
 
 			HttpClient httpClient;
-			
+
 			if (https) {
 
 				SchemeRegistry schemeRegistry = new SchemeRegistry();
@@ -102,7 +102,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 				HttpParams httpParams = new BasicHttpParams();
 				httpParams.setParameter(ConnManagerPNames.MAX_TOTAL_CONNECTIONS, 30);
 				httpParams.setParameter(ConnManagerPNames.MAX_CONNECTIONS_PER_ROUTE, new ConnPerRouteBean(30));
-				httpParams.setParameter(HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+				httpParams.setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 				HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
 
 				ClientConnectionManager cm = new ThreadSafeClientConnManager(httpParams, schemeRegistry);
@@ -120,22 +120,37 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 			String result = EntityUtils.toString(httpResponse.getEntity());
 
-			return "<requestID='" + requestId + "' />" + result;
+			return "<requestID='"
+					+ requestId
+					+ "' />"
+					+ result;
 		}
 		catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='" + requestId + "' />" + "Error=5\n" + e.getMessage();
+			return "<requestID='"
+					+ requestId
+					+ "' />"
+					+ "Error=5\n"
+					+ e.getMessage();
 		}
 		catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='" + requestId + "' />" + "Error=4\n" + e.getMessage();
+			return "<requestID='"
+					+ requestId
+					+ "' />"
+					+ "Error=4\n"
+					+ e.getMessage();
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='" + requestId + "' />" + "Error=1\n" + e.getMessage();
+			return "<requestID='"
+					+ requestId
+					+ "' />"
+					+ "Error=1\n"
+					+ e.getMessage();
 		}
 
 		// TODO Auto-generated method stub

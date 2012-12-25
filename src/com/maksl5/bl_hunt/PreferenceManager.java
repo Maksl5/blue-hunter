@@ -17,27 +17,21 @@ import android.content.SharedPreferences;
  */
 public class PreferenceManager {
 
-	public static boolean getPref(	Context con,
-									String key,
-									boolean defValue) {
+	public static boolean getPref(Context con, String key, boolean defValue) {
 
 		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		return shPreferences.getBoolean(key, defValue);
 
 	}
-	
-	public static int getPref(	Context con,
-									String key,
-									int defValue) {
+
+	public static int getPref(Context con, String key, int defValue) {
 
 		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		return shPreferences.getInt(key, defValue);
 
 	}
-	
-	public static String getPref(	Context con,
-									String key,
-									String defValue) {
+
+	public static String getPref(Context con, String key, String defValue) {
 
 		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		return shPreferences.getString(key, defValue);

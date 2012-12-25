@@ -22,7 +22,7 @@ public class EnableBluetoothActivity extends Activity {
 
 	public static final int BT_ENABLE_RESULT_ENABLE = 1;
 	public static final int BT_ENABLE_RESULT_NOT_ENABLE = -1;
-	
+
 	private Button yesButton;
 	private Button noButton;
 
@@ -44,51 +44,52 @@ public class EnableBluetoothActivity extends Activity {
 
 		yesButton = (Button) findViewById(R.id.yesButton);
 		noButton = (Button) findViewById(R.id.noButton);
-		
+
 		registerListeners();
 
 	}
-	
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.support.v4.app.FragmentActivity#onResume()
 	 */
 	@Override
 	protected void onResume() {
-	
+
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
 	private void registerListeners() {
 
 		yesButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-			
+
 				EnableBluetoothActivity.this.setResult(BT_ENABLE_RESULT_ENABLE);
 				finish();
-				
+
 			}
 		});
-		
-		/////////////////////////////////
-		/////////////////////////////////
-		
+
+		// ///////////////////////////////
+		// ///////////////////////////////
+
 		noButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-			
+
 				EnableBluetoothActivity.this.setResult(BT_ENABLE_RESULT_NOT_ENABLE);
 				finish();
-				
+
 			}
 		});
-		
+
 	}
 
 	/*
@@ -97,8 +98,7 @@ public class EnableBluetoothActivity extends Activity {
 	 * @see android.app.Activity#onKeyUp(int, android.view.KeyEvent)
 	 */
 	@Override
-	public boolean onKeyUp(	int keyCode,
-							KeyEvent event) {
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
 
 		if (keyCode == KeyEvent.KEYCODE_BACK) return true;
 		return false;

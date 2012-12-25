@@ -29,18 +29,20 @@ import android.view.MenuItem;
  */
 public class PreferenceActivity extends android.preference.PreferenceActivity {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
-		
+
 		ActionBar actionBar = this.getActionBar();
-		
+
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		
-		
+
 	}
 
 	/*
@@ -53,38 +55,40 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 
 		loadHeadersFromResource(R.xml.preference_headers, target);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.support.v4.app.FragmentActivity#onResume()
 	 */
 	@Override
 	protected void onResume() {
-	
+
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			
-			finish();
-			
-			break;
 
-		default:
-			break;
+		switch (item.getItemId()) {
+			case android.R.id.home:
+
+				finish();
+
+				break;
+
+			default:
+				break;
 		}
-		
-		
-		
+
 		return true;
 	}
 
@@ -106,8 +110,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 			super.onCreate(savedInstanceState);
 
 			addPreferencesFromResource(R.xml.info_preference);
-			
-			if(!Authentification.newUpdateAvailable) {
+
+			if (!Authentification.newUpdateAvailable) {
 				Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
 				PreferenceScreen infoScreen = getPreferenceScreen();
 				infoScreen.removePreference(newUpdatePref);
@@ -121,39 +125,40 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 		 * 
 		 */
 		private void registerListeners() {
-			
-			//New Update Available - Click
+
+			// New Update Available - Click
 			Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
-			if(newUpdatePref != null) {
+			if (newUpdatePref != null) {
 				newUpdatePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-					
+
 					@Override
 					public boolean onPreferenceClick(Preference preference) {
-					
-						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Maksl5/blue-hunter/raw/master/bin/Blue%20Hunter.apk"));
+
+						Intent browserIntent =
+								new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Maksl5/blue-hunter/raw/master/bin/Blue%20Hunter.apk"));
 						startActivity(browserIntent);
-						
+
 						return true;
 					}
 				});
 			}
-			
-			//Show Changelog Click
+
+			// Show Changelog Click
 			Preference showChangelogPref = findPreference("pref_changelog");
-			if(showChangelogPref != null){
+			if (showChangelogPref != null) {
 				showChangelogPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-					
+
 					@Override
-					public boolean onPreferenceClick(Preference preference) {				
-						
+					public boolean onPreferenceClick(Preference preference) {
+
 						MainActivity main = MainActivity.thisActivity;
 						main.authentification.showChangelog(InfoFragment.this.getActivity());
-						
+
 						return true;
 					}
 				});
 			}
-			
+
 		}
 
 		private void initializeStaticPrefs() {
@@ -173,10 +178,11 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 
 	}
 
-	
 	public static class BehaviourFragment extends PreferenceFragment {
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.preference.PreferenceFragment#onCreate(android.os.Bundle)
 		 */
 		@Override
@@ -184,30 +190,29 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 
 			// TODO Auto-generated method stub
 			super.onCreate(savedInstanceState);
-			
+
 			addPreferencesFromResource(R.xml.behaviour_preference);
-			
+
 			registerListeners();
 		}
-		
+
 		private void registerListeners() {
+
 			Preference showNotificationPref = findPreference("pref_showNotification");
-			if(showNotificationPref != null) {
+			if (showNotificationPref != null) {
 				showNotificationPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-					
+
 					@Override
-					public boolean onPreferenceChange(	Preference preference,
-														Object newValue) {
-						
+					public boolean onPreferenceChange(Preference preference, Object newValue) {
+
 						MainActivity.thisActivity.alterNotification(newValue.equals(true));
-						
+
 						return true;
 					}
 				});
 			}
-			
-			
+
 		}
-		
+
 	}
 }

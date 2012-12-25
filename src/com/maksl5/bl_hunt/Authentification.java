@@ -39,11 +39,10 @@ public class Authentification {
 	public static final int NETRESULT_ID_CHECK_UPDATE = 2;
 	public static final int NETRESULT_ID_GET_USER_INFO = 3;
 	public static final int NETRESULT_ID_UPDATED = 4;
-	
+
 	public static boolean newUpdateAvailable = false;
 
-	public Authentification(Context con,
-			MainActivity mainActivity) {
+	public Authentification(Context con, MainActivity mainActivity) {
 
 		context = con;
 		this.mainActivity = mainActivity;
@@ -65,7 +64,8 @@ public class Authentification {
 			serial = "NULL";
 		}
 
-		if (serial == null | serial.equals("")) serial = "NULL";
+		if (serial == null
+			| serial.equals("")) serial = "NULL";
 
 		return serial;
 	}
@@ -115,8 +115,7 @@ public class Authentification {
 			setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
 				@Override
-				public boolean onResult(int requestId,
-										String resultString) {
+				public boolean onResult(int requestId, String resultString) {
 
 					if (requestId == NETRESULT_ID_CHECK_UPDATE) {
 						try {
@@ -127,14 +126,17 @@ public class Authentification {
 							int verCode = Integer.parseInt(matcher.group(1));
 
 							if (verCode > getVersionCode(context)) {
-								Toast.makeText(context, "NEW NIGHTLY VERSION AVAILABLE\nCurrently installed build: " + getVersionCode(context) + "\nAvailable build: " + verCode, Toast.LENGTH_LONG).show();
+								Toast.makeText(context, "NEW NIGHTLY VERSION AVAILABLE\nCurrently installed build: "
+														+ getVersionCode(context)
+														+ "\nAvailable build: "
+														+ verCode, Toast.LENGTH_LONG).show();
 								newUpdateAvailable = true;
 							}
 						}
 						catch (IllegalStateException e) {
 							Pattern pattern = Pattern.compile("Error=(\\d+)");
 							Matcher matcher = pattern.matcher(resultString);
-							if(matcher.find()) {
+							if (matcher.find()) {
 								Toast.makeText(context, "There was an error while connecting to the Server.", Toast.LENGTH_LONG).show();
 							}
 						}
@@ -146,14 +148,13 @@ public class Authentification {
 				}
 			});
 
-			NetworkThread checkUpdateThread =
-					new NetworkThread(mainActivity, mainActivity.netMananger);
+			NetworkThread checkUpdateThread = new NetworkThread(mainActivity, mainActivity.netMananger);
 
 			checkUpdateThread.execute(AuthentificationSecure.SERVER_CHECK_UPDATE, String.valueOf(NETRESULT_ID_CHECK_UPDATE));
 		}
 
 	}
-	
+
 	public void showChangelog(final Activity activity) {
 
 		showChangelog(activity, 0);
@@ -167,17 +168,14 @@ public class Authentification {
 	/**
  * 
  */
-	public void showChangelog(final Activity activity,	int oldVersion,
-								int newVersion,
-								int limit) {
+	public void showChangelog(final Activity activity, int oldVersion, int newVersion, int limit) {
 
 		NetworkThread getChangelog = new NetworkThread(mainActivity, mainActivity.netMananger);
 
 		mainActivity.authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
 			@Override
-			public boolean onResult(int requestId,
-									String resultString) {
+			public boolean onResult(int requestId, String resultString) {
 
 				if (requestId == Authentification.NETRESULT_ID_UPDATED) {
 
@@ -188,17 +186,17 @@ public class Authentification {
 						int error = Integer.parseInt(matcher.group(1));
 
 						switch (error) {
-						case 1:
-						case 4:
-						case 5:
-							Toast.makeText(mainActivity, "Error retrieving changelog for new version", Toast.LENGTH_LONG).show();
-							break;
-						case 90:
-							Toast.makeText(mainActivity, "Updated to new version. No Changelog available.", Toast.LENGTH_LONG).show();
-							break;
-						case 404:
-							Toast.makeText(mainActivity, "Updated to new version. Changelog could not be found on the server.", Toast.LENGTH_LONG).show();
-							break;
+							case 1:
+							case 4:
+							case 5:
+								Toast.makeText(mainActivity, "Error retrieving changelog for new version", Toast.LENGTH_LONG).show();
+								break;
+							case 90:
+								Toast.makeText(mainActivity, "Updated to new version. No Changelog available.", Toast.LENGTH_LONG).show();
+								break;
+							case 404:
+								Toast.makeText(mainActivity, "Updated to new version. Changelog could not be found on the server.", Toast.LENGTH_LONG).show();
+								break;
 						}
 					}
 					else {
@@ -207,8 +205,7 @@ public class Authentification {
 						ScrollView changeLogScrollView = new ScrollView(activity);
 						WebView changelogWebView = new WebView(activity);
 						changelogDialog.setTitle("Changelog");
-						int padding =
-								mainActivity.getResources().getDimensionPixelSize(R.dimen.padding_small);
+						int padding = mainActivity.getResources().getDimensionPixelSize(R.dimen.padding_small);
 						changelogWebView.setPadding(padding, padding, padding, padding);
 						changelogDialog.addContentView(changeLogScrollView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 						changeLogScrollView.addView(changelogWebView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -224,30 +221,36 @@ public class Authentification {
 			}
 		});
 		if (limit == 0) {
-			if (oldVersion == 0 | newVersion == 0) {
+			if (oldVersion == 0
+				| newVersion == 0) {
 				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED));
 			}
 			else {
-				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old=" + oldVersion, "new=" + newVersion);
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old="
+																																	+ oldVersion, "new="
+																																					+ newVersion);
 			}
 		}
 		else {
-			if (oldVersion == 0 | newVersion == 0) {
-				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "l=" + limit);
+			if (oldVersion == 0
+				| newVersion == 0) {
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "l="
+																																	+ limit);
 			}
 			else {
-				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old=" + oldVersion, "new=" + newVersion, "l=" + limit);
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old="
+																																	+ oldVersion, "new="
+																																					+ newVersion, "l="
+																																									+ limit);
 			}
 
 		}
 
 	}
-	
 
 	public interface OnNetworkResultAvailableListener {
 
-		public abstract boolean onResult(	int requestId,
-											String resultString);
+		public abstract boolean onResult(int requestId, String resultString);
 	}
 
 	public void setOnNetworkResultAvailableListener(OnNetworkResultAvailableListener listener) {
@@ -258,11 +261,9 @@ public class Authentification {
 	/**
 	 * @return the onNetworkResultAvailableListener
 	 */
-	public synchronized void fireOnNetworkResultAvailable(	int requestId,
-															String resultString) {
+	public synchronized void fireOnNetworkResultAvailable(int requestId, String resultString) {
 
-		ArrayList<OnNetworkResultAvailableListener> removeListeners =
-				new ArrayList<OnNetworkResultAvailableListener>();
+		ArrayList<OnNetworkResultAvailableListener> removeListeners = new ArrayList<OnNetworkResultAvailableListener>();
 
 		for (OnNetworkResultAvailableListener listener : listenerList) {
 			if (listener.onResult(requestId, resultString)) {

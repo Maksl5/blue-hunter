@@ -10,7 +10,6 @@
     <dimen name="enable_bt_font_text">12sp</dimen>
     <dimen name="enable_bt_button_text">20sp</dimen>
     
-        
     <dimen name="foundDevices_secondary_text">12sp</dimen>
     <dimen name="foundDevices_name_text">14sp</dimen>
     <dimen name="foundDevices_manufacturer_text">12sp</dimen>

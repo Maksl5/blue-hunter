@@ -5,13 +5,11 @@ package com.maksl5.bl_hunt;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R.integer;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
 import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -106,24 +104,24 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		currentPage = newPage;
 
 		switch (newPage) {
-		case 1:
-			menu.findItem(R.id.menu_search).setVisible(false);
-			menu.findItem(R.id.menu_info).setVisible(false);
-			break;
-		case 2:
-			menu.findItem(R.id.menu_search).setVisible(true);
-			menu.findItem(R.id.menu_info).setVisible(false);
-			Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
-			break;
-		case 3:
-			menu.findItem(R.id.menu_search).setVisible(true);
-			menu.findItem(R.id.menu_info).setVisible(true);
-			Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
-			break;
-		case 4:
-			menu.findItem(R.id.menu_search).setVisible(false);
-			menu.findItem(R.id.menu_info).setVisible(false);
-			break;
+			case 1:
+				menu.findItem(R.id.menu_search).setVisible(false);
+				menu.findItem(R.id.menu_info).setVisible(false);
+				break;
+			case 2:
+				menu.findItem(R.id.menu_search).setVisible(true);
+				menu.findItem(R.id.menu_info).setVisible(false);
+				Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
+				break;
+			case 3:
+				menu.findItem(R.id.menu_search).setVisible(true);
+				menu.findItem(R.id.menu_info).setVisible(true);
+				Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
+				break;
+			case 4:
+				menu.findItem(R.id.menu_search).setVisible(false);
+				menu.findItem(R.id.menu_info).setVisible(false);
+				break;
 		}
 
 		return true;
@@ -164,8 +162,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	 * @see android.app.ActionBar.OnNavigationListener#onNavigationItemSelected(int, long)
 	 */
 	@Override
-	public boolean onNavigationItemSelected(int itemPosition,
-											long itemId) {
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 
 		final ViewPager parentView = (ViewPager) mainActivity.findViewById(R.id.pager);
 		final TableRow userInfoRow = (TableRow) mainActivity.findViewById(R.id.userInfoTableRow);
@@ -176,92 +173,96 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		Animation animation;
 
 		switch (itemPosition) {
-		case 0:
+			case 0:
 
-			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+				// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+				// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
 
-			animation = new SizeAnimation(parentView, userInfoRow, 0);
-			animation.setDuration(1000);
-			animation.setFillAfter(true);
+				animation = new SizeAnimation(parentView, userInfoRow, 0);
+				animation.setDuration(1000);
+				animation.setFillAfter(true);
 
-			animation.setInterpolator(new AccelerateDecelerateInterpolator());
-			animation.setAnimationListener(new AnimationListener() {
+				animation.setInterpolator(new AccelerateDecelerateInterpolator());
+				animation.setAnimationListener(new AnimationListener() {
 
-				@Override
-				public void onAnimationStart(Animation animation) {
+					@Override
+					public void onAnimationStart(Animation animation) {
 
-					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
+						Log.d("layout", "before: view.getBottom = "
+										+ parentView.getBottom());
 
-					// TODO Auto-generated method stub
+						// TODO Auto-generated method stub
 
-				}
+					}
 
-				@Override
-				public void onAnimationRepeat(Animation animation) {
+					@Override
+					public void onAnimationRepeat(Animation animation) {
 
-					// TODO Auto-generated method stub
+						// TODO Auto-generated method stub
 
-				}
+					}
 
-				@Override
-				public void onAnimationEnd(Animation animation) {
+					@Override
+					public void onAnimationEnd(Animation animation) {
 
-					userInfoRow.setVisibility(TableRow.INVISIBLE);
-					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-					parentView.requestLayout();
-					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
-					// TODO Auto-generated method stub
+						userInfoRow.setVisibility(View.INVISIBLE);
+						Log.d("layout", "after: view.getBottom = "
+										+ parentView.getBottom());
+						parentView.requestLayout();
+						// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+						// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
+						// TODO Auto-generated method stub
 
-				}
-			});
+					}
+				});
 
-			parentView.startAnimation(animation);
-			break;
-		case 1:
+				parentView.startAnimation(animation);
+				break;
+			case 1:
 
-			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+				// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+				// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
 
-			animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
-			animation.setDuration(1000);
-			animation.setFillAfter(true);
+				animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
+				animation.setDuration(1000);
+				animation.setFillAfter(true);
 
-			animation.setInterpolator(new AccelerateDecelerateInterpolator());
-			animation.setAnimationListener(new AnimationListener() {
+				animation.setInterpolator(new AccelerateDecelerateInterpolator());
+				animation.setAnimationListener(new AnimationListener() {
 
-				@Override
-				public void onAnimationStart(Animation animation) {
+					@Override
+					public void onAnimationStart(Animation animation) {
 
-					userInfoRow.setVisibility(TableRow.VISIBLE);
-					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
-					// TODO Auto-generated method stub
+						userInfoRow.setVisibility(View.VISIBLE);
+						Log.d("layout", "before: view.getBottom = "
+										+ parentView.getBottom());
+						// TODO Auto-generated method stub
 
-				}
+					}
 
-				@Override
-				public void onAnimationRepeat(Animation animation) {
+					@Override
+					public void onAnimationRepeat(Animation animation) {
 
-					// TODO Auto-generated method stub
+						// TODO Auto-generated method stub
 
-				}
+					}
 
-				@Override
-				public void onAnimationEnd(Animation animation) {
+					@Override
+					public void onAnimationEnd(Animation animation) {
 
-					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-					parentView.requestLayout();
-					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
-					// TODO Auto-generated method stub
+						Log.d("layout", "after: view.getBottom = "
+										+ parentView.getBottom());
+						parentView.requestLayout();
+						// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+						// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
+						// TODO Auto-generated method stub
 
-				}
-			});
+					}
+				});
 
-			parentView.startAnimation(animation);
+				parentView.startAnimation(animation);
 
-			break;
+				break;
 		}
 
 		return false;
@@ -322,10 +323,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		int initialBot;
 		int initialTop;
 
-
-		public SizeAnimation(ViewPager view,
-				TableRow userRow,
-				int targetTop) {
+		public SizeAnimation(ViewPager view, TableRow userRow, int targetTop) {
 
 			this.view = view;
 			this.userRow = userRow;
@@ -343,31 +341,31 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		 * @see android.view.animation.Animation#applyTransformation(float, android.view.animation.Transformation)
 		 */
 		@Override
-		protected void applyTransformation(	float interpolatedTime,
-											Transformation t) {
+		protected void applyTransformation(float interpolatedTime, Transformation t) {
 
 			if (targetTop == initialTop) {
 				return;
 			}
 			else if (targetTop > initialTop) {
 
-				int top = (int) ((targetTop - initialTop) * interpolatedTime + initialTop);
+				int top = (int) ((targetTop - initialTop)
+									* interpolatedTime + initialTop);
 
 				view.setTop(top);
 				userRow.setBottom(top);
-				view.getLayoutParams().height = view.getBottom() - top;
-				
-
+				view.getLayoutParams().height = view.getBottom()
+												- top;
 
 			}
 			else if (targetTop < initialTop) {
 
-				int top = (int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop);
+				int top = (int) ((initialTop - targetTop)
+									* (1 - interpolatedTime) + targetTop);
 
 				view.setTop(top);
 				userRow.setBottom(top);
-				view.getLayoutParams().height = view.getBottom() - top;
-				
+				view.getLayoutParams().height = view.getBottom()
+												- top;
 
 			}
 
@@ -379,10 +377,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		 * @see android.view.animation.Animation#initialize(int, int, int, int)
 		 */
 		@Override
-		public void initialize(	int width,
-								int height,
-								int parentWidth,
-								int parentHeight) {
+		public void initialize(int width, int height, int parentWidth, int parentHeight) {
 
 			// TODO Auto-generated method stub
 			super.initialize(width, height, parentWidth, parentHeight);
