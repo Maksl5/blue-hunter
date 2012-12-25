@@ -2,6 +2,7 @@ package com.maksl5.bl_hunt;
 
 
 
+import java.security.PublicKey;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +37,12 @@ import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
 
 public class FragmentLayoutManager {
 
+	public static final int PAGE_DEVICE_DISCOVERY = 0;
+	public static final int PAGE_LEADERBOARD = 1;
+	public static final int PAGE_FOUND_DEVICES = 2;
+	public static final int PAGE_ACHIEVEMENTS = 3;
+	public static final int PAGE_STATISTICS = 4;
+	
 	public static View getSpecificView(
 										Bundle params, LayoutInflater parentInflater, ViewGroup rootContainer,
 										Context context) {
@@ -43,13 +50,16 @@ public class FragmentLayoutManager {
 		int sectionNumber = params.getInt(CustomSectionFragment.ARG_SECTION_NUMBER);
 
 		switch (sectionNumber) {
-			case 1:
+			case PAGE_DEVICE_DISCOVERY:
 				return parentInflater.inflate(R.layout.act_page_discovery, rootContainer, false);
-			case 2:
+			case PAGE_LEADERBOARD:
 				return parentInflater.inflate(R.layout.act_page_leaderboard, rootContainer, false);
-			case 3:
+			case PAGE_FOUND_DEVICES:
 				return parentInflater.inflate(R.layout.act_page_founddevices, rootContainer, false);
-			case 4:
+			case PAGE_ACHIEVEMENTS:
+				break;
+			case PAGE_STATISTICS:
+				break;
 
 		}
 

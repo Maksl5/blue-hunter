@@ -93,7 +93,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 		getMenuItem(R.id.menu_search).setOnActionExpandListener(this);
 
-		changePage(1);
+		changePage(FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
 
 	}
 
@@ -104,23 +104,26 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		currentPage = newPage;
 
 		switch (newPage) {
-			case 1:
+			case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
 				menu.findItem(R.id.menu_search).setVisible(false);
 				menu.findItem(R.id.menu_info).setVisible(false);
 				break;
-			case 2:
+			case FragmentLayoutManager.PAGE_LEADERBOARD:
 				menu.findItem(R.id.menu_search).setVisible(true);
 				menu.findItem(R.id.menu_info).setVisible(false);
 				Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
 				break;
-			case 3:
+			case FragmentLayoutManager.PAGE_FOUND_DEVICES:
 				menu.findItem(R.id.menu_search).setVisible(true);
 				menu.findItem(R.id.menu_info).setVisible(true);
 				Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
 				break;
-			case 4:
+			case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
 				menu.findItem(R.id.menu_search).setVisible(false);
 				menu.findItem(R.id.menu_info).setVisible(false);
+				break;
+			case FragmentLayoutManager.PAGE_STATISTICS:
+				
 				break;
 		}
 

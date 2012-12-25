@@ -138,7 +138,7 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onPageSelected(int position) {
 
-				actionBarHandler.changePage(position + 1);
+				actionBarHandler.changePage(position);
 
 			}
 
@@ -277,7 +277,7 @@ public class MainActivity extends FragmentActivity {
 
 			Fragment fragment = new CustomSectionFragment();
 			Bundle args = new Bundle();
-			args.putInt(CustomSectionFragment.ARG_SECTION_NUMBER, i + 1);
+			args.putInt(CustomSectionFragment.ARG_SECTION_NUMBER, i);
 			fragment.setArguments(args);
 			return fragment;
 		}
@@ -285,21 +285,23 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public int getCount() {
 
-			return 4;
+			return 5;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
 
 			switch (position) {
-				case 0:
+				case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
 					return getString(R.string.str_pageTitle_main).toUpperCase();
-				case 1:
+				case FragmentLayoutManager.PAGE_LEADERBOARD:
 					return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
-				case 2:
+				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
 					return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
-				case 3:
+				case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
 					return getString(R.string.str_pageTitle_achievements).toUpperCase();
+				case FragmentLayoutManager.PAGE_STATISTICS:
+					return getString(R.string.str_pageTitle_statistics).toUpperCase();
 			}
 			return null;
 		}
