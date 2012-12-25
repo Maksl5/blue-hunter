@@ -13,7 +13,7 @@
     <string name="str_pageTitle_leaderboard">Leaderboard</string>
     <string name="str_pageTitle_foundDevices">Found Devices</string>
     <string name="str_pageTitle_achievements">Achievements</string>
-    <string name="str_pageTitle_statistics">Achievements</string>
+    <string name="str_pageTitle_statistics">Statistics</string>
     <string name="str_menu_settings">Settings</string>
     <string name="str_menu_info" tools:ignore="MissingTranslation">Help</string>
     <string name="str_menu_search">Search</string>
