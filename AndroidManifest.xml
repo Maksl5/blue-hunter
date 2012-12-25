@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="488"
-    android:versionName="pre_alpha_0.1.0.488_120927-2001" >
+    android:versionCode="501"
+    android:versionName="pre_alpha_0.1.0.501_121225-1831" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -21,7 +21,7 @@
         <activity
             android:name=".MainActivity"
             android:alwaysRetainTaskState="true"
-            android:configChanges="orientation|screenSize"
+            android:configChanges="orientation|screenLayout|screenSize"
             android:label="@string/str_mainActTitle"
             android:screenOrientation="user" >
             <intent-filter>

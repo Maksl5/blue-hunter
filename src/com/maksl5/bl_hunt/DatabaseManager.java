@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.R.string;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -19,6 +20,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.Html;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +57,7 @@ public class DatabaseManager {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
+		values.put(DatabaseHelper.COLUMN_TIME, System.currentTimeMillis());
 
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
 			close();
@@ -79,6 +82,7 @@ public class DatabaseManager {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
 		values.put(DatabaseHelper.COLUMN_RSSI, RSSI);
+		values.put(DatabaseHelper.COLUMN_TIME, System.currentTimeMillis());
 
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
 			close();
@@ -102,6 +106,7 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
 		values.put(DatabaseHelper.COLUMN_NAME, name);
 		values.put(DatabaseHelper.COLUMN_RSSI, RSSI);
+		values.put(DatabaseHelper.COLUMN_TIME, System.currentTimeMillis());
 	
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
 			close();
@@ -141,9 +146,11 @@ public class DatabaseManager {
 		while (!cursor.isAfterLast()) {
 			HashMap<String, String> tempHashMap = new HashMap<String, String>();
 
-			tempHashMap.put(DatabaseHelper.COLUMN_MAC_ADDRESS, cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_MAC_ADDRESS)));
-			tempHashMap.put(DatabaseHelper.COLUMN_NAME, cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_NAME)));
-			tempHashMap.put(DatabaseHelper.COLUMN_RSSI, cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_RSSI)));
+			tempHashMap.put(DatabaseHelper.COLUMN_MAC_ADDRESS, cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_MAC_ADDRESS)));
+			tempHashMap.put(DatabaseHelper.COLUMN_NAME, cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME)));
+			tempHashMap.put(DatabaseHelper.COLUMN_RSSI, cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_RSSI)));
+			tempHashMap.put(DatabaseHelper.COLUMN_TIME, cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TIME)));
+			
 
 			devices.add(tempHashMap);
 			cursor.moveToNext();
@@ -184,6 +191,7 @@ public class DatabaseManager {
 		public final static String COLUMN_MAC_ADDRESS = "macAddress";
 		public final static String COLUMN_NAME = "name";
 		public final static String COLUMN_RSSI = "RSSI";
+		public final static String COLUMN_TIME = "time";
 
 
 		private MainActivity mainActivity;
@@ -191,7 +199,7 @@ public class DatabaseManager {
 
 		// CREATE DECLARATION
 		public final static String FOUND_DEVICES_CREATE =
-				"Create Table " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null);";
+				"Create Table " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME + " Integer);";
 
 		public DatabaseHelper(MainActivity mainActivity,
 				int version) {
@@ -212,7 +220,7 @@ public class DatabaseManager {
 		public void onCreate(SQLiteDatabase db) {
 
 			db.execSQL(FOUND_DEVICES_CREATE);
-			showChangelog(10);
+			mainActivity.authentification.showChangelog(mainActivity, 10);
 
 		}
 
@@ -227,97 +235,14 @@ public class DatabaseManager {
 								int newVersion) {
 			
 			
-			showChangelog(oldVersion, newVersion, 0);
-
-		}
-
-		private void showChangelog() {
-
-			showChangelog(0);
-		}
-
-		private void showChangelog(int limit) {
-
-			showChangelog(0, 0, limit);
-		}
-
-		/**
-	 * 
-	 */
-		private void showChangelog(	int oldVersion,
-									int newVersion,
-									int limit) {
-
-			NetworkThread getChangelog = new NetworkThread(mainActivity, mainActivity.netMananger);
-
-			mainActivity.authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
-
-				@Override
-				public boolean onResult(int requestId,
-										String resultString) {
-
-					if (requestId == Authentification.NETRESULT_ID_UPDATED) {
-
-						Pattern pattern = Pattern.compile("Error=(\\d+)");
-						Matcher matcher = pattern.matcher(resultString);
-
-						if (matcher.find()) {
-							int error = Integer.parseInt(matcher.group(1));
-
-							switch (error) {
-							case 1:
-							case 4:
-							case 5:
-								Toast.makeText(mainActivity, "Error retrieving changelog for new version", Toast.LENGTH_LONG).show();
-								break;
-							case 90:
-								Toast.makeText(mainActivity, "Updated to new version. No Changelog available.", Toast.LENGTH_LONG).show();
-								break;
-							case 404:
-								Toast.makeText(mainActivity, "Updated to new version. Changelog could not be found on the server.", Toast.LENGTH_LONG).show();
-								break;
-							}
-						}
-						else {
-
-							Dialog changelogDialog = new Dialog(mainActivity);
-							ScrollView changeLogScrollView = new ScrollView(mainActivity);
-							TextView changelogTextView = new TextView(mainActivity);
-							changelogDialog.setTitle("Changelog");
-							int padding =
-									mainActivity.getResources().getDimensionPixelSize(R.dimen.padding_small);
-							changelogTextView.setPadding(padding, padding, padding, padding);
-							changelogDialog.addContentView(changeLogScrollView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-							changeLogScrollView.addView(changelogTextView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-							changelogTextView.setText(Html.fromHtml(resultString));
-							changelogDialog.show();
-
-						}
-
-						return true;
-					}
-
-					return false;
-				}
-			});
-			if (limit == 0) {
-				if (oldVersion == 0 | newVersion == 0) {
-					getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED));
-				}
-				else {
-					getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old=" + oldVersion, "new=" + newVersion);
-				}
+			if(oldVersion < 499) {
+				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_TIME + " Integer;");
 			}
-			else {
-				if (oldVersion == 0 | newVersion == 0) {
-					getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "l=" + limit);
-				}
-				else {
-					getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old=" + oldVersion, "new=" + newVersion, "l=" + limit);
-				}
-
-			}
+			
+			
+			mainActivity.authentification.showChangelog(mainActivity, oldVersion, newVersion, 0);
 
 		}
+
 	}
 }

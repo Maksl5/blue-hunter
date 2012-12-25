@@ -8,15 +8,18 @@ package com.maksl5.bl_hunt;
 
 import java.util.List;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.view.MenuItem;
 
 
 
@@ -25,6 +28,20 @@ import android.preference.PreferenceScreen;
  * 
  */
 public class PreferenceActivity extends android.preference.PreferenceActivity {
+
+	/* (non-Javadoc)
+	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		ActionBar actionBar = this.getActionBar();
+		
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
+		
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -47,6 +64,28 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 		super.onResume();
 		
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			
+			finish();
+			
+			break;
+
+		default:
+			break;
+		}
+		
+		
+		
+		return true;
 	}
 
 	/**
@@ -82,6 +121,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 		 * 
 		 */
 		private void registerListeners() {
+			
+			//New Update Available - Click
 			Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
 			if(newUpdatePref != null) {
 				newUpdatePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -97,6 +138,21 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 				});
 			}
 			
+			//Show Changelog Click
+			Preference showChangelogPref = findPreference("pref_changelog");
+			if(showChangelogPref != null){
+				showChangelogPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					
+					@Override
+					public boolean onPreferenceClick(Preference preference) {				
+						
+						MainActivity main = MainActivity.thisActivity;
+						main.authentification.showChangelog(InfoFragment.this.getActivity());
+						
+						return true;
+					}
+				});
+			}
 			
 		}
 
@@ -130,6 +186,27 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 			super.onCreate(savedInstanceState);
 			
 			addPreferencesFromResource(R.xml.behaviour_preference);
+			
+			registerListeners();
+		}
+		
+		private void registerListeners() {
+			Preference showNotificationPref = findPreference("pref_showNotification");
+			if(showNotificationPref != null) {
+				showNotificationPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+					
+					@Override
+					public boolean onPreferenceChange(	Preference preference,
+														Object newValue) {
+						
+						MainActivity.thisActivity.alterNotification(newValue.equals(true));
+						
+						return true;
+					}
+				});
+			}
+			
+			
 		}
 		
 	}

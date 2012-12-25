@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -33,8 +34,9 @@ import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
 
 
-
 public class MainActivity extends FragmentActivity {
+
+	public static MainActivity thisActivity;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the sections. We use a
@@ -67,6 +69,7 @@ public class MainActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		thisActivity = this;
 		destroyed = false;
 		setContentView(R.layout.act_main);
 		// Create the adapter that will return a fragment for each of the primary sections
@@ -197,8 +200,7 @@ public class MainActivity extends FragmentActivity {
 		actionBarHandler.initialize();
 
 		// Setting up Views
-		if (disStateTextView == null)
-			disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
+		if (disStateTextView == null) disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
 		// Setting up DiscoveryManager
 
 		if (!disMan.startDiscoveryManager()) {
@@ -247,6 +249,8 @@ public class MainActivity extends FragmentActivity {
 		case R.id.menu_settings:
 			Intent intent = new Intent(this, PreferenceActivity.class);
 			startActivity(intent);
+			break;
+		case R.id.menu_info:
 
 			break;
 		default:
@@ -366,20 +370,63 @@ public class MainActivity extends FragmentActivity {
 
 	public void updateNotification() {
 
-		int exp = LevelSystem.getUserExp(this);
-		int level = LevelSystem.getLevel(exp);
+		if (PreferenceManager.getPref(this, "pref_showNotification", true)) {
 
-		if (VERSION.SDK_INT >= 14)
-			stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
+			int exp = LevelSystem.getUserExp(this);
+			int level = LevelSystem.getLevel(exp);
 
-		stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
+			if (VERSION.SDK_INT >= 14)
+				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
 
-		if (VERSION.SDK_INT >= 16) {
-			notificationManager.notify(1, stateNotificationBuilder.build());
+			stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
+
+			if (VERSION.SDK_INT >= 16) {
+				notificationManager.notify(1, stateNotificationBuilder.build());
+			}
+			else {
+				notificationManager.notify(1, stateNotificationBuilder.getNotification());
+			}
+		}
+	}
+
+	public void alterNotification(boolean show) {
+
+		if (show) {
+
+			int exp = LevelSystem.getUserExp(this);
+			int level = LevelSystem.getLevel(exp);
+
+			if (VERSION.SDK_INT >= 14)
+				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
+
+			stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
+
+			if (VERSION.SDK_INT >= 16) {
+				notificationManager.notify(1, stateNotificationBuilder.build());
+			}
+			else {
+				notificationManager.notify(1, stateNotificationBuilder.getNotification());
+			}
+
 		}
 		else {
-			notificationManager.notify(1, stateNotificationBuilder.getNotification());
+			notificationManager.cancelAll();
 		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.support.v4.app.FragmentActivity#onConfigurationChanged(android.content.res.Configuration)
+	 */
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+
+		FragmentLayoutManager.refreshFoundDevicesList(this);
 
 	}
 

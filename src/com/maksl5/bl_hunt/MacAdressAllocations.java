@@ -9,6 +9,8 @@ package com.maksl5.bl_hunt;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import android.R.integer;
+
 
 
 /**
@@ -19,9 +21,18 @@ import java.util.HashMap;
  * 
  */
 public class MacAdressAllocations {
+	
+	private static HashMap<String, String[]> manufacturerMacs = null;
+	private static HashMap<String, Integer> manufacturerExps = null;
 
 	public static HashMap<String, String[]> getHashMap() {
 
+		if(manufacturerMacs != null) {
+			if(!manufacturerMacs.isEmpty()) {
+				return manufacturerMacs;
+			}
+		}
+		
 		HashMap<String, String[]> hsHashMap = new HashMap<String, String[]>();
 
 		Field[] fields = MacAdressAllocations.class.getDeclaredFields();
@@ -44,12 +55,21 @@ public class MacAdressAllocations {
 			}
 
 		}
+		manufacturerMacs = hsHashMap;
 		return hsHashMap;
 
 	}
 
 	public static int getExp(String manufacturer) {
 
+		if(manufacturerExps != null) {
+			if(!manufacturerExps.isEmpty()) {
+				if(manufacturerExps.get(manufacturer + "_exp") != null) {
+					return manufacturerExps.get(manufacturer + "_exp");
+				}
+			}
+		}
+		
 		int exp = 0;
 
 		try {
@@ -75,6 +95,13 @@ public class MacAdressAllocations {
 
 	public static HashMap<String, Integer> getExpHashMap() {
 
+		if(manufacturerExps != null) {
+			if(!manufacturerExps.isEmpty()) {
+				return manufacturerExps;
+			}
+		}
+		
+		
 		HashMap<String, Integer> hsHashMap = new HashMap<String, Integer>();
 
 		Field[] fields = MacAdressAllocations.class.getDeclaredFields();
@@ -97,6 +124,7 @@ public class MacAdressAllocations {
 			}
 
 		}
+		manufacturerExps = hsHashMap;
 		return hsHashMap;
 	}
 

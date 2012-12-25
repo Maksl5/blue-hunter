@@ -92,6 +92,9 @@ _This information is **NOT** sent to the game server, but stored in the offline 
  - **_Remote Device Name_** - This is the name of the remote Bluetooth device. This is used to display as information to you.<br>
 _This information is **NOT** sent to the game server, but stored in the offline game database._
 
+ - **_Local Time_** - This is the time, that is saved, when you find a new device.<br>
+_This information is **NOT** sent to the game server, but stored in the offline game database._
+
 
 All information gathered from the game and send to the game server into the database is completely nonpublic. The database is completely locked. The only person, who has access to this database is me ! No companies and no other persons have access and are allowed to gather information from this database in any way. Your stored information will not be used for any other purposes, that don't have to do with the game functionality and with statistic purposes !
 

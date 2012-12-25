@@ -5,6 +5,7 @@ package com.maksl5.bl_hunt;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R.integer;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
@@ -25,6 +27,8 @@ import android.view.animation.Transformation;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -37,27 +41,28 @@ import android.widget.TextView;
  * {@link Menu} or the supplied {@link Menu} is null, all methods in this class will throw a NullMenuException.
  */
 
-public class ActionBarHandler implements OnNavigationListener {
+public class ActionBarHandler implements OnNavigationListener, OnQueryTextListener, OnActionExpandListener {
 
-	private Activity parentActivity;
+	private MainActivity mainActivity;
 	public ActionBar actBar;
 	private MenuInflater menuInflater;
 	private Menu menu;
 
 	private CompoundButton disSwitch;
 	private ProgressBar progressBar;
+	private int currentPage;
 
 	@TargetApi(11)
-	public ActionBarHandler(Activity activity) {
+	public ActionBarHandler(MainActivity activity) {
 
-		parentActivity = activity;
-		actBar = parentActivity.getActionBar();
+		mainActivity = activity;
+		actBar = mainActivity.getActionBar();
 		actBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actBar.setDisplayShowTitleEnabled(false);
 
 		List<String> spinnerItems = new ArrayList<String>();
 		spinnerItems.add((String) activity.getTitle());
-		spinnerItems.add(parentActivity.getString(R.string.str_actBar_userInfo));
+		spinnerItems.add(mainActivity.getString(R.string.str_actBar_userInfo));
 
 		if (VERSION.SDK_INT >= 14) {
 			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(actBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, spinnerItems), this);
@@ -66,7 +71,7 @@ public class ActionBarHandler implements OnNavigationListener {
 			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_dropdown_item, spinnerItems), this);
 		}
 
-		menuInflater = parentActivity.getMenuInflater();
+		menuInflater = mainActivity.getMenuInflater();
 
 	}
 
@@ -75,13 +80,20 @@ public class ActionBarHandler implements OnNavigationListener {
 	 */
 	public void initialize() {
 
-		disSwitch = (CompoundButton) menu.findItem(R.id.menu_switch).getActionView();
+		checkMenuNull();
+
+		disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
 		disSwitch.setPadding(5, 0, 5, 0);
 
-		progressBar = new ProgressBar(parentActivity, null, android.R.attr.progressBarStyleSmall);
-		menu.findItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
+		progressBar = new ProgressBar(mainActivity, null, android.R.attr.progressBarStyleSmall);
+		getMenuItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
 
 		progressBar.setPadding(5, 0, 5, 0);
+
+		SearchView srchView = (SearchView) getActionView(R.id.menu_search);
+		srchView.setOnQueryTextListener(this);
+
+		getMenuItem(R.id.menu_search).setOnActionExpandListener(this);
 
 		changePage(1);
 
@@ -91,18 +103,26 @@ public class ActionBarHandler implements OnNavigationListener {
 
 		checkMenuNull();
 
+		currentPage = newPage;
+
 		switch (newPage) {
 		case 1:
 			menu.findItem(R.id.menu_search).setVisible(false);
+			menu.findItem(R.id.menu_info).setVisible(false);
 			break;
 		case 2:
 			menu.findItem(R.id.menu_search).setVisible(true);
+			menu.findItem(R.id.menu_info).setVisible(false);
+			Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
 			break;
 		case 3:
 			menu.findItem(R.id.menu_search).setVisible(true);
+			menu.findItem(R.id.menu_info).setVisible(true);
+			Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
 			break;
 		case 4:
 			menu.findItem(R.id.menu_search).setVisible(false);
+			menu.findItem(R.id.menu_info).setVisible(false);
 			break;
 		}
 
@@ -147,9 +167,9 @@ public class ActionBarHandler implements OnNavigationListener {
 	public boolean onNavigationItemSelected(int itemPosition,
 											long itemId) {
 
-		final ViewPager parentView = (ViewPager) parentActivity.findViewById(R.id.pager);
-		final TableRow userInfoRow = (TableRow) parentActivity.findViewById(R.id.userInfoTableRow);
-		TextView userInfoTextView = (TextView) parentActivity.findViewById(R.id.userInfoTxtView);
+		final ViewPager parentView = (ViewPager) mainActivity.findViewById(R.id.pager);
+		final TableRow userInfoRow = (TableRow) mainActivity.findViewById(R.id.userInfoTableRow);
+		TextView userInfoTextView = (TextView) mainActivity.findViewById(R.id.userInfoTxtView);
 
 		final long id = itemId;
 
@@ -158,9 +178,9 @@ public class ActionBarHandler implements OnNavigationListener {
 		switch (itemPosition) {
 		case 0:
 
-			//parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-			//userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
-			
+			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+
 			animation = new SizeAnimation(parentView, userInfoRow, 0);
 			animation.setDuration(1000);
 			animation.setFillAfter(true);
@@ -189,8 +209,9 @@ public class ActionBarHandler implements OnNavigationListener {
 
 					userInfoRow.setVisibility(TableRow.INVISIBLE);
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-					//parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-					//userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
+					parentView.requestLayout();
+					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
 					// TODO Auto-generated method stub
 
 				}
@@ -199,10 +220,10 @@ public class ActionBarHandler implements OnNavigationListener {
 			parentView.startAnimation(animation);
 			break;
 		case 1:
-			
-			//parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-			//userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
-			
+
+			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+
 			animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
 			animation.setDuration(1000);
 			animation.setFillAfter(true);
@@ -230,8 +251,9 @@ public class ActionBarHandler implements OnNavigationListener {
 				public void onAnimationEnd(Animation animation) {
 
 					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
-					//parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-					//userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
+					parentView.requestLayout();
+					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
 					// TODO Auto-generated method stub
 
 				}
@@ -242,6 +264,35 @@ public class ActionBarHandler implements OnNavigationListener {
 			break;
 		}
 
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.widget.SearchView.OnQueryTextListener#onQueryTextChange(java.lang.String)
+	 */
+	@Override
+	public boolean onQueryTextChange(String newText) {
+
+		if (currentPage == 3) {
+
+			FragmentLayoutManager.filterFoundDevices(newText, mainActivity);
+
+		}
+
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.widget.SearchView.OnQueryTextListener#onQueryTextSubmit(java.lang.String)
+	 */
+	@Override
+	public boolean onQueryTextSubmit(String query) {
+
+		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -271,7 +322,9 @@ public class ActionBarHandler implements OnNavigationListener {
 		int initialBot;
 		int initialTop;
 
-		public SizeAnimation(ViewPager view, TableRow userRow,
+
+		public SizeAnimation(ViewPager view,
+				TableRow userRow,
 				int targetTop) {
 
 			this.view = view;
@@ -279,6 +332,9 @@ public class ActionBarHandler implements OnNavigationListener {
 			this.targetTop = targetTop;
 			this.initialBot = view.getBottom();
 			this.initialTop = view.getTop();
+
+			Log.d("hardware_accelerated?", String.valueOf(view.isHardwareAccelerated()));
+
 		}
 
 		/*
@@ -294,33 +350,27 @@ public class ActionBarHandler implements OnNavigationListener {
 				return;
 			}
 			else if (targetTop > initialTop) {
-				
+
 				int top = (int) ((targetTop - initialTop) * interpolatedTime + initialTop);
 
 				view.setTop(top);
 				userRow.setBottom(top);
-				view.getLayoutParams().height =
-						view.getBottom() - top;
+				view.getLayoutParams().height = view.getBottom() - top;
+				
 
-				view.invalidate();
-				view.requestLayout();
 
 			}
 			else if (targetTop < initialTop) {
 
 				int top = (int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop);
-				
+
 				view.setTop(top);
 				userRow.setBottom(top);
-				// view.setBottom(initialBot);
-				view.getLayoutParams().height =
-						view.getBottom() - top;
-
-				view.invalidate();
-				view.requestLayout();
-				view.forceLayout();
+				view.getLayoutParams().height = view.getBottom() - top;
+				
 
 			}
+
 		}
 
 		/*
@@ -350,6 +400,30 @@ public class ActionBarHandler implements OnNavigationListener {
 			return true;
 		}
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.view.MenuItem.OnActionExpandListener#onMenuItemActionCollapse(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onMenuItemActionCollapse(MenuItem item) {
+
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.view.MenuItem.OnActionExpandListener#onMenuItemActionExpand(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onMenuItemActionExpand(MenuItem item) {
+
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 }

@@ -14,4 +14,5 @@
     <dimen name="foundDevices_secondary_text">12sp</dimen>
     <dimen name="foundDevices_name_text">14sp</dimen>
     <dimen name="foundDevices_manufacturer_text">12sp</dimen>
+    <dimen name="foundDevices_time_text">11sp</dimen>
 </resources>

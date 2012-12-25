@@ -11,9 +11,14 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 
@@ -148,6 +153,96 @@ public class Authentification {
 		}
 
 	}
+	
+	public void showChangelog(final Activity activity) {
+
+		showChangelog(activity, 0);
+	}
+
+	public void showChangelog(final Activity activity, int limit) {
+
+		showChangelog(activity, 0, 0, limit);
+	}
+
+	/**
+ * 
+ */
+	public void showChangelog(final Activity activity,	int oldVersion,
+								int newVersion,
+								int limit) {
+
+		NetworkThread getChangelog = new NetworkThread(mainActivity, mainActivity.netMananger);
+
+		mainActivity.authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
+
+			@Override
+			public boolean onResult(int requestId,
+									String resultString) {
+
+				if (requestId == Authentification.NETRESULT_ID_UPDATED) {
+
+					Pattern pattern = Pattern.compile("Error=(\\d+)");
+					Matcher matcher = pattern.matcher(resultString);
+
+					if (matcher.find()) {
+						int error = Integer.parseInt(matcher.group(1));
+
+						switch (error) {
+						case 1:
+						case 4:
+						case 5:
+							Toast.makeText(mainActivity, "Error retrieving changelog for new version", Toast.LENGTH_LONG).show();
+							break;
+						case 90:
+							Toast.makeText(mainActivity, "Updated to new version. No Changelog available.", Toast.LENGTH_LONG).show();
+							break;
+						case 404:
+							Toast.makeText(mainActivity, "Updated to new version. Changelog could not be found on the server.", Toast.LENGTH_LONG).show();
+							break;
+						}
+					}
+					else {
+
+						Dialog changelogDialog = new Dialog(activity);
+						ScrollView changeLogScrollView = new ScrollView(activity);
+						WebView changelogWebView = new WebView(activity);
+						changelogDialog.setTitle("Changelog");
+						int padding =
+								mainActivity.getResources().getDimensionPixelSize(R.dimen.padding_small);
+						changelogWebView.setPadding(padding, padding, padding, padding);
+						changelogDialog.addContentView(changeLogScrollView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+						changeLogScrollView.addView(changelogWebView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+						changelogWebView.loadDataWithBaseURL(null, resultString, "text/html", "UTF-8", null);
+						changelogDialog.show();
+
+					}
+
+					return true;
+				}
+
+				return false;
+			}
+		});
+		if (limit == 0) {
+			if (oldVersion == 0 | newVersion == 0) {
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED));
+			}
+			else {
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old=" + oldVersion, "new=" + newVersion);
+			}
+		}
+		else {
+			if (oldVersion == 0 | newVersion == 0) {
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "l=" + limit);
+			}
+			else {
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old=" + oldVersion, "new=" + newVersion, "l=" + limit);
+			}
+
+		}
+
+	}
+	
 
 	public interface OnNetworkResultAvailableListener {
 

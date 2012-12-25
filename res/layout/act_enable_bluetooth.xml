@@ -11,7 +11,7 @@
         android:id="@+id/tableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
+
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
@@ -20,9 +20,8 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/text_holo_light_blue"
             android:textSize="@dimen/enable_bt_font_title" />
-
     </TableRow>
-
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -70,30 +69,24 @@
                     android:textSize="@dimen/enable_bt_button_text" />
             </TableRow>
         </TableRow>
-
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/tableRow3"
             android:layout_alignParentTop="true" >
-
-            <TableRow
-                android:id="@+id/tableRow2"
-                android:layout_width="match_parent"
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:gravity="center_vertical" >
+                android:text="@string/str_enableBT_text"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="@dimen/enable_bt_font_text" />
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/str_enableBT_text"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textSize="@dimen/enable_bt_font_text" />
-            </TableRow>
         </RelativeLayout>
-
     </RelativeLayout>
 
 </LinearLayout>
