@@ -2,13 +2,18 @@
  *  DatabaseHelper.java in com.maksl5.bl_hunt
  *  © Maksl5[Markus Bensing] 2012
  */
-package com.maksl5.bl_hunt;
+package com.maksl5.bl_hunt.storage;
 
 
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import com.maksl5.bl_hunt.FragmentLayoutManager;
+import com.maksl5.bl_hunt.FragmentLayoutManager.FoundDevicesLayout;
+import com.maksl5.bl_hunt.activity.MainActivity;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

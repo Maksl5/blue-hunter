@@ -2,7 +2,7 @@
  *  NetworkThread.java in com.maksl5.bl_hunt
  *  © Maksl5[Markus Bensing] 2012
  */
-package com.maksl5.bl_hunt;
+package com.maksl5.bl_hunt.net;
 
 
 
@@ -36,15 +36,24 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.R.id;
+import com.maksl5.bl_hunt.activity.MainActivity;
+
 import android.os.AsyncTask;
 import android.view.MenuItem;
 
 
 
 /**
+ * 
+ * 
+ * Call execute(String remoteFile, String requestID, String params...);
+ * 
  * @author Maksl5[Markus Bensing]
  * 
  */
+
 public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 	private MainActivity mainActivity;
@@ -120,37 +129,26 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 			String result = EntityUtils.toString(httpResponse.getEntity());
 
-			return "<requestID='"
-					+ requestId
-					+ "' />"
-					+ result;
+			if (!String.valueOf(httpResponse.getStatusLine().getStatusCode()).startsWith("2")) {
+				return "<requestID='" + requestId + "' />" + "Error=" + httpResponse.getStatusLine().getStatusCode();
+			}
+
+			return "<requestID='" + requestId + "' />" + result;
 		}
 		catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='"
-					+ requestId
-					+ "' />"
-					+ "Error=5\n"
-					+ e.getMessage();
+			return "<requestID='" + requestId + "' />" + "Error=5\n" + e.getMessage();
 		}
 		catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='"
-					+ requestId
-					+ "' />"
-					+ "Error=4\n"
-					+ e.getMessage();
+			return "<requestID='" + requestId + "' />" + "Error=4\n" + e.getMessage();
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "<requestID='"
-					+ requestId
-					+ "' />"
-					+ "Error=1\n"
-					+ e.getMessage();
+			return "<requestID='" + requestId + "' />" + "Error=1\n" + e.getMessage();
 		}
 
 		// TODO Auto-generated method stub

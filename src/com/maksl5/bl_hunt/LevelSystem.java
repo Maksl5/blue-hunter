@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import com.maksl5.bl_hunt.DatabaseManager.DatabaseHelper;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.MacAdressAllocations;
+import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 
 
 

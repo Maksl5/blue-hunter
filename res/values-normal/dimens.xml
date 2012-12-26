@@ -6,4 +6,6 @@
     <dimen name="foundDevices_name_text">16sp</dimen>
     <dimen name="foundDevices_manufacturer_text">11sp</dimen>
     <dimen name="foundDevices_time_text">11sp</dimen>
+    
+        <dimen name="statistics_contactBadge_size">70sp</dimen>
 </resources>

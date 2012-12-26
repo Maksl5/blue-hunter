@@ -1,9 +1,13 @@
 /**
  * 
  */
-package com.maksl5.bl_hunt;
+package com.maksl5.bl_hunt.activity;
 
 
+
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.R.id;
+import com.maksl5.bl_hunt.R.layout;
 
 import android.app.Activity;
 import android.os.Bundle;

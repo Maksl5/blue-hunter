@@ -14,18 +14,29 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
-import com.maksl5.bl_hunt.DatabaseManager.DatabaseHelper;
-import com.maksl5.bl_hunt.MainActivity.CustomSectionFragment;
-import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
+import com.maksl5.bl_hunt.custom_ui.AdjustedEditText;
+import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
+import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.MacAdressAllocations;
+import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 
 
 
@@ -42,7 +53,7 @@ public class FragmentLayoutManager {
 	public static final int PAGE_FOUND_DEVICES = 2;
 	public static final int PAGE_ACHIEVEMENTS = 3;
 	public static final int PAGE_STATISTICS = 4;
-	
+
 	public static View getSpecificView(
 										Bundle params, LayoutInflater parentInflater, ViewGroup rootContainer,
 										Context context) {
@@ -59,7 +70,7 @@ public class FragmentLayoutManager {
 			case PAGE_ACHIEVEMENTS:
 				break;
 			case PAGE_STATISTICS:
-				break;
+				return parentInflater.inflate(R.layout.act_page_statistics, rootContainer, false);
 
 		}
 
@@ -82,7 +93,8 @@ public class FragmentLayoutManager {
 
 		public static void refreshFoundDevicesList(final MainActivity mainActivity) {
 
-			ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+			ListView lv =
+					(ListView) mainActivity.mViewPager.getChildAt(PAGE_FOUND_DEVICES + 1).findViewById(R.id.listView2);
 
 			List<HashMap<String, String>> devices =
 					new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
@@ -209,6 +221,98 @@ public class FragmentLayoutManager {
 								- LevelSystem.getLevelStartExp(level));
 			progressBar.setProgress(exp
 									- LevelSystem.getLevelStartExp(level));
+		}
+
+	}
+
+	/**
+	 * @author Maksl5
+	 * 
+	 */
+	public static class StatisticLayout {
+
+		public static void initializeView(final MainActivity mainActivity) {
+
+			View parentContainer = mainActivity.mViewPager.getChildAt(PAGE_STATISTICS + 1);
+
+			final TextView nameTextView = (TextView) parentContainer.findViewById(R.id.nameTextView);
+			final AdjustedEditText nameEditText = (AdjustedEditText) parentContainer.findViewById(R.id.nameEditText);
+
+			// Listener
+			nameTextView.setOnLongClickListener(new OnLongClickListener() {
+
+				@Override
+				public boolean onLongClick(View v) {
+
+					nameEditText.setText(nameTextView.getText());
+
+					nameTextView.animate().setDuration(500).alpha(0f);
+					nameTextView.setVisibility(TextView.GONE);
+
+					nameEditText.setAlpha(0f);
+					nameEditText.setVisibility(EditText.VISIBLE);
+					nameEditText.animate().setDuration(500).alpha(1f);
+
+					InputMethodManager imm =
+							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+					
+					return true;
+				}
+			});
+
+			nameEditText.setOnEditorActionListener(new OnEditorActionListener() {
+
+				@Override
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+					InputMethodManager imm =
+							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+					if (actionId == EditorInfo.IME_ACTION_DONE
+						&& nameEditText.isShown()) {
+
+						imm.hideSoftInputFromWindow(nameEditText.getWindowToken(), 0);
+
+						// submit();
+						nameTextView.setText(nameEditText.getText());
+
+						nameEditText.animate().setDuration(500).alpha(1f);
+						nameEditText.setVisibility(EditText.GONE);
+
+						nameTextView.setAlpha(0f);
+						nameTextView.setVisibility(TextView.VISIBLE);
+						nameTextView.animate().setDuration(500).alpha(1f);
+
+						return true;
+					}
+					return false;
+				}
+			});
+
+			nameEditText.setOnBackKeyClickListener(new OnBackKeyClickedListener() {
+
+				@Override
+				public void onBackKeyClicked() {
+
+					InputMethodManager imm =
+							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+					if (nameEditText.isShown()
+						&& imm.isActive(nameEditText)) {
+
+						imm.hideSoftInputFromWindow(nameEditText.getWindowToken(), 0);
+
+						nameEditText.animate().setDuration(500).alpha(0f);
+						nameEditText.setVisibility(EditText.GONE);
+
+						nameTextView.setAlpha(0f);
+						nameTextView.setVisibility(TextView.VISIBLE);
+						nameTextView.animate().setDuration(500).alpha(1f);
+					}
+				}
+			});
+
 		}
 
 	}

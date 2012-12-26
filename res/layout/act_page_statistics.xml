@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_large" >
+
+    <QuickContactBadge
+        android:id="@+id/contactBadge"
+        android:layout_width="@dimen/statistics_contactBadge_size"
+        android:layout_height="@dimen/statistics_contactBadge_size"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:adjustViewBounds="false"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_launcher" />
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/contactBadge"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/contactBadge"
+        android:layout_toRightOf="@+id/contactBadge"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:gravity="center"
+            android:longClickable="true"
+            android:text="Large Text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/text_holo_light_blue"
+            android:textStyle="bold|italic"
+            android:visibility="visible" />
+
+        <com.maksl5.bl_hunt.CustomUI.AdjustedEditText
+            android:id="@+id/nameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Enter your name..."
+            android:imeActionLabel="@string/str_statistics_editName_apply"
+            android:imeOptions="actionDone"
+            android:inputType="textPersonName"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/text_holo_light_blue"
+            android:textStyle="bold|italic"
+            android:visibility="gone" >
+
+            <requestFocus />
+        </com.maksl5.bl_hunt.CustomUI.AdjustedEditText>
+    </TableRow>
+
+</RelativeLayout>

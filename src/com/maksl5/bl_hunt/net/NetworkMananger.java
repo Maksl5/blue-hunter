@@ -2,12 +2,16 @@
  *  NetworkMananger.java in com.maksl5.bl_hunt
  *  © Maksl5[Markus Bensing] 2012
  */
-package com.maksl5.bl_hunt;
+package com.maksl5.bl_hunt.net;
 
 
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.R.id;
+import com.maksl5.bl_hunt.activity.MainActivity;
 
 import android.view.MenuItem;
 

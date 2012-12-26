@@ -1,9 +1,15 @@
-package com.maksl5.bl_hunt;
+package com.maksl5.bl_hunt.activity;
 
 
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.maksl5.bl_hunt.FragmentLayoutManager;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.FragmentLayoutManager.FoundDevicesLayout;
+import com.maksl5.bl_hunt.R.id;
+import com.maksl5.bl_hunt.R.string;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;

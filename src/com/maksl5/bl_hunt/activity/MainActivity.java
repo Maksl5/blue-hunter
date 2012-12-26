@@ -1,6 +1,9 @@
-package com.maksl5.bl_hunt;
+package com.maksl5.bl_hunt.activity;
 
 
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -29,9 +32,28 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.DiscoveryManager;
+import com.maksl5.bl_hunt.FragmentLayoutManager;
+import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
-import com.maksl5.bl_hunt.CustomUI.PatternProgressBar;
+import com.maksl5.bl_hunt.FragmentLayoutManager.DeviceDiscoveryLayout;
+import com.maksl5.bl_hunt.FragmentLayoutManager.FoundDevicesLayout;
+import com.maksl5.bl_hunt.FragmentLayoutManager.StatisticLayout;
+import com.maksl5.bl_hunt.R.drawable;
+import com.maksl5.bl_hunt.R.id;
+import com.maksl5.bl_hunt.R.layout;
+import com.maksl5.bl_hunt.R.menu;
+import com.maksl5.bl_hunt.R.string;
+import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
+import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.NetworkMananger;
+import com.maksl5.bl_hunt.net.NetworkThread;
+import com.maksl5.bl_hunt.net.Authentification.LoginManager;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 
@@ -58,6 +80,7 @@ public class MainActivity extends FragmentActivity {
 	public NetworkMananger netMananger;
 	public NotificationManager notificationManager;
 	public Notification.Builder stateNotificationBuilder;
+	public LoginManager loginManager;
 
 	public TextView disStateTextView;
 	public TextView userInfoTextView;
@@ -83,6 +106,7 @@ public class MainActivity extends FragmentActivity {
 
 		authentification = new Authentification(this, this);
 		netMananger = new NetworkMananger(this);
+		loginManager = authentification.new LoginManager(Authentification.getSerialNumber());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -107,8 +131,7 @@ public class MainActivity extends FragmentActivity {
 		stateNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
 		stateNotificationBuilder.setAutoCancel(false);
 		stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
-		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-																																	| Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
+		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
 	}
 
@@ -170,9 +193,93 @@ public class MainActivity extends FragmentActivity {
 
 				switch (requestId) {
 					case Authentification.NETRESULT_ID_SERIAL_CHECK:
-						Toast.makeText(MainActivity.this, resultString, Toast.LENGTH_LONG).show();
+
+						Pattern pattern = Pattern.compile("Error=(\\d+)");
+						Matcher matcher = pattern.matcher(resultString);
+
+						if (matcher.find()) {
+							int error = Integer.parseInt(matcher.group(1));
+
+							String errorMsg = "Error " + error + " while checking serial."; 
+							
+							switch (error) {
+								case 1:
+								case 4:
+								case 5:
+									errorMsg+= " (Could not retrieve data. Possibly no internet connection.)";
+									break;
+								case 404:
+									errorMsg += " (Could not retrieve data. Possibly server is down or script not available.)";
+									break;
+								case 500:
+									errorMsg += " (Could not retrieve data. Server error. Please contact the developer.)";
+									break;
+								case 1001:
+								case 1002:
+								case 1004:
+									errorMsg += " (Uncomplete parameters)";
+									break;
+								case 1003:
+									errorMsg += " (Hashes don't match)";
+									break;
+								case 1005:
+									errorMsg += " (Failed inserting serial into DB)";
+									break;
+								case 1006:
+									errorMsg += " (Failed updating serial in DB)";
+									break;
+								case 1007:
+									errorMsg += " (More than 1 row in DB query result)";
+									break;
+							}
+							
+							Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+							break;
+						}
+
+						loginManager.login();
 						break;
 					case Authentification.NETRESULT_ID_GET_USER_INFO:
+						
+						Pattern pattern2 = Pattern.compile("Error=(\\d+)");
+						Matcher matcher2 = pattern2.matcher(resultString);
+
+						if (matcher2.find()) {
+							int error = Integer.parseInt(matcher2.group(1));
+
+							String errorMsg = "Error " + error + " while getting User Info."; 
+							
+							switch (error) {
+								case 1:
+								case 4:
+								case 5:
+									errorMsg+= " (Could not retrieve data. Possibly no internet connection.)";
+									break;
+								case 404:
+									errorMsg += " (Could not retrieve data. Possibly server is down or script not available.)";
+									break;
+								case 500:
+									errorMsg += " (Could not retrieve data. Server error. Please contact the developer.)";
+									break;
+							}
+							
+							userInfoTextView.setText(errorMsg);
+							userInfoTextView.setVisibility(View.VISIBLE);
+							userInfoTextView.setClickable(true);
+							userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
+							userInfoTextView.setLinkTextColor(Color.DKGRAY);
+							userInfoTextView.requestLayout();
+							userInfoTextView.invalidate();
+
+							TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
+							userInfoRow.setVisibility(View.VISIBLE);
+							userInfoRow.invalidate();
+							userInfoRow.setVisibility(View.INVISIBLE);
+							break;
+						}
+
+						
+						
 						userInfoTextView.setText(Html.fromHtml(resultString));
 						userInfoTextView.setVisibility(View.VISIBLE);
 						userInfoTextView.setClickable(true);
@@ -218,10 +325,7 @@ public class MainActivity extends FragmentActivity {
 		// Network Stuff
 
 		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
-		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s="
-																																		+ Authentification.getSerialNumber(), "v="
-																																												+ versionCode, "h="
-																																																+ authentification.getSerialNumberHash());
+		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + versionCode, "h=" + authentification.getSerialNumberHash());
 
 		new DatabaseManager(this, versionCode).close();
 
@@ -234,6 +338,7 @@ public class MainActivity extends FragmentActivity {
 		userInfoRow.setVisibility(View.INVISIBLE);
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(this);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
+		FragmentLayoutManager.StatisticLayout.initializeView(this);
 
 		updateNotification();
 
@@ -342,8 +447,8 @@ public class MainActivity extends FragmentActivity {
 
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		if ((requestCode == 64 | requestCode == 128)
-			& disMan != null) disMan.passEnableBTActivityResult(resultCode, requestCode);
+		if ((requestCode == 64 | requestCode == 128) & disMan != null)
+			disMan.passEnableBTActivityResult(resultCode, requestCode);
 	}
 
 	/*
@@ -377,18 +482,9 @@ public class MainActivity extends FragmentActivity {
 			int level = LevelSystem.getLevel(exp);
 
 			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level)
-														- LevelSystem.getLevelStartExp(level), exp
-																								- LevelSystem.getLevelStartExp(level), false);
+				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
 
-			stateNotificationBuilder.setContentText("Level "
-													+ level
-													+ "\t"
-													+ exp
-													+ " / "
-													+ LevelSystem.getLevelEndExp(level)
-													+ " "
-													+ getString(R.string.str_foundDevices_exp_abbreviation));
+			stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
@@ -408,18 +504,9 @@ public class MainActivity extends FragmentActivity {
 			int level = LevelSystem.getLevel(exp);
 
 			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level)
-														- LevelSystem.getLevelStartExp(level), exp
-																								- LevelSystem.getLevelStartExp(level), false);
+				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
 
-			stateNotificationBuilder.setContentText("Level "
-													+ level
-													+ "\t"
-													+ exp
-													+ " / "
-													+ LevelSystem.getLevelEndExp(level)
-													+ " "
-													+ getString(R.string.str_foundDevices_exp_abbreviation));
+			stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());

@@ -2,11 +2,15 @@
  *  PreferenceActivity.java in com.maksl5.bl_hunt
  *  © Maksl5[Markus Bensing] 2012
  */
-package com.maksl5.bl_hunt;
+package com.maksl5.bl_hunt.activity;
 
 
 
 import java.util.List;
+
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.R.xml;
+import com.maksl5.bl_hunt.net.Authentification;
 
 import android.app.ActionBar;
 import android.content.Intent;

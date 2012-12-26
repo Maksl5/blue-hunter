@@ -51,4 +51,6 @@
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>
+    
+    <string name="str_statistics_editName_apply">Apply</string>
 </resources>
