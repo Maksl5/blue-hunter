@@ -38,6 +38,12 @@
     <string name="str_Preference_Header_info_sum">Shows some information about the game.</string>
     <string name="str_Preference_Header_behaviour">Behaviour</string>
     <string name="str_Preference_Header_behaviour_sum">Manage the device specific behaviour of the game.</string>
+    <string name="str_Preference_Header_profile">Profile</string>
+    <string name="str_Preference_Header_profile_sum">Adjust your profile settings (Online)</string>
+    <string name="str_Preferences_changePass_title">Change Password</string>
+    <string name="str_Preferences_changePass_sum">Change your profile password. (Online)</string>
+    <string name="str_Preferences_localPass_title">Login Password</string>
+    <string name="str_Preferences_localPass_sum">Set the password used by the game to log in to your profile.</string>
     <string name="str_Preferences_version_title">Version</string>
     <string name="str_Preferences_showChangelog_title">Show Changelog</string>
     <string name="str_Preferences_checkUpdate_title">Automatically check updates</string>
@@ -53,4 +59,13 @@
     <string name="str_foundDevices_exp_abbreviation">Exp</string>
     
     <string name="str_statistics_editName_apply">Apply</string>
+    
+    <string name="str_changePass_online_title">Change profile password</string>
+    <string name="str_changePass_cancelButton">Cancel</string>
+    <string name="str_changePass_applyButton">Apply</string>
+    <string name="str_changePass_sureButton">Are you sure?</string>
+    <string name="str_changePass_oldPass">Enter old password...</string>
+    <string name="str_changePass_newPass">Enter new password...</string>
+    <string name="str_changePass_confirmNewPass">Confirm new password...</string>
+    
 </resources>

@@ -38,6 +38,8 @@ This game uses some Android Permissions. Here I want to explain, for what these 
  - **_android.permission.BLUETOOTH_** - Is used to receive the state of Bluetooth and to start the discovery of Bluetooth devices.
  - **_android.permission.BLUETOOTH\_ADMIN_** - Is used to turn Bluetooth on, when necessary.
  - **_android.permission.INTERNET_** - Is used to connect to the internet, to get the game synchronized with the game servers.
+ - **_android.permission.ACCESS_NETWORK_STATE_** - Is used to determinate internet connectivity change.
+ - **_android.permission.VIBRATE_** - Is used to notify the user about a new found device by vibration.
 
 
 ----------

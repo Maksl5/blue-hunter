@@ -21,12 +21,12 @@ import android.view.MenuItem;
  * @author Maksl5[Markus Bensing]
  * 
  */
-public class NetworkMananger {
+public class NetworkManager {
 
 	private MainActivity mainActivity;
 	private List<NetworkThread> curRunningThreads;
 
-	public NetworkMananger(MainActivity mActivity) {
+	public NetworkManager(MainActivity mActivity) {
 
 		mainActivity = mActivity;
 		curRunningThreads = new ArrayList<NetworkThread>();

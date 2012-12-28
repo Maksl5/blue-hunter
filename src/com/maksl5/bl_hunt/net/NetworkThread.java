@@ -57,9 +57,9 @@ import android.view.MenuItem;
 public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 	private MainActivity mainActivity;
-	private NetworkMananger networkMananger;
+	private NetworkManager networkMananger;
 
-	public NetworkThread(MainActivity mainActivity, NetworkMananger networkMananger) {
+	public NetworkThread(MainActivity mainActivity, NetworkManager networkMananger) {
 
 		super();
 		this.mainActivity = mainActivity;

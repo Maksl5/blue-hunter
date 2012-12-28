@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="504"
-    android:versionName="pre_alpha_0.1.0.504_121225-2200" >
+    android:versionCode="536"
+    android:versionName="pre_alpha_0.1.0.536_121228-0235" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth"
@@ -24,7 +25,7 @@
         android:theme="@style/AppTheme"
         android:uiOptions="splitActionBarWhenNarrow" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenLayout|screenSize"
             android:label="@string/str_mainActTitle"
@@ -36,14 +37,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="EnableBluetoothActivity"
+            android:name=".activity.EnableBluetoothActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="user"
             android:theme="@style/EnableBluetoothTheme" >
         </activity>
         <activity
-            android:name="PreferenceActivity"
+            android:name=".activity.PreferenceActivity"
             android:label="@string/str_menu_settings" >
+        </activity>
+                <activity
+            android:name=".activity.ChangePasswordActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="user"
+            android:theme="@style/EnableBluetoothTheme" >
         </activity>
     </application>
 

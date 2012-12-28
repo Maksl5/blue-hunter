@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:gravity="center" >
 
-            <com.maksl5.bl_hunt.CustomUI.PatternProgressBar
+            <com.maksl5.bl_hunt.custom_ui.PatternProgressBar
                 android:id="@+id/progressBar1"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="wrap_content"

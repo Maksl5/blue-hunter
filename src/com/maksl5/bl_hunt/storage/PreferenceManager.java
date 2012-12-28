@@ -37,4 +37,26 @@ public class PreferenceManager {
 		return shPreferences.getString(key, defValue);
 
 	}
+	
+	public static void setPref(Context con, String key, String value) {
+		
+		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+		shPreferences.edit().putString(key, value).apply();
+		
+	}
+	
+	public static void setPref(Context con, String key, Boolean value) {
+		
+		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+		shPreferences.edit().putBoolean(key, value).apply();
+		
+	}
+	
+	public static void setPref(Context con, String key, int value) {
+		
+		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+		shPreferences.edit().putInt(key, value).apply();
+		
+	}
+	
 }

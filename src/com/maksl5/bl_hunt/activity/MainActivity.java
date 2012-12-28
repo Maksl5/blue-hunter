@@ -48,7 +48,7 @@ import com.maksl5.bl_hunt.R.string;
 import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.net.NetworkMananger;
+import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.net.Authentification.LoginManager;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
@@ -77,7 +77,7 @@ public class MainActivity extends FragmentActivity {
 	public ActionBarHandler actionBarHandler;
 	public DiscoveryManager disMan;
 	public Authentification authentification;
-	public NetworkMananger netMananger;
+	public NetworkManager netMananger;
 	public NotificationManager notificationManager;
 	public Notification.Builder stateNotificationBuilder;
 	public LoginManager loginManager;
@@ -86,6 +86,7 @@ public class MainActivity extends FragmentActivity {
 	public TextView userInfoTextView;
 
 	public int versionCode = 0;
+	public boolean passSet = false;
 
 	private boolean destroyed;
 
@@ -105,8 +106,9 @@ public class MainActivity extends FragmentActivity {
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		authentification = new Authentification(this, this);
-		netMananger = new NetworkMananger(this);
-		loginManager = authentification.new LoginManager(Authentification.getSerialNumber());
+		netMananger = new NetworkManager(this);
+		
+		loginManager = authentification.new LoginManager(Authentification.getSerialNumber(), null, authentification.getStoredLoginToken());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -234,11 +236,11 @@ public class MainActivity extends FragmentActivity {
 							}
 							
 							Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
-							break;
+							return true;
 						}
 
 						loginManager.login();
-						break;
+						return true;
 					case Authentification.NETRESULT_ID_GET_USER_INFO:
 						
 						Pattern pattern2 = Pattern.compile("Error=(\\d+)");
@@ -275,7 +277,7 @@ public class MainActivity extends FragmentActivity {
 							userInfoRow.setVisibility(View.VISIBLE);
 							userInfoRow.invalidate();
 							userInfoRow.setVisibility(View.INVISIBLE);
-							break;
+							return true;
 						}
 
 						
@@ -292,7 +294,7 @@ public class MainActivity extends FragmentActivity {
 						userInfoRow.setVisibility(View.VISIBLE);
 						userInfoRow.invalidate();
 						userInfoRow.setVisibility(View.INVISIBLE);
-						break;
+						return true;
 				}
 
 				return false;
@@ -460,7 +462,8 @@ public class MainActivity extends FragmentActivity {
 	protected void onDestroy() {
 
 		notificationManager.cancelAll();
-
+		loginManager.unregisterInternetReceiver();
+		
 		disMan.unregisterReceiver();
 		disMan.stopDiscoveryManager();
 		destroyed = true;

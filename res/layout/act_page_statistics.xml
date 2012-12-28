@@ -37,7 +37,7 @@
             android:textStyle="bold|italic"
             android:visibility="visible" />
 
-        <com.maksl5.bl_hunt.CustomUI.AdjustedEditText
+        <com.maksl5.bl_hunt.custom_ui.AdjustedEditText
             android:id="@+id/nameEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -55,7 +55,7 @@
             android:visibility="gone" >
 
             <requestFocus />
-        </com.maksl5.bl_hunt.CustomUI.AdjustedEditText>
+        </com.maksl5.bl_hunt.custom_ui.AdjustedEditText>
     </TableRow>
 
 </RelativeLayout>
