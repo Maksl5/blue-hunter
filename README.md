@@ -19,7 +19,7 @@ As you might know, _Blue Hunter_ will be the follow-up of the [Scan Most Bluetoo
 
 For those of you, who didn't know about _Scan Most Bluetooth Devices_, here is a short description of that, what the game should look like in the future.
 
-Blue Hunter is a level-up game, in which you have to search for Bluetooth devices in range. Each unique device, that you'll find will give you some EXP. While gaining more an more EXP, you will, of couse, get into the next level. For each level-up you will unlock specific small game features, that will make it mor comfortable to play. That's not all. You will have the chance to decide, if you also want to play against the others, who play this game. For that there will be the Leaderboard. Later you will also be able to add friends, make a player vs. player game, establish your own clan, etc. Achievements will also be integrated.
+Blue Hunter is a level-up game, in which you have to search for Bluetooth devices in range. Each unique device, that you'll find will give you some EXP. While gaining more an more EXP, you will, of couse, get into the next level. For each level-up you will unlock specific small game features, that will make it more comfortable to play. That's not all. You will have the chance to decide, if you also want to play against the others, who play this game, too. For that there will be the Leaderboard. Later you will also be able to add friends, make a player vs. player game, establish your own clan, etc. Achievements will also be integrated.
 
 
 ----------
@@ -28,6 +28,13 @@ Blue Hunter is a level-up game, in which you have to search for Bluetooth device
 ## Development
 For sure the game is currently under development. But this doesn't prevents me from opening the source here to GitHub. Keep in mind, that classes that are written for security purposes of course are not published. Security does play an important role in this society, so please excuse me, that I will not share any of my hash/security algorithms or fields, that contain secure content. The peculiarity of this project is, that you can get the newest nightly available, right from my testing purposes pushed to the [bin/](https://github.com/Maksl5/blue-hunter/tree/master/bin) folder. So you can always keep an eye on this and check out, what's new now. Updates of the .apk are very frequently. If I just worked on the project on a day, there will be the corresponding .apk available at this day.
 
+
+----------
+
+
+## Changelog
+
+Check out the [changelog](http://maks.mph-p.de/blueHunter/updated.php) for a more descriptive view of the changes made.
 
 ----------
 

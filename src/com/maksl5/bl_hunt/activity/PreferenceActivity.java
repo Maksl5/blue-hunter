@@ -76,6 +76,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	MenuItem progressBarItem;
 
 	private boolean destroyed = false;
+	private String newPass = null;
 
 	MainActivity mainActivity;
 	PrefNetManager netManager;
@@ -174,7 +175,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			if (resultCode == 1) {
 
 				String oldPass = data.getStringExtra("oldPass");
-				String newPass = data.getStringExtra("newPass");
+				newPass = data.getStringExtra("newPass");
 
 				mainActivity.authentification.setOnNetworkResultAvailableListener(this);
 
@@ -183,19 +184,26 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			}
 			else if (resultCode == 2) {
 
-				String newPass = data.getStringExtra("newPass");
+				newPass = data.getStringExtra("newPass");
 
 				mainActivity.authentification.setOnNetworkResultAvailableListener(this);
 
 				PrefNetThread changePass = new PrefNetThread(this, mainActivity, netManager);
 				changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE), "h=" + mainActivity.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(), "v=" + mainActivity.versionCode, "np=" + newPass, "lt=" + mainActivity.authentification.getStoredLoginToken());
 
-				Log.d("toke", mainActivity.authentification.getStoredLoginToken());
+				
 				
 			}
 			break;
 		case ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS:
-
+			if(resultCode == 1) {
+				
+				String newLoginPass = data.getStringExtra("newLoginPass");
+				mainActivity.authentification.storePass(newLoginPass);
+				
+				mainActivity.loginManager.login();
+				
+			}
 			break;
 		}
 
@@ -279,6 +287,15 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 			if(resultString.equals("<SUCCESS>")) {
 				Toast.makeText(mainActivity, "Successfully changed password.", Toast.LENGTH_LONG).show();
+				
+				if(ProfileFragment.changeLoginPass != null) {
+					ProfileFragment.changeLoginPass.setEnabled(true);
+				}
+				
+				if(newPass != null) {
+					mainActivity.authentification.storePass(newPass);
+				}
+				
 			}
 
 		}
@@ -431,11 +448,10 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	 */
 	public static class ProfileFragment extends PreferenceFragment {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.preference.PreferenceFragment#onCreate(android.os.Bundle)
-		 */
+
+		public static Preference changeOnlinePass;
+		public static Preference changeLoginPass;
+		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 
@@ -443,6 +459,16 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			super.onCreate(savedInstanceState);
 
 			addPreferencesFromResource(R.xml.profile_preference);
+			
+			changeOnlinePass = findPreference("pref_changePass");
+			changeOnlinePass.setEnabled(MainActivity.thisActivity.loginManager.getLoginState());
+			
+			changeLoginPass = findPreference("pref_localPass");
+			if(!MainActivity.thisActivity.passSet && MainActivity.thisActivity.loginManager.getLoginState()) {
+				changeOnlinePass.setTitle(R.string.str_Preferences_changePass_new_title);
+				changeOnlinePass.setSummary(R.string.str_Preferences_changePass_new_sum);
+				changeLoginPass.setEnabled(false);
+			}
 
 			MainActivity.thisActivity.loginManager.login();
 			registerListeners();
@@ -451,14 +477,13 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 		private void registerListeners() {
 
-			final Preference changeOnlinePass = findPreference("pref_changePass");
 			changeOnlinePass.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 
 					Intent intent =
-							new Intent(ProfileFragment.this.getActivity(), ChangePasswordActivity.class);
+							new Intent(getActivity(), ChangePasswordActivity.class);
 					Bundle parametersBundle = new Bundle();
 					parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
 					parametersBundle.putBoolean("passSet", MainActivity.thisActivity.passSet);
@@ -466,6 +491,22 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 					getActivity().startActivityForResult(intent, ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
 
+					return true;
+				}
+			});
+			
+			changeLoginPass.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+				
+					Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+					Bundle parametersBundle = new Bundle();
+					parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS);
+					intent.putExtras(parametersBundle);
+					
+					getActivity().startActivityForResult(intent, ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS);
+					
 					return true;
 				}
 			});

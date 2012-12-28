@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -108,7 +109,7 @@ public class MainActivity extends FragmentActivity {
 		authentification = new Authentification(this, this);
 		netMananger = new NetworkManager(this);
 		
-		loginManager = authentification.new LoginManager(Authentification.getSerialNumber(), null, authentification.getStoredLoginToken());
+		loginManager = authentification.new LoginManager(Authentification.getSerialNumber(), authentification.getStoredPass(), authentification.getStoredLoginToken());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -126,7 +127,7 @@ public class MainActivity extends FragmentActivity {
 
 		registerListener();
 
-		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		stateNotificationBuilder = new Notification.Builder(this);
 
 		stateNotificationBuilder.setOngoing(true);

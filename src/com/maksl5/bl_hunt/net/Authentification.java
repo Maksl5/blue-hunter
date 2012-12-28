@@ -110,9 +110,9 @@ public class Authentification {
 		return secure.getPassHash(pass);
 	}
 
-	public String getSavedPass() {
+	public String getStoredPass() {
 
-		return secure.getSavedPass();
+		return secure.getStoredPass();
 	}
 
 	public String getStoredLoginToken() {
@@ -127,6 +127,11 @@ public class Authentification {
 
 		secure.storeLoginToken(tokenString);
 
+	}
+	public void storePass(String pass) {
+		
+		secure.storePass(pass);
+		
 	}
 
 	/**
@@ -432,6 +437,8 @@ public class Authentification {
 
 		private void checkLogin() {
 
+			password = getStoredPass();
+			
 			if (loginToken != null) {
 
 				NetworkThread checkLogin =
@@ -645,6 +652,7 @@ public class Authentification {
 						break;
 					case 1004:
 						errorMsg += " (Password is wrong)";
+						mainActivity.passSet = true;
 						break;
 					case 1005:
 						errorMsg += " (Unexpected number of rows in DB query result)";
@@ -658,11 +666,14 @@ public class Authentification {
 					return true;
 				}
 
-				Pattern checkLoginPattern = Pattern.compile("<loggedIn>(\\d)</loggedIn>");
+				Pattern checkLoginPattern = Pattern.compile("<loggedIn>([0-1])</loggedIn><passExists>([0-1])</passExists>");
 				Matcher checkLoginMatcher = checkLoginPattern.matcher(resultString);
 				if (checkLoginMatcher.find()) {
 
 					setLoginState("1".equals(checkLoginMatcher.group(1)));
+					
+					boolean passExists = "1".equals(checkLoginMatcher.group(2));
+					mainActivity.passSet = passExists;
 
 					if (!loggedIn) {
 						preLogin();

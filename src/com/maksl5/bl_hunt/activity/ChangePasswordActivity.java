@@ -23,6 +23,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 
 
@@ -59,6 +60,11 @@ public class ChangePasswordActivity extends Activity {
 
 		if (mode == MODE_CHANGE_ONLINE_PASS) {
 			setContentView(R.layout.act_change_online_pass);
+			
+			TextView title = (TextView) findViewById(R.id.textView1);
+			if(!isPasswordSet) {
+				title.setText(R.string.str_changePass_new_title);
+			}
 
 			cancelButton = (Button) findViewById(R.id.cancelButton);
 			applyButton = (Button) findViewById(R.id.confirmButton);
@@ -179,6 +185,79 @@ public class ChangePasswordActivity extends Activity {
 			confirmPass.addTextChangedListener(textWatcher);
 
 		}else if (mode == MODE_CHANGE_LOGIN_PASS) {
+			setContentView(R.layout.act_change_login_pass);
+			
+			newPass = (EditText) findViewById(R.id.newPassEdit);
+			
+			cancelButton = (Button) findViewById(R.id.cancelButton);
+			applyButton = (Button) findViewById(R.id.confirmButton);
+			
+			applyButton.setEnabled(false);
+			
+			cancelButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+				
+					setResult(0);
+					finish();
+					
+				}
+			});
+			
+			applyButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+				
+					String newPassText = newPass.getText().toString();
+					
+					if(newPassText != null && !newPassText.equals("")) {
+						
+						Intent intent = new Intent();
+						intent.putExtra("newLoginPass", MainActivity.thisActivity.authentification.getPassHash(newPassText));
+						setResult(1, intent);
+						finish();
+						
+					}
+					
+				}
+			});
+			
+			newPass.addTextChangedListener( new TextWatcher() {
+				
+				@Override
+				public void onTextChanged(	CharSequence s,
+											int start,
+											int before,
+											int count) {
+				
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void beforeTextChanged(	CharSequence s,
+												int start,
+												int count,
+												int after) {
+				
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void afterTextChanged(Editable s) {
+				
+					if(s.toString() != null && !s.toString().equals("")) {
+						applyButton.setEnabled(true);
+					}else {
+						applyButton.setEnabled(false);
+					}
+					
+				}
+			});
+			
 			
 		}
 

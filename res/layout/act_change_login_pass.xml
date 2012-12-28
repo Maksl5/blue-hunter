@@ -16,7 +16,7 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/str_changePass_title"
+            android:text="@string/str_loginPass_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/text_holo_light_blue"
             android:textSize="@dimen/enable_bt_font_title" />
@@ -85,44 +85,6 @@
                 android:layout_centerVertical="true"
                 android:hint="@string/str_changePass_newPass"
                 android:imeOptions="actionNext|actionPrevious"
-                android:inputType="textPassword" />
-
-            <EditText
-                android:id="@+id/oldPassEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/newPassEdit"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="false"
-                android:hint="@string/str_changePass_oldPass"
-                android:imeOptions="actionNext"
-                android:inputType="textPassword" >
-
-                <requestFocus />
-            </EditText>
-
-            <ImageView
-                android:id="@+id/equalIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/confirmPassEdit"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/newPassEdit"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_error" />
-
-            <EditText
-                android:id="@+id/confirmPassEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="false"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="false"
-                android:layout_below="@id/newPassEdit"
-                android:layout_toLeftOf="@id/equalIndicator"
-                android:hint="@string/str_changePass_confirmNewPass"
-                android:imeOptions="actionDone|actionPrevious"
                 android:inputType="textPassword" />
 
         </RelativeLayout>
