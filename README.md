@@ -101,7 +101,7 @@ _This information is **NOT** sent to the game server, but stored in the offline 
  - **_Remote Device Name_** - This is the name of the remote Bluetooth device. This is used to display as information to you.<br>
 _This information is **NOT** sent to the game server, but stored in the offline game database._
 
- - **_Local Time_** - This is the time, that is saved, when you find a new device.<br>
+ - **_Local Time_** - This is the time, that is saved, when you find a new device. This is used to display as information to you.<br>
 _This information is **NOT** sent to the game server, but stored in the offline game database._
 
 
