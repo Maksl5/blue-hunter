@@ -236,11 +236,11 @@ public class MainActivity extends FragmentActivity {
 							}
 							
 							Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
-							return true;
+							break;
 						}
 
 						loginManager.login();
-						return true;
+						break;
 					case Authentification.NETRESULT_ID_GET_USER_INFO:
 						
 						Pattern pattern2 = Pattern.compile("Error=(\\d+)");
@@ -294,7 +294,7 @@ public class MainActivity extends FragmentActivity {
 						userInfoRow.setVisibility(View.VISIBLE);
 						userInfoRow.invalidate();
 						userInfoRow.setVisibility(View.INVISIBLE);
-						return true;
+						break;
 				}
 
 				return false;
