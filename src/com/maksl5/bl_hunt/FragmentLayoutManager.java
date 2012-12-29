@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import android.R.integer;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -108,6 +109,10 @@ public class FragmentLayoutManager {
 			HashMap<String, Integer> expHashMap = MacAddressAllocations.getExpHashMap();
 
 			Set<String> keySet = macHashMap.keySet();
+			
+			String expString = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+			DateFormat dateFormat = DateFormat.getDateTimeInstance();
+			
 			for (HashMap<String, String> device : devices) {
 				HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
 
@@ -119,7 +124,7 @@ public class FragmentLayoutManager {
 				tempDataHashMap.put("name", device.get(DatabaseHelper.COLUMN_NAME));
 				tempDataHashMap.put("RSSI", "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI));
 
-				if (manufacturer == null || manufacturer.equals("") || manufacturer.equals("Unknown")) {
+				if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
 					manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
 					new DatabaseManager(mainActivity, mainActivity.versionCode).addManufacturerToDevice(deviceMac, manufacturer);
 
@@ -130,11 +135,11 @@ public class FragmentLayoutManager {
 				}
 
 				tempDataHashMap.put("manufacturer", manufacturer);
-				tempDataHashMap.put("exp", "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+				tempDataHashMap.put("exp", "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString);
 
 				Long time =
 						(deviceTime == null || deviceTime.equals("null")) ? 0 : Long.parseLong(deviceTime);
-				tempDataHashMap.put("time", DateFormat.getDateTimeInstance().format(new Date(time)));
+				tempDataHashMap.put("time", dateFormat.format(new Date(time)));
 
 				listViewHashMaps.add(tempDataHashMap);
 
