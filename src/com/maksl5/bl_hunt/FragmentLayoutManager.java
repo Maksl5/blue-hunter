@@ -2,7 +2,6 @@ package com.maksl5.bl_hunt;
 
 
 
-import java.security.PublicKey;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,11 +31,11 @@ import android.widget.TextView.OnEditorActionListener;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
 import com.maksl5.bl_hunt.custom_ui.AdjustedEditText;
-import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
+import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.MacAdressAllocations;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
+import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 
 
 
@@ -54,23 +53,24 @@ public class FragmentLayoutManager {
 	public static final int PAGE_ACHIEVEMENTS = 3;
 	public static final int PAGE_STATISTICS = 4;
 
-	public static View getSpecificView(
-										Bundle params, LayoutInflater parentInflater, ViewGroup rootContainer,
+	public static View getSpecificView(	Bundle params,
+										LayoutInflater parentInflater,
+										ViewGroup rootContainer,
 										Context context) {
 
 		int sectionNumber = params.getInt(CustomSectionFragment.ARG_SECTION_NUMBER);
 
 		switch (sectionNumber) {
-			case PAGE_DEVICE_DISCOVERY:
-				return parentInflater.inflate(R.layout.act_page_discovery, rootContainer, false);
-			case PAGE_LEADERBOARD:
-				return parentInflater.inflate(R.layout.act_page_leaderboard, rootContainer, false);
-			case PAGE_FOUND_DEVICES:
-				return parentInflater.inflate(R.layout.act_page_founddevices, rootContainer, false);
-			case PAGE_ACHIEVEMENTS:
-				break;
-			case PAGE_STATISTICS:
-				return parentInflater.inflate(R.layout.act_page_statistics, rootContainer, false);
+		case PAGE_DEVICE_DISCOVERY:
+			return parentInflater.inflate(R.layout.act_page_discovery, rootContainer, false);
+		case PAGE_LEADERBOARD:
+			return parentInflater.inflate(R.layout.act_page_leaderboard, rootContainer, false);
+		case PAGE_FOUND_DEVICES:
+			return parentInflater.inflate(R.layout.act_page_founddevices, rootContainer, false);
+		case PAGE_ACHIEVEMENTS:
+			break;
+		case PAGE_STATISTICS:
+			return parentInflater.inflate(R.layout.act_page_statistics, rootContainer, false);
 
 		}
 
@@ -83,13 +83,16 @@ public class FragmentLayoutManager {
 	 */
 	public static class FoundDevicesLayout {
 
-		private static List<HashMap<String, String>> showedFdList = new ArrayList<HashMap<String, String>>();
-		private static List<HashMap<String, String>> completeFdList = new ArrayList<HashMap<String, String>>();
-		private static String[ ] from = {
-				"macAddress", "manufacturer", "exp", "RSSI", "name", "time" };
-		private static int[ ] to = {
-				R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView, R.id.rssiTxtView, R.id.nameTxtView,
-				R.id.timeTxtView };
+		private static List<HashMap<String, String>> showedFdList =
+				new ArrayList<HashMap<String, String>>();
+		private static List<HashMap<String, String>> completeFdList =
+				new ArrayList<HashMap<String, String>>();
+		private static String[] from =
+				{
+					"macAddress", "manufacturer", "exp", "RSSI", "name", "time" };
+		private static int[] to = {
+									R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView,
+									R.id.rssiTxtView, R.id.nameTxtView, R.id.timeTxtView };
 
 		public static void refreshFoundDevicesList(final MainActivity mainActivity) {
 
@@ -98,52 +101,35 @@ public class FragmentLayoutManager {
 
 			List<HashMap<String, String>> devices =
 					new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
-			List<HashMap<String, String>> listViewHashMaps = new ArrayList<HashMap<String, String>>();
+			List<HashMap<String, String>> listViewHashMaps =
+					new ArrayList<HashMap<String, String>>();
 
-			HashMap<String, String[ ]> macHashMap = MacAdressAllocations.getHashMap();
-			HashMap<String, Integer> expHashMap = MacAdressAllocations.getExpHashMap();
+			HashMap<String, String[]> macHashMap = MacAddressAllocations.getHashMap();
+			HashMap<String, Integer> expHashMap = MacAddressAllocations.getExpHashMap();
 
 			Set<String> keySet = macHashMap.keySet();
 			for (HashMap<String, String> device : devices) {
 				HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
+				
+				String deviceMac = device.get(DatabaseHelper.COLUMN_MAC_ADDRESS);
+				String manufacturer = device.get(DatabaseHelper.COLUMN_MANUFACTURER);
+				String deviceTime = device.get(DatabaseHelper.COLUMN_TIME);
 
-				tempDataHashMap.put("macAddress", device.get(DatabaseHelper.COLUMN_MAC_ADDRESS));
+				tempDataHashMap.put("macAddress", deviceMac);
 				tempDataHashMap.put("name", device.get(DatabaseHelper.COLUMN_NAME));
-				tempDataHashMap.put("RSSI", "RSSI: "
-											+ device.get(DatabaseHelper.COLUMN_RSSI));
+				tempDataHashMap.put("RSSI", "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI));
+				
+				if(manufacturer == null || manufacturer.equals("") || manufacturer.equals("Unkown")) {
+					manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
+					new DatabaseManager(mainActivity, mainActivity.versionCode).addManufacturerToDevice(deviceMac, manufacturer);
+				}
+				
+				tempDataHashMap.put("manufacturer", manufacturer);
+				tempDataHashMap.put("exp", "" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")));
 
 				Long time =
-						(device.get(DatabaseHelper.COLUMN_TIME) == null || device.get(DatabaseHelper.COLUMN_TIME).equals("null"))
-								? 0
-								: Long.parseLong(device.get(DatabaseHelper.COLUMN_TIME));
+						(deviceTime == null || deviceTime.equals("null")) ? 0 : Long.parseLong(deviceTime);
 				tempDataHashMap.put("time", DateFormat.getDateTimeInstance().format(new Date(time)));
-
-				boolean foundManufacturer = false;
-
-				for (String key : keySet) {
-					String[ ] specificMacs = macHashMap.get(key);
-
-					for (String mac : specificMacs) {
-						if (device.get(DatabaseHelper.COLUMN_MAC_ADDRESS).startsWith(mac)) {
-							foundManufacturer = true;
-							tempDataHashMap.put("manufacturer", key);
-							tempDataHashMap.put("exp", "+"
-														+ expHashMap.get(key.replace(" ", "_")
-																			+ "_exp")
-														+ " "
-														+ mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
-						}
-					}
-
-				}
-
-				if (!foundManufacturer) {
-					tempDataHashMap.put("manufacturer", "Unknown");
-					tempDataHashMap.put("exp", "+"
-												+ expHashMap.get("Unknown_exp")
-												+ " "
-												+ mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
-				}
 
 				listViewHashMaps.add(tempDataHashMap);
 
@@ -166,10 +152,12 @@ public class FragmentLayoutManager {
 			lv.setSelection(scroll);
 		}
 
-		public static void filterFoundDevices(String text, MainActivity mainActivity) {
+		public static void filterFoundDevices(	String text,
+												MainActivity mainActivity) {
 
 			List<HashMap<String, String>> searchedList = new ArrayList<HashMap<String, String>>();
-			ListView lv = (ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+			ListView lv =
+					(ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
 			SimpleAdapter sAdapter;
 
 			if (text.equalsIgnoreCase("[unknown]")) {
@@ -179,7 +167,8 @@ public class FragmentLayoutManager {
 						searchedList.add(hashMap);
 					}
 				}
-				sAdapter = new SimpleAdapter(mainActivity, searchedList, R.layout.act_page_founddevices_row, from, to);
+				sAdapter =
+						new SimpleAdapter(mainActivity, searchedList, R.layout.act_page_founddevices_row, from, to);
 			}
 			else {
 				sAdapter =
@@ -202,25 +191,17 @@ public class FragmentLayoutManager {
 
 			TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
 			TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
-			PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
+			PatternProgressBar progressBar =
+					(PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
 			int exp = LevelSystem.getUserExp(mainActivity);
 			int level = LevelSystem.getLevel(exp);
 
-			expTextView.setText(exp
-								+ " "
-								+ mainActivity.getString(R.string.str_foundDevices_exp_abbreviation)
-								+ " / "
-								+ LevelSystem.getLevelEndExp(level)
-								+ " "
-								+ mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
-			lvlTextView.setText("Level "
-								+ level);
+			expTextView.setText(exp + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation) + " / " + LevelSystem.getLevelEndExp(level) + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+			lvlTextView.setText("Level " + level);
 
-			progressBar.setMax(LevelSystem.getLevelEndExp(level)
-								- LevelSystem.getLevelStartExp(level));
-			progressBar.setProgress(exp
-									- LevelSystem.getLevelStartExp(level));
+			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
+			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 		}
 
 	}
@@ -235,8 +216,10 @@ public class FragmentLayoutManager {
 
 			View parentContainer = mainActivity.mViewPager.getChildAt(PAGE_STATISTICS + 1);
 
-			final TextView nameTextView = (TextView) parentContainer.findViewById(R.id.nameTextView);
-			final AdjustedEditText nameEditText = (AdjustedEditText) parentContainer.findViewById(R.id.nameEditText);
+			final TextView nameTextView =
+					(TextView) parentContainer.findViewById(R.id.nameTextView);
+			final AdjustedEditText nameEditText =
+					(AdjustedEditText) parentContainer.findViewById(R.id.nameEditText);
 
 			// Listener
 			nameTextView.setOnLongClickListener(new OnLongClickListener() {
@@ -255,8 +238,8 @@ public class FragmentLayoutManager {
 
 					InputMethodManager imm =
 							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-					
+					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
 					return true;
 				}
 			});
@@ -264,13 +247,14 @@ public class FragmentLayoutManager {
 			nameEditText.setOnEditorActionListener(new OnEditorActionListener() {
 
 				@Override
-				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				public boolean onEditorAction(	TextView v,
+												int actionId,
+												KeyEvent event) {
 
 					InputMethodManager imm =
 							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-					if (actionId == EditorInfo.IME_ACTION_DONE
-						&& nameEditText.isShown()) {
+					if (actionId == EditorInfo.IME_ACTION_DONE && nameEditText.isShown()) {
 
 						imm.hideSoftInputFromWindow(nameEditText.getWindowToken(), 0);
 
@@ -298,8 +282,7 @@ public class FragmentLayoutManager {
 					InputMethodManager imm =
 							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-					if (nameEditText.isShown()
-						&& imm.isActive(nameEditText)) {
+					if (nameEditText.isShown() && imm.isActive(nameEditText)) {
 
 						imm.hideSoftInputFromWindow(nameEditText.getWindowToken(), 0);
 
@@ -333,12 +316,11 @@ public class FragmentLayoutManager {
 		 * @see android.view.ViewGroup.OnHierarchyChangeListener#onChildViewAdded(android.view.View, android.view.View)
 		 */
 		@Override
-		public void onChildViewAdded(View parent, View child) {
+		public void onChildViewAdded(	View parent,
+										View child) {
 
 			TextView nameTxtView = (TextView) child.findViewById(R.id.nameTxtView);
-			if (nameTxtView.getText() == null
-				|| nameTxtView.getText().toString().equals("")
-				|| nameTxtView.toString().trim().equals("")) {
+			if (nameTxtView.getText() == null || nameTxtView.getText().toString().equals("") || nameTxtView.toString().trim().equals("")) {
 				((TableRow) child.findViewById(R.id.TableRow01)).setVisibility(View.GONE);
 
 				TextWatcherClass txtWatcherClass = new TextWatcherClass(nameTxtView, child);
@@ -361,7 +343,8 @@ public class FragmentLayoutManager {
 		 * android.view.View)
 		 */
 		@Override
-		public void onChildViewRemoved(View parent, View child) {
+		public void onChildViewRemoved(	View parent,
+										View child) {
 
 			TextView nameTxtView = (TextView) child.findViewById(R.id.nameTxtView);
 			for (TextWatcherClass textWatcher : new ArrayList<TextWatcherClass>(listenerList)) {
@@ -378,7 +361,8 @@ public class FragmentLayoutManager {
 			public TextView nameTxtView;
 			View child;
 
-			private TextWatcherClass(TextView nameTxtView, View child) {
+			private TextWatcherClass(TextView nameTxtView,
+					View child) {
 
 				this.nameTxtView = nameTxtView;
 				this.child = child;
@@ -403,7 +387,10 @@ public class FragmentLayoutManager {
 			 * @see android.text.TextWatcher#beforeTextChanged(java.lang.CharSequence, int, int, int)
 			 */
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			public void beforeTextChanged(	CharSequence s,
+											int start,
+											int count,
+											int after) {
 
 				// TODO Auto-generated method stub
 
@@ -415,11 +402,12 @@ public class FragmentLayoutManager {
 			 * @see android.text.TextWatcher#onTextChanged(java.lang.CharSequence, int, int, int)
 			 */
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			public void onTextChanged(	CharSequence s,
+										int start,
+										int before,
+										int count) {
 
-				if (nameTxtView.getText() == null
-					|| nameTxtView.getText().toString().equals("")
-					|| nameTxtView.toString().trim().equals("")) {
+				if (nameTxtView.getText() == null || nameTxtView.getText().toString().equals("") || nameTxtView.toString().trim().equals("")) {
 					((TableRow) child.findViewById(R.id.tableRow1)).setVisibility(View.GONE);
 				}
 				else {

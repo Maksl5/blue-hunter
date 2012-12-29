@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @author Maksl5[Markus Bensing]
  * 
  */
-public class MacAdressAllocations {
+public class MacAddressAllocations {
 
 	private static HashMap<String, String[]> manufacturerMacs = null;
 	private static HashMap<String, Integer> manufacturerExps = null;
@@ -31,13 +31,13 @@ public class MacAdressAllocations {
 
 		HashMap<String, String[]> hsHashMap = new HashMap<String, String[]>();
 
-		Field[] fields = MacAdressAllocations.class.getDeclaredFields();
+		Field[] fields = MacAddressAllocations.class.getDeclaredFields();
 
 		for (Field field : fields) {
 			if (field.getType().equals(String[].class)) {
 				String[] macStrings;
 				try {
-					macStrings = (String[]) field.get(MacAdressAllocations.class);
+					macStrings = (String[]) field.get(MacAddressAllocations.class);
 					hsHashMap.put(field.getName().replace("_", " "), macStrings);
 				}
 				catch (IllegalArgumentException e) {
@@ -55,6 +55,23 @@ public class MacAdressAllocations {
 		return hsHashMap;
 
 	}
+	
+	public static String getManufacturer(String macAddress) {
+		HashMap<String, String[]> manufacturers = getHashMap();
+		
+		for (String manufacturer : manufacturers.keySet()) {
+			String[] macs = manufacturers.get(manufacturer);
+			
+			for (String mac : macs) {
+				if(macAddress.substring(0, 8).equals(mac)) {
+					return manufacturer;
+				}
+			}
+			
+		}
+		
+		return "Unknown";
+	}
 
 	public static int getExp(String manufacturer) {
 
@@ -67,8 +84,8 @@ public class MacAdressAllocations {
 		int exp = 0;
 
 		try {
-			Field expField = MacAdressAllocations.class.getDeclaredField(manufacturer + "_exp");
-			exp = expField.getInt(MacAdressAllocations.class);
+			Field expField = MacAddressAllocations.class.getDeclaredField(manufacturer + "_exp");
+			exp = expField.getInt(MacAddressAllocations.class);
 		}
 		catch (NoSuchFieldException e) {
 			// TODO Auto-generated catch block
@@ -95,13 +112,13 @@ public class MacAdressAllocations {
 
 		HashMap<String, Integer> hsHashMap = new HashMap<String, Integer>();
 
-		Field[] fields = MacAdressAllocations.class.getDeclaredFields();
+		Field[] fields = MacAddressAllocations.class.getDeclaredFields();
 
 		for (Field field : fields) {
 			if (field.getType().equals(int.class)) {
 				int exp;
 				try {
-					exp = (Integer) field.get(MacAdressAllocations.class);
+					exp = (Integer) field.get(MacAddressAllocations.class);
 					hsHashMap.put(field.getName(), exp);
 				}
 				catch (IllegalArgumentException e) {

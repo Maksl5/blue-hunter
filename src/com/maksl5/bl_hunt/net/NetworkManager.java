@@ -9,11 +9,10 @@ package com.maksl5.bl_hunt.net;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.R.id;
-import com.maksl5.bl_hunt.activity.MainActivity;
-
 import android.view.MenuItem;
+
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
 
 
 

@@ -3,13 +3,7 @@ package com.maksl5.bl_hunt;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -21,6 +15,11 @@ import android.os.Vibrator;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
+
+import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 

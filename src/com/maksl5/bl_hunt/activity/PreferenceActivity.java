@@ -36,18 +36,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.R.xml;
-import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
-import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.net.EasySSLSocketFactory;
-import com.maksl5.bl_hunt.net.NetworkManager;
-
 import android.app.ActionBar;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -57,11 +47,17 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.EasySSLSocketFactory;
 
 
 

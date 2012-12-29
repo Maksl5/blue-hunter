@@ -12,7 +12,7 @@ import java.util.Set;
 
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.MacAdressAllocations;
+import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 
 
@@ -29,8 +29,8 @@ public class LevelSystem {
 
 		List<HashMap<String, String>> foundDevices =
 				new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
-		HashMap<String, Integer> expHashMap = MacAdressAllocations.getExpHashMap();
-		HashMap<String, String[ ]> macAllocations = MacAdressAllocations.getHashMap();
+		HashMap<String, Integer> expHashMap = MacAddressAllocations.getExpHashMap();
+		HashMap<String, String[ ]> macAllocations = MacAddressAllocations.getHashMap();
 
 		Set<String> keys = macAllocations.keySet();
 

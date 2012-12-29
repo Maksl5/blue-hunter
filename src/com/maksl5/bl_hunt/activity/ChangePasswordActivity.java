@@ -5,16 +5,8 @@ package com.maksl5.bl_hunt.activity;
 
 
 
-import java.security.PublicKey;
-
-import com.maksl5.bl_hunt.R;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.maksl5.bl_hunt.R;
 
 
 

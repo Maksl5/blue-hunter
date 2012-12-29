@@ -36,12 +36,11 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.R.id;
-import com.maksl5.bl_hunt.activity.MainActivity;
-
 import android.os.AsyncTask;
 import android.view.MenuItem;
+
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
 
 
 

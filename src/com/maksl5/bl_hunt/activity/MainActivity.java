@@ -14,8 +14,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Debug;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -34,25 +35,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.maksl5.bl_hunt.DiscoveryManager;
+import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.FragmentLayoutManager;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
-import com.maksl5.bl_hunt.FragmentLayoutManager.DeviceDiscoveryLayout;
-import com.maksl5.bl_hunt.FragmentLayoutManager.FoundDevicesLayout;
-import com.maksl5.bl_hunt.FragmentLayoutManager.StatisticLayout;
-import com.maksl5.bl_hunt.R.drawable;
-import com.maksl5.bl_hunt.R.id;
-import com.maksl5.bl_hunt.R.layout;
-import com.maksl5.bl_hunt.R.menu;
-import com.maksl5.bl_hunt.R.string;
-import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.Authentification.LoginManager;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.NetworkThread;
-import com.maksl5.bl_hunt.net.Authentification.LoginManager;
-import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
@@ -95,6 +87,9 @@ public class MainActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		
+		//Debug.startMethodTracing("blHunt_6");
+		
 		thisActivity = this;
 		destroyed = false;
 		setContentView(R.layout.act_main);
@@ -114,7 +109,7 @@ public class MainActivity extends FragmentActivity {
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
-		mViewPager.setOffscreenPageLimit(4);
+		mViewPager.setOffscreenPageLimit(5);
 
 		try {
 			versionCode =
@@ -345,6 +340,8 @@ public class MainActivity extends FragmentActivity {
 
 		updateNotification();
 
+		//Debug.stopMethodTracing();
+		
 		return true;
 	}
 

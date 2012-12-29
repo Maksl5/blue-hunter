@@ -5,12 +5,6 @@ package com.maksl5.bl_hunt.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.maksl5.bl_hunt.FragmentLayoutManager;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.FragmentLayoutManager.FoundDevicesLayout;
-import com.maksl5.bl_hunt.R.id;
-import com.maksl5.bl_hunt.R.string;
-
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
@@ -34,7 +28,9 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TableRow;
-import android.widget.TextView;
+
+import com.maksl5.bl_hunt.FragmentLayoutManager;
+import com.maksl5.bl_hunt.R;
 
 
 

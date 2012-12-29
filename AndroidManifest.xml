@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="553"
-    android:versionName="pre_alpha_0.2.0.553_121228-2010" >
+    android:versionCode="567"
+    android:versionName="pre_alpha_0.2.0.567_121229-1334" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -16,6 +16,7 @@
     <uses-feature
         android:name="android.hardware.bluetooth"
         android:required="true" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="false"

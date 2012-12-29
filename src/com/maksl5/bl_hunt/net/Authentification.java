@@ -11,12 +11,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.R.dimen;
-import com.maksl5.bl_hunt.R.string;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -31,6 +25,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.Toast;
+
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 

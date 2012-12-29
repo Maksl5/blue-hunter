@@ -10,14 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.maksl5.bl_hunt.FragmentLayoutManager;
-import com.maksl5.bl_hunt.FragmentLayoutManager.FoundDevicesLayout;
-import com.maksl5.bl_hunt.activity.MainActivity;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.maksl5.bl_hunt.FragmentLayoutManager;
+import com.maksl5.bl_hunt.activity.MainActivity;
 
 
 
@@ -31,7 +30,8 @@ public class DatabaseManager {
 	/**
 	 * 
 	 */
-	public DatabaseManager(MainActivity mainActivity, int version) {
+	public DatabaseManager(MainActivity mainActivity,
+			int version) {
 
 		this.version = version;
 		this.mainActivity = mainActivity;
@@ -48,6 +48,7 @@ public class DatabaseManager {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
+		values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(macAddress));
 		values.put(DatabaseHelper.COLUMN_TIME, System.currentTimeMillis());
 
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
@@ -65,11 +66,11 @@ public class DatabaseManager {
 	 * 
 	 */
 	public boolean addNewDevice(String macAddress,
-
-	short RSSI) {
+								short RSSI) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
+		values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(macAddress));
 		values.put(DatabaseHelper.COLUMN_RSSI, RSSI);
 		values.put(DatabaseHelper.COLUMN_TIME, System.currentTimeMillis());
 
@@ -87,10 +88,13 @@ public class DatabaseManager {
 	/**
 	 * 
 	 */
-	public boolean addNewDevice(String macAddress, String name, short RSSI) {
+	public boolean addNewDevice(String macAddress,
+								String name,
+								short RSSI) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
+		values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(macAddress));
 		values.put(DatabaseHelper.COLUMN_NAME, name);
 		values.put(DatabaseHelper.COLUMN_RSSI, RSSI);
 		values.put(DatabaseHelper.COLUMN_TIME, System.currentTimeMillis());
@@ -110,8 +114,8 @@ public class DatabaseManager {
 
 		List<String> macStrings = new ArrayList<String>();
 
-		Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, new String[ ] {
-			DatabaseHelper.COLUMN_MAC_ADDRESS }, null, null, null, null, null);
+		Cursor cursor =
+				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, new String[] { DatabaseHelper.COLUMN_MAC_ADDRESS }, null, null, null, null, null);
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
@@ -127,15 +131,17 @@ public class DatabaseManager {
 
 		List<HashMap<String, String>> devices = new ArrayList<HashMap<String, String>>();
 
-		Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null, null);
+		Cursor cursor =
+				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null, null);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			HashMap<String, String> tempHashMap = new HashMap<String, String>();
 
-			tempHashMap.put(DatabaseHelper.COLUMN_MAC_ADDRESS, cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_MAC_ADDRESS)));
-			tempHashMap.put(DatabaseHelper.COLUMN_NAME, cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME)));
-			tempHashMap.put(DatabaseHelper.COLUMN_RSSI, cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_RSSI)));
-			tempHashMap.put(DatabaseHelper.COLUMN_TIME, cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TIME)));
+			tempHashMap.put(DatabaseHelper.COLUMN_MAC_ADDRESS, cursor.getString(1));
+			tempHashMap.put(DatabaseHelper.COLUMN_NAME, cursor.getString(2));
+			tempHashMap.put(DatabaseHelper.COLUMN_RSSI, cursor.getString(3));
+			tempHashMap.put(DatabaseHelper.COLUMN_TIME, cursor.getString(4));
+			tempHashMap.put(DatabaseHelper.COLUMN_MANUFACTURER, cursor.getString(5));
 
 			devices.add(tempHashMap);
 			cursor.moveToNext();
@@ -146,17 +152,26 @@ public class DatabaseManager {
 		return devices;
 	}
 
-	public void addNameToDevice(String macAddress, String name) {
+	public void addNameToDevice(String macAddress,
+								String name) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_NAME, name);
 
-		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS
-																+ " = ?", new String[ ] {
-			macAddress });
+		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(mainActivity);
 		close();
 
+	}
+
+	public void addManufacturerToDevice(String macAddress,
+										String manufacturer) {
+
+		ContentValues values = new ContentValues();
+		values.put(DatabaseHelper.COLUMN_MANUFACTURER, manufacturer);
+		
+		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
+		close();
 	}
 
 	public void close() {
@@ -178,24 +193,17 @@ public class DatabaseManager {
 		public final static String COLUMN_NAME = "name";
 		public final static String COLUMN_RSSI = "RSSI";
 		public final static String COLUMN_TIME = "time";
+		public final static String COLUMN_MANUFACTURER = "manufacturer";
 
 		private MainActivity mainActivity;
 		private int version;
 
 		// CREATE DECLARATION
-		public final static String FOUND_DEVICES_CREATE = "Create Table "
-															+ FOUND_DEVICES_TABLE
-															+ " (_id Integer Primary Key Autoincrement, "
-															+ COLUMN_MAC_ADDRESS
-															+ " Text Not Null, "
-															+ COLUMN_NAME
-															+ " Text, "
-															+ COLUMN_RSSI
-															+ " Integer Not Null, "
-															+ COLUMN_TIME
-															+ " Integer);";
+		public final static String FOUND_DEVICES_CREATE =
+				"Create Table " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME + " Integer, " + COLUMN_MANUFACTURER + " Text);";
 
-		public DatabaseHelper(MainActivity mainActivity, int version) {
+		public DatabaseHelper(MainActivity mainActivity,
+				int version) {
 
 			super(mainActivity, DATABASE_NAME, null, version);
 
@@ -223,14 +231,16 @@ public class DatabaseManager {
 		 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
 		 */
 		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		public void onUpgrade(	SQLiteDatabase db,
+								int oldVersion,
+								int newVersion) {
 
 			if (oldVersion < 499) {
-				db.execSQL("Alter Table "
-							+ FOUND_DEVICES_TABLE
-							+ " Add Column "
-							+ COLUMN_TIME
-							+ " Integer;");
+				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_TIME + " Integer;");
+			}
+
+			if (oldVersion < 566) {
+				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_MANUFACTURER + " Text;");
 			}
 
 			mainActivity.authentification.showChangelog(mainActivity, oldVersion, newVersion, 0);
