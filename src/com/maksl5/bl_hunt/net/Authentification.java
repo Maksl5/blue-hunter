@@ -126,10 +126,11 @@ public class Authentification {
 		secure.storeLoginToken(tokenString);
 
 	}
+
 	public void storePass(String pass) {
-		
+
 		secure.storePass(pass);
-		
+
 	}
 
 	/**
@@ -184,7 +185,7 @@ public class Authentification {
 							int verCode = Integer.parseInt(matcher.group(1));
 
 							if (verCode > getVersionCode(context)) {
-								Toast.makeText(context, "NEW NIGHTLY VERSION AVAILABLE\nCurrently installed build: " + getVersionCode(context) + "\nAvailable build: " + verCode, Toast.LENGTH_LONG).show();
+								Toast.makeText(context, mainActivity.getString(R.string.str_auth_newUpdateAvailable, getVersionCode(context), verCode), Toast.LENGTH_LONG).show();
 								newUpdateAvailable = true;
 							}
 						}
@@ -193,7 +194,7 @@ public class Authentification {
 							Matcher matcher = pattern.matcher(resultString);
 							if (matcher.find()) {
 								int errorCode = Integer.parseInt(matcher.group(1));
-								Toast.makeText(context, "Error " + errorCode + "while checking for update.", Toast.LENGTH_LONG).show();
+								Toast.makeText(context, mainActivity.getString(R.string.str_Error_checkUpdate, errorCode), Toast.LENGTH_LONG).show();
 							}
 						}
 
@@ -244,32 +245,32 @@ public class Authentification {
 					Pattern pattern = Pattern.compile("Error=(\\d+)");
 					Matcher matcher = pattern.matcher(resultString);
 
+					String updateMsg =
+							mainActivity.getString(R.string.str_auth_updated, getVersionName(mainActivity));
+
 					if (matcher.find()) {
 						int error = Integer.parseInt(matcher.group(1));
-
-						String updateMsg = "Updated to new version.";
 
 						switch (error) {
 						case 1:
 						case 4:
 						case 5:
 							updateMsg +=
-									" (Could not retrieve changelog. Possibly not internet connection.)";
+									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_1_4_5));
 							break;
 						case 90:
-							updateMsg += " (No Changelog available.)";
+							updateMsg +=
+									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_90));
 							break;
 						case 404:
 							updateMsg +=
-									" (Could not retrieve changelog. Possibly server down or changelog script not available.)";
+									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_404));
 							break;
 						case 500:
 							updateMsg +=
-									" (Could not retrieve changelog. Server error. Please contact developer.)";
+									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_500));
 							break;
 						}
-
-						Toast.makeText(mainActivity, updateMsg, Toast.LENGTH_LONG).show();
 
 					}
 					else {
@@ -277,7 +278,7 @@ public class Authentification {
 						Dialog changelogDialog = new Dialog(activity);
 						ScrollView changeLogScrollView = new ScrollView(activity);
 						WebView changelogWebView = new WebView(activity);
-						changelogDialog.setTitle("Changelog");
+						changelogDialog.setTitle(mainActivity.getString(R.string.str_auth_changelog));
 						int padding =
 								mainActivity.getResources().getDimensionPixelSize(R.dimen.padding_small);
 						changelogWebView.setPadding(padding, padding, padding, padding);
@@ -287,6 +288,8 @@ public class Authentification {
 						changelogDialog.show();
 
 					}
+
+					Toast.makeText(mainActivity, updateMsg, Toast.LENGTH_LONG).show();
 
 					return true;
 				}
@@ -436,7 +439,7 @@ public class Authentification {
 		private void checkLogin() {
 
 			password = getStoredPass();
-			
+
 			if (loginToken != null) {
 
 				NetworkThread checkLogin =
@@ -485,38 +488,38 @@ public class Authentification {
 				Matcher matcher = pattern.matcher(resultString);
 
 				if (matcher.find()) {
-					
+
 					setLoginState(false);
-					
+
 					int error = Integer.parseInt(matcher.group(1));
 
-					String errorMsg = "Error " + error + " while prelogin.";
+					String errorMsg = mainActivity.getString(R.string.str_Error_preLogin, error);
 
 					switch (error) {
 					case 1:
 					case 4:
 					case 5:
-						errorMsg += " (Could not retrieve data. Possibly no internet connection.)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_1_4_5));
 						break;
 					case 404:
 						errorMsg +=
-								" (Could not retrieve data. Possibly server is down or script not available.)";
+								String.format(" (%s)", mainActivity.getString(R.string.str_Error_404));
 						break;
 					case 500:
 						errorMsg +=
-								" (Could not retrieve data. Server error. Please contact the developer.)";
+								String.format(" (%s)", mainActivity.getString(R.string.str_Error_500));
 						break;
 					case 1001:
 					case 1002:
 					case 1006:
-						errorMsg += " (Uncomplete parameters)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_preLogin_100_1_2_6));
 						break;
 					case 1003:
-						errorMsg += " (Hashes don't match)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_preLogin_100_3));
 						break;
 					case 1004:
 					case 1005:
-						errorMsg += " (Unexpected number of rows in DB query result)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_preLogin_100_4_5));
 						break;
 					}
 
@@ -532,51 +535,51 @@ public class Authentification {
 				Matcher matcher1 = pattern1.matcher(resultString);
 
 				if (matcher1.find()) {
-					
+
 					setLoginState(false);
-					
+
 					int error = Integer.parseInt(matcher1.group(1));
 
-					String errorMsg = "Error " + error + " while login.";
+					String errorMsg = mainActivity.getString(R.string.str_Error_Login, error);
 
 					switch (error) {
 					case 1:
 					case 4:
 					case 5:
-						errorMsg += " (Could not retrieve data. Possibly no internet connection.)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_1_4_5));
 						break;
 					case 404:
 						errorMsg +=
-								" (Could not retrieve data. Possibly server is down or script not available.)";
+								String.format(" (%s)", mainActivity.getString(R.string.str_Error_404));
 						break;
 					case 500:
 						errorMsg +=
-								" (Could not retrieve data. Server error. Please contact the developer.)";
+								String.format(" (%s)", mainActivity.getString(R.string.str_Error_500));
 						break;
 					case 1001:
 					case 1002:
 					case 1003:
 					case 1011:
-						errorMsg += " (Uncomplete parameters)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_1_2_3_11));
 						break;
 					case 1004:
-						errorMsg += " (Hashes don't match)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_4));
 						break;
 					case 1005:
 					case 1007:
-						errorMsg += " (Failed inserting session into DB)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_5_7));
 						break;
 					case 1006:
-						errorMsg += " (Password must be committed)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_6));
 						break;
 					case 1008:
-						errorMsg += " (Password is wrong)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_8));
 						break;
 					case 1009:
-						errorMsg += " (Unexpected number of rows in DB query result)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_9));
 						break;
 					case 1010:
-						errorMsg += " (Request timeout)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_10));
 						break;
 
 					}
@@ -602,15 +605,15 @@ public class Authentification {
 					setLoginState(true);
 
 					if (!passExists) {
-						Toast.makeText(mainActivity, "Login was succesfully.\nNote: Because of security aspects, you should consider to set a password for the game. You can do that in your profile settings.", Toast.LENGTH_LONG).show();
+						Toast.makeText(mainActivity, String.format("%s %n %s", mainActivity.getString(R.string.str_auth_loginSuccess, mainActivity.getString(R.string.str_auth_securityMsg))), Toast.LENGTH_LONG).show();
 					}
 					else {
-						Toast.makeText(mainActivity, "Login was succesfully.", Toast.LENGTH_LONG).show();
+						Toast.makeText(mainActivity, mainActivity.getString(R.string.str_auth_loginSuccess), Toast.LENGTH_LONG).show();
 					}
 
 				}
 				else {
-					Toast.makeText(mainActivity, "Could not store login token.", Toast.LENGTH_LONG).show();
+					Toast.makeText(mainActivity, mainActivity.getString(R.string.str_auth_storeTokenFailed), Toast.LENGTH_LONG).show();
 				}
 
 				return true;
@@ -620,56 +623,57 @@ public class Authentification {
 				Matcher matcher2 = pattern2.matcher(resultString);
 
 				if (matcher2.find()) {
-					
+
 					setLoginState(false);
-					
+
 					int error = Integer.parseInt(matcher2.group(1));
 
-					String errorMsg = "Error " + error + " while check login.";
+					String errorMsg = mainActivity.getString(R.string.str_Error_checkLogin, error);
 
 					switch (error) {
 					case 1:
 					case 4:
 					case 5:
-						errorMsg += " (Could not retrieve data. Possibly no internet connection.)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_1_4_5));
 						break;
 					case 404:
 						errorMsg +=
-								" (Could not retrieve data. Possibly server is down or script not available.)";
+								String.format(" (%s)", mainActivity.getString(R.string.str_Error_404));
 						break;
 					case 500:
 						errorMsg +=
-								" (Could not retrieve data. Server error. Please contact the developer.)";
+								String.format(" (%s)", mainActivity.getString(R.string.str_Error_500));
 						break;
 					case 1001:
 					case 1002:
-						errorMsg += " (Uncomplete parameters)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_1_2));
 						break;
 					case 1003:
-						errorMsg += " (Password must be committed)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_3));
 						break;
 					case 1004:
-						errorMsg += " (Password is wrong)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_4));
 						mainActivity.passSet = true;
 						break;
 					case 1005:
-						errorMsg += " (Unexpected number of rows in DB query result)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_5));
 						break;
 					case 1006:
 					case 1007:
-						errorMsg += " (Failed to delete rows in DB)";
+						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_6_7));
 						break;
 					}
 					Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
 					return true;
 				}
 
-				Pattern checkLoginPattern = Pattern.compile("<loggedIn>([0-1])</loggedIn><passExists>([0-1])</passExists>");
+				Pattern checkLoginPattern =
+						Pattern.compile("<loggedIn>([0-1])</loggedIn><passExists>([0-1])</passExists>");
 				Matcher checkLoginMatcher = checkLoginPattern.matcher(resultString);
 				if (checkLoginMatcher.find()) {
 
 					setLoginState("1".equals(checkLoginMatcher.group(1)));
-					
+
 					boolean passExists = "1".equals(checkLoginMatcher.group(2));
 					mainActivity.passSet = passExists;
 

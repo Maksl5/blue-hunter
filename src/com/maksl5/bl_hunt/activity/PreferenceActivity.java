@@ -161,7 +161,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	protected void onActivityResult(int requestCode,
 									int resultCode,
 									Intent data) {
-		
+
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == 0) { return; }
@@ -187,18 +187,16 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				PrefNetThread changePass = new PrefNetThread(this, mainActivity, netManager);
 				changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE), "h=" + mainActivity.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(), "v=" + mainActivity.versionCode, "np=" + newPass, "lt=" + mainActivity.authentification.getStoredLoginToken());
 
-				
-				
 			}
 			break;
 		case ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS:
-			if(resultCode == 1) {
-				
+			if (resultCode == 1) {
+
 				String newLoginPass = data.getStringExtra("newLoginPass");
 				mainActivity.authentification.storePass(newLoginPass);
-				
+
 				mainActivity.loginManager.login();
-				
+
 			}
 			break;
 		}
@@ -222,58 +220,56 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			if (matcher.find()) {
 				int error = Integer.parseInt(matcher.group(1));
 
-				String errorMsg = "Error " + error + " while changing password.";
+				String errorMsg = getString(R.string.str_Error_changePass, error);
 
 				switch (error) {
 				case 1:
 				case 4:
 				case 5:
-					errorMsg += " (Could not retrieve data. Possibly no internet connection.)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_1_4_5));
 					break;
 				case 404:
-					errorMsg +=
-							" (Could not retrieve data. Possibly server is down or script not available.)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_404));
 					break;
 				case 500:
-					errorMsg +=
-							" (Could not retrieve data. Server error. Please contact the developer.)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_500));
 					break;
 				case 1001:
 				case 1002:
 				case 1003:
 				case 1004:
 				case 10016:
-					errorMsg += " (Uncomplete parameters)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_1_2_3_4_16));
 					break;
 				case 1005:
-					errorMsg += " (Hashes don't match)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_5));
 					break;
 				case 1006:
 				case 1008:
-					errorMsg += " (Could not set new password in DB)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_6_8));
 					break;
 				case 1007:
-					errorMsg += " (Old password must be committed)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_7));
 					break;
 				case 1009:
-					errorMsg += " (Password does not match entered one)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_9));
 					break;
 				case 1010:
 				case 1013:
-					errorMsg += " (Unexpected number of rows in DB query result)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_10_13));
 					break;
 				case 1011:
-					errorMsg += " (Unknown login token. [Error deleting it from DB.])";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_11));
 					break;
 				case 1012:
-					errorMsg += " (Unknown login token. Try again.)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_12));
 					mainActivity.loginManager.login();
 					break;
 				case 1014:
-					errorMsg += " (Found more than 1 login token. [Error deleting them from DB.])";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_14));
 					break;
 				case 1015:
-					errorMsg += " (Found more than 1 login token. Try again.)";
+					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_15));
 					mainActivity.loginManager.login();
 					break;
 				}
@@ -281,17 +277,17 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
 			}
 
-			if(resultString.equals("<SUCCESS>")) {
-				Toast.makeText(mainActivity, "Successfully changed password.", Toast.LENGTH_LONG).show();
-				
-				if(ProfileFragment.changeLoginPass != null) {
+			if (resultString.equals("<SUCCESS>")) {
+				Toast.makeText(mainActivity, getString(R.string.str_Preferences_changePass_success), Toast.LENGTH_LONG).show();
+
+				if (ProfileFragment.changeLoginPass != null) {
 					ProfileFragment.changeLoginPass.setEnabled(true);
 				}
-				
-				if(newPass != null) {
+
+				if (newPass != null) {
 					mainActivity.authentification.storePass(newPass);
 				}
-				
+
 			}
 
 		}
@@ -444,10 +440,9 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	 */
 	public static class ProfileFragment extends PreferenceFragment {
 
-
 		public static Preference changeOnlinePass;
 		public static Preference changeLoginPass;
-		
+
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 
@@ -455,12 +450,12 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			super.onCreate(savedInstanceState);
 
 			addPreferencesFromResource(R.xml.profile_preference);
-			
+
 			changeOnlinePass = findPreference("pref_changePass");
 			changeOnlinePass.setEnabled(MainActivity.thisActivity.loginManager.getLoginState());
-			
+
 			changeLoginPass = findPreference("pref_localPass");
-			if(!MainActivity.thisActivity.passSet && MainActivity.thisActivity.loginManager.getLoginState()) {
+			if (!MainActivity.thisActivity.passSet && MainActivity.thisActivity.loginManager.getLoginState()) {
 				changeOnlinePass.setTitle(R.string.str_Preferences_changePass_new_title);
 				changeOnlinePass.setSummary(R.string.str_Preferences_changePass_new_sum);
 				changeLoginPass.setEnabled(false);
@@ -478,8 +473,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 
-					Intent intent =
-							new Intent(getActivity(), ChangePasswordActivity.class);
+					Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
 					Bundle parametersBundle = new Bundle();
 					parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
 					parametersBundle.putBoolean("passSet", MainActivity.thisActivity.passSet);
@@ -490,19 +484,19 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 					return true;
 				}
 			});
-			
+
 			changeLoginPass.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-				
+
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
-				
+
 					Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
 					Bundle parametersBundle = new Bundle();
 					parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS);
 					intent.putExtras(parametersBundle);
-					
+
 					getActivity().startActivityForResult(intent, ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS);
-					
+
 					return true;
 				}
 			});

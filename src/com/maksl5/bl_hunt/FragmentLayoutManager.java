@@ -122,6 +122,10 @@ public class FragmentLayoutManager {
 				if(manufacturer == null || manufacturer.equals("") || manufacturer.equals("Unkown")) {
 					manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
 					new DatabaseManager(mainActivity, mainActivity.versionCode).addManufacturerToDevice(deviceMac, manufacturer);
+					
+					if(manufacturer.equals("Unknown")) {
+						manufacturer = mainActivity.getString(R.string.str_foundDevices_manu_unkown);
+					}
 				}
 				
 				tempDataHashMap.put("manufacturer", manufacturer);
@@ -162,8 +166,10 @@ public class FragmentLayoutManager {
 
 			if (text.equalsIgnoreCase("[unknown]")) {
 
+				String unknownString = mainActivity.getString(R.string.str_foundDevices_manu_unkown);
+				
 				for (HashMap<String, String> hashMap : completeFdList) {
-					if (hashMap.get("manufacturer").equals("Unknown")) {
+					if (hashMap.get("manufacturer").equals(unknownString)) {
 						searchedList.add(hashMap);
 					}
 				}
@@ -197,8 +203,8 @@ public class FragmentLayoutManager {
 			int exp = LevelSystem.getUserExp(mainActivity);
 			int level = LevelSystem.getLevel(exp);
 
-			expTextView.setText(exp + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation) + " / " + LevelSystem.getLevelEndExp(level) + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
-			lvlTextView.setText("Level " + level);
+			expTextView.setText(String.format("%d %s / %d %s", exp, mainActivity.getString(R.string.str_foundDevices_exp_abbreviation), LevelSystem.getLevelEndExp(level), mainActivity.getString(R.string.str_foundDevices_exp_abbreviation)));
+			lvlTextView.setText(String.format("%s %d", mainActivity.getString(R.string.str_foundDevices_level), level));
 
 			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
 			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));

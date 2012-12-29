@@ -15,7 +15,7 @@
     <string name="str_pageTitle_achievements">Achievements</string>
     <string name="str_pageTitle_statistics">Statistics</string>
     <string name="str_menu_settings">Settings</string>
-    <string name="str_menu_info" tools:ignore="MissingTranslation">Help</string>
+    <string name="str_menu_info">Help</string>
     <string name="str_menu_search">Search</string>
     <string name="str_actBar_userInfo">User Information</string>
     <string name="str_mainActTitle">Blue Hunter</string>
@@ -23,7 +23,7 @@
     <string name="str_discoveryState_running">Discovery running.</string>
     <string name="str_discoveryState_stopped">Discovery stopped.</string>
     <string name="str_discoveryState_btOff">Bluetooth off.</string>
-    <string name="str_discoveryState_finished">Discovery finished.\nReactivating...</string>
+    <string name="str_discoveryState_finished">Discovery finished. Reactivating...</string>
     <string name="str_discoveryState_btEnabling">Enabling Bluetooth...</string>
     <string name="str_discoveryState_btDisabling">Disabling Bluetooth...</string>
     <string name="str_discoveryState_error">Discovery error.</string>
@@ -34,16 +34,17 @@
     <string name="str_enableBT_yesButton">Yes</string>
     <string name="str_enableBT_noButton">No</string>
     
-    <string name="str_Preference_Header_info">Info</string>
-    <string name="str_Preference_Header_info_sum">Shows some information about the game.</string>
-    <string name="str_Preference_Header_behaviour">Behaviour</string>
-    <string name="str_Preference_Header_behaviour_sum">Manage the device specific behaviour of the game.</string>
-    <string name="str_Preference_Header_profile">Profile</string>
-    <string name="str_Preference_Header_profile_sum">Adjust your profile settings (Online)</string>
+    <string name="str_PreferenceHeader_info">Info</string>
+    <string name="str_PreferenceHeader_info_sum">Shows some information about the game.</string>
+    <string name="str_PreferenceHeader_behaviour">Behaviour</string>
+    <string name="str_PreferenceHeader_behaviour_sum">Manage the device specific behaviour of the game.</string>
+    <string name="str_PreferenceHeader_profile">Profile</string>
+    <string name="str_PreferenceHeader_profile_sum">Adjust your profile settings (Online)</string>
     <string name="str_Preferences_changePass_title">Change Password</string>
     <string name="str_Preferences_changePass_sum">Change your profile password. (Online)</string>
     <string name="str_Preferences_changePass_new_title">Set Password</string>
     <string name="str_Preferences_changePass_new_sum">Set your profile password. (Online)</string>
+    <string name="str_Preferences_changePass_success">Successfully changed password.</string>
     <string name="str_Preferences_localPass_title">Login Password</string>
     <string name="str_Preferences_localPass_sum">Set the password used by the game to log in to your profile.</string>
     <string name="str_Preferences_version_title">Version</string>
@@ -59,6 +60,7 @@
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>
+    <string name="str_foundDevices_level">Level</string>
     
     <string name="str_statistics_editName_apply">Apply</string>
     
@@ -71,5 +73,70 @@
     <string name="str_changePass_newPass">Enter new password...</string>
     <string name="str_changePass_confirmNewPass">Confirm new password...</string>
     <string name="str_loginPass_title">Set login password</string>
+    
+    <string name="str_auth_newUpdateAvailable" formatted="false">New nightly version available. %n Currently installed build: %d. %n Available build: %d.</string>
+    <string name="str_auth_updated" formatted="false">Updated to new version %s. %n</string>
+    <string name="str_auth_updated_1_4_5">Could not retrieve changelog. Possibly not internet connection.</string>
+    <string name="str_auth_updated_90">No Changelog available.</string>
+    <string name="str_auth_updated_404">Could not retrieve changelog. Possibly server down or changelog script not available.</string>
+    <string name="str_auth_updated_500">Could not retrieve changelog. Server error. Please contact developer.</string>
+    <string name="str_auth_changelog">Changelog</string>
+    <string name="str_auth_loginSuccess">Login was successfully.</string>
+    <string name="str_auth_securityMsg">Note: Because of security aspects, you should consider to set a password for the game. You can do that in your profile settings.</string>
+    <string name="str_auth_storeTokenFailed">Could not store login token.</string>
+    
+    
+    <!-- Error strings -->
+    
+    
+    <string name="str_Error_1_4_5">Could not retrieve data. Possibly no internet connection.</string>
+    <string name="str_Error_404">Could not retrieve data. Possibly server is down or script not available.</string>
+    <string name="str_Error_500">Could not retrieve data. Server error. Please contact the developer.</string>
+    
+    <string name="str_Error_serialCheck">Error %d while checking serial.</string>
+    <string name="str_Error_serialCheck_100_1_2_4">Uncomplete parameters.</string>
+    <string name="str_Error_serialCheck_100_3">Hashes don\'t match.</string>
+    <string name="str_Error_serialCheck_100_5">Failed inserting serial into DB.</string>
+    <string name="str_Error_serialCheck_100_6">Failed updating serial in DB.</string>
+    <string name="str_Error_serialCheck_100_7">More than 1 row in DB query result.</string>
+    
+    <string name="str_Error_getUserInfo">Error %d while getting User Info.</string>
+    
+    <string name="str_Error_checkUpdate">Error %d while checking for update.</string>
+    
+    <string name="str_Error_changePass">Error %d while changing password.</string>
+    <string name="str_Error_changePass_100_1_2_3_4_16">Uncomplete parameters.</string>
+    <string name="str_Error_changePass_100_5">Hashes don\'t match.</string>
+    <string name="str_Error_changePass_100_6_8">Could not set new password in DB.</string>
+    <string name="str_Error_changePass_100_7">Old password must be committed.</string>
+    <string name="str_Error_changePass_100_9">Password does not match entered one.</string>
+    <string name="str_Error_changePass_100_10_13">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_changePass_100_11">Unknown login token. [Error deleting it from DB.]</string>
+    <string name="str_Error_changePass_100_12">Unknown login token. Try again.</string>
+    <string name="str_Error_changePass_100_14">Found more than 1 login token. [Error deleting them from DB.]</string>
+    <string name="str_Error_changePass_100_15">Found more than 1 login token. Try again.</string>
+    
+    <string name="str_Error_preLogin">Error %d while prelogin.</string>
+    <string name="str_Error_preLogin_100_1_2_6">Uncomplete parameters.</string>
+    <string name="str_Error_preLogin_100_3">Hashes don\'t match.</string>
+    <string name="str_Error_preLogin_100_4_5">Unexpected number of rows in DB query result.</string>
+    
+    <string name="str_Error_Login">Error %d while login.</string>
+    <string name="str_Error_Login_100_1_2_3_11">Uncomplete parameters.</string>
+    <string name="str_Error_Login_100_4">Hashes don\'t match.</string>
+    <string name="str_Error_Login_100_5_7">Failed inserting session into DB.</string>
+    <string name="str_Error_Login_100_6">Password must be committed.</string>
+    <string name="str_Error_Login_100_8">Password is wrong.</string>
+    <string name="str_Error_Login_100_9">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_Login_100_10">Request timeout.</string>
+    
+    <string name="str_Error_checkLogin">Error %d while checking login.</string>
+    <string name="str_Error_checkLogin_100_1_2">Uncomplete parameters.</string>
+    <string name="str_Error_checkLogin_100_3">Password must be committed.</string>
+    <string name="str_Error_checkLogin_100_4">Password is wrong.</string>
+    <string name="str_Error_checkLogin_100_5">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_checkLogin_100_6_7">Failed to delete rows in DB.</string>
+
+
     
 </resources>

@@ -4,17 +4,17 @@
     <header
         android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$BehaviourFragment"
         android:icon="@drawable/ic_settings_behaviour"
-        android:summary="@string/str_Preference_Header_behaviour_sum"
-        android:title="@string/str_Preference_Header_behaviour" />
+        android:summary="@string/str_PreferenceHeader_behaviour_sum"
+        android:title="@string/str_PreferenceHeader_behaviour" />
     <header
         android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$InfoFragment"
         android:icon="@drawable/ic_settings_info"
-        android:summary="@string/str_Preference_Header_info_sum"
-        android:title="@string/str_Preference_Header_info" />
+        android:summary="@string/str_PreferenceHeader_info_sum"
+        android:title="@string/str_PreferenceHeader_info" />
     <header
         android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$ProfileFragment"
         android:icon="@drawable/ic_settings_profile"
-        android:summary="@string/str_Preference_Header_profile_sum"
-        android:title="@string/str_Preference_Header_profile" />
+        android:summary="@string/str_PreferenceHeader_profile_sum"
+        android:title="@string/str_PreferenceHeader_profile" />
 
 </preference-headers>

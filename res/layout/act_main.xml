@@ -45,7 +45,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Information is an important element in our life, so this here is your information about Blue Hunter.\n More Text\n More and more text.\n ddid you know, that here needs to be more text to see, that this sh*t doesn&apos;t work ? yeah. \n another line...\n no more to say...^^ \n test ?"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </TableRow>
 

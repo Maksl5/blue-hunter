@@ -18,7 +18,8 @@
             android:id="@+id/txt_discoveryState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="D I S C O V E R Y  R U N N I N G ." />
+            android:text="TextView" />
+
     </TableRow>
 
     <TableLayout

@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -93,12 +94,12 @@ public class MainActivity extends FragmentActivity {
 		thisActivity = this;
 		destroyed = false;
 		setContentView(R.layout.act_main);
-		// Create the adapter that will return a fragment for each of the primary sections
-		// of the app.
-
+		
 		actionBarHandler = new ActionBarHandler(this);
 		disMan = new DiscoveryManager(this);
-
+		
+		// Create the adapter that will return a fragment for each of the primary sections
+		// of the app.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		authentification = new Authentification(this, this);
@@ -198,36 +199,36 @@ public class MainActivity extends FragmentActivity {
 						if (matcher.find()) {
 							int error = Integer.parseInt(matcher.group(1));
 
-							String errorMsg = "Error " + error + " while checking serial."; 
+							String errorMsg = getString(R.string.str_Error_serialCheck, error); 
 							
 							switch (error) {
 								case 1:
 								case 4:
 								case 5:
-									errorMsg+= " (Could not retrieve data. Possibly no internet connection.)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_1_4_5));
 									break;
 								case 404:
-									errorMsg += " (Could not retrieve data. Possibly server is down or script not available.)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_404));
 									break;
 								case 500:
-									errorMsg += " (Could not retrieve data. Server error. Please contact the developer.)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_500));
 									break;
 								case 1001:
 								case 1002:
 								case 1004:
-									errorMsg += " (Uncomplete parameters)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_1_2_4));
 									break;
 								case 1003:
-									errorMsg += " (Hashes don't match)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_3));
 									break;
 								case 1005:
-									errorMsg += " (Failed inserting serial into DB)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_5));
 									break;
 								case 1006:
-									errorMsg += " (Failed updating serial in DB)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_6));
 									break;
 								case 1007:
-									errorMsg += " (More than 1 row in DB query result)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_7));
 									break;
 							}
 							
@@ -245,19 +246,19 @@ public class MainActivity extends FragmentActivity {
 						if (matcher2.find()) {
 							int error = Integer.parseInt(matcher2.group(1));
 
-							String errorMsg = "Error " + error + " while getting User Info."; 
+							String errorMsg = getString(R.string.str_Error_getUserInfo, error); 
 							
 							switch (error) {
 								case 1:
 								case 4:
 								case 5:
-									errorMsg+= " (Could not retrieve data. Possibly no internet connection.)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_1_4_5));
 									break;
 								case 404:
-									errorMsg += " (Could not retrieve data. Possibly server is down or script not available.)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_404));
 									break;
 								case 500:
-									errorMsg += " (Could not retrieve data. Server error. Please contact the developer.)";
+									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_500));
 									break;
 							}
 							
@@ -485,7 +486,7 @@ public class MainActivity extends FragmentActivity {
 			if (VERSION.SDK_INT >= 14)
 				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
 
-			stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
+			stateNotificationBuilder.setContentText(String.format("%s %d\t%d / %d %s", getString(R.string.str_foundDevices_level), level, exp, LevelSystem.getLevelEndExp(level), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
@@ -507,7 +508,7 @@ public class MainActivity extends FragmentActivity {
 			if (VERSION.SDK_INT >= 14)
 				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
 
-			stateNotificationBuilder.setContentText("Level " + level + "\t" + exp + " / " + LevelSystem.getLevelEndExp(level) + " " + getString(R.string.str_foundDevices_exp_abbreviation));
+			stateNotificationBuilder.setContentText(String.format("%s %d\t%d / %d %s", getString(R.string.str_foundDevices_level), level, exp, LevelSystem.getLevelEndExp(level), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
