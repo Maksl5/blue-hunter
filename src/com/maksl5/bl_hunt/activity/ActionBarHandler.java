@@ -278,7 +278,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	@Override
 	public boolean onQueryTextChange(String newText) {
 
-		if (currentPage == 3) {
+		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES) {
 
 			FragmentLayoutManager.FoundDevicesLayout.filterFoundDevices(newText, mainActivity);
 

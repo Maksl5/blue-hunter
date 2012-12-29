@@ -110,7 +110,7 @@ public class FragmentLayoutManager {
 			Set<String> keySet = macHashMap.keySet();
 			for (HashMap<String, String> device : devices) {
 				HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
-				
+
 				String deviceMac = device.get(DatabaseHelper.COLUMN_MAC_ADDRESS);
 				String manufacturer = device.get(DatabaseHelper.COLUMN_MANUFACTURER);
 				String deviceTime = device.get(DatabaseHelper.COLUMN_TIME);
@@ -118,18 +118,19 @@ public class FragmentLayoutManager {
 				tempDataHashMap.put("macAddress", deviceMac);
 				tempDataHashMap.put("name", device.get(DatabaseHelper.COLUMN_NAME));
 				tempDataHashMap.put("RSSI", "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI));
-				
-				if(manufacturer == null || manufacturer.equals("") || manufacturer.equals("Unkown")) {
+
+				if (manufacturer == null || manufacturer.equals("") || manufacturer.equals("Unknown")) {
 					manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
 					new DatabaseManager(mainActivity, mainActivity.versionCode).addManufacturerToDevice(deviceMac, manufacturer);
-					
-					if(manufacturer.equals("Unknown")) {
-						manufacturer = mainActivity.getString(R.string.str_foundDevices_manu_unkown);
+
+					if (manufacturer.equals("Unknown")) {
+						manufacturer =
+								mainActivity.getString(R.string.str_foundDevices_manu_unkown);
 					}
 				}
-				
+
 				tempDataHashMap.put("manufacturer", manufacturer);
-				tempDataHashMap.put("exp", "" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")));
+				tempDataHashMap.put("exp", "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
 
 				Long time =
 						(deviceTime == null || deviceTime.equals("null")) ? 0 : Long.parseLong(deviceTime);
@@ -166,8 +167,9 @@ public class FragmentLayoutManager {
 
 			if (text.equalsIgnoreCase("[unknown]")) {
 
-				String unknownString = mainActivity.getString(R.string.str_foundDevices_manu_unkown);
-				
+				String unknownString =
+						mainActivity.getString(R.string.str_foundDevices_manu_unkown);
+
 				for (HashMap<String, String> hashMap : completeFdList) {
 					if (hashMap.get("manufacturer").equals(unknownString)) {
 						searchedList.add(hashMap);
