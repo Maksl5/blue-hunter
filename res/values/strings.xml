@@ -84,6 +84,7 @@
     <string name="str_auth_loginSuccess">Login was successfully.</string>
     <string name="str_auth_securityMsg">Note: Because of security aspects, you should consider to set a password for the game. You can do that in your profile settings.</string>
     <string name="str_auth_storeTokenFailed">Could not store login token.</string>
+    <string name="str_auth_changelog_ok">Ok</string>
     
     
     <!-- Error strings -->

@@ -12,9 +12,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -271,25 +275,43 @@ public class Authentification {
 									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_500));
 							break;
 						}
-
+						
+						Toast.makeText(mainActivity, updateMsg, Toast.LENGTH_LONG).show();
 					}
 					else {
 
-						Dialog changelogDialog = new Dialog(activity);
+						Builder builder = new Builder(activity);
+						builder.setTitle(mainActivity.getString(R.string.str_auth_changelog));
+						builder.setNeutralButton(R.string.str_auth_changelog_ok, new OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog,
+												int which) {
+							
+								dialog.dismiss();
+								
+							}
+						});
+						
+						AlertDialog changelogDialog = builder.create();
 						ScrollView changeLogScrollView = new ScrollView(activity);
+						
+						changeLogScrollView.setSmoothScrollingEnabled(true);
+						
+						
 						WebView changelogWebView = new WebView(activity);
-						changelogDialog.setTitle(mainActivity.getString(R.string.str_auth_changelog));
 						int padding =
 								mainActivity.getResources().getDimensionPixelSize(R.dimen.padding_small);
 						changelogWebView.setPadding(padding, padding, padding, padding);
-						changelogDialog.addContentView(changeLogScrollView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 						changeLogScrollView.addView(changelogWebView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 						changelogWebView.loadDataWithBaseURL(null, resultString, "text/html", "UTF-8", null);
+						
+						changelogDialog.setView(changeLogScrollView, 0, 0, 0, 0);
+						
 						changelogDialog.show();
 
 					}
 
-					Toast.makeText(mainActivity, updateMsg, Toast.LENGTH_LONG).show();
 
 					return true;
 				}
