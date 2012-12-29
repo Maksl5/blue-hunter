@@ -51,7 +51,7 @@ public class FragmentLayoutManager {
 	public static final int PAGE_LEADERBOARD = 1;
 	public static final int PAGE_FOUND_DEVICES = 2;
 	public static final int PAGE_ACHIEVEMENTS = 3;
-	public static final int PAGE_STATISTICS = 4;
+	public static final int PAGE_PROFILE = 4;
 
 	public static View getSpecificView(	Bundle params,
 										LayoutInflater parentInflater,
@@ -69,8 +69,8 @@ public class FragmentLayoutManager {
 			return parentInflater.inflate(R.layout.act_page_founddevices, rootContainer, false);
 		case PAGE_ACHIEVEMENTS:
 			break;
-		case PAGE_STATISTICS:
-			return parentInflater.inflate(R.layout.act_page_statistics, rootContainer, false);
+		case PAGE_PROFILE:
+			return parentInflater.inflate(R.layout.act_page_profile, rootContainer, false);
 
 		}
 
@@ -220,7 +220,7 @@ public class FragmentLayoutManager {
 
 		public static void initializeView(final MainActivity mainActivity) {
 
-			View parentContainer = mainActivity.mViewPager.getChildAt(PAGE_STATISTICS + 1);
+			View parentContainer = mainActivity.mViewPager.getChildAt(PAGE_PROFILE + 1);
 
 			final TextView nameTextView =
 					(TextView) parentContainer.findViewById(R.id.nameTextView);

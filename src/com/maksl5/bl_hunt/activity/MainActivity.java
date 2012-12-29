@@ -406,8 +406,8 @@ public class MainActivity extends FragmentActivity {
 					return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
 				case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
 					return getString(R.string.str_pageTitle_achievements).toUpperCase();
-				case FragmentLayoutManager.PAGE_STATISTICS:
-					return getString(R.string.str_pageTitle_statistics).toUpperCase();
+				case FragmentLayoutManager.PAGE_PROFILE:
+					return getString(R.string.str_pageTitle_profile).toUpperCase();
 			}
 			return null;
 		}

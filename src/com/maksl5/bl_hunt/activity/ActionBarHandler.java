@@ -124,7 +124,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				menu.findItem(R.id.menu_search).setVisible(false);
 				menu.findItem(R.id.menu_info).setVisible(false);
 				break;
-			case FragmentLayoutManager.PAGE_STATISTICS:
+			case FragmentLayoutManager.PAGE_PROFILE:
 				
 				break;
 		}
