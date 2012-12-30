@@ -188,8 +188,8 @@ public class Authentification {
 
 							int verCode = Integer.parseInt(matcher.group(1));
 
-							if (verCode > getVersionCode(context)) {
-								Toast.makeText(context, mainActivity.getString(R.string.str_auth_newUpdateAvailable, getVersionCode(context), verCode), Toast.LENGTH_LONG).show();
+							if (verCode > getVersionCode(mainActivity)) {
+								Toast.makeText(mainActivity, mainActivity.getString(R.string.str_auth_newUpdateAvailable, getVersionCode(context), verCode), Toast.LENGTH_LONG).show();
 								newUpdateAvailable = true;
 							}
 						}
@@ -198,7 +198,7 @@ public class Authentification {
 							Matcher matcher = pattern.matcher(resultString);
 							if (matcher.find()) {
 								int errorCode = Integer.parseInt(matcher.group(1));
-								Toast.makeText(context, mainActivity.getString(R.string.str_Error_checkUpdate, errorCode), Toast.LENGTH_LONG).show();
+								Toast.makeText(mainActivity, mainActivity.getString(R.string.str_Error_checkUpdate, errorCode), Toast.LENGTH_LONG).show();
 							}
 						}
 

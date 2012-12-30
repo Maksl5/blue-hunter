@@ -29,34 +29,11 @@ public class LevelSystem {
 
 		List<HashMap<String, String>> foundDevices =
 				new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
-		HashMap<String, Integer> expHashMap = MacAddressAllocations.getExpHashMap();
-		HashMap<String, String[ ]> macAllocations = MacAddressAllocations.getHashMap();
-
-		Set<String> keys = macAllocations.keySet();
 
 		for (HashMap<String, String> foundDevice : foundDevices) {
-			boolean foundManufacturer = false;
 
-			for (String key : keys) {
-				String[ ] manufactuerMacs = macAllocations.get(key);
-
-				for (String mac : manufactuerMacs) {
-
-					if (foundDevice.get(DatabaseHelper.COLUMN_MAC_ADDRESS).startsWith(mac)) {
-						foundManufacturer = true;
-						int tempExp = expHashMap.get(key.replace(" ", "_")
-														+ "_exp");
-						exp += tempExp;
-
-					}
-
-				}
-
-			}
-
-			if (!foundManufacturer) {
-				exp += expHashMap.get("Unknown_exp");
-			}
+			String mac = foundDevice.get(DatabaseHelper.COLUMN_MAC_ADDRESS);
+			exp += MacAddressAllocations.getExp(MacAddressAllocations.getManufacturer(mac).replace(" ", "_"));
 
 		}
 
@@ -71,9 +48,7 @@ public class LevelSystem {
 		int compareExp = 50;
 
 		while (compareExp < exp) {
-			compareExp = compareExp
-							* 2
-							+ compareExp;
+			compareExp = compareExp * 2 + compareExp;
 			level += 1;
 		}
 
@@ -87,9 +62,7 @@ public class LevelSystem {
 		int exp = 50;
 
 		for (int i = 1; i < level - 1; i++) {
-			exp = exp
-					* 2
-					+ exp;
+			exp = exp * 2 + exp;
 		}
 
 		return exp;
@@ -100,9 +73,7 @@ public class LevelSystem {
 		int exp = 50;
 
 		for (int i = 1; i < level; i++) {
-			exp = exp
-					* 2
-					+ exp;
+			exp = exp * 2 + exp;
 		}
 
 		return exp;

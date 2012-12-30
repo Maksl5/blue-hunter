@@ -89,7 +89,7 @@ public class MainActivity extends FragmentActivity {
 
 		super.onCreate(savedInstanceState);
 		
-		//Debug.startMethodTracing("blHunt_6");
+		//Debug.startMethodTracing("blHunt_9");
 		
 		thisActivity = this;
 		destroyed = false;
@@ -323,6 +323,8 @@ public class MainActivity extends FragmentActivity {
 
 		// Network Stuff
 
+		authentification.checkUpdate();
+		
 		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
 		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + versionCode, "h=" + authentification.getSerialNumberHash());
 
