@@ -33,7 +33,15 @@ public class LevelSystem {
 		for (HashMap<String, String> foundDevice : foundDevices) {
 
 			String manufacturer = foundDevice.get(DatabaseHelper.COLUMN_MANUFACTURER);
-			exp += MacAddressAllocations.getExp(manufacturer.replace(" ", "_"));
+			
+			if(manufacturer == null)
+			{
+				exp += 12;
+			}
+			else {
+				exp += MacAddressAllocations.getExp(manufacturer.replace(" ", "_"));
+			}
+			
 
 		}
 
