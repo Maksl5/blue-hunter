@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="651"
-    android:versionName="pre_alpha_0.2.0.651_121231-1717" >
+    android:versionCode="656"
+    android:versionName="pre_alpha_0.2.0.656_121231-1833" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
+        android:name="BlueHunter"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
