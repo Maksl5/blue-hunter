@@ -81,6 +81,8 @@ public class MainActivity extends FragmentActivity {
 
 	public int versionCode = 0;
 	public boolean passSet = false;
+	
+	public int exp = 0;
 
 	private boolean destroyed;
 
@@ -89,7 +91,7 @@ public class MainActivity extends FragmentActivity {
 
 		super.onCreate(savedInstanceState);
 		
-		//Debug.startMethodTracing("blHunt_9");
+		//Debug.startMethodTracing("blHunt_12");
 		
 		thisActivity = this;
 		destroyed = false;
@@ -482,7 +484,6 @@ public class MainActivity extends FragmentActivity {
 
 		if (PreferenceManager.getPref(this, "pref_showNotification", true)) {
 
-			int exp = LevelSystem.getUserExp(this);
 			int level = LevelSystem.getLevel(exp);
 
 			if (VERSION.SDK_INT >= 14)
@@ -504,7 +505,6 @@ public class MainActivity extends FragmentActivity {
 
 		if (show) {
 
-			int exp = LevelSystem.getUserExp(this);
 			int level = LevelSystem.getLevel(exp);
 
 			if (VERSION.SDK_INT >= 14)

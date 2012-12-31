@@ -127,7 +127,7 @@ public class DatabaseManager {
 		return macStrings;
 	}
 
-	public List<HashMap<String, String>> getAllDevices() {
+	public synchronized List<HashMap<String, String>> getAllDevices() {
 
 		List<HashMap<String, String>> devices = new ArrayList<HashMap<String, String>>();
 
@@ -164,7 +164,7 @@ public class DatabaseManager {
 
 	}
 
-	public void addManufacturerToDevice(String macAddress,
+	public synchronized void addManufacturerToDevice(String macAddress,
 										String manufacturer) {
 
 		ContentValues values = new ContentValues();

@@ -56,7 +56,7 @@ public class MacAddressAllocations {
 
 	}
 
-	public static String getManufacturer(String macAddress) {
+	public synchronized static String getManufacturer(String macAddress) {
 
 		HashMap<String, String[]> manufacturers = getHashMap();
 
@@ -74,11 +74,11 @@ public class MacAddressAllocations {
 
 	public static int getExp(String manufacturer) {
 
-		//if (manufacturerExps != null) {
-		//	if (!manufacturerExps.isEmpty()) {
-				if (manufacturerExps.get(manufacturer + "_exp") != null) { return manufacturerExps.get(manufacturer + "_exp"); }
-		//	}
-		//}
+		if (manufacturerExps != null) {
+			if (!manufacturerExps.isEmpty()) {
+				return manufacturerExps.get(manufacturer + "_exp");
+			}
+		}
 
 		int exp = 0;
 

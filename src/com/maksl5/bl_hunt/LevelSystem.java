@@ -32,8 +32,8 @@ public class LevelSystem {
 
 		for (HashMap<String, String> foundDevice : foundDevices) {
 
-			String mac = foundDevice.get(DatabaseHelper.COLUMN_MAC_ADDRESS);
-			exp += MacAddressAllocations.getExp(MacAddressAllocations.getManufacturer(mac).replace(" ", "_"));
+			String manufacturer = foundDevice.get(DatabaseHelper.COLUMN_MANUFACTURER);
+			exp += MacAddressAllocations.getExp(manufacturer.replace(" ", "_"));
 
 		}
 

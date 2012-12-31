@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import android.R.bool;
 import android.R.integer;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -84,10 +87,15 @@ public class FragmentLayoutManager {
 	 */
 	public static class FoundDevicesLayout {
 
-		private static List<HashMap<String, String>> showedFdList =
-				new ArrayList<HashMap<String, String>>();
-		private static List<HashMap<String, String>> completeFdList =
-				new ArrayList<HashMap<String, String>>();
+		public static final int ARRAY_INDEX_MAC_ADDRESS = 0;
+		public static final int ARRAY_INDEX_NAME = 1;
+		public static final int ARRAY_INDEX_RSSI = 2;
+		public static final int ARRAY_INDEX_MANUFACTURER = 3;
+		public static final int ARRAY_INDEX_EXP = 4;
+		public static final int ARRAY_INDEX_TIME = 5;
+
+		private volatile static String[] showedFdArray = {};
+		private volatile static String[] completeFdList = {};
 		private static String[] from =
 				{
 					"macAddress", "manufacturer", "exp", "RSSI", "name", "time" };
@@ -95,101 +103,312 @@ public class FragmentLayoutManager {
 									R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView,
 									R.id.rssiTxtView, R.id.nameTxtView, R.id.timeTxtView };
 
+		private static ThreadManager threadManager = null;
+
 		public static void refreshFoundDevicesList(final MainActivity mainActivity) {
 
-			ListView lv =
-					(ListView) mainActivity.mViewPager.getChildAt(PAGE_FOUND_DEVICES + 1).findViewById(R.id.listView2);
-
-			List<HashMap<String, String>> devices =
-					new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
-			List<HashMap<String, String>> listViewHashMaps =
-					new ArrayList<HashMap<String, String>>();
-
-			HashMap<String, String[]> macHashMap = MacAddressAllocations.getHashMap();
-			HashMap<String, Integer> expHashMap = MacAddressAllocations.getExpHashMap();
-
-			Set<String> keySet = macHashMap.keySet();
-			
-			String expString = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
-			DateFormat dateFormat = DateFormat.getDateTimeInstance();
-			
-			for (HashMap<String, String> device : devices) {
-				HashMap<String, String> tempDataHashMap = new HashMap<String, String>();
-
-				String deviceMac = device.get(DatabaseHelper.COLUMN_MAC_ADDRESS);
-				String manufacturer = device.get(DatabaseHelper.COLUMN_MANUFACTURER);
-				String deviceTime = device.get(DatabaseHelper.COLUMN_TIME);
-
-				tempDataHashMap.put("macAddress", deviceMac);
-				tempDataHashMap.put("name", device.get(DatabaseHelper.COLUMN_NAME));
-				tempDataHashMap.put("RSSI", "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI));
-
-				if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
-					manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
-					new DatabaseManager(mainActivity, mainActivity.versionCode).addManufacturerToDevice(deviceMac, manufacturer);
-
-					if (manufacturer.equals("Unknown")) {
-						manufacturer =
-								mainActivity.getString(R.string.str_foundDevices_manu_unkown);
-					}
-				}
-
-				tempDataHashMap.put("manufacturer", manufacturer);
-				tempDataHashMap.put("exp", "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString);
-
-				Long time =
-						(deviceTime == null || deviceTime.equals("null")) ? 0 : Long.parseLong(deviceTime);
-				tempDataHashMap.put("time", dateFormat.format(new Date(time)));
-
-				listViewHashMaps.add(tempDataHashMap);
-
+			if (threadManager == null) {
+				threadManager = new FoundDevicesLayout().new ThreadManager(mainActivity);
 			}
 
-			SimpleAdapter sAdapter =
-					new SimpleAdapter(mainActivity, listViewHashMaps, R.layout.act_page_founddevices_row, from, to);
-			showedFdList = listViewHashMaps;
-
-			if (!completeFdList.equals(listViewHashMaps)) {
-				completeFdList = listViewHashMaps;
+			RefreshThread refreshThread =
+					new FoundDevicesLayout().new RefreshThread(mainActivity, threadManager);
+			if (refreshThread.canRun()) {
+				refreshThread.execute();
 			}
 
-			ListenerClass listenerClass = new FragmentLayoutManager().new ListenerClass();
-
-			// lv.setOnHierarchyChangeListener(listenerClass);
-
-			int scroll = lv.getFirstVisiblePosition();
-			lv.setAdapter(sAdapter);
-			lv.setSelection(scroll);
 		}
 
 		public static void filterFoundDevices(	String text,
 												MainActivity mainActivity) {
 
-			List<HashMap<String, String>> searchedList = new ArrayList<HashMap<String, String>>();
+			List<String> searchedList = new ArrayList<String>();
+
 			ListView lv =
 					(ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
-			SimpleAdapter sAdapter;
+			FoundDevicesAdapter fdAdapter;
 
 			if (text.equalsIgnoreCase("[unknown]")) {
 
 				String unknownString =
 						mainActivity.getString(R.string.str_foundDevices_manu_unkown);
 
-				for (HashMap<String, String> hashMap : completeFdList) {
-					if (hashMap.get("manufacturer").equals(unknownString)) {
-						searchedList.add(hashMap);
+				for (String deviceAsString : completeFdList) {
+
+					String[] device = deviceAsString.split(String.valueOf((char) 30));
+
+					if (device[ARRAY_INDEX_MANUFACTURER].equals(unknownString)) {
+						searchedList.add(deviceAsString);
 					}
 				}
-				sAdapter =
-						new SimpleAdapter(mainActivity, searchedList, R.layout.act_page_founddevices_row, from, to);
+
+				showedFdArray = searchedList.toArray(new String[searchedList.size()]);
+				fdAdapter =
+						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+				lv.setAdapter(fdAdapter);
+
 			}
 			else {
-				sAdapter =
-						new SimpleAdapter(mainActivity, completeFdList, R.layout.act_page_founddevices_row, from, to);
+				showedFdArray = completeFdList;
+				fdAdapter =
+						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+				lv.setAdapter(fdAdapter);
 			}
 
-			lv.setAdapter(sAdapter);
+		}
 
+		private class RefreshThread extends AsyncTask<Void, Void, Void> {
+
+			private MainActivity mainActivity;
+			private ListView listView;
+
+			private FoundDevicesAdapter fdAdapter;
+
+			private ThreadManager threadManager;
+
+			private boolean canRun = true;
+
+			private RefreshThread(MainActivity mainActivity,
+					ThreadManager threadManager) {
+
+				super();
+				this.mainActivity = mainActivity;
+				this.listView =
+						(ListView) mainActivity.mViewPager.getChildAt(PAGE_FOUND_DEVICES + 1).findViewById(R.id.listView2);
+				this.fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
+				if (this.fdAdapter == null || this.fdAdapter.isEmpty()) {
+					this.fdAdapter =
+							new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+				}
+				this.listView.setAdapter(fdAdapter);
+
+				this.threadManager = threadManager;
+
+				if (!this.threadManager.setThread(this)) {
+					canRun = false;
+				}
+
+			}
+
+			public boolean canRun() {
+
+				return canRun;
+			}
+
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				List<HashMap<String, String>> devices =
+						new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
+				String[] listViewArray = new String[devices.size()];
+
+				String expString =
+						mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+				DateFormat dateFormat = DateFormat.getDateTimeInstance();
+
+				String tempString;
+
+				for (int i = 0; i < devices.size(); i++) {
+
+					HashMap<String, String> device = devices.get(i);
+
+					String deviceMac = device.get(DatabaseHelper.COLUMN_MAC_ADDRESS);
+					String manufacturer = device.get(DatabaseHelper.COLUMN_MANUFACTURER);
+					String deviceTime = device.get(DatabaseHelper.COLUMN_TIME);
+
+					if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
+						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
+						new DatabaseManager(mainActivity, mainActivity.versionCode).addManufacturerToDevice(deviceMac, manufacturer);
+
+						if (manufacturer.equals("Unknown")) {
+							manufacturer =
+									mainActivity.getString(R.string.str_foundDevices_manu_unkown);
+						}
+					}
+
+					Long time =
+							(deviceTime == null || deviceTime.equals("null")) ? 0 : Long.parseLong(deviceTime);
+
+					tempString =
+							deviceMac + (char) 30 + device.get(DatabaseHelper.COLUMN_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI) + (char) 30 + manufacturer + (char) 30 + "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString + (char) 30 + dateFormat.format(new Date(time));
+
+					listViewArray[i] = tempString;
+
+					showedFdArray = listViewArray;
+
+					publishProgress();
+
+				}
+
+				if (!completeFdList.equals(listViewArray)) {
+					completeFdList = listViewArray;
+				}
+
+				return null;
+
+				// ListenerClass listenerClass = new FragmentLayoutManager().new ListenerClass();
+
+				// lv.setOnHierarchyChangeListener(listenerClass);
+
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+			 */
+			@Override
+			protected void onPostExecute(Void result) {
+
+				int scroll = listView.getFirstVisiblePosition();
+				this.fdAdapter =
+						new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+				listView.setAdapter(fdAdapter);
+				listView.setSelection(scroll);
+
+				threadManager.finished(this);
+
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+			 */
+			@Override
+			protected void onProgressUpdate(Void... values) {
+
+				int scroll = listView.getFirstVisiblePosition();
+				this.fdAdapter =
+						new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+				listView.setAdapter(fdAdapter);
+				listView.setSelection(scroll);
+
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.os.AsyncTask#onPreExecute()
+			 */
+			@Override
+			protected void onPreExecute() {
+
+			}
+		}
+
+		private class ThreadManager {
+
+			MainActivity mainActivity;
+			RefreshThread refreshThread;
+			boolean running;
+
+			public ThreadManager(MainActivity mainActivity) {
+
+				this.mainActivity = mainActivity;
+			}
+
+			/**
+			 * @param refreshThread2
+			 * @return
+			 */
+			public boolean setThread(RefreshThread refreshThread) {
+
+				if (running) { return false; }
+
+				this.refreshThread = refreshThread;
+				running = true;
+				return true;
+			}
+
+			public boolean finished(RefreshThread refreshThread) {
+
+				if (this.refreshThread.equals(refreshThread)) {
+					running = false;
+					return true;
+				}
+				return false;
+			}
+		}
+
+		public class FoundDevicesAdapter extends ArrayAdapter<String> {
+
+			String[] devices;
+			Context context;
+
+			public FoundDevicesAdapter(Context context,
+					int textViewResourceId,
+					String[] objects) {
+
+				super(context, textViewResourceId, objects);
+				this.context = context;
+				devices = objects;
+
+			}
+
+			@Override
+			public View getView(int position,
+								View convertView,
+								ViewGroup parent) {
+
+				View rowView = convertView;
+				if (rowView == null) {
+
+					LayoutInflater inflater =
+							(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+					rowView = inflater.inflate(R.layout.act_page_founddevices_row, parent, false);
+					
+					ViewHolder viewHolder = new ViewHolder();
+					
+					viewHolder.macAddress = (TextView) rowView.findViewById(R.id.macTxtView);
+					viewHolder.name = (TextView) rowView.findViewById(R.id.nameTxtView);
+					viewHolder.manufacturer = (TextView) rowView.findViewById(R.id.manufacturerTxtView);
+					viewHolder.rssi = (TextView) rowView.findViewById(R.id.rssiTxtView);
+					viewHolder.time = (TextView) rowView.findViewById(R.id.timeTxtView);
+					viewHolder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
+					viewHolder.nameTableRow = (TableRow) rowView.findViewById(R.id.tableRow1);
+					
+					rowView.setTag(viewHolder);
+				}
+
+				ViewHolder holder = (ViewHolder) rowView.getTag();
+
+				String deviceAsString = devices[position];
+				String[] device = deviceAsString.split(String.valueOf((char) 30));
+
+				
+
+				String nameString = device[ARRAY_INDEX_NAME];
+				if (nameString == null || nameString.equals("null")) {
+					nameString = "";
+					holder.nameTableRow.setVisibility(View.GONE);
+				}else{
+					holder.nameTableRow.setVisibility(View.VISIBLE);
+				}
+				
+				
+				holder.macAddress.setText(device[ARRAY_INDEX_MAC_ADDRESS]);
+				holder.name.setText(nameString);
+				holder.manufacturer.setText(device[ARRAY_INDEX_MANUFACTURER]);
+				holder.rssi.setText(device[ARRAY_INDEX_RSSI]);
+				holder.time.setText(device[ARRAY_INDEX_TIME]);
+				holder.exp.setText(device[ARRAY_INDEX_EXP]);
+
+				return rowView;
+			}
+
+		}
+
+		static class ViewHolder {
+
+			TextView macAddress;
+			TextView name;
+			TextView manufacturer;
+			TextView rssi;
+			TextView time;
+			TextView exp;
+			TableRow nameTableRow;
 		}
 
 	}
@@ -208,6 +427,7 @@ public class FragmentLayoutManager {
 					(PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
 			int exp = LevelSystem.getUserExp(mainActivity);
+			mainActivity.exp = exp;
 			int level = LevelSystem.getLevel(exp);
 
 			expTextView.setText(String.format("%d %s / %d %s", exp, mainActivity.getString(R.string.str_foundDevices_exp_abbreviation), LevelSystem.getLevelEndExp(level), mainActivity.getString(R.string.str_foundDevices_exp_abbreviation)));
