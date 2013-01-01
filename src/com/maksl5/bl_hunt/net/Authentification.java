@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.acra.ACRA;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -26,6 +28,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager.BadTokenException;
 import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -308,7 +311,16 @@ public class Authentification {
 						
 						changelogDialog.setView(changeLogScrollView, 0, 0, 0, 0);
 						
-						changelogDialog.show();
+						
+						try {
+							changelogDialog.show();
+						}
+						catch (BadTokenException e) {
+							
+							ACRA.getErrorReporter().handleSilentException(e);
+							
+						}
+						
 
 					}
 
