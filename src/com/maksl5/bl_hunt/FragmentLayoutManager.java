@@ -351,6 +351,8 @@ public class FragmentLayoutManager {
 								View convertView,
 								ViewGroup parent) {
 
+				if (devices == null || devices[position] == null) { return null; }
+
 				View rowView = convertView;
 				if (rowView == null) {
 
@@ -358,17 +360,18 @@ public class FragmentLayoutManager {
 							(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 					rowView = inflater.inflate(R.layout.act_page_founddevices_row, parent, false);
-					
+
 					ViewHolder viewHolder = new ViewHolder();
-					
+
 					viewHolder.macAddress = (TextView) rowView.findViewById(R.id.macTxtView);
 					viewHolder.name = (TextView) rowView.findViewById(R.id.nameTxtView);
-					viewHolder.manufacturer = (TextView) rowView.findViewById(R.id.manufacturerTxtView);
+					viewHolder.manufacturer =
+							(TextView) rowView.findViewById(R.id.manufacturerTxtView);
 					viewHolder.rssi = (TextView) rowView.findViewById(R.id.rssiTxtView);
 					viewHolder.time = (TextView) rowView.findViewById(R.id.timeTxtView);
 					viewHolder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
 					viewHolder.nameTableRow = (TableRow) rowView.findViewById(R.id.tableRow1);
-					
+
 					rowView.setTag(viewHolder);
 				}
 
@@ -377,17 +380,15 @@ public class FragmentLayoutManager {
 				String deviceAsString = devices[position];
 				String[] device = deviceAsString.split(String.valueOf((char) 30));
 
-				
-
 				String nameString = device[ARRAY_INDEX_NAME];
 				if (nameString == null || nameString.equals("null")) {
 					nameString = "";
 					holder.nameTableRow.setVisibility(View.GONE);
-				}else{
+				}
+				else {
 					holder.nameTableRow.setVisibility(View.VISIBLE);
 				}
-				
-				
+
 				holder.macAddress.setText(device[ARRAY_INDEX_MAC_ADDRESS]);
 				holder.name.setText(nameString);
 				holder.manufacturer.setText(device[ARRAY_INDEX_MANUFACTURER]);

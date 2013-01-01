@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="657"
-    android:versionName="pre_alpha_0.2.0.657_121231-1942" >
+    android:versionCode="658"
+    android:versionName="pre_alpha_0.2.0.658_130101-1559" >
 
     <uses-sdk
         android:minSdkVersion="11"
