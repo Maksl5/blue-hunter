@@ -343,7 +343,7 @@ public class FragmentLayoutManager {
 				super(context, textViewResourceId, objects);
 				this.context = context;
 				devices = objects;
-
+				
 			}
 
 			@Override
@@ -351,7 +351,7 @@ public class FragmentLayoutManager {
 								View convertView,
 								ViewGroup parent) {
 
-				if (devices == null || devices[position] == null) { return null; }
+				if (devices == null || devices[position] == null) { return new View(context); }
 
 				View rowView = convertView;
 				if (rowView == null) {
