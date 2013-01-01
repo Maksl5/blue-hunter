@@ -343,7 +343,7 @@ public class FragmentLayoutManager {
 				super(context, textViewResourceId, objects);
 				this.context = context;
 				devices = objects;
-				
+
 			}
 
 			@Override
@@ -377,25 +377,28 @@ public class FragmentLayoutManager {
 
 				ViewHolder holder = (ViewHolder) rowView.getTag();
 
-				String deviceAsString = devices[position];
-				String[] device = deviceAsString.split(String.valueOf((char) 30));
+				if (holder != null) {
 
-				String nameString = device[ARRAY_INDEX_NAME];
-				if (nameString == null || nameString.equals("null")) {
-					nameString = "";
-					holder.nameTableRow.setVisibility(View.GONE);
+					String deviceAsString = devices[position];
+					String[] device = deviceAsString.split(String.valueOf((char) 30));
+
+					String nameString = device[ARRAY_INDEX_NAME];
+					if (nameString == null || nameString.equals("null")) {
+						nameString = "";
+						holder.nameTableRow.setVisibility(View.GONE);
+					}
+					else {
+						holder.nameTableRow.setVisibility(View.VISIBLE);
+					}
+
+					holder.macAddress.setText(device[ARRAY_INDEX_MAC_ADDRESS]);
+					holder.name.setText(nameString);
+					holder.manufacturer.setText(device[ARRAY_INDEX_MANUFACTURER]);
+					holder.rssi.setText(device[ARRAY_INDEX_RSSI]);
+					holder.time.setText(device[ARRAY_INDEX_TIME]);
+					holder.exp.setText(device[ARRAY_INDEX_EXP]);
+
 				}
-				else {
-					holder.nameTableRow.setVisibility(View.VISIBLE);
-				}
-
-				holder.macAddress.setText(device[ARRAY_INDEX_MAC_ADDRESS]);
-				holder.name.setText(nameString);
-				holder.manufacturer.setText(device[ARRAY_INDEX_MANUFACTURER]);
-				holder.rssi.setText(device[ARRAY_INDEX_RSSI]);
-				holder.time.setText(device[ARRAY_INDEX_TIME]);
-				holder.exp.setText(device[ARRAY_INDEX_EXP]);
-
 				return rowView;
 			}
 
