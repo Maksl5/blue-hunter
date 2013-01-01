@@ -144,8 +144,11 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	 */
 	private void checkMenuNull() {
 
-		if (menu == null)
-			throw new NullMenuException("The Menu object is null. This is caused, because you either haven't supplied a Menu, or the supplied Menu was null. Read the class description to avoid this Exception.");
+		if (menu == null) {
+			
+			mainActivity.invalidateOptionsMenu();
+			
+		}
 
 	}
 
