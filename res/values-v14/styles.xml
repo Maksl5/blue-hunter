@@ -1,6 +1,15 @@
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar" />
-	<style name="EnableBluetoothTheme" parent="android:Theme.DeviceDefault.NoActionBar"/>
-	
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/bhActionBar</item>
+    </style>
+
+    <style name="bhActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@drawable/bg_actionbar_tiled</item>
+        <item name="android:titleTextStyle">@style/NoTitleText</item>
+        <item name="android:subtitleTextStyle">@style/NoTitleText</item>
+    </style>
+
+    <style name="EnableBluetoothTheme" parent="android:Theme.DeviceDefault.NoActionBar" />
+
 </resources>

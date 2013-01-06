@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="668"
-    android:versionName="pre_alpha_0.2.0.668_130106-0418" >
+    android:versionCode="733"
+    android:versionName="pre_alpha_0.2.0.733_130106-0840" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -25,13 +25,12 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/str_mainTitle"
         android:theme="@style/AppTheme"
-        android:uiOptions="splitActionBarWhenNarrow" >
+        android:uiOptions="splitActionBarWhenNarrow" android:logo="@drawable/ic_logo">
         <activity
             android:name=".activity.MainActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenLayout|screenSize"
-            android:label="@string/str_mainActTitle"
-            android:screenOrientation="user" >
+            android:screenOrientation="user">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

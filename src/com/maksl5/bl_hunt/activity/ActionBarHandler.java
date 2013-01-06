@@ -9,15 +9,20 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -52,27 +57,21 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	private ProgressBar progressBar;
 	private int currentPage;
 
+	private int moveStartY;
+	private int beforeLastY;
+	private int lastY;
+
 	@TargetApi(11)
 	public ActionBarHandler(MainActivity activity) {
 
 		mainActivity = activity;
 		actBar = mainActivity.getActionBar();
-		actBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
 		actBar.setDisplayShowTitleEnabled(false);
-
-		List<String> spinnerItems = new ArrayList<String>();
-		spinnerItems.add((String) activity.getTitle());
-		spinnerItems.add(mainActivity.getString(R.string.str_actBar_userInfo));
-
-		if (VERSION.SDK_INT >= 14) {
-			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(actBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, spinnerItems), this);
-		}
-		else {
-			actBar.setListNavigationCallbacks(new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_dropdown_item, spinnerItems), this);
-		}
+		actBar.setDisplayUseLogoEnabled(true);
+		actBar.setDisplayShowHomeEnabled(true);
 
 		menuInflater = mainActivity.getMenuInflater();
-
 	}
 
 	/**
@@ -81,6 +80,51 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	public void initialize() {
 
 		checkMenuNull();
+
+		final ViewPager viewPager = (ViewPager) mainActivity.findViewById(R.id.pager);
+		final TableRow userInfoRow = (TableRow) mainActivity.findViewById(R.id.userInfoTableRow);
+
+		userInfoRow.setVisibility(View.VISIBLE);
+
+		viewPager.getChildAt(0).setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(	View v,
+									MotionEvent event) {
+
+				final int Y = (int) event.getRawY();
+
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN:
+					moveStartY = (int) event.getY();
+
+					userInfoRow.setVisibility(View.VISIBLE);
+					return true;
+				case MotionEvent.ACTION_MOVE:
+					int top = Y - moveStartY;
+
+					beforeLastY = lastY;
+					lastY = (int) event.getRawY();
+
+					viewPager.setTop(top);
+					userInfoRow.setBottom(top);
+					viewPager.getLayoutParams().height = viewPager.getBottom() - top;
+					return true;
+				case MotionEvent.ACTION_UP:
+
+					if ((Y - beforeLastY) < 0) {
+						onNavigationItemSelected(0, 0);
+					}
+					else {
+						onNavigationItemSelected(1, 0);
+					}
+					return true;
+
+				}
+
+				return false;
+			}
+		});
 
 		disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
 		disSwitch.setPadding(5, 0, 5, 0);
@@ -106,27 +150,27 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		currentPage = newPage;
 
 		switch (newPage) {
-			case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
-				menu.findItem(R.id.menu_search).setVisible(false);
-				menu.findItem(R.id.menu_info).setVisible(false);
-				break;
-			case FragmentLayoutManager.PAGE_LEADERBOARD:
-				menu.findItem(R.id.menu_search).setVisible(true);
-				menu.findItem(R.id.menu_info).setVisible(false);
-				Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
-				break;
-			case FragmentLayoutManager.PAGE_FOUND_DEVICES:
-				menu.findItem(R.id.menu_search).setVisible(true);
-				menu.findItem(R.id.menu_info).setVisible(true);
-				Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
-				break;
-			case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
-				menu.findItem(R.id.menu_search).setVisible(false);
-				menu.findItem(R.id.menu_info).setVisible(false);
-				break;
-			case FragmentLayoutManager.PAGE_PROFILE:
-				
-				break;
+		case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
+			menu.findItem(R.id.menu_search).setVisible(false);
+			menu.findItem(R.id.menu_info).setVisible(false);
+			break;
+		case FragmentLayoutManager.PAGE_LEADERBOARD:
+			menu.findItem(R.id.menu_search).setVisible(true);
+			menu.findItem(R.id.menu_info).setVisible(false);
+			Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
+			break;
+		case FragmentLayoutManager.PAGE_FOUND_DEVICES:
+			menu.findItem(R.id.menu_search).setVisible(true);
+			menu.findItem(R.id.menu_info).setVisible(true);
+			Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
+			break;
+		case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
+			menu.findItem(R.id.menu_search).setVisible(false);
+			menu.findItem(R.id.menu_info).setVisible(false);
+			break;
+		case FragmentLayoutManager.PAGE_PROFILE:
+
+			break;
 		}
 
 		return true;
@@ -145,9 +189,9 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	private void checkMenuNull() {
 
 		if (menu == null) {
-			
+
 			mainActivity.invalidateOptionsMenu();
-			
+
 		}
 
 	}
@@ -170,104 +214,101 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	 * @see android.app.ActionBar.OnNavigationListener#onNavigationItemSelected(int, long)
 	 */
 	@Override
-	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+	public boolean onNavigationItemSelected(int itemPosition,
+											long itemId) {
 
 		final ViewPager parentView = (ViewPager) mainActivity.findViewById(R.id.pager);
 		final TableRow userInfoRow = (TableRow) mainActivity.findViewById(R.id.userInfoTableRow);
-		
+
 		Animation animation;
 
 		switch (itemPosition) {
-			case 0:
+		case 0:
 
-				// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-				// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
 
-				animation = new SizeAnimation(parentView, userInfoRow, 0);
-				animation.setDuration(1000);
-				animation.setFillAfter(true);
+			animation = new SizeAnimation(parentView, userInfoRow, 0);
+			animation.setDuration(500);
+			animation.setFillAfter(true);
 
-				animation.setInterpolator(new AccelerateDecelerateInterpolator());
-				animation.setAnimationListener(new AnimationListener() {
+			animation.setInterpolator(new AccelerateDecelerateInterpolator());
+			animation.setAnimationListener(new AnimationListener() {
 
-					@Override
-					public void onAnimationStart(Animation animation) {
+				@Override
+				public void onAnimationStart(Animation animation) {
 
-						Log.d("layout", "before: view.getBottom = "
-										+ parentView.getBottom());
+					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
 
-						// TODO Auto-generated method stub
+					// TODO Auto-generated method stub
 
-					}
+				}
 
-					@Override
-					public void onAnimationRepeat(Animation animation) {
+				@Override
+				public void onAnimationRepeat(Animation animation) {
 
-						// TODO Auto-generated method stub
+					// TODO Auto-generated method stub
 
-					}
+				}
 
-					@Override
-					public void onAnimationEnd(Animation animation) {
+				@Override
+				public void onAnimationEnd(Animation animation) {
 
-						userInfoRow.setVisibility(View.INVISIBLE);
-						Log.d("layout", "after: view.getBottom = "
-										+ parentView.getBottom());
-						parentView.requestLayout();
-						// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-						// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
-						// TODO Auto-generated method stub
+					userInfoRow.setVisibility(View.INVISIBLE);
+					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
+					parentView.requestLayout();
+					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
+					// TODO Auto-generated method stub
 
-					}
-				});
+				}
+			});
 
-				parentView.startAnimation(animation);
-				break;
-			case 1:
+			parentView.startAnimation(animation);
+			break;
+		case 1:
 
-				// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-				// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
+			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
+			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
 
-				animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
-				animation.setDuration(1000);
-				animation.setFillAfter(true);
+			animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
+			animation.setDuration(500);
+			animation.setFillAfter(true);
 
-				animation.setInterpolator(new AccelerateDecelerateInterpolator());
-				animation.setAnimationListener(new AnimationListener() {
+			animation.setInterpolator(new AccelerateDecelerateInterpolator());
+			animation.setAnimationListener(new AnimationListener() {
 
-					@Override
-					public void onAnimationStart(Animation animation) {
+				@Override
+				public void onAnimationStart(Animation animation) {
 
-						userInfoRow.setVisibility(View.VISIBLE);
-						Log.d("layout", "before: view.getBottom = "
-										+ parentView.getBottom());
-						// TODO Auto-generated method stub
+					userInfoRow.setVisibility(View.VISIBLE);
+					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
+					// TODO Auto-generated method stub
 
-					}
+				}
 
-					@Override
-					public void onAnimationRepeat(Animation animation) {
+				@Override
+				public void onAnimationRepeat(Animation animation) {
 
-						// TODO Auto-generated method stub
+					// TODO Auto-generated method stub
 
-					}
+				}
 
-					@Override
-					public void onAnimationEnd(Animation animation) {
+				@Override
+				public void onAnimationEnd(Animation animation) {
 
-						Log.d("layout", "after: view.getBottom = "
-										+ parentView.getBottom());
-						parentView.requestLayout();
-						// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-						// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
-						// TODO Auto-generated method stub
+					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
+					parentView.requestLayout();
+					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
+					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
+					// TODO Auto-generated method stub
 
-					}
-				});
+				}
+			});
 
-				parentView.startAnimation(animation);
+			parentView.startAnimation(animation);
 
-				break;
+			break;
 		}
 
 		return false;
@@ -328,7 +369,9 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		int initialBot;
 		int initialTop;
 
-		public SizeAnimation(ViewPager view, TableRow userRow, int targetTop) {
+		public SizeAnimation(ViewPager view,
+				TableRow userRow,
+				int targetTop) {
 
 			this.view = view;
 			this.userRow = userRow;
@@ -346,31 +389,28 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		 * @see android.view.animation.Animation#applyTransformation(float, android.view.animation.Transformation)
 		 */
 		@Override
-		protected void applyTransformation(float interpolatedTime, Transformation t) {
+		protected void applyTransformation(	float interpolatedTime,
+											Transformation t) {
 
 			if (targetTop == initialTop) {
 				return;
 			}
 			else if (targetTop > initialTop) {
 
-				int top = (int) ((targetTop - initialTop)
-									* interpolatedTime + initialTop);
+				int top = (int) ((targetTop - initialTop) * interpolatedTime + initialTop);
 
 				view.setTop(top);
 				userRow.setBottom(top);
-				view.getLayoutParams().height = view.getBottom()
-												- top;
+				view.getLayoutParams().height = view.getBottom() - top;
 
 			}
 			else if (targetTop < initialTop) {
 
-				int top = (int) ((initialTop - targetTop)
-									* (1 - interpolatedTime) + targetTop);
+				int top = (int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop);
 
 				view.setTop(top);
 				userRow.setBottom(top);
-				view.getLayoutParams().height = view.getBottom()
-												- top;
+				view.getLayoutParams().height = view.getBottom() - top;
 
 			}
 
@@ -382,7 +422,10 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		 * @see android.view.animation.Animation#initialize(int, int, int, int)
 		 */
 		@Override
-		public void initialize(int width, int height, int parentWidth, int parentHeight) {
+		public void initialize(	int width,
+								int height,
+								int parentWidth,
+								int parentHeight) {
 
 			// TODO Auto-generated method stub
 			super.initialize(width, height, parentWidth, parentHeight);
@@ -421,8 +464,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	 */
 	@Override
 	public boolean onMenuItemActionExpand(MenuItem item) {
-
-		// TODO Auto-generated method stub
+		
 		return true;
 	}
 

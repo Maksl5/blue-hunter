@@ -88,7 +88,6 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		
 		//Debug.startMethodTracing("blHunt_12");
@@ -332,13 +331,11 @@ public class MainActivity extends FragmentActivity {
 
 		new DatabaseManager(this, versionCode).close();
 
-		TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
 		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
 
 		NetworkThread getUserInfo = new NetworkThread(this, netMananger);
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
-		userInfoRow.setVisibility(View.INVISIBLE);
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(this);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 		FragmentLayoutManager.StatisticLayout.initializeView(this);
