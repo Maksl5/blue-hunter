@@ -450,7 +450,7 @@ public class DiscoveryManager {
 
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING);
 				mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING, mainActivity));
-				mainActivity.notificationManager.notify(1, mainActivity.stateNotificationBuilder.build());
+				mainActivity.updateNotification();
 
 			}
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -470,7 +470,7 @@ public class DiscoveryManager {
 				else {
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED);
 					mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, mainActivity));
-					mainActivity.notificationManager.notify(1, mainActivity.stateNotificationBuilder.build());
+					mainActivity.updateNotification();
 				}
 
 			}

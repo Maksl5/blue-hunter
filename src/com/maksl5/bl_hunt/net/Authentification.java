@@ -639,7 +639,7 @@ public class Authentification {
 					setLoginState(true);
 
 					if (!passExists) {
-						Toast.makeText(mainActivity, String.format("%s %n %s", mainActivity.getString(R.string.str_auth_loginSuccess, mainActivity.getString(R.string.str_auth_securityMsg))), Toast.LENGTH_LONG).show();
+						Toast.makeText(mainActivity, String.format("%s %n %s", mainActivity.getString(R.string.str_auth_loginSuccess), mainActivity.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
 					}
 					else {
 						Toast.makeText(mainActivity, mainActivity.getString(R.string.str_auth_loginSuccess), Toast.LENGTH_LONG).show();
