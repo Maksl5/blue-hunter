@@ -90,7 +90,7 @@ public class Authentification {
 			serial = "NULL";
 		}
 
-		if (serial == null | serial.equals("")) serial = "NULL";
+		if (serial == null || serial.equals("")) serial = "NULL";
 
 		return serial;
 	}
@@ -263,19 +263,19 @@ public class Authentification {
 						case 4:
 						case 5:
 							updateMsg +=
-									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_1_4_5));
+									String.format("(%s)", mainActivity.getString(R.string.str_auth_updated_1_4_5));
 							break;
 						case 90:
 							updateMsg +=
-									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_90));
+									String.format("(%s)", mainActivity.getString(R.string.str_auth_updated_90));
 							break;
 						case 404:
 							updateMsg +=
-									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_404));
+									String.format("(%s)", mainActivity.getString(R.string.str_auth_updated_404));
 							break;
 						case 500:
 							updateMsg +=
-									String.format(" (%s)", mainActivity.getString(R.string.str_auth_updated_500));
+									String.format("(%s)", mainActivity.getString(R.string.str_auth_updated_500));
 							break;
 						}
 						
@@ -639,7 +639,8 @@ public class Authentification {
 					setLoginState(true);
 
 					if (!passExists) {
-						Toast.makeText(mainActivity, String.format("%s %n %s", mainActivity.getString(R.string.str_auth_loginSuccess), mainActivity.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
+						Toast.makeText(mainActivity, String.format("%s%n%s", mainActivity.getString(R.string.str_auth_loginSuccess), mainActivity.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
+						Toast.makeText(mainActivity, String.format("%s%n%s", mainActivity.getString(R.string.str_auth_loginSuccess), mainActivity.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
 					}
 					else {
 						Toast.makeText(mainActivity, mainActivity.getString(R.string.str_auth_loginSuccess), Toast.LENGTH_LONG).show();

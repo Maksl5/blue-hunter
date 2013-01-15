@@ -12,6 +12,11 @@
         android:summary="@string/str_PreferenceHeader_profile_sum"
         android:title="@string/str_PreferenceHeader_profile" />
     <header
+        android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$MiscFragment"
+        android:icon="@drawable/ic_settings_misc"
+        android:summary="@string/str_PreferenceHeader_misc_sum"
+        android:title="@string/str_PreferenceHeader_misc" />
+    <header
         android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$InfoFragment"
         android:icon="@drawable/ic_settings_info"
         android:summary="@string/str_PreferenceHeader_info_sum"

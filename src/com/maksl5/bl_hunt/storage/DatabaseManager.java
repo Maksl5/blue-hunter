@@ -6,6 +6,8 @@ package com.maksl5.bl_hunt.storage;
 
 
 
+import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -172,6 +174,44 @@ public class DatabaseManager {
 		
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
 		close();
+	}
+	
+	public int rebuildDatabase() {
+		List<HashMap<String, String>> allDevices = getAllDevices();
+		
+		if(mainActivity.deleteDatabase(DatabaseHelper.DATABASE_NAME)) {
+			
+			dbHelper = new DatabaseHelper(mainActivity, version);
+			db = dbHelper.getWritableDatabase();
+			
+			List<Integer> failureRows = new ArrayList<Integer>();
+			
+			for (HashMap<String, String> device : allDevices) {
+				
+				ContentValues values = new ContentValues();
+				values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.get(DatabaseHelper.COLUMN_MAC_ADDRESS));
+				values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(device.get(DatabaseHelper.COLUMN_MAC_ADDRESS)));
+				values.put(DatabaseHelper.COLUMN_NAME, device.get(DatabaseHelper.COLUMN_NAME));
+				values.put(DatabaseHelper.COLUMN_RSSI, device.get(DatabaseHelper.COLUMN_RSSI));
+				values.put(DatabaseHelper.COLUMN_TIME, device.get(DatabaseHelper.COLUMN_TIME));
+
+				if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) == -1) {
+					failureRows.add(allDevices.indexOf(device));
+				}
+			}
+			
+			close();
+			
+			if(failureRows.size() == 0) {
+				return 0;
+			}else {
+				return -failureRows.size();
+			}
+			
+		} else {
+			return 1001;
+		}
+		
 	}
 
 	public void close() {

@@ -35,11 +35,13 @@
     <string name="str_enableBT_noButton">No</string>
     
     <string name="str_PreferenceHeader_info">Info</string>
-    <string name="str_PreferenceHeader_info_sum">Shows some information about the game.</string>
+    <string name="str_PreferenceHeader_info_sum">Show some information about the game.</string>
     <string name="str_PreferenceHeader_behaviour">Behaviour</string>
     <string name="str_PreferenceHeader_behaviour_sum">Manage the device specific behaviour of the game.</string>
     <string name="str_PreferenceHeader_profile">Profile</string>
-    <string name="str_PreferenceHeader_profile_sum">Adjust your profile settings (Online)</string>
+    <string name="str_PreferenceHeader_profile_sum">Adjust your profile settings. (Online)</string>
+    <string name="str_PreferenceHeader_misc">Miscellaneous</string>
+    <string name="str_PreferenceHeader_misc_sum">Change misc. settings or clean up the game.</string>
     <string name="str_Preferences_changePass_title">Change Password</string>
     <string name="str_Preferences_changePass_sum">Change your profile password. (Online)</string>
     <string name="str_Preferences_changePass_new_title">Set Password</string>
@@ -57,6 +59,8 @@
     <string name="str_Preferences_vibrate_sum">Vibrate when a new device is found.</string>
     <string name="str_Preferences_showNotification_title">Show Notification</string>
     <string name="str_Preferences_showNotification_sum">Show the current status of discovery, level and exp as notification.</string>
+    <string name="str_Preferences_rebuildDB_title">Rebuild Database (ALPHA! MAKE BACKUP BEFORE DOING THIS!)</string>
+    <string name="str_Preferences_rebuildDB_sum">Rebuild the locale found devices database. Only try this, if you\'re noticing problems and bugs.</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>
@@ -75,7 +79,7 @@
     <string name="str_loginPass_title">Set login password</string>
     
     <string name="str_auth_newUpdateAvailable" formatted="false">New nightly version available. %n Currently installed build: %d. %n Available build: %d.</string>
-    <string name="str_auth_updated" formatted="false">Updated to new version %s. %n</string>
+    <string name="str_auth_updated" formatted="false">Updated to new version %s.%n</string>
     <string name="str_auth_updated_1_4_5">Could not retrieve changelog. Possibly not internet connection.</string>
     <string name="str_auth_updated_90">No Changelog available.</string>
     <string name="str_auth_updated_404">Could not retrieve changelog. Possibly server down or changelog script not available.</string>

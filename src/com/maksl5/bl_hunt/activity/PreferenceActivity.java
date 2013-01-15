@@ -58,6 +58,7 @@ import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.net.EasySSLSocketFactory;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
 
 
 
@@ -131,6 +132,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 		progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
 		this.menu.findItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
+		progressBar.setPadding(5, 0, 5, 0);
 
 		return true;
 	}
@@ -239,37 +241,47 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				case 1003:
 				case 1004:
 				case 10016:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_1_2_3_4_16));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_1_2_3_4_16));
 					break;
 				case 1005:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_5));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_5));
 					break;
 				case 1006:
 				case 1008:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_6_8));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_6_8));
 					break;
 				case 1007:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_7));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_7));
 					break;
 				case 1009:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_9));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_9));
 					break;
 				case 1010:
 				case 1013:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_10_13));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_10_13));
 					break;
 				case 1011:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_11));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_11));
 					break;
 				case 1012:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_12));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_12));
 					mainActivity.loginManager.login();
 					break;
 				case 1014:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_14));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_14));
 					break;
 				case 1015:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_changePass_100_15));
+					errorMsg +=
+							String.format(" (%s)", getString(R.string.str_Error_changePass_100_15));
 					mainActivity.loginManager.login();
 					break;
 				}
@@ -517,6 +529,65 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			});
 
 		}
+	}
+
+	/**
+	 * @author Maksl5[Markus Bensing]
+	 * 
+	 */
+	public static class MiscFragment extends PreferenceFragment {
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.preference.PreferenceFragment#onCreate(android.os.Bundle)
+		 */
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+
+			super.onCreate(savedInstanceState);
+
+			addPreferencesFromResource(R.xml.misc_preference);
+
+			registerListeners();
+		}
+
+		/**
+		 * 
+		 */
+		private void registerListeners() {
+
+			Preference rebuildDB = findPreference("pref_rebuildDB");
+			rebuildDB.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+
+					int result =
+							new DatabaseManager(MainActivity.thisActivity, MainActivity.thisActivity.versionCode).rebuildDatabase();
+
+					if (result == 0) {
+						Toast.makeText(getActivity(), "Successfully rebuilt database. App will now restart.", Toast.LENGTH_LONG).show();
+					}
+					else if (result < 0) {
+						Toast.makeText(getActivity(), (-result) + " devices could not be rebuild. App will now restart.", Toast.LENGTH_LONG).show();
+					}
+					else if (result == 1001) {
+						Toast.makeText(getActivity(), "Database could not be rebuilt.", Toast.LENGTH_LONG).show();
+						return true;
+					}
+
+					Intent i =
+							getActivity().getBaseContext().getPackageManager().getLaunchIntentForPackage(getActivity().getBaseContext().getPackageName());
+					i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(i);
+
+					return true;
+				}
+			});
+
+		}
+
 	}
 
 	/**
