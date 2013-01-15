@@ -672,7 +672,8 @@ public class FragmentLayoutManager {
 
 							for (String property : deviceAsArray) {
 								if (property.contains(filterString)) {
-									newValues.add(device);
+									if(!newValues.contains(device))
+										newValues.add(device);
 								}
 							}
 
