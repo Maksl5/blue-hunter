@@ -163,12 +163,16 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		case FragmentLayoutManager.PAGE_LEADERBOARD:
 			menu.findItem(R.id.menu_search).setVisible(true);
 			menu.findItem(R.id.menu_info).setVisible(false);
-			Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
+			
+			onQueryTextChange("");
+			menu.findItem(R.id.menu_search).collapseActionView();
 			break;
 		case FragmentLayoutManager.PAGE_FOUND_DEVICES:
 			menu.findItem(R.id.menu_search).setVisible(true);
 			menu.findItem(R.id.menu_info).setVisible(true);
-			Log.d("srchView", String.valueOf(menu.findItem(R.id.menu_search).collapseActionView()));
+
+			onQueryTextChange("");
+			menu.findItem(R.id.menu_search).collapseActionView();
 			break;
 		case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
 			menu.findItem(R.id.menu_search).setVisible(false);

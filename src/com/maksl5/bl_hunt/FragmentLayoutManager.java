@@ -4,6 +4,10 @@ package com.maksl5.bl_hunt;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +30,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TableRow;
@@ -152,6 +157,7 @@ public class FragmentLayoutManager {
 				showedFdArray = completeFdList;
 				fdAdapter =
 						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+				fdAdapter.getFilter().filter(text);
 				lv.setAdapter(fdAdapter);
 			}
 
@@ -333,16 +339,40 @@ public class FragmentLayoutManager {
 
 		public class FoundDevicesAdapter extends ArrayAdapter<String> {
 
-			String[] devices;
-			Context context;
+			private final Object lock = new Object();
+
+			private Context context;
+
+			private FoundDevicesFilter filter;
+
+			private List<String> devices;
+
+			private ArrayList<String> originalValues;
+
+			private boolean notifyOnChange = true;
+
+			private LayoutInflater inflater;
 
 			public FoundDevicesAdapter(Context context,
 					int textViewResourceId,
 					String[] objects) {
 
 				super(context, textViewResourceId, objects);
+				init(context, textViewResourceId, 0, Arrays.asList(objects));
+
+				devices = Arrays.asList(objects);
+
+			}
+
+			private void init(	Context context,
+								int resource,
+								int textViewResourceId,
+								List<String> objects) {
+
 				this.context = context;
-				devices = objects;
+				inflater =
+						(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				this.devices = objects;
 
 			}
 
@@ -351,14 +381,10 @@ public class FragmentLayoutManager {
 								View convertView,
 								ViewGroup parent) {
 
-				if (devices == null || devices[position] == null) { return new View(context); }
+				if (devices == null || devices.get(position) == null) { return new View(context); }
 
 				View rowView = convertView;
 				if (rowView == null) {
-
-					LayoutInflater inflater =
-							(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
 					rowView = inflater.inflate(R.layout.act_page_founddevices_row, parent, false);
 
 					ViewHolder viewHolder = new ViewHolder();
@@ -379,7 +405,7 @@ public class FragmentLayoutManager {
 
 				if (holder != null) {
 
-					String deviceAsString = devices[position];
+					String deviceAsString = devices.get(position);
 					String[] device = deviceAsString.split(String.valueOf((char) 30));
 
 					String nameString = device[ARRAY_INDEX_NAME];
@@ -400,6 +426,285 @@ public class FragmentLayoutManager {
 
 				}
 				return rowView;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#getFilter()
+			 */
+			@Override
+			public Filter getFilter() {
+
+				if (filter == null) {
+					filter = new FoundDevicesFilter();
+				}
+
+				return filter;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#add(java.lang.Object)
+			 */
+			@Override
+			public void add(String object) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.add(object);
+					}
+					else {
+						devices.add(object);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#addAll(java.util.Collection)
+			 */
+			@Override
+			public void addAll(Collection<? extends String> collection) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.addAll(collection);
+					}
+					else {
+						devices.addAll(collection);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#addAll(T[])
+			 */
+			@Override
+			public void addAll(String... items) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						Collections.addAll(originalValues, items);
+					}
+					else {
+						Collections.addAll(devices, items);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#clear()
+			 */
+			@Override
+			public void clear() {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.clear();
+					}
+					else {
+						devices.clear();
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#getCount()
+			 */
+			@Override
+			public int getCount() {
+
+				return devices.size();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#getItem(int)
+			 */
+			@Override
+			public String getItem(int position) {
+
+				return devices.get(position);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#getPosition(java.lang.Object)
+			 */
+			@Override
+			public int getPosition(String item) {
+
+				return devices.indexOf(item);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#insert(java.lang.Object, int)
+			 */
+			@Override
+			public void insert(	String object,
+								int index) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.add(index, object);
+					}
+					else {
+						devices.add(index, object);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#remove(java.lang.Object)
+			 */
+			@Override
+			public void remove(String object) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.remove(object);
+					}
+					else {
+						devices.remove(object);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#sort(java.util.Comparator)
+			 */
+			@Override
+			public void sort(Comparator<? super String> comparator) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						Collections.sort(originalValues, comparator);
+					}
+					else {
+						Collections.sort(devices, comparator);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			@Override
+			public void notifyDataSetChanged() {
+
+				super.notifyDataSetChanged();
+				notifyOnChange = true;
+			}
+
+			@Override
+			public void setNotifyOnChange(boolean notifyOnChange) {
+
+				this.notifyOnChange = notifyOnChange;
+			}
+
+			/**
+			 * @author Maksl5[Markus Bensing]
+			 * 
+			 */
+			private class FoundDevicesFilter extends Filter {
+
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see android.widget.Filter#performFiltering(java.lang.CharSequence)
+				 */
+				@Override
+				protected FilterResults performFiltering(CharSequence filterSequence) {
+
+					FilterResults results = new FilterResults();
+
+					if (originalValues == null) {
+						synchronized (lock) {
+							originalValues = new ArrayList<String>(devices);
+						}
+					}
+
+					if (filterSequence == null || filterSequence.length() == 0) {
+						ArrayList<String> list;
+						synchronized (lock) {
+							list = new ArrayList<String>(originalValues);
+						}
+						results.values = list;
+						results.count = list.size();
+					}
+					else {
+						String filterString = filterSequence.toString().toLowerCase();
+
+						ArrayList<String> devicesList;
+						synchronized (lock) {
+							devicesList = new ArrayList<String>(originalValues);
+						}
+
+						final int count = devicesList.size();
+						final ArrayList<String> newValues = new ArrayList<String>();
+
+						for (int i = 0; i < count; i++) {
+							final String device = devicesList.get(i);
+							final String deviceString = device.toString().toLowerCase();
+
+							final String[] deviceAsArray = deviceString.split(String.valueOf((char) 30));
+
+							for (String property : deviceAsArray) {
+								if (property.contains(filterString)) {
+									newValues.add(device);
+								}
+							}
+
+						}
+
+						results.values = newValues;
+						results.count = newValues.size();
+					}
+
+					return results;
+				}
+
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see android.widget.Filter#publishResults(java.lang.CharSequence,
+				 * android.widget.Filter.FilterResults)
+				 */
+				@Override
+				protected void publishResults(	CharSequence constraint,
+												FilterResults results) {
+
+					devices = (List<String>) results.values;
+					if (results.count > 0) {
+						notifyDataSetChanged();
+					}
+					else {
+						notifyDataSetInvalidated();
+					}
+
+				}
+
 			}
 
 		}
