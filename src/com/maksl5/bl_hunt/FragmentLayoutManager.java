@@ -18,6 +18,7 @@ import android.R.integer;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -28,6 +29,8 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
@@ -99,8 +102,8 @@ public class FragmentLayoutManager {
 		public static final int ARRAY_INDEX_EXP = 4;
 		public static final int ARRAY_INDEX_TIME = 5;
 
-		private volatile static String[] showedFdArray = {};
-		private volatile static String[] completeFdList = {};
+		private volatile static List<String> showedFdList = new ArrayList<String>();
+		private volatile static List<String> completeFdList = new ArrayList<String>();
 		private static String[] from =
 				{
 					"macAddress", "manufacturer", "exp", "RSSI", "name", "time" };
@@ -109,6 +112,26 @@ public class FragmentLayoutManager {
 									R.id.rssiTxtView, R.id.nameTxtView, R.id.timeTxtView };
 
 		private static ThreadManager threadManager = null;
+
+		public static int selectedItem = -1;
+
+		private static OnItemLongClickListener onLongClickListener = new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(	AdapterView<?> parent,
+											View view,
+											int position,
+											long id) {
+
+				selectedItem = position;
+
+				MainActivity.thisActivity.startActionMode(MainActivity.thisActivity.actionBarHandler.actionModeCallback);
+				view.setSelected(true);
+
+				return true;
+			}
+
+		};
 
 		public static void refreshFoundDevicesList(final MainActivity mainActivity) {
 
@@ -147,23 +170,38 @@ public class FragmentLayoutManager {
 					}
 				}
 
-				showedFdArray = searchedList.toArray(new String[searchedList.size()]);
+				showedFdList = searchedList;
 				fdAdapter =
-						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdList);
 				lv.setAdapter(fdAdapter);
 
 			}
 			else {
-				showedFdArray = completeFdList;
+				showedFdList = completeFdList;
 				fdAdapter =
-						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdList);
 				fdAdapter.getFilter().filter(text);
 				lv.setAdapter(fdAdapter);
 			}
 
 		}
 
-		private class RefreshThread extends AsyncTask<Void, Void, Void> {
+		/**
+		 * @param mainActivity
+		 * @return
+		 */
+		public static String getSelectedMac(MainActivity mainActivity) {
+
+			if (selectedItem == -1) return null;
+
+			String macString =
+					showedFdList.get(selectedItem).split(String.valueOf((char) 30))[ARRAY_INDEX_MAC_ADDRESS];
+
+			return macString;
+
+		}
+
+		private class RefreshThread extends AsyncTask<Void, List<String>, List<String>> {
 
 			private MainActivity mainActivity;
 			private ListView listView;
@@ -173,6 +211,11 @@ public class FragmentLayoutManager {
 			private ThreadManager threadManager;
 
 			private boolean canRun = true;
+			
+			private int scrollIndex;
+			private int scrollTop;
+			
+			
 
 			private RefreshThread(MainActivity mainActivity,
 					ThreadManager threadManager) {
@@ -181,13 +224,20 @@ public class FragmentLayoutManager {
 				this.mainActivity = mainActivity;
 				this.listView =
 						(ListView) mainActivity.mViewPager.getChildAt(PAGE_FOUND_DEVICES + 1).findViewById(R.id.listView2);
+
+				listView.setOnItemLongClickListener(onLongClickListener);
+				
+				scrollIndex = listView.getFirstVisiblePosition();
+				View v = listView.getChildAt(0);
+				scrollTop = (v == null) ? 0 : v.getTop();
+
 				this.fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 				if (this.fdAdapter == null || this.fdAdapter.isEmpty()) {
 					this.fdAdapter =
-							new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
+							new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdList);
+					this.listView.setAdapter(fdAdapter);
 				}
-				this.listView.setAdapter(fdAdapter);
-
+				
 				this.threadManager = threadManager;
 
 				if (!this.threadManager.setThread(this)) {
@@ -202,11 +252,11 @@ public class FragmentLayoutManager {
 			}
 
 			@Override
-			protected Void doInBackground(Void... params) {
+			protected List<String> doInBackground(Void... params) {
 
 				List<HashMap<String, String>> devices =
 						new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
-				String[] listViewArray = new String[devices.size()];
+				List<String> listViewList = new ArrayList<String>();
 
 				String expString =
 						mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
@@ -238,19 +288,13 @@ public class FragmentLayoutManager {
 					tempString =
 							deviceMac + (char) 30 + device.get(DatabaseHelper.COLUMN_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI) + (char) 30 + manufacturer + (char) 30 + "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString + (char) 30 + dateFormat.format(new Date(time));
 
-					listViewArray[i] = tempString;
+					listViewList.add(tempString);
 
-					showedFdArray = listViewArray;
-
-					publishProgress();
+					publishProgress(listViewList);
 
 				}
 
-				if (!completeFdList.equals(listViewArray)) {
-					completeFdList = listViewArray;
-				}
-
-				return null;
+				return listViewList;
 
 				// ListenerClass listenerClass = new FragmentLayoutManager().new ListenerClass();
 
@@ -264,13 +308,15 @@ public class FragmentLayoutManager {
 			 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 			 */
 			@Override
-			protected void onPostExecute(Void result) {
+			protected void onPostExecute(List<String> result) {
 
-				int scroll = listView.getFirstVisiblePosition();
-				this.fdAdapter =
-						new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
-				listView.setAdapter(fdAdapter);
-				listView.setSelection(scroll);
+				if (!completeFdList.equals(result)) {
+					completeFdList = result;
+				}
+				
+				fdAdapter.refill(showedFdList);
+				
+				listView.setSelectionFromTop(scrollIndex, scrollTop);
 
 				threadManager.finished(this);
 
@@ -282,13 +328,14 @@ public class FragmentLayoutManager {
 			 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
 			 */
 			@Override
-			protected void onProgressUpdate(Void... values) {
+			protected void onProgressUpdate(List<String>... values) {
 
-				int scroll = listView.getFirstVisiblePosition();
-				this.fdAdapter =
-						new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdArray);
-				listView.setAdapter(fdAdapter);
-				listView.setSelection(scroll);
+				showedFdList = values[0];
+
+				//fdAdapter.refill(showedFdList);
+
+				listView.setSelectionFromTop(scrollIndex, scrollTop);
+				
 
 			}
 
@@ -349,18 +396,18 @@ public class FragmentLayoutManager {
 
 			private ArrayList<String> originalValues;
 
-			private boolean notifyOnChange = true;
+			private boolean notifyOnChange = false;
 
 			private LayoutInflater inflater;
 
 			public FoundDevicesAdapter(Context context,
 					int textViewResourceId,
-					String[] objects) {
+					List<String> objects) {
 
 				super(context, textViewResourceId, objects);
-				init(context, textViewResourceId, 0, Arrays.asList(objects));
+				init(context, textViewResourceId, 0, objects);
 
-				devices = Arrays.asList(objects);
+				devices = objects;
 
 			}
 
@@ -623,6 +670,13 @@ public class FragmentLayoutManager {
 				this.notifyOnChange = notifyOnChange;
 			}
 
+			public void refill(List<String> devices) {
+
+				this.devices.clear();
+				this.devices.addAll(devices);
+				notifyDataSetChanged();
+			}
+
 			/**
 			 * @author Maksl5[Markus Bensing]
 			 * 
@@ -668,12 +722,12 @@ public class FragmentLayoutManager {
 							final String device = devicesList.get(i);
 							final String deviceString = device.toString().toLowerCase();
 
-							final String[] deviceAsArray = deviceString.split(String.valueOf((char) 30));
+							final String[] deviceAsArray =
+									deviceString.split(String.valueOf((char) 30));
 
 							for (String property : deviceAsArray) {
 								if (property.contains(filterString)) {
-									if(!newValues.contains(device))
-										newValues.add(device);
+									if (!newValues.contains(device)) newValues.add(device);
 								}
 							}
 
@@ -697,6 +751,7 @@ public class FragmentLayoutManager {
 												FilterResults results) {
 
 					devices = (List<String>) results.values;
+					showedFdList = devices;
 					if (results.count > 0) {
 						notifyDataSetChanged();
 					}

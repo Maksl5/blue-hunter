@@ -59,7 +59,8 @@ public class DiscoveryManager {
 		if (stateTextView == null) return false;
 
 		if (btHandler == null) {
-			btHandler = new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, mainActivity));
+			btHandler =
+					new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, mainActivity));
 			registerReceiver();
 		}
 		else {
@@ -84,7 +85,8 @@ public class DiscoveryManager {
 
 	}
 
-	public boolean passEnableBTActivityResult(int result, int request) {
+	public boolean passEnableBTActivityResult(	int result,
+												int request) {
 
 		if (btHandler == null) return false;
 
@@ -147,7 +149,8 @@ public class DiscoveryManager {
 		 *            The {@link Context} of the base package or activity.
 		 */
 
-		public DiscoveryState(TextView stateTextView, Context con) {
+		public DiscoveryState(TextView stateTextView,
+				Context con) {
 
 			this.stateTextView = stateTextView;
 			context = con;
@@ -160,49 +163,51 @@ public class DiscoveryManager {
 		 * @param context
 		 * @return
 		 */
-		public static String getDiscoveryState(int state, Context context) {
+		public static String getDiscoveryState(	int state,
+												Context context) {
 
 			switch (state) {
-				case DISCOVERY_STATE_RUNNING:
-					return formatStateText(context.getString(R.string.str_discoveryState_running));
-				case DISCOVERY_STATE_STOPPED:
-					return formatStateText(context.getString(R.string.str_discoveryState_stopped));
-				case DISCOVERY_STATE_BT_OFF:
-					return formatStateText(context.getString(R.string.str_discoveryState_btOff));
-				case DISCOVERY_STATE_FINISHED:
-					return formatStateText(context.getString(R.string.str_discoveryState_finished));
-				case DISCOVERY_STATE_BT_ENABLING:
-					return formatStateText(context.getString(R.string.str_discoveryState_btEnabling));
-				case DISCOVERY_STATE_BT_DISABLING:
-					return formatStateText(context.getString(R.string.str_discoveryState_btDisabling));
-				case DISCOVERY_STATE_ERROR:
-					return formatStateText(context.getString(R.string.str_discoveryState_error));
-				case DISCOVERY_STATE_OFF:
-					return formatStateText(context.getString(R.string.str_discoveryState_off));
+			case DISCOVERY_STATE_RUNNING:
+				return formatStateText(context.getString(R.string.str_discoveryState_running));
+			case DISCOVERY_STATE_STOPPED:
+				return formatStateText(context.getString(R.string.str_discoveryState_stopped));
+			case DISCOVERY_STATE_BT_OFF:
+				return formatStateText(context.getString(R.string.str_discoveryState_btOff));
+			case DISCOVERY_STATE_FINISHED:
+				return formatStateText(context.getString(R.string.str_discoveryState_finished));
+			case DISCOVERY_STATE_BT_ENABLING:
+				return formatStateText(context.getString(R.string.str_discoveryState_btEnabling));
+			case DISCOVERY_STATE_BT_DISABLING:
+				return formatStateText(context.getString(R.string.str_discoveryState_btDisabling));
+			case DISCOVERY_STATE_ERROR:
+				return formatStateText(context.getString(R.string.str_discoveryState_error));
+			case DISCOVERY_STATE_OFF:
+				return formatStateText(context.getString(R.string.str_discoveryState_off));
 			}
 
 			return "";
 		}
 
-		public static String getUnformatedDiscoveryState(int state, Context context) {
+		public static String getUnformatedDiscoveryState(	int state,
+															Context context) {
 
 			switch (state) {
-				case DISCOVERY_STATE_RUNNING:
-					return context.getString(R.string.str_discoveryState_running);
-				case DISCOVERY_STATE_STOPPED:
-					return context.getString(R.string.str_discoveryState_stopped);
-				case DISCOVERY_STATE_BT_OFF:
-					return context.getString(R.string.str_discoveryState_btOff);
-				case DISCOVERY_STATE_FINISHED:
-					return context.getString(R.string.str_discoveryState_finished);
-				case DISCOVERY_STATE_BT_ENABLING:
-					return context.getString(R.string.str_discoveryState_btEnabling);
-				case DISCOVERY_STATE_BT_DISABLING:
-					return context.getString(R.string.str_discoveryState_btDisabling);
-				case DISCOVERY_STATE_ERROR:
-					return context.getString(R.string.str_discoveryState_error);
-				case DISCOVERY_STATE_OFF:
-					return context.getString(R.string.str_discoveryState_off);
+			case DISCOVERY_STATE_RUNNING:
+				return context.getString(R.string.str_discoveryState_running);
+			case DISCOVERY_STATE_STOPPED:
+				return context.getString(R.string.str_discoveryState_stopped);
+			case DISCOVERY_STATE_BT_OFF:
+				return context.getString(R.string.str_discoveryState_btOff);
+			case DISCOVERY_STATE_FINISHED:
+				return context.getString(R.string.str_discoveryState_finished);
+			case DISCOVERY_STATE_BT_ENABLING:
+				return context.getString(R.string.str_discoveryState_btEnabling);
+			case DISCOVERY_STATE_BT_DISABLING:
+				return context.getString(R.string.str_discoveryState_btDisabling);
+			case DISCOVERY_STATE_ERROR:
+				return context.getString(R.string.str_discoveryState_error);
+			case DISCOVERY_STATE_OFF:
+				return context.getString(R.string.str_discoveryState_off);
 			}
 
 			return "";
@@ -231,14 +236,12 @@ public class DiscoveryManager {
 
 		private static String formatStateText(String stateText) {
 
-			char[ ] splittedText = stateText.toCharArray();
+			char[] splittedText = stateText.toCharArray();
 
 			String newText = "";
 
 			for (int i = 0; i < splittedText.length; i++) {
-				newText = newText
-							+ String.valueOf(splittedText[ i ])
-							+ " ";
+				newText = newText + String.valueOf(splittedText[i]) + " ";
 			}
 
 			return newText.trim().toUpperCase();
@@ -295,17 +298,20 @@ public class DiscoveryManager {
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-			foundDevices = new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
+			foundDevices =
+					new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 
-			discoveryButton = (CompoundButton) mainActivity.actionBarHandler.getActionView(R.id.menu_switch);
+			discoveryButton =
+					(CompoundButton) mainActivity.actionBarHandler.getActionView(R.id.menu_switch);
 
 			requestBtEnable(false);
 
 			discoveryButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				public void onCheckedChanged(	CompoundButton buttonView,
+												boolean isChecked) {
 
 					if (isChecked) {
 						if (isBluetoothEnabled()) {
@@ -374,19 +380,20 @@ public class DiscoveryManager {
 			}
 		}
 
-		private void enableBluetoothResult(int result, int request) {
+		private void enableBluetoothResult(	int result,
+											int request) {
 
 			switch (result) {
-				case EnableBluetoothActivity.BT_ENABLE_RESULT_ENABLE:
-					enableBluetooth();
-					requestId = request;
-					break;
-				case EnableBluetoothActivity.BT_ENABLE_RESULT_NOT_ENABLE:
-					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
-					discoveryButton.setChecked(false);
-					break;
-				default:
-					break;
+			case EnableBluetoothActivity.BT_ENABLE_RESULT_ENABLE:
+				enableBluetooth();
+				requestId = request;
+				break;
+			case EnableBluetoothActivity.BT_ENABLE_RESULT_NOT_ENABLE:
+				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
+				discoveryButton.setChecked(false);
+				break;
+			default:
+				break;
 			}
 		}
 
@@ -417,32 +424,34 @@ public class DiscoveryManager {
 		 * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
 		 */
 		@Override
-		public void onReceive(Context context, Intent intent) {
+		public void onReceive(	Context context,
+								Intent intent) {
 
 			String action = intent.getAction();
 
 			if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-				int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
+				int newState =
+						intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
 
 				switch (newState) {
-					case BluetoothAdapter.STATE_OFF:
-						disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
-						break;
-					case BluetoothAdapter.STATE_TURNING_ON:
-						disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_ENABLING);
-						break;
-					case BluetoothAdapter.STATE_TURNING_OFF:
-						discoveryButton.setChecked(false);
-						disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_DISABLING);
-						break;
-					case BluetoothAdapter.STATE_ON:
-						disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_OFF);
-						if (requestId == 128) {
-							runDiscovery();
-						}
-						break;
-					default:
-						break;
+				case BluetoothAdapter.STATE_OFF:
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_OFF);
+					break;
+				case BluetoothAdapter.STATE_TURNING_ON:
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_ENABLING);
+					break;
+				case BluetoothAdapter.STATE_TURNING_OFF:
+					discoveryButton.setChecked(false);
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_BT_DISABLING);
+					break;
+				case BluetoothAdapter.STATE_ON:
+					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_OFF);
+					if (requestId == 128) {
+						runDiscovery();
+					}
+					break;
+				default:
+					break;
 				}
 
 			}
@@ -476,7 +485,8 @@ public class DiscoveryManager {
 			}
 			else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 
-				BluetoothDevice tempDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				BluetoothDevice tempDevice =
+						intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				short RSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);
 				onDeviceFound(tempDevice, RSSI);
 
@@ -484,13 +494,17 @@ public class DiscoveryManager {
 
 		}
 
-		public void onDeviceFound(BluetoothDevice btDevice, short RSSI) {
+		public void onDeviceFound(	BluetoothDevice btDevice,
+									short RSSI) {
+
+			foundDevices =
+					new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
 
 			if (!foundDevices.contains(btDevice.getAddress())) {
 				foundDevicesInCurDiscovery.add(btDevice);
 				attemptVibration();
 				new DatabaseManager(mainActivity, mainActivity.versionCode).addNewDevice(btDevice.getAddress(), RSSI);
-				foundDevices = new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
+
 				FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(mainActivity);
 				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(mainActivity);
 
@@ -504,7 +518,8 @@ public class DiscoveryManager {
 
 			boolean bVibrate = PreferenceManager.getPref(mainActivity, "pref_vibrate", false);
 			if (bVibrate) {
-				Vibrator vibrator = (Vibrator) mainActivity.getSystemService(Context.VIBRATOR_SERVICE);
+				Vibrator vibrator =
+						(Vibrator) mainActivity.getSystemService(Context.VIBRATOR_SERVICE);
 				vibrator.vibrate(500);
 			}
 

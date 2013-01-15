@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,11 +38,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.Toast;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TableRow;
 
 import com.maksl5.bl_hunt.FragmentLayoutManager;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
 
 
 
@@ -66,6 +69,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	private int moveStartY;
 	private int beforeLastY;
 	private int lastY;
+	
+	public ActionMode.Callback actionModeCallback;
 
 	@TargetApi(11)
 	public ActionBarHandler(MainActivity activity) {
@@ -146,6 +151,87 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		getMenuItem(R.id.menu_search).setOnActionExpandListener(this);
 
 		changePage(FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
+		
+actionModeCallback = new ActionMode.Callback() {
+			
+			@Override
+			public boolean onCreateActionMode(	ActionMode mode,
+												Menu menu) {
+			
+				MenuInflater inflater = mode.getMenuInflater();
+				switch (currentPage) {
+				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
+					inflater.inflate(R.menu.act_context_fd, menu);
+					return true;
+				default:
+					return false;
+				}
+				
+			}
+
+			@Override
+			public boolean onPrepareActionMode(	ActionMode mode,
+												Menu menu) {
+				return false;
+			}
+			
+			@Override
+			public boolean onActionItemClicked(	ActionMode mode,
+												MenuItem item) {
+				switch (currentPage) {
+				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
+					
+					switch (item.getItemId()) {
+					case R.id.menu_context_remove:
+
+						String macAddress = FragmentLayoutManager.FoundDevicesLayout.getSelectedMac(mainActivity);
+						if(macAddress == null) {
+							Toast.makeText(mainActivity, "Error removing device.", Toast.LENGTH_LONG).show();
+							mode.finish();
+						}
+						
+						if(!new DatabaseManager(mainActivity, mainActivity.versionCode).deleteDevice(macAddress)) {
+							Toast.makeText(mainActivity, "Error removing device.", Toast.LENGTH_LONG).show();
+						}else {
+							FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(mainActivity);
+							FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(mainActivity);
+
+							mainActivity.updateNotification();
+							Toast.makeText(mainActivity, "Successfully removed device.", Toast.LENGTH_LONG).show();
+						}
+						mode.finish();
+						return true;
+					default:
+						break;
+					}
+					
+					
+					break;
+
+				default:
+					break;
+				}
+				
+				return false;
+			}
+
+			@Override
+			public void onDestroyActionMode(ActionMode mode) {
+			
+				switch (currentPage) {
+				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
+					
+					FragmentLayoutManager.FoundDevicesLayout.selectedItem = -1;
+					
+					break;
+
+				default:
+					break;
+				}
+				
+				
+			}
+		};
 
 	}
 

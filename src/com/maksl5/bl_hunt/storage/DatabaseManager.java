@@ -134,7 +134,7 @@ public class DatabaseManager {
 		List<HashMap<String, String>> devices = new ArrayList<HashMap<String, String>>();
 
 		Cursor cursor =
-				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null, null);
+				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null, DatabaseHelper.COLUMN_TIME + " DESC");
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			HashMap<String, String> tempHashMap = new HashMap<String, String>();
@@ -174,6 +174,17 @@ public class DatabaseManager {
 		
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
 		close();
+	}
+	
+	public boolean deleteDevice(String macAddress) {
+		
+		int result = db.delete(DatabaseHelper.FOUND_DEVICES_TABLE, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
+		
+		close();
+		
+		if(result == 0) return false;
+		
+		return true;
 	}
 	
 	public int rebuildDatabase() {
