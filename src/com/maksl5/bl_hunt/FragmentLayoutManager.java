@@ -384,7 +384,7 @@ public class FragmentLayoutManager {
 
 			private ArrayList<String> originalValues;
 
-			private boolean notifyOnChange = false;
+			private boolean notifyOnChange = true;
 
 			private LayoutInflater inflater;
 

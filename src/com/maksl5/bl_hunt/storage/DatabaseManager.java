@@ -6,6 +6,12 @@ package com.maksl5.bl_hunt.storage;
 
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -190,6 +196,20 @@ public class DatabaseManager {
 
 		List<HashMap<String, String>> allDevices = getAllDevices();
 
+		File dbFile = new File(db.getPath());
+		File backup = new File(dbFile.getPath() + ".bak");
+		try {
+			copy(dbFile, backup);
+		}
+		catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try {
+			
+
+		
 		if (bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME)) {
 
 			dbHelper = new DatabaseHelper(bhApp, version);
@@ -224,6 +244,16 @@ public class DatabaseManager {
 		else {
 			return 1001;
 		}
+		
+		}
+		catch (Exception e) {
+			
+			bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME);
+			dbFile.delete();
+			backup.renameTo(dbFile);
+			
+			return 1002;
+		}
 
 	}
 
@@ -231,6 +261,20 @@ public class DatabaseManager {
 
 		db.close();
 		dbHelper.close();
+	}
+	
+	private void copy(File src, File dst) throws IOException {
+	    InputStream in = new FileInputStream(src);
+	    OutputStream out = new FileOutputStream(dst);
+
+	    // Transfer bytes from in to out
+	    byte[] buf = new byte[1024];
+	    int len;
+	    while ((len = in.read(buf)) > 0) {
+	        out.write(buf, 0, len);
+	    }
+	    in.close();
+	    out.close();
 	}
 
 	/**
@@ -248,7 +292,7 @@ public class DatabaseManager {
 		public final static String COLUMN_TIME = "time";
 		public final static String COLUMN_MANUFACTURER = "manufacturer";
 
-		private BlueHunter bhApp;
+		private BlueHunter bhApplication;
 		private int version;
 
 		// CREATE DECLARATION
@@ -258,9 +302,9 @@ public class DatabaseManager {
 		public DatabaseHelper(BlueHunter app,
 				int version) {
 
-			super(app, DATABASE_NAME, null, version);
+			super(app.mainActivity, DATABASE_NAME, null, version);
 
-			this.bhApp = app;
+			this.bhApplication = app;
 			this.version = version;
 
 		}
@@ -274,7 +318,10 @@ public class DatabaseManager {
 		public void onCreate(SQLiteDatabase db) {
 
 			db.execSQL(FOUND_DEVICES_CREATE);
-			bhApp.authentification.showChangelog(10);
+			if(bhApplication != null)
+				if(bhApplication.authentification != null)
+					bhApplication.authentification.showChangelog(10);
+			
 
 		}
 
