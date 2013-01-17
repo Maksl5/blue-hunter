@@ -52,6 +52,7 @@ import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
@@ -66,7 +67,7 @@ import com.maksl5.bl_hunt.storage.DatabaseManager;
  * @author Maksl5[Markus Bensing]
  * 
  */
-public class PreferenceActivity extends android.preference.PreferenceActivity implements OnNetworkResultAvailableListener {
+public class SettingsActivity extends android.preference.PreferenceActivity implements OnNetworkResultAvailableListener {
 
 	Menu menu;
 	ProgressBar progressBar;
@@ -75,7 +76,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	private boolean destroyed = false;
 	private String newPass = null;
 
-	MainActivity mainActivity;
+	BlueHunter bhApp;
 	PrefNetManager netManager;
 
 	/*
@@ -88,7 +89,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 		super.onCreate(savedInstanceState);
 
-		mainActivity = MainActivity.thisActivity;
+		bhApp = (BlueHunter) getApplication();
+		bhApp.currentActivity = this;
 
 		netManager = new PrefNetManager(this);
 
@@ -119,6 +121,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 		// TODO Auto-generated method stub
 		super.onResume();
+
+		bhApp.currentActivity = this;
 
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -175,19 +179,19 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				String oldPass = data.getStringExtra("oldPass");
 				newPass = data.getStringExtra("newPass");
 
-				mainActivity.authentification.setOnNetworkResultAvailableListener(this);
+				bhApp.authentification.setOnNetworkResultAvailableListener(this);
 
-				PrefNetThread changePass = new PrefNetThread(this, mainActivity, netManager);
-				changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE), "h=" + mainActivity.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(), "v=" + mainActivity.versionCode, "op=" + oldPass, "np=" + newPass, "lt=" + mainActivity.authentification.getStoredLoginToken());
+				PrefNetThread changePass = new PrefNetThread(this, bhApp, netManager);
+				changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE), "h=" + bhApp.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "op=" + oldPass, "np=" + newPass, "lt=" + bhApp.authentification.getStoredLoginToken());
 			}
 			else if (resultCode == 2) {
 
 				newPass = data.getStringExtra("newPass");
 
-				mainActivity.authentification.setOnNetworkResultAvailableListener(this);
+				bhApp.authentification.setOnNetworkResultAvailableListener(this);
 
-				PrefNetThread changePass = new PrefNetThread(this, mainActivity, netManager);
-				changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE), "h=" + mainActivity.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(), "v=" + mainActivity.versionCode, "np=" + newPass, "lt=" + mainActivity.authentification.getStoredLoginToken());
+				PrefNetThread changePass = new PrefNetThread(this, bhApp, netManager);
+				changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE), "h=" + bhApp.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "np=" + newPass, "lt=" + bhApp.authentification.getStoredLoginToken());
 
 			}
 			break;
@@ -195,9 +199,9 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			if (resultCode == 1) {
 
 				String newLoginPass = data.getStringExtra("newLoginPass");
-				mainActivity.authentification.storePass(newLoginPass);
+				bhApp.authentification.storePass(newLoginPass);
 
-				mainActivity.loginManager.login();
+				bhApp.loginManager.login();
 
 			}
 			break;
@@ -273,7 +277,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				case 1012:
 					errorMsg +=
 							String.format(" (%s)", getString(R.string.str_Error_changePass_100_12));
-					mainActivity.loginManager.login();
+					bhApp.loginManager.login();
 					break;
 				case 1014:
 					errorMsg +=
@@ -282,22 +286,22 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				case 1015:
 					errorMsg +=
 							String.format(" (%s)", getString(R.string.str_Error_changePass_100_15));
-					mainActivity.loginManager.login();
+					bhApp.loginManager.login();
 					break;
 				}
 
-				Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
+				Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
 			}
 
 			if (resultString.equals("<SUCCESS>")) {
-				Toast.makeText(mainActivity, getString(R.string.str_Preferences_changePass_success), Toast.LENGTH_LONG).show();
+				Toast.makeText(bhApp, getString(R.string.str_Preferences_changePass_success), Toast.LENGTH_LONG).show();
 
 				if (ProfileFragment.changeLoginPass != null) {
 					ProfileFragment.changeLoginPass.setEnabled(true);
 				}
 
 				if (newPass != null) {
-					mainActivity.authentification.storePass(newPass);
+					bhApp.authentification.storePass(newPass);
 				}
 
 			}
@@ -329,6 +333,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	 */
 	public static class InfoFragment extends PreferenceFragment {
 
+		BlueHunter bhApp;
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -339,6 +345,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 			// TODO Auto-generated method stub
 			super.onCreate(savedInstanceState);
+
+			bhApp = (BlueHunter) getActivity().getApplication();
 
 			addPreferencesFromResource(R.xml.info_preference);
 
@@ -382,8 +390,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 					@Override
 					public boolean onPreferenceClick(Preference preference) {
 
-						MainActivity main = MainActivity.thisActivity;
-						main.authentification.showChangelog(InfoFragment.this.getActivity());
+						bhApp.authentification.showChangelog();
 
 						return true;
 					}
@@ -409,6 +416,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 	public static class BehaviourFragment extends PreferenceFragment {
 
+		BlueHunter bhApp;
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -419,6 +428,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 			// TODO Auto-generated method stub
 			super.onCreate(savedInstanceState);
+
+			bhApp = (BlueHunter) getActivity().getApplication();
 
 			addPreferencesFromResource(R.xml.behaviour_preference);
 
@@ -435,7 +446,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 					public boolean onPreferenceChange(	Preference preference,
 														Object newValue) {
 
-						MainActivity.thisActivity.alterNotification(newValue.equals(true));
+						bhApp.mainActivity.alterNotification(newValue.equals(true));
 
 						return true;
 					}
@@ -452,6 +463,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	 */
 	public static class ProfileFragment extends PreferenceFragment {
 
+		BlueHunter bhApp;
+
 		public static Preference changeOnlinePass;
 		public static Preference changeLoginPass;
 
@@ -461,19 +474,21 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			// TODO Auto-generated method stub
 			super.onCreate(savedInstanceState);
 
+			bhApp = (BlueHunter) getActivity().getApplication();
+
 			addPreferencesFromResource(R.xml.profile_preference);
 
 			changeOnlinePass = findPreference("pref_changePass");
-			changeOnlinePass.setEnabled(MainActivity.thisActivity.loginManager.getLoginState());
+			changeOnlinePass.setEnabled(bhApp.loginManager.getLoginState());
 
 			changeLoginPass = findPreference("pref_localPass");
-			if (!MainActivity.thisActivity.passSet && MainActivity.thisActivity.loginManager.getLoginState()) {
+			if (!bhApp.mainActivity.passSet && bhApp.loginManager.getLoginState()) {
 				changeOnlinePass.setTitle(R.string.str_Preferences_changePass_new_title);
 				changeOnlinePass.setSummary(R.string.str_Preferences_changePass_new_sum);
 				changeLoginPass.setEnabled(false);
 			}
 
-			MainActivity.thisActivity.loginManager.login();
+			bhApp.loginManager.login();
 			registerListeners();
 
 		}
@@ -488,7 +503,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 					Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
 					Bundle parametersBundle = new Bundle();
 					parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
-					parametersBundle.putBoolean("passSet", MainActivity.thisActivity.passSet);
+					parametersBundle.putBoolean("passSet", bhApp.mainActivity.passSet);
 					intent.putExtras(parametersBundle);
 
 					getActivity().startActivityForResult(intent, ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
@@ -513,7 +528,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				}
 			});
 
-			MainActivity.thisActivity.authentification.setOnLoginChangeListener(new OnLoginChangeListener() {
+			bhApp.authentification.setOnLoginChangeListener(new OnLoginChangeListener() {
 
 				@Override
 				public void loginStateChange(boolean loggedIn) {
@@ -537,6 +552,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	 */
 	public static class MiscFragment extends PreferenceFragment {
 
+		BlueHunter bhApp;
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -546,6 +563,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		public void onCreate(Bundle savedInstanceState) {
 
 			super.onCreate(savedInstanceState);
+
+			bhApp = (BlueHunter) getActivity().getApplication();
 
 			addPreferencesFromResource(R.xml.misc_preference);
 
@@ -564,7 +583,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				public boolean onPreferenceClick(Preference preference) {
 
 					int result =
-							new DatabaseManager(MainActivity.thisActivity, MainActivity.thisActivity.versionCode).rebuildDatabase();
+							new DatabaseManager(bhApp, bhApp.getVersionCode()).rebuildDatabase();
 
 					if (result == 0) {
 						Toast.makeText(getActivity(), "Successfully rebuilt database. App will now restart.", Toast.LENGTH_LONG).show();
@@ -596,10 +615,10 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	 */
 	public class PrefNetManager {
 
-		private PreferenceActivity prefActivity;
+		private SettingsActivity prefActivity;
 		private List<PrefNetThread> curRunningThreads;
 
-		public PrefNetManager(PreferenceActivity prefActivity) {
+		public PrefNetManager(SettingsActivity prefActivity) {
 
 			this.prefActivity = prefActivity;
 			curRunningThreads = new ArrayList<PrefNetThread>();
@@ -637,17 +656,17 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	 */
 	public class PrefNetThread extends AsyncTask<String, Integer, String> {
 
-		private MainActivity mainActivity;
-		private PreferenceActivity preferenceActivity;
+		private SettingsActivity preferenceActivity;
 		private PrefNetManager networkMananger;
+		private BlueHunter bhApp;
 
-		public PrefNetThread(PreferenceActivity preferenceActivity,
-				MainActivity mainActivity,
+		public PrefNetThread(SettingsActivity preferenceActivity,
+				BlueHunter app,
 				PrefNetManager networkMananger) {
 
 			super();
 			this.preferenceActivity = preferenceActivity;
-			this.mainActivity = mainActivity;
+			this.bhApp = app;
 			this.networkMananger = networkMananger;
 			networkMananger.addRunningThread(this);
 		}
@@ -754,7 +773,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 			result = reqIdMatcher.replaceFirst("");
 
-			mainActivity.authentification.fireOnNetworkResultAvailable(reqId, result);
+			bhApp.authentification.fireOnNetworkResultAvailable(reqId, result);
 
 			networkMananger.threadFinished(this);
 

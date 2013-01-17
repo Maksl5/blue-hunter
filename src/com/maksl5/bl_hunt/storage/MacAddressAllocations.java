@@ -75,9 +75,7 @@ public class MacAddressAllocations {
 	public static int getExp(String manufacturer) {
 
 		if (manufacturerExps != null) {
-			if (!manufacturerExps.isEmpty()) {
-				return manufacturerExps.get(manufacturer + "_exp");
-			}
+			if (!manufacturerExps.isEmpty()) { return manufacturerExps.get(manufacturer + "_exp"); }
 		}
 
 		int exp = 0;

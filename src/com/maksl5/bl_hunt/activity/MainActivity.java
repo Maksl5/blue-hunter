@@ -8,16 +8,12 @@ import java.util.regex.Pattern;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build.VERSION;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -35,13 +31,13 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.DiscoveryManager;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.FragmentLayoutManager;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.net.Authentification.LoginManager;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.net.NetworkManager;
@@ -52,8 +48,6 @@ import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 public class MainActivity extends FragmentActivity {
-
-	public static MainActivity thisActivity;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the sections. We use a
@@ -68,59 +62,51 @@ public class MainActivity extends FragmentActivity {
 	 */
 	public ViewPager mViewPager;
 
-	public ActionBarHandler actionBarHandler;
-	public DiscoveryManager disMan;
-	public Authentification authentification;
-	public NetworkManager netMananger;
-	public NotificationManager notificationManager;
-	public Notification.Builder stateNotificationBuilder;
-	public LoginManager loginManager;
+	private BlueHunter bhApp;
 
-	public TextView disStateTextView;
+	protected NotificationManager notificationManager;
+	public Notification.Builder stateNotificationBuilder;
+
+	protected TextView disStateTextView;
 	public TextView userInfoTextView;
 
-	public int versionCode = 0;
 	public boolean passSet = false;
-	
+
 	public int exp = 0;
 
 	private boolean destroyed;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
-		
-		//Debug.startMethodTracing("blHunt_12");
-		
-		thisActivity = this;
+
+		// Debug.startMethodTracing("blHunt_12");
+
+		bhApp = (BlueHunter) getApplication();
+		bhApp.mainActivity = this;
+		bhApp.currentActivity = this;
+
 		destroyed = false;
 		setContentView(R.layout.act_main);
-		
-		actionBarHandler = new ActionBarHandler(this);
-		disMan = new DiscoveryManager(this);
-		
+
+		bhApp.actionBarHandler = new ActionBarHandler(bhApp);
+		bhApp.disMan = new DiscoveryManager(bhApp);
+
 		// Create the adapter that will return a fragment for each of the primary sections
 		// of the app.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		authentification = new Authentification(this, this);
-		netMananger = new NetworkManager(this);
-		
-		loginManager = authentification.new LoginManager(Authentification.getSerialNumber(), authentification.getStoredPass(), authentification.getStoredLoginToken());
+		bhApp.authentification = new Authentification(bhApp);
+		bhApp.netMananger = new NetworkManager(bhApp);
+
+		bhApp.loginManager =
+				bhApp.authentification.new LoginManager(Authentification.getSerialNumber(), bhApp.authentification.getStoredPass(), bhApp.authentification.getStoredLoginToken());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(5);
-
-		try {
-			versionCode =
-					getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
-		}
-		catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		registerListener();
 
@@ -148,6 +134,8 @@ public class MainActivity extends FragmentActivity {
 
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
+		bhApp.currentActivity = this;
+
 	}
 
 	/**
@@ -161,12 +149,14 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onPageSelected(int position) {
 
-				actionBarHandler.changePage(position);
+				bhApp.actionBarHandler.changePage(position);
 
 			}
 
 			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+			public void onPageScrolled(	int position,
+										float positionOffset,
+										int positionOffsetPixels) {
 
 			}
 
@@ -175,112 +165,101 @@ public class MainActivity extends FragmentActivity {
 
 				switch (state) {
 
-					case ViewPager.SCROLL_STATE_DRAGGING:
+				case ViewPager.SCROLL_STATE_DRAGGING:
 
-					case ViewPager.SCROLL_STATE_IDLE:
+				case ViewPager.SCROLL_STATE_IDLE:
 
-					case ViewPager.SCROLL_STATE_SETTLING:
+				case ViewPager.SCROLL_STATE_SETTLING:
 
 				}
 
 			}
 		});
 
-		authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
+		bhApp.authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
 			@Override
-			public boolean onResult(int requestId, String resultString) {
+			public boolean onResult(int requestId,
+									String resultString) {
 
 				switch (requestId) {
-					case Authentification.NETRESULT_ID_SERIAL_CHECK:
+				case Authentification.NETRESULT_ID_SERIAL_CHECK:
 
-						Pattern pattern = Pattern.compile("Error=(\\d+)");
-						Matcher matcher = pattern.matcher(resultString);
+					Pattern pattern = Pattern.compile("Error=(\\d+)");
+					Matcher matcher = pattern.matcher(resultString);
 
-						if (matcher.find()) {
-							int error = Integer.parseInt(matcher.group(1));
+					if (matcher.find()) {
+						int error = Integer.parseInt(matcher.group(1));
 
-							String errorMsg = getString(R.string.str_Error_serialCheck, error); 
-							
-							switch (error) {
-								case 1:
-								case 4:
-								case 5:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_1_4_5));
-									break;
-								case 404:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_404));
-									break;
-								case 500:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_500));
-									break;
-								case 1001:
-								case 1002:
-								case 1004:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_1_2_4));
-									break;
-								case 1003:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_3));
-									break;
-								case 1005:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_5));
-									break;
-								case 1006:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_6));
-									break;
-								case 1007:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_7));
-									break;
-							}
-							
-							Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+						String errorMsg = getString(R.string.str_Error_serialCheck, error);
+
+						switch (error) {
+						case 1:
+						case 4:
+						case 5:
+							errorMsg += String.format(" (%s)", getString(R.string.str_Error_1_4_5));
+							break;
+						case 404:
+							errorMsg += String.format(" (%s)", getString(R.string.str_Error_404));
+							break;
+						case 500:
+							errorMsg += String.format(" (%s)", getString(R.string.str_Error_500));
+							break;
+						case 1001:
+						case 1002:
+						case 1004:
+							errorMsg +=
+									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_1_2_4));
+							break;
+						case 1003:
+							errorMsg +=
+									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_3));
+							break;
+						case 1005:
+							errorMsg +=
+									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_5));
+							break;
+						case 1006:
+							errorMsg +=
+									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_6));
+							break;
+						case 1007:
+							errorMsg +=
+									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_7));
 							break;
 						}
 
-						loginManager.login();
+						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
 						break;
-					case Authentification.NETRESULT_ID_GET_USER_INFO:
-						
-						Pattern pattern2 = Pattern.compile("Error=(\\d+)");
-						Matcher matcher2 = pattern2.matcher(resultString);
+					}
 
-						if (matcher2.find()) {
-							int error = Integer.parseInt(matcher2.group(1));
+					bhApp.loginManager.login();
+					break;
+				case Authentification.NETRESULT_ID_GET_USER_INFO:
 
-							String errorMsg = getString(R.string.str_Error_getUserInfo, error); 
-							
-							switch (error) {
-								case 1:
-								case 4:
-								case 5:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_1_4_5));
-									break;
-								case 404:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_404));
-									break;
-								case 500:
-									errorMsg+= String.format(" (%s)", getString(R.string.str_Error_500));
-									break;
-							}
-							
-							userInfoTextView.setText(errorMsg);
-							userInfoTextView.setVisibility(View.VISIBLE);
-							userInfoTextView.setClickable(true);
-							userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
-							userInfoTextView.setLinkTextColor(Color.DKGRAY);
-							userInfoTextView.requestLayout();
-							userInfoTextView.invalidate();
+					Pattern pattern2 = Pattern.compile("Error=(\\d+)");
+					Matcher matcher2 = pattern2.matcher(resultString);
 
-							TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
-							userInfoRow.setVisibility(View.VISIBLE);
-							userInfoRow.invalidate();
-							userInfoRow.setVisibility(View.INVISIBLE);
-							return true;
+					if (matcher2.find()) {
+						int error = Integer.parseInt(matcher2.group(1));
+
+						String errorMsg = getString(R.string.str_Error_getUserInfo, error);
+
+						switch (error) {
+						case 1:
+						case 4:
+						case 5:
+							errorMsg += String.format(" (%s)", getString(R.string.str_Error_1_4_5));
+							break;
+						case 404:
+							errorMsg += String.format(" (%s)", getString(R.string.str_Error_404));
+							break;
+						case 500:
+							errorMsg += String.format(" (%s)", getString(R.string.str_Error_500));
+							break;
 						}
 
-						
-						
-						userInfoTextView.setText(Html.fromHtml(resultString));
+						userInfoTextView.setText(errorMsg);
 						userInfoTextView.setVisibility(View.VISIBLE);
 						userInfoTextView.setClickable(true);
 						userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -292,7 +271,22 @@ public class MainActivity extends FragmentActivity {
 						userInfoRow.setVisibility(View.VISIBLE);
 						userInfoRow.invalidate();
 						userInfoRow.setVisibility(View.INVISIBLE);
-						break;
+						return true;
+					}
+
+					userInfoTextView.setText(Html.fromHtml(resultString));
+					userInfoTextView.setVisibility(View.VISIBLE);
+					userInfoTextView.setClickable(true);
+					userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
+					userInfoTextView.setLinkTextColor(Color.DKGRAY);
+					userInfoTextView.requestLayout();
+					userInfoTextView.invalidate();
+
+					TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
+					userInfoRow.setVisibility(View.VISIBLE);
+					userInfoRow.invalidate();
+					userInfoRow.setVisibility(View.INVISIBLE);
+					break;
 				}
 
 				return false;
@@ -304,46 +298,49 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
+		bhApp.currentActivity = this;
+
 		getMenuInflater().inflate(R.menu.act_main, menu);
-		actionBarHandler.supplyMenu(menu);
-		actionBarHandler.initialize();
+		bhApp.actionBarHandler.supplyMenu(menu);
+		bhApp.actionBarHandler.initialize();
 
 		// Setting up Views
-		if (disStateTextView == null) disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
+		if (disStateTextView == null)
+			disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
 		// Setting up DiscoveryManager
 
-		if (!disMan.startDiscoveryManager()) {
-			if (!disMan.supplyTextView(disStateTextView)) {
+		if (!bhApp.disMan.startDiscoveryManager()) {
+			if (!bhApp.disMan.supplyTextView(disStateTextView)) {
 
 				// ERROR
 			}
 			else {
-				disMan.startDiscoveryManager();
+				bhApp.disMan.startDiscoveryManager();
 			}
 		}
 
 		// Network Stuff
 
-		authentification.checkUpdate();
-		
-		NetworkThread serialSubmit = new NetworkThread(this, netMananger);
-		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + versionCode, "h=" + authentification.getSerialNumberHash());
+		bhApp.authentification.checkUpdate();
 
-		new DatabaseManager(this, versionCode).close();
+		NetworkThread serialSubmit = new NetworkThread(bhApp);
+		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
+
+		new DatabaseManager(bhApp, bhApp.getVersionCode()).close();
 
 		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
 
-		NetworkThread getUserInfo = new NetworkThread(this, netMananger);
+		NetworkThread getUserInfo = new NetworkThread(bhApp);
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
-		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(this);
+		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 		FragmentLayoutManager.StatisticLayout.initializeView(this);
 
 		updateNotification();
 
-		//Debug.stopMethodTracing();
-		
+		// Debug.stopMethodTracing();
+
 		return true;
 	}
 
@@ -356,15 +353,15 @@ public class MainActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-			case R.id.menu_settings:
-				Intent intent = new Intent(this, PreferenceActivity.class);
-				startActivity(intent);
-				break;
-			case R.id.menu_info:
+		case R.id.menu_settings:
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
+			break;
+		case R.id.menu_info:
 
-				break;
-			default:
-				break;
+			break;
+		default:
+			break;
 		}
 		return false;
 	}
@@ -399,16 +396,16 @@ public class MainActivity extends FragmentActivity {
 		public CharSequence getPageTitle(int position) {
 
 			switch (position) {
-				case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
-					return getString(R.string.str_pageTitle_main).toUpperCase();
-				case FragmentLayoutManager.PAGE_LEADERBOARD:
-					return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
-				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
-					return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
-				case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
-					return getString(R.string.str_pageTitle_achievements).toUpperCase();
-				case FragmentLayoutManager.PAGE_PROFILE:
-					return getString(R.string.str_pageTitle_profile).toUpperCase();
+			case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
+				return getString(R.string.str_pageTitle_main).toUpperCase();
+			case FragmentLayoutManager.PAGE_LEADERBOARD:
+				return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
+			case FragmentLayoutManager.PAGE_FOUND_DEVICES:
+				return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
+			case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
+				return getString(R.string.str_pageTitle_achievements).toUpperCase();
+			case FragmentLayoutManager.PAGE_PROFILE:
+				return getString(R.string.str_pageTitle_profile).toUpperCase();
 			}
 			return null;
 		}
@@ -423,7 +420,9 @@ public class MainActivity extends FragmentActivity {
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
 		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		public View onCreateView(	LayoutInflater inflater,
+									ViewGroup container,
+									Bundle savedInstanceState) {
 
 			Bundle args = getArguments();
 
@@ -432,7 +431,8 @@ public class MainActivity extends FragmentActivity {
 		}
 
 		@Override
-		public void onViewCreated(View view, Bundle savedInstanceState) {
+		public void onViewCreated(	View view,
+									Bundle savedInstanceState) {
 
 			super.onViewCreated(view, savedInstanceState);
 
@@ -445,12 +445,14 @@ public class MainActivity extends FragmentActivity {
 	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
 	 */
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+	protected void onActivityResult(int requestCode,
+									int resultCode,
+									Intent intent) {
 
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		if ((requestCode == 64 | requestCode == 128) & disMan != null)
-			disMan.passEnableBTActivityResult(resultCode, requestCode);
+		if ((requestCode == 64 | requestCode == 128) & bhApp.disMan != null)
+			bhApp.disMan.passEnableBTActivityResult(resultCode, requestCode);
 	}
 
 	/*
@@ -462,10 +464,10 @@ public class MainActivity extends FragmentActivity {
 	protected void onDestroy() {
 
 		notificationManager.cancelAll();
-		loginManager.unregisterInternetReceiver();
-		
-		disMan.unregisterReceiver();
-		disMan.stopDiscoveryManager();
+		bhApp.loginManager.unregisterInternetReceiver();
+
+		bhApp.disMan.unregisterReceiver();
+		bhApp.disMan.stopDiscoveryManager();
 		destroyed = true;
 
 		super.onDestroy();
@@ -534,7 +536,7 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
 
-		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(this);
+		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 
 	}
 

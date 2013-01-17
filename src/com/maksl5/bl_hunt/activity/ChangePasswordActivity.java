@@ -17,7 +17,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.net.Authentification;
 
 
 
@@ -45,8 +47,10 @@ public class ChangePasswordActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-		
+
 		super.onCreate(savedInstanceState);
+
+		((BlueHunter) getApplication()).currentActivity = this;
 
 		Bundle parameters = getIntent().getExtras();
 		int mode = parameters.getInt("mode");
@@ -54,9 +58,9 @@ public class ChangePasswordActivity extends Activity {
 
 		if (mode == MODE_CHANGE_ONLINE_PASS) {
 			setContentView(R.layout.act_change_online_pass);
-			
+
 			TextView title = (TextView) findViewById(R.id.textView1);
-			if(!isPasswordSet) {
+			if (!isPasswordSet) {
 				title.setText(R.string.str_changePass_new_title);
 			}
 
@@ -98,16 +102,16 @@ public class ChangePasswordActivity extends Activity {
 					else if (caption.equalsIgnoreCase(getString(R.string.str_changePass_sureButton))) {
 
 						if (newPass.getText().toString().equals(confirmPass.getText().toString())) {
-							if (isPasswordSet && oldPass.getText() != null && !oldPass.getText().equals("")) {
+							if (isPasswordSet && oldPass.getText().toString() != null && oldPass.getText().toString().length() != 0) {
 								Intent intent = new Intent();
-								intent.putExtra("oldPass", MainActivity.thisActivity.authentification.getPassHash(oldPass.getText().toString()));
-								intent.putExtra("newPass", MainActivity.thisActivity.authentification.getPassHash(newPass.getText().toString()));
+								intent.putExtra("oldPass", Authentification.getPassHash(oldPass.getText().toString()));
+								intent.putExtra("newPass", Authentification.getPassHash(newPass.getText().toString()));
 								setResult(1, intent);
 								finish();
 							}
 							else {
 								Intent intent = new Intent();
-								intent.putExtra("newPass", MainActivity.thisActivity.authentification.getPassHash(newPass.getText().toString()));
+								intent.putExtra("newPass", Authentification.getPassHash(newPass.getText().toString()));
 								setResult(2, intent);
 								finish();
 							}
@@ -121,14 +125,20 @@ public class ChangePasswordActivity extends Activity {
 			oldPass.addTextChangedListener(new TextWatcher() {
 
 				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
+				public void onTextChanged(	CharSequence s,
+											int start,
+											int before,
+											int count) {
 
 					// TODO Auto-generated method stub
 
 				}
 
 				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				public void beforeTextChanged(	CharSequence s,
+												int start,
+												int count,
+												int after) {
 
 					// TODO Auto-generated method stub
 
@@ -154,14 +164,20 @@ public class ChangePasswordActivity extends Activity {
 			TextWatcher textWatcher = new TextWatcher() {
 
 				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
+				public void onTextChanged(	CharSequence s,
+											int start,
+											int before,
+											int count) {
 
 					// TODO Auto-generated method stub
 
 				}
 
 				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				public void beforeTextChanged(	CharSequence s,
+												int start,
+												int count,
+												int after) {
 
 					// TODO Auto-generated method stub
 
@@ -178,81 +194,82 @@ public class ChangePasswordActivity extends Activity {
 			newPass.addTextChangedListener(textWatcher);
 			confirmPass.addTextChangedListener(textWatcher);
 
-		}else if (mode == MODE_CHANGE_LOGIN_PASS) {
+		}
+		else if (mode == MODE_CHANGE_LOGIN_PASS) {
 			setContentView(R.layout.act_change_login_pass);
-			
+
 			newPass = (EditText) findViewById(R.id.newPassEdit);
-			
+
 			cancelButton = (Button) findViewById(R.id.cancelButton);
 			applyButton = (Button) findViewById(R.id.confirmButton);
-			
+
 			applyButton.setEnabled(false);
-			
+
 			cancelButton.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
-				
+
 					setResult(0);
 					finish();
-					
+
 				}
 			});
-			
+
 			applyButton.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
-				
+
 					String newPassText = newPass.getText().toString();
-					
-					if(newPassText != null && !newPassText.equals("")) {
-						
+
+					if (newPassText != null && !newPassText.equals("")) {
+
 						Intent intent = new Intent();
-						intent.putExtra("newLoginPass", MainActivity.thisActivity.authentification.getPassHash(newPassText));
+						intent.putExtra("newLoginPass", Authentification.getPassHash(newPassText));
 						setResult(1, intent);
 						finish();
-						
+
 					}
-					
+
 				}
 			});
-			
-			newPass.addTextChangedListener( new TextWatcher() {
-				
+
+			newPass.addTextChangedListener(new TextWatcher() {
+
 				@Override
 				public void onTextChanged(	CharSequence s,
 											int start,
 											int before,
 											int count) {
-				
+
 					// TODO Auto-generated method stub
-					
+
 				}
-				
+
 				@Override
 				public void beforeTextChanged(	CharSequence s,
 												int start,
 												int count,
 												int after) {
-				
+
 					// TODO Auto-generated method stub
-					
+
 				}
-				
+
 				@Override
 				public void afterTextChanged(Editable s) {
-				
-					if(s.toString() != null && !s.toString().equals("")) {
+
+					if (s.toString() != null && !s.toString().equals("")) {
 						applyButton.setEnabled(true);
-					}else {
+					}
+					else {
 						applyButton.setEnabled(false);
 					}
-					
+
 				}
 			});
-			
-			
+
 		}
 
 	}
@@ -273,7 +290,8 @@ public class ChangePasswordActivity extends Activity {
 				equalIndicator.setImageResource(R.drawable.ic_error);
 				applyButton.setEnabled(false);
 			}
-		}else {
+		}
+		else {
 			if (newPassText != null && !newPassText.equals("") && newPassText.equals(confirmPassText) && oldPassText != null && !oldPassText.equals("")) {
 
 				equalIndicator.setImageResource(R.drawable.ic_correct);
@@ -283,7 +301,7 @@ public class ChangePasswordActivity extends Activity {
 				equalIndicator.setImageResource(R.drawable.ic_error);
 				applyButton.setEnabled(false);
 			}
-			
+
 		}
 
 	}

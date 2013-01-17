@@ -39,8 +39,8 @@ import org.apache.http.util.EntityUtils;
 import android.os.AsyncTask;
 import android.view.MenuItem;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
 
 
 
@@ -55,15 +55,13 @@ import com.maksl5.bl_hunt.activity.MainActivity;
 
 public class NetworkThread extends AsyncTask<String, Integer, String> {
 
-	private MainActivity mainActivity;
-	private NetworkManager networkMananger;
+	private BlueHunter bhApp;
 
-	public NetworkThread(MainActivity mainActivity, NetworkManager networkMananger) {
+	public NetworkThread(BlueHunter app) {
 
 		super();
-		this.mainActivity = mainActivity;
-		this.networkMananger = networkMananger;
-		networkMananger.addRunningThread(this);
+		this.bhApp = app;
+		bhApp.netMananger.addRunningThread(this);
 	}
 
 	/*
@@ -74,8 +72,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 	@Override
 	protected String doInBackground(String... params) {
 
-		String remoteFile = params[ 0 ];
-		int requestId = Integer.parseInt(params[ 1 ]);
+		String remoteFile = params[0];
+		int requestId = Integer.parseInt(params[1]);
 		boolean https = false;
 
 		if (remoteFile.startsWith("https")) https = true;
@@ -86,7 +84,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 			for (int i = 2; i < params.length; i++) {
 				Pattern pattern = Pattern.compile("(.+)=(.+)", Pattern.CASE_INSENSITIVE);
-				Matcher matcher = pattern.matcher(params[ i ]);
+				Matcher matcher = pattern.matcher(params[i]);
 
 				matcher.matches();
 
@@ -113,7 +111,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 				httpParams.setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 				HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
 
-				ClientConnectionManager cm = new ThreadSafeClientConnManager(httpParams, schemeRegistry);
+				ClientConnectionManager cm =
+						new ThreadSafeClientConnManager(httpParams, schemeRegistry);
 
 				httpClient = new DefaultHttpClient(cm, httpParams);
 			}
@@ -128,9 +127,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 			String result = EntityUtils.toString(httpResponse.getEntity());
 
-			if (!String.valueOf(httpResponse.getStatusLine().getStatusCode()).startsWith("2")) {
-				return "<requestID='" + requestId + "' />" + "Error=" + httpResponse.getStatusLine().getStatusCode();
-			}
+			if (!String.valueOf(httpResponse.getStatusLine().getStatusCode()).startsWith("2")) { return "<requestID='" + requestId + "' />" + "Error=" + httpResponse.getStatusLine().getStatusCode(); }
 
 			return "<requestID='" + requestId + "' />" + result;
 		}
@@ -169,9 +166,9 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 		result = reqIdMatcher.replaceFirst("");
 
-		mainActivity.authentification.fireOnNetworkResultAvailable(reqId, result);
+		bhApp.authentification.fireOnNetworkResultAvailable(reqId, result);
 
-		networkMananger.threadFinished(this);
+		bhApp.netMananger.threadFinished(this);
 
 	}
 
@@ -183,8 +180,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 	@Override
 	protected void onPreExecute() {
 
-		if (!mainActivity.isDestroyed()) {
-			MenuItem progressBar = mainActivity.actionBarHandler.getMenuItem(R.id.menu_progress);
+		if (!bhApp.mainActivity.isDestroyed()) {
+			MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
 			progressBar.setVisible(true);
 		}
 

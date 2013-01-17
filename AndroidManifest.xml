@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="797"
-    android:versionName="pre_alpha_0.2.0.797_130115-2307" >
+    android:versionCode="819"
+    android:versionName="pre_alpha_0.2.0.819_130117-1846" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -44,7 +44,7 @@
             android:theme="@style/EnableBluetoothTheme" >
         </activity>
         <activity
-            android:name=".activity.PreferenceActivity"
+            android:name="com.maksl5.bl_hunt.activity.SettingsActivity"
             android:label="@string/str_menu_settings" >
         </activity>
         <activity

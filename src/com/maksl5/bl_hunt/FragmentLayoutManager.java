@@ -4,21 +4,16 @@ package com.maksl5.bl_hunt;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
-import android.R.bool;
-import android.R.integer;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -35,7 +30,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -104,12 +98,6 @@ public class FragmentLayoutManager {
 
 		private volatile static List<String> showedFdList = new ArrayList<String>();
 		private volatile static List<String> completeFdList = new ArrayList<String>();
-		private static String[] from =
-				{
-					"macAddress", "manufacturer", "exp", "RSSI", "name", "time" };
-		private static int[] to = {
-									R.id.macTxtView, R.id.manufacturerTxtView, R.id.expTxtView,
-									R.id.rssiTxtView, R.id.nameTxtView, R.id.timeTxtView };
 
 		private static ThreadManager threadManager = null;
 
@@ -123,24 +111,32 @@ public class FragmentLayoutManager {
 											int position,
 											long id) {
 
-				selectedItem = position;
+				if (view.getContext() instanceof BlueHunter) {
 
-				MainActivity.thisActivity.startActionMode(MainActivity.thisActivity.actionBarHandler.actionModeCallback);
-				view.setSelected(true);
+					BlueHunter bhApp = (BlueHunter) view.getContext();
 
-				return true;
+					selectedItem = position;
+
+					bhApp.mainActivity.startActionMode(bhApp.actionBarHandler.actionModeCallback);
+					view.setSelected(true);
+
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
 
 		};
 
-		public static void refreshFoundDevicesList(final MainActivity mainActivity) {
+		public static void refreshFoundDevicesList(final BlueHunter bhApp) {
 
 			if (threadManager == null) {
-				threadManager = new FoundDevicesLayout().new ThreadManager(mainActivity);
+				threadManager = new FoundDevicesLayout().new ThreadManager();
 			}
 
 			RefreshThread refreshThread =
-					new FoundDevicesLayout().new RefreshThread(mainActivity, threadManager);
+					new FoundDevicesLayout().new RefreshThread(bhApp, threadManager);
 			if (refreshThread.canRun()) {
 				refreshThread.execute();
 			}
@@ -148,18 +144,22 @@ public class FragmentLayoutManager {
 		}
 
 		public static void filterFoundDevices(	String text,
-												MainActivity mainActivity) {
+												BlueHunter bhApp) {
 
 			List<String> searchedList = new ArrayList<String>();
 
 			ListView lv =
-					(ListView) mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
-			FoundDevicesAdapter fdAdapter;
+					(ListView) bhApp.mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
+			FoundDevicesAdapter fdAdapter = (FoundDevicesAdapter) lv.getAdapter();
+			if (fdAdapter == null || fdAdapter.isEmpty()) {
+				fdAdapter =
+						new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row, showedFdList);
+				lv.setAdapter(fdAdapter);
+			}
 
 			if (text.equalsIgnoreCase("[unknown]")) {
 
-				String unknownString =
-						mainActivity.getString(R.string.str_foundDevices_manu_unkown);
+				String unknownString = bhApp.getString(R.string.str_foundDevices_manu_unkown);
 
 				for (String deviceAsString : completeFdList) {
 
@@ -169,19 +169,18 @@ public class FragmentLayoutManager {
 						searchedList.add(deviceAsString);
 					}
 				}
-
 				showedFdList = searchedList;
-				fdAdapter =
-						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdList);
-				lv.setAdapter(fdAdapter);
+				fdAdapter.refill(showedFdList);
 
 			}
+			else if (text.length() == 0) {
+				if (showedFdList != completeFdList) {
+					showedFdList = completeFdList;
+					fdAdapter.refill(showedFdList);
+				}
+			}
 			else {
-				showedFdList = completeFdList;
-				fdAdapter =
-						new FoundDevicesLayout().new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdList);
 				fdAdapter.getFilter().filter(text);
-				lv.setAdapter(fdAdapter);
 			}
 
 		}
@@ -190,7 +189,7 @@ public class FragmentLayoutManager {
 		 * @param mainActivity
 		 * @return
 		 */
-		public static String getSelectedMac(MainActivity mainActivity) {
+		public static String getSelectedMac() {
 
 			if (selectedItem == -1) return null;
 
@@ -203,7 +202,7 @@ public class FragmentLayoutManager {
 
 		private class RefreshThread extends AsyncTask<Void, List<String>, List<String>> {
 
-			private MainActivity mainActivity;
+			private BlueHunter bhApp;
 			private ListView listView;
 
 			private FoundDevicesAdapter fdAdapter;
@@ -211,22 +210,20 @@ public class FragmentLayoutManager {
 			private ThreadManager threadManager;
 
 			private boolean canRun = true;
-			
+
 			private int scrollIndex;
 			private int scrollTop;
-			
-			
 
-			private RefreshThread(MainActivity mainActivity,
+			private RefreshThread(BlueHunter app,
 					ThreadManager threadManager) {
 
 				super();
-				this.mainActivity = mainActivity;
+				this.bhApp = app;
 				this.listView =
-						(ListView) mainActivity.mViewPager.getChildAt(PAGE_FOUND_DEVICES + 1).findViewById(R.id.listView2);
+						(ListView) bhApp.mainActivity.mViewPager.getChildAt(PAGE_FOUND_DEVICES + 1).findViewById(R.id.listView2);
 
 				listView.setOnItemLongClickListener(onLongClickListener);
-				
+
 				scrollIndex = listView.getFirstVisiblePosition();
 				View v = listView.getChildAt(0);
 				scrollTop = (v == null) ? 0 : v.getTop();
@@ -234,10 +231,10 @@ public class FragmentLayoutManager {
 				this.fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 				if (this.fdAdapter == null || this.fdAdapter.isEmpty()) {
 					this.fdAdapter =
-							new FoundDevicesAdapter(mainActivity, R.layout.act_page_founddevices_row, showedFdList);
+							new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row, showedFdList);
 					this.listView.setAdapter(fdAdapter);
 				}
-				
+
 				this.threadManager = threadManager;
 
 				if (!this.threadManager.setThread(this)) {
@@ -255,11 +252,10 @@ public class FragmentLayoutManager {
 			protected List<String> doInBackground(Void... params) {
 
 				List<HashMap<String, String>> devices =
-						new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
+						new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
 				List<String> listViewList = new ArrayList<String>();
 
-				String expString =
-						mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+				String expString = bhApp.getString(R.string.str_foundDevices_exp_abbreviation);
 				DateFormat dateFormat = DateFormat.getDateTimeInstance();
 
 				String tempString;
@@ -274,11 +270,10 @@ public class FragmentLayoutManager {
 
 					if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
 						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
-						new DatabaseManager(mainActivity, mainActivity.versionCode).addManufacturerToDevice(deviceMac, manufacturer);
+						new DatabaseManager(bhApp, bhApp.getVersionCode()).addManufacturerToDevice(deviceMac, manufacturer);
 
 						if (manufacturer.equals("Unknown")) {
-							manufacturer =
-									mainActivity.getString(R.string.str_foundDevices_manu_unkown);
+							manufacturer = bhApp.getString(R.string.str_foundDevices_manu_unkown);
 						}
 					}
 
@@ -313,9 +308,9 @@ public class FragmentLayoutManager {
 				if (!completeFdList.equals(result)) {
 					completeFdList = result;
 				}
-				
+
 				fdAdapter.refill(showedFdList);
-				
+
 				listView.setSelectionFromTop(scrollIndex, scrollTop);
 
 				threadManager.finished(this);
@@ -332,10 +327,9 @@ public class FragmentLayoutManager {
 
 				showedFdList = values[0];
 
-				//fdAdapter.refill(showedFdList);
+				// fdAdapter.refill(showedFdList);
 
 				listView.setSelectionFromTop(scrollIndex, scrollTop);
-				
 
 			}
 
@@ -352,14 +346,8 @@ public class FragmentLayoutManager {
 
 		private class ThreadManager {
 
-			MainActivity mainActivity;
 			RefreshThread refreshThread;
 			boolean running;
-
-			public ThreadManager(MainActivity mainActivity) {
-
-				this.mainActivity = mainActivity;
-			}
 
 			/**
 			 * @param refreshThread2
@@ -791,7 +779,7 @@ public class FragmentLayoutManager {
 			PatternProgressBar progressBar =
 					(PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
-			int exp = LevelSystem.getUserExp(mainActivity);
+			int exp = LevelSystem.getUserExp((BlueHunter) mainActivity.getApplication());
 			mainActivity.exp = exp;
 			int level = LevelSystem.getLevel(exp);
 

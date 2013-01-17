@@ -17,46 +17,64 @@ import android.content.SharedPreferences;
  */
 public class PreferenceManager {
 
-	public static boolean getPref(Context con, String key, boolean defValue) {
+	public static boolean getPref(	Context con,
+									String key,
+									boolean defValue) {
 
-		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+		SharedPreferences shPreferences =
+				android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		return shPreferences.getBoolean(key, defValue);
 
 	}
 
-	public static int getPref(Context con, String key, int defValue) {
+	public static int getPref(	Context con,
+								String key,
+								int defValue) {
 
-		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+		SharedPreferences shPreferences =
+				android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		return shPreferences.getInt(key, defValue);
 
 	}
 
-	public static String getPref(Context con, String key, String defValue) {
+	public static String getPref(	Context con,
+									String key,
+									String defValue) {
 
-		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+		SharedPreferences shPreferences =
+				android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		return shPreferences.getString(key, defValue);
 
 	}
-	
-	public static void setPref(Context con, String key, String value) {
-		
-		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+
+	public static void setPref(	Context con,
+								String key,
+								String value) {
+
+		SharedPreferences shPreferences =
+				android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		shPreferences.edit().putString(key, value).apply();
-		
+
 	}
-	
-	public static void setPref(Context con, String key, Boolean value) {
-		
-		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+
+	public static void setPref(	Context con,
+								String key,
+								Boolean value) {
+
+		SharedPreferences shPreferences =
+				android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		shPreferences.edit().putBoolean(key, value).apply();
-		
+
 	}
-	
-	public static void setPref(Context con, String key, int value) {
-		
-		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+
+	public static void setPref(	Context con,
+								String key,
+								int value) {
+
+		SharedPreferences shPreferences =
+				android.preference.PreferenceManager.getDefaultSharedPreferences(con);
 		shPreferences.edit().putInt(key, value).apply();
-		
+
 	}
-	
+
 }

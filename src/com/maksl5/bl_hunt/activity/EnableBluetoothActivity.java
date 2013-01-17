@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
 
 
@@ -36,11 +37,11 @@ public class EnableBluetoothActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		// TODO Auto-generated method stub
-
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
 
 		super.onCreate(savedInstanceState);
+
+		((BlueHunter) getApplication()).currentActivity = this;
 
 		setContentView(R.layout.act_enable_bluetooth);
 
@@ -61,6 +62,8 @@ public class EnableBluetoothActivity extends Activity {
 
 		// TODO Auto-generated method stub
 		super.onResume();
+
+		((BlueHunter) getApplication()).currentActivity = this;
 
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -100,7 +103,8 @@ public class EnableBluetoothActivity extends Activity {
 	 * @see android.app.Activity#onKeyUp(int, android.view.KeyEvent)
 	 */
 	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
+	public boolean onKeyUp(	int keyCode,
+							KeyEvent event) {
 
 		if (keyCode == KeyEvent.KEYCODE_BACK) return true;
 		return false;

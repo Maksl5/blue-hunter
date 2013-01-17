@@ -6,8 +6,6 @@ package com.maksl5.bl_hunt.storage;
 
 
 
-import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,28 +15,28 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.FragmentLayoutManager;
-import com.maksl5.bl_hunt.activity.MainActivity;
 
 
 
 public class DatabaseManager {
 
 	private int version;
-	private MainActivity mainActivity;
+	private BlueHunter bhApp;
 	private DatabaseHelper dbHelper;
 	private SQLiteDatabase db;
 
 	/**
 	 * 
 	 */
-	public DatabaseManager(MainActivity mainActivity,
+	public DatabaseManager(BlueHunter app,
 			int version) {
 
 		this.version = version;
-		this.mainActivity = mainActivity;
+		this.bhApp = app;
 
-		this.dbHelper = new DatabaseHelper(mainActivity, version);
+		this.dbHelper = new DatabaseHelper(bhApp, version);
 		this.db = dbHelper.getWritableDatabase();
 
 	}
@@ -161,44 +159,46 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_NAME, name);
 
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
-		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(mainActivity);
+		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		close();
 
 	}
 
-	public synchronized void addManufacturerToDevice(String macAddress,
-										String manufacturer) {
+	public synchronized void addManufacturerToDevice(	String macAddress,
+														String manufacturer) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_MANUFACTURER, manufacturer);
-		
+
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
 		close();
 	}
-	
+
 	public boolean deleteDevice(String macAddress) {
-		
-		int result = db.delete(DatabaseHelper.FOUND_DEVICES_TABLE, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
-		
+
+		int result =
+				db.delete(DatabaseHelper.FOUND_DEVICES_TABLE, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
+
 		close();
-		
-		if(result == 0) return false;
-		
+
+		if (result == 0) return false;
+
 		return true;
 	}
-	
+
 	public int rebuildDatabase() {
+
 		List<HashMap<String, String>> allDevices = getAllDevices();
-		
-		if(mainActivity.deleteDatabase(DatabaseHelper.DATABASE_NAME)) {
-			
-			dbHelper = new DatabaseHelper(mainActivity, version);
+
+		if (bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME)) {
+
+			dbHelper = new DatabaseHelper(bhApp, version);
 			db = dbHelper.getWritableDatabase();
-			
+
 			List<Integer> failureRows = new ArrayList<Integer>();
-			
+
 			for (HashMap<String, String> device : allDevices) {
-				
+
 				ContentValues values = new ContentValues();
 				values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.get(DatabaseHelper.COLUMN_MAC_ADDRESS));
 				values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(device.get(DatabaseHelper.COLUMN_MAC_ADDRESS)));
@@ -210,19 +210,21 @@ public class DatabaseManager {
 					failureRows.add(allDevices.indexOf(device));
 				}
 			}
-			
+
 			close();
-			
-			if(failureRows.size() == 0) {
+
+			if (failureRows.size() == 0) {
 				return 0;
-			}else {
+			}
+			else {
 				return -failureRows.size();
 			}
-			
-		} else {
+
+		}
+		else {
 			return 1001;
 		}
-		
+
 	}
 
 	public void close() {
@@ -246,19 +248,19 @@ public class DatabaseManager {
 		public final static String COLUMN_TIME = "time";
 		public final static String COLUMN_MANUFACTURER = "manufacturer";
 
-		private MainActivity mainActivity;
+		private BlueHunter bhApp;
 		private int version;
 
 		// CREATE DECLARATION
 		public final static String FOUND_DEVICES_CREATE =
 				"Create Table " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME + " Integer, " + COLUMN_MANUFACTURER + " Text);";
 
-		public DatabaseHelper(MainActivity mainActivity,
+		public DatabaseHelper(BlueHunter app,
 				int version) {
 
-			super(mainActivity, DATABASE_NAME, null, version);
+			super(app, DATABASE_NAME, null, version);
 
-			this.mainActivity = mainActivity;
+			this.bhApp = app;
 			this.version = version;
 
 		}
@@ -272,7 +274,7 @@ public class DatabaseManager {
 		public void onCreate(SQLiteDatabase db) {
 
 			db.execSQL(FOUND_DEVICES_CREATE);
-			mainActivity.authentification.showChangelog(mainActivity, 10);
+			bhApp.authentification.showChangelog(10);
 
 		}
 
@@ -294,7 +296,7 @@ public class DatabaseManager {
 				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_MANUFACTURER + " Text;");
 			}
 
-			mainActivity.authentification.showChangelog(mainActivity, oldVersion, newVersion, 0);
+			bhApp.authentification.showChangelog(oldVersion, newVersion, 0);
 
 		}
 

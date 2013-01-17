@@ -8,12 +8,10 @@ package com.maksl5.bl_hunt;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
-import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
+import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 
 
 
@@ -23,25 +21,23 @@ import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
  */
 public class LevelSystem {
 
-	public static int getUserExp(MainActivity mainActivity) {
+	public static int getUserExp(BlueHunter bhApp) {
 
 		int exp = 0;
 
 		List<HashMap<String, String>> foundDevices =
-				new DatabaseManager(mainActivity, mainActivity.versionCode).getAllDevices();
+				new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
 
 		for (HashMap<String, String> foundDevice : foundDevices) {
 
 			String manufacturer = foundDevice.get(DatabaseHelper.COLUMN_MANUFACTURER);
-			
-			if(manufacturer == null)
-			{
+
+			if (manufacturer == null) {
 				exp += 12;
 			}
 			else {
 				exp += MacAddressAllocations.getExp(manufacturer.replace(" ", "_"));
 			}
-			
 
 		}
 

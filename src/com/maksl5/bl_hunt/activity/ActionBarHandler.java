@@ -2,46 +2,33 @@ package com.maksl5.bl_hunt.activity;
 
 
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.nfc.Tag;
-import android.os.Build.VERSION;
 import android.os.Bundle;
-import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.MenuItem.OnActionExpandListener;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.Transformation;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
-import android.widget.Toast;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TableRow;
+import android.widget.Toast;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.FragmentLayoutManager;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
@@ -57,7 +44,7 @@ import com.maksl5.bl_hunt.storage.DatabaseManager;
 
 public class ActionBarHandler implements OnNavigationListener, OnQueryTextListener, OnActionExpandListener {
 
-	private MainActivity mainActivity;
+	private BlueHunter bhApp;
 	public ActionBar actBar;
 	private MenuInflater menuInflater;
 	private Menu menu;
@@ -69,20 +56,20 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	private int moveStartY;
 	private int beforeLastY;
 	private int lastY;
-	
+
 	public ActionMode.Callback actionModeCallback;
 
 	@TargetApi(11)
-	public ActionBarHandler(MainActivity activity) {
+	public ActionBarHandler(BlueHunter app) {
 
-		mainActivity = activity;
-		actBar = mainActivity.getActionBar();
+		bhApp = app;
+		actBar = bhApp.mainActivity.getActionBar();
 
 		actBar.setDisplayShowTitleEnabled(false);
 		actBar.setDisplayUseLogoEnabled(true);
 		actBar.setDisplayShowHomeEnabled(true);
 
-		menuInflater = mainActivity.getMenuInflater();
+		menuInflater = bhApp.mainActivity.getMenuInflater();
 	}
 
 	/**
@@ -92,8 +79,9 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 		checkMenuNull();
 
-		final ViewPager viewPager = (ViewPager) mainActivity.findViewById(R.id.pager);
-		final TableRow userInfoRow = (TableRow) mainActivity.findViewById(R.id.userInfoTableRow);
+		final ViewPager viewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+		final TableRow userInfoRow =
+				(TableRow) bhApp.mainActivity.findViewById(R.id.userInfoTableRow);
 
 		userInfoRow.setVisibility(View.VISIBLE);
 
@@ -140,7 +128,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
 		disSwitch.setPadding(5, 0, 5, 0);
 
-		progressBar = new ProgressBar(mainActivity, null, android.R.attr.progressBarStyleSmall);
+		progressBar = new ProgressBar(bhApp, null, android.R.attr.progressBarStyleSmall);
 		getMenuItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
 
 		progressBar.setPadding(5, 0, 5, 0);
@@ -151,13 +139,13 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		getMenuItem(R.id.menu_search).setOnActionExpandListener(this);
 
 		changePage(FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
-		
-actionModeCallback = new ActionMode.Callback() {
-			
+
+		actionModeCallback = new ActionMode.Callback() {
+
 			@Override
 			public boolean onCreateActionMode(	ActionMode mode,
 												Menu menu) {
-			
+
 				MenuInflater inflater = mode.getMenuInflater();
 				switch (currentPage) {
 				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
@@ -166,70 +154,72 @@ actionModeCallback = new ActionMode.Callback() {
 				default:
 					return false;
 				}
-				
+
 			}
 
 			@Override
 			public boolean onPrepareActionMode(	ActionMode mode,
 												Menu menu) {
+
 				return false;
 			}
-			
+
 			@Override
 			public boolean onActionItemClicked(	ActionMode mode,
 												MenuItem item) {
+
 				switch (currentPage) {
 				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
-					
+
 					switch (item.getItemId()) {
 					case R.id.menu_context_remove:
 
-						String macAddress = FragmentLayoutManager.FoundDevicesLayout.getSelectedMac(mainActivity);
-						if(macAddress == null) {
-							Toast.makeText(mainActivity, "Error removing device.", Toast.LENGTH_LONG).show();
+						String macAddress =
+								FragmentLayoutManager.FoundDevicesLayout.getSelectedMac();
+						if (macAddress == null) {
+							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
 							mode.finish();
 						}
-						
-						if(!new DatabaseManager(mainActivity, mainActivity.versionCode).deleteDevice(macAddress)) {
-							Toast.makeText(mainActivity, "Error removing device.", Toast.LENGTH_LONG).show();
-						}else {
-							FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(mainActivity);
-							FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(mainActivity);
 
-							mainActivity.updateNotification();
-							Toast.makeText(mainActivity, "Successfully removed device.", Toast.LENGTH_LONG).show();
+						if (!new DatabaseManager(bhApp, bhApp.getVersionCode()).deleteDevice(macAddress)) {
+							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
+						}
+						else {
+							FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+							FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+
+							bhApp.mainActivity.updateNotification();
+							Toast.makeText(bhApp, "Successfully removed device.", Toast.LENGTH_LONG).show();
 						}
 						mode.finish();
 						return true;
 					default:
 						break;
 					}
-					
-					
+
 					break;
 
 				default:
 					break;
 				}
-				
+
 				return false;
 			}
 
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
-			
+
 				switch (currentPage) {
 				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
-					
+
 					FragmentLayoutManager.FoundDevicesLayout.selectedItem = -1;
-					
+
 					break;
 
 				default:
 					break;
 				}
-				
-				
+
 			}
 		};
 
@@ -249,7 +239,7 @@ actionModeCallback = new ActionMode.Callback() {
 		case FragmentLayoutManager.PAGE_LEADERBOARD:
 			menu.findItem(R.id.menu_search).setVisible(true);
 			menu.findItem(R.id.menu_info).setVisible(false);
-			
+
 			onQueryTextChange("");
 			menu.findItem(R.id.menu_search).collapseActionView();
 			break;
@@ -286,7 +276,7 @@ actionModeCallback = new ActionMode.Callback() {
 
 		if (menu == null) {
 
-			mainActivity.invalidateOptionsMenu();
+			bhApp.mainActivity.invalidateOptionsMenu();
 
 		}
 
@@ -313,8 +303,9 @@ actionModeCallback = new ActionMode.Callback() {
 	public boolean onNavigationItemSelected(int itemPosition,
 											long itemId) {
 
-		final ViewPager parentView = (ViewPager) mainActivity.findViewById(R.id.pager);
-		final TableRow userInfoRow = (TableRow) mainActivity.findViewById(R.id.userInfoTableRow);
+		final ViewPager parentView = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+		final TableRow userInfoRow =
+				(TableRow) bhApp.mainActivity.findViewById(R.id.userInfoTableRow);
 
 		Animation animation;
 
@@ -420,7 +411,7 @@ actionModeCallback = new ActionMode.Callback() {
 
 		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES) {
 
-			FragmentLayoutManager.FoundDevicesLayout.filterFoundDevices(newText, mainActivity);
+			FragmentLayoutManager.FoundDevicesLayout.filterFoundDevices(newText, bhApp);
 
 		}
 
@@ -560,7 +551,7 @@ actionModeCallback = new ActionMode.Callback() {
 	 */
 	@Override
 	public boolean onMenuItemActionExpand(MenuItem item) {
-		
+
 		return true;
 	}
 

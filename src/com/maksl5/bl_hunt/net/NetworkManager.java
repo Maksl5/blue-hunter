@@ -11,8 +11,8 @@ import java.util.List;
 
 import android.view.MenuItem;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
 
 
 
@@ -22,12 +22,12 @@ import com.maksl5.bl_hunt.activity.MainActivity;
  */
 public class NetworkManager {
 
-	private MainActivity mainActivity;
+	private BlueHunter bhApp;
 	private List<NetworkThread> curRunningThreads;
 
-	public NetworkManager(MainActivity mActivity) {
+	public NetworkManager(BlueHunter app) {
 
-		mainActivity = mActivity;
+		bhApp = app;
 		curRunningThreads = new ArrayList<NetworkThread>();
 	}
 
@@ -48,8 +48,8 @@ public class NetworkManager {
 	private void checkList() {
 
 		if (curRunningThreads.size() == 0) {
-			if (!mainActivity.isDestroyed()) {
-				MenuItem progressBar = mainActivity.actionBarHandler.getMenuItem(R.id.menu_progress);
+			if (!bhApp.mainActivity.isDestroyed()) {
+				MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
 				progressBar.setVisible(false);
 			}
 		}

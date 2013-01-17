@@ -17,7 +17,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
-import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
@@ -39,13 +38,13 @@ import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 public class DiscoveryManager {
 
-	private MainActivity mainActivity;
+	private BlueHunter bhApp;
 	private TextView stateTextView;
 	private BluetoothDiscoveryHandler btHandler;
 
-	public DiscoveryManager(MainActivity activity) {
+	public DiscoveryManager(BlueHunter application) {
 
-		mainActivity = activity;
+		bhApp = application;
 
 	}
 
@@ -59,8 +58,7 @@ public class DiscoveryManager {
 		if (stateTextView == null) return false;
 
 		if (btHandler == null) {
-			btHandler =
-					new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, mainActivity));
+			btHandler = new BluetoothDiscoveryHandler(new DiscoveryState(stateTextView, bhApp));
 			registerReceiver();
 		}
 		else {
@@ -103,12 +101,12 @@ public class DiscoveryManager {
 		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
 		filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
 
-		mainActivity.registerReceiver(btHandler, filter);
+		bhApp.registerReceiver(btHandler, filter);
 	}
 
 	public void unregisterReceiver() {
 
-		mainActivity.unregisterReceiver(btHandler);
+		bhApp.unregisterReceiver(btHandler);
 
 	}
 
@@ -298,12 +296,11 @@ public class DiscoveryManager {
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-			foundDevices =
-					new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
+			foundDevices = new DatabaseManager(bhApp, bhApp.getVersionCode()).getMacAddresses();
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 
 			discoveryButton =
-					(CompoundButton) mainActivity.actionBarHandler.getActionView(R.id.menu_switch);
+					(CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
 
 			requestBtEnable(false);
 
@@ -338,10 +335,10 @@ public class DiscoveryManager {
 			if (isBluetoothSupported()) {
 				if (!isBluetoothEnabled()) {
 					if (startDiscovery) {
-						mainActivity.startActivityForResult(new Intent(mainActivity, EnableBluetoothActivity.class), 128);
+						bhApp.mainActivity.startActivityForResult(new Intent(bhApp, EnableBluetoothActivity.class), 128);
 					}
 					else {
-						mainActivity.startActivityForResult(new Intent(mainActivity, EnableBluetoothActivity.class), 64);
+						bhApp.mainActivity.startActivityForResult(new Intent(bhApp, EnableBluetoothActivity.class), 64);
 					}
 
 				}
@@ -458,8 +455,8 @@ public class DiscoveryManager {
 			else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
 
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING);
-				mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING, mainActivity));
-				mainActivity.updateNotification();
+				bhApp.mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING, bhApp));
+				bhApp.mainActivity.updateNotification();
 
 			}
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -467,7 +464,7 @@ public class DiscoveryManager {
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
 
 				for (BluetoothDevice btDevice : foundDevicesInCurDiscovery) {
-					new DatabaseManager(mainActivity, mainActivity.versionCode).addNameToDevice(btDevice.getAddress(), btDevice.getName());
+					new DatabaseManager(bhApp, bhApp.getVersionCode()).addNameToDevice(btDevice.getAddress(), btDevice.getName());
 				}
 
 				foundDevicesInCurDiscovery = null;
@@ -478,8 +475,8 @@ public class DiscoveryManager {
 				}
 				else {
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED);
-					mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, mainActivity));
-					mainActivity.updateNotification();
+					bhApp.mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, bhApp));
+					bhApp.mainActivity.updateNotification();
 				}
 
 			}
@@ -497,18 +494,17 @@ public class DiscoveryManager {
 		public void onDeviceFound(	BluetoothDevice btDevice,
 									short RSSI) {
 
-			foundDevices =
-					new DatabaseManager(mainActivity, mainActivity.versionCode).getMacAddresses();
+			foundDevices = new DatabaseManager(bhApp, bhApp.getVersionCode()).getMacAddresses();
 
 			if (!foundDevices.contains(btDevice.getAddress())) {
 				foundDevicesInCurDiscovery.add(btDevice);
 				attemptVibration();
-				new DatabaseManager(mainActivity, mainActivity.versionCode).addNewDevice(btDevice.getAddress(), RSSI);
+				new DatabaseManager(bhApp, bhApp.getVersionCode()).addNewDevice(btDevice.getAddress(), RSSI);
 
-				FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(mainActivity);
-				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(mainActivity);
+				FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
-				mainActivity.updateNotification();
+				bhApp.mainActivity.updateNotification();
 
 			}
 
@@ -516,10 +512,9 @@ public class DiscoveryManager {
 
 		public void attemptVibration() {
 
-			boolean bVibrate = PreferenceManager.getPref(mainActivity, "pref_vibrate", false);
+			boolean bVibrate = PreferenceManager.getPref(bhApp, "pref_vibrate", false);
 			if (bVibrate) {
-				Vibrator vibrator =
-						(Vibrator) mainActivity.getSystemService(Context.VIBRATOR_SERVICE);
+				Vibrator vibrator = (Vibrator) bhApp.getSystemService(Context.VIBRATOR_SERVICE);
 				vibrator.vibrate(500);
 			}
 

@@ -13,18 +13,14 @@ import java.util.regex.Pattern;
 
 import org.acra.ACRA;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.ViewGroup.LayoutParams;
@@ -33,8 +29,8 @@ import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
@@ -47,7 +43,7 @@ public class Authentification {
 
 	private AuthentificationSecure secure;
 	private Context context;
-	private MainActivity mainActivity;
+	protected BlueHunter bhApp;
 	private ArrayList<OnNetworkResultAvailableListener> listenerList =
 			new ArrayList<Authentification.OnNetworkResultAvailableListener>();
 	private ArrayList<OnLoginChangeListener> loginChangeListeners =
@@ -65,11 +61,10 @@ public class Authentification {
 	public static boolean newUpdateAvailable = false;
 	public boolean internetIsAvailable = false;
 
-	public Authentification(Context con,
-			MainActivity mainActivity) {
+	public Authentification(BlueHunter app) {
 
-		context = con;
-		this.mainActivity = mainActivity;
+		context = app;
+		this.bhApp = app;
 
 		checkInternetConnection();
 
@@ -110,9 +105,9 @@ public class Authentification {
 		return secure.getPassChangeHash(getSerialNumber(), newPass);
 	}
 
-	public String getPassHash(String pass) {
+	public static String getPassHash(String pass) {
 
-		return secure.getPassHash(pass);
+		return AuthentificationSecure.getPassHash(pass);
 	}
 
 	public String getStoredPass() {
@@ -148,30 +143,6 @@ public class Authentification {
 		return context;
 	}
 
-	public static int getVersionCode(Context con) {
-
-		try {
-			return con.getPackageManager().getPackageInfo(con.getPackageName(), PackageManager.GET_META_DATA).versionCode;
-		}
-		catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return 0;
-		}
-	}
-
-	public static String getVersionName(Context con) {
-
-		try {
-			return con.getPackageManager().getPackageInfo(con.getPackageName(), PackageManager.GET_META_DATA).versionName;
-		}
-		catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
-		}
-	}
-
 	public void checkUpdate() {
 
 		if (PreferenceManager.getPref(context, "pref_checkUpdate", true)) {
@@ -191,8 +162,8 @@ public class Authentification {
 
 							int verCode = Integer.parseInt(matcher.group(1));
 
-							if (verCode > getVersionCode(mainActivity)) {
-								Toast.makeText(mainActivity, mainActivity.getString(R.string.str_auth_newUpdateAvailable, getVersionCode(context), verCode), Toast.LENGTH_LONG).show();
+							if (verCode > bhApp.getVersionCode()) {
+								Toast.makeText(bhApp, bhApp.getString(R.string.str_auth_newUpdateAvailable, bhApp.getVersionCode(), verCode), Toast.LENGTH_LONG).show();
 								newUpdateAvailable = true;
 							}
 						}
@@ -201,7 +172,7 @@ public class Authentification {
 							Matcher matcher = pattern.matcher(resultString);
 							if (matcher.find()) {
 								int errorCode = Integer.parseInt(matcher.group(1));
-								Toast.makeText(mainActivity, mainActivity.getString(R.string.str_Error_checkUpdate, errorCode), Toast.LENGTH_LONG).show();
+								Toast.makeText(bhApp, bhApp.getString(R.string.str_Error_checkUpdate, errorCode), Toast.LENGTH_LONG).show();
 							}
 						}
 
@@ -212,36 +183,33 @@ public class Authentification {
 				}
 			});
 
-			NetworkThread checkUpdateThread =
-					new NetworkThread(mainActivity, mainActivity.netMananger);
+			NetworkThread checkUpdateThread = new NetworkThread(bhApp);
 
 			checkUpdateThread.execute(AuthentificationSecure.SERVER_CHECK_UPDATE, String.valueOf(NETRESULT_ID_CHECK_UPDATE));
 		}
 
 	}
 
-	public void showChangelog(final Activity activity) {
+	public void showChangelog() {
 
-		showChangelog(activity, 0);
+		showChangelog(0);
 	}
 
-	public void showChangelog(	final Activity activity,
-								int limit) {
+	public void showChangelog(int limit) {
 
-		showChangelog(activity, 0, 0, limit);
+		showChangelog(0, 0, limit);
 	}
 
 	/**
  * 
  */
-	public void showChangelog(	final Activity activity,
-								int oldVersion,
+	public void showChangelog(	int oldVersion,
 								int newVersion,
 								int limit) {
 
-		NetworkThread getChangelog = new NetworkThread(mainActivity, mainActivity.netMananger);
+		NetworkThread getChangelog = new NetworkThread(bhApp);
 
-		mainActivity.authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
+		setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
 			@Override
 			public boolean onResult(int requestId,
@@ -253,7 +221,7 @@ public class Authentification {
 					Matcher matcher = pattern.matcher(resultString);
 
 					String updateMsg =
-							mainActivity.getString(R.string.str_auth_updated, getVersionName(mainActivity));
+							bhApp.getString(R.string.str_auth_updated, bhApp.getVersionName());
 
 					if (matcher.find()) {
 						int error = Integer.parseInt(matcher.group(1));
@@ -263,67 +231,63 @@ public class Authentification {
 						case 4:
 						case 5:
 							updateMsg +=
-									String.format("(%s)", mainActivity.getString(R.string.str_auth_updated_1_4_5));
+									String.format("(%s)", bhApp.getString(R.string.str_auth_updated_1_4_5));
 							break;
 						case 90:
 							updateMsg +=
-									String.format("(%s)", mainActivity.getString(R.string.str_auth_updated_90));
+									String.format("(%s)", bhApp.getString(R.string.str_auth_updated_90));
 							break;
 						case 404:
 							updateMsg +=
-									String.format("(%s)", mainActivity.getString(R.string.str_auth_updated_404));
+									String.format("(%s)", bhApp.getString(R.string.str_auth_updated_404));
 							break;
 						case 500:
 							updateMsg +=
-									String.format("(%s)", mainActivity.getString(R.string.str_auth_updated_500));
+									String.format("(%s)", bhApp.getString(R.string.str_auth_updated_500));
 							break;
 						}
-						
-						Toast.makeText(mainActivity, updateMsg, Toast.LENGTH_LONG).show();
+
+						Toast.makeText(bhApp, updateMsg, Toast.LENGTH_LONG).show();
 					}
 					else {
 
-						Builder builder = new Builder(activity);
-						builder.setTitle(mainActivity.getString(R.string.str_auth_changelog));
+						Builder builder = new Builder(bhApp.currentActivity);
+						builder.setTitle(bhApp.getString(R.string.str_auth_changelog));
 						builder.setNeutralButton(R.string.str_auth_changelog_ok, new OnClickListener() {
-							
+
 							@Override
 							public void onClick(DialogInterface dialog,
 												int which) {
-							
+
 								dialog.dismiss();
-								
+
 							}
 						});
-						
+
 						AlertDialog changelogDialog = builder.create();
-						ScrollView changeLogScrollView = new ScrollView(activity);
-						
+						ScrollView changeLogScrollView = new ScrollView(bhApp.currentActivity);
+
 						changeLogScrollView.setSmoothScrollingEnabled(true);
-						
-						
-						WebView changelogWebView = new WebView(activity);
+
+						WebView changelogWebView = new WebView(bhApp.currentActivity);
 						int padding =
-								mainActivity.getResources().getDimensionPixelSize(R.dimen.padding_small);
+								bhApp.getResources().getDimensionPixelSize(R.dimen.padding_small);
 						changelogWebView.setPadding(padding, padding, padding, padding);
 						changeLogScrollView.addView(changelogWebView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 						changelogWebView.loadDataWithBaseURL(null, resultString, "text/html", "UTF-8", null);
-						
+
 						changelogDialog.setView(changeLogScrollView, 0, 0, 0, 0);
-						
-						
+
 						try {
 							changelogDialog.show();
 						}
 						catch (BadTokenException e) {
-							
+
 							ACRA.getErrorReporter().handleSilentException(e);
-							
+
 						}
-						
 
 					}
-
 
 					return true;
 				}
@@ -433,12 +397,12 @@ public class Authentification {
 
 			intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 
-			mainActivity.registerReceiver(this, intentFilter);
+			bhApp.registerReceiver(this, intentFilter);
 		}
 
 		public void unregisterInternetReceiver() {
 
-			mainActivity.unregisterReceiver(this);
+			bhApp.unregisterReceiver(this);
 		}
 
 		public void login() {
@@ -452,21 +416,21 @@ public class Authentification {
 			if (resultFromPreLogin != null && !resultFromPreLogin.equalsIgnoreCase("")) {
 				Toast.makeText(getContext(), resultFromPreLogin, Toast.LENGTH_LONG).show();
 
-				NetworkThread login = new NetworkThread(mainActivity, mainActivity.netMananger);
+				NetworkThread login = new NetworkThread(bhApp);
 
 				if (password == null) {
-					login.execute(AuthentificationSecure.SERVER_LOGIN, String.valueOf(NETRESULT_ID_LOGIN), "h=" + Authentification.this.getLoginHash(resultFromPreLogin), "s=" + Authentification.getSerialNumber(), "v=" + mainActivity.versionCode, "t=" + resultFromPreLogin);
+					login.execute(AuthentificationSecure.SERVER_LOGIN, String.valueOf(NETRESULT_ID_LOGIN), "h=" + Authentification.this.getLoginHash(resultFromPreLogin), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "t=" + resultFromPreLogin);
 				}
 				else {
-					login.execute(AuthentificationSecure.SERVER_LOGIN, String.valueOf(NETRESULT_ID_LOGIN), "h=" + Authentification.this.getLoginHash(resultFromPreLogin), "s=" + Authentification.getSerialNumber(), "v=" + mainActivity.versionCode, "t=" + resultFromPreLogin, "p=" + password);
+					login.execute(AuthentificationSecure.SERVER_LOGIN, String.valueOf(NETRESULT_ID_LOGIN), "h=" + Authentification.this.getLoginHash(resultFromPreLogin), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "t=" + resultFromPreLogin, "p=" + password);
 				}
 			}
 		}
 
 		private void preLogin() {
 
-			NetworkThread preLogin = new NetworkThread(mainActivity, mainActivity.netMananger);
-			preLogin.execute(AuthentificationSecure.SERVER_PRE_LOGIN, String.valueOf(Authentification.NETRESULT_ID_PRE_LOGIN), "s=" + Authentification.getSerialNumber(), "v=" + mainActivity.versionCode, "h=" + Authentification.this.getSerialNumberHash());
+			NetworkThread preLogin = new NetworkThread(bhApp);
+			preLogin.execute(AuthentificationSecure.SERVER_PRE_LOGIN, String.valueOf(Authentification.NETRESULT_ID_PRE_LOGIN), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + Authentification.this.getSerialNumberHash());
 
 		}
 
@@ -476,8 +440,7 @@ public class Authentification {
 
 			if (loginToken != null) {
 
-				NetworkThread checkLogin =
-						new NetworkThread(mainActivity, mainActivity.netMananger);
+				NetworkThread checkLogin = new NetworkThread(bhApp);
 
 				if (password == null) {
 					checkLogin.execute(AuthentificationSecure.SERVER_CHECK_LOGIN, String.valueOf(Authentification.NETRESULT_ID_CHECK_LOGIN), "s=" + getSerialNumber(), "lt=" + loginToken);
@@ -527,37 +490,39 @@ public class Authentification {
 
 					int error = Integer.parseInt(matcher.group(1));
 
-					String errorMsg = mainActivity.getString(R.string.str_Error_preLogin, error);
+					String errorMsg = bhApp.getString(R.string.str_Error_preLogin, error);
 
 					switch (error) {
 					case 1:
 					case 4:
 					case 5:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_1_4_5));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_1_4_5));
 						break;
 					case 404:
-						errorMsg +=
-								String.format(" (%s)", mainActivity.getString(R.string.str_Error_404));
+						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_404));
 						break;
 					case 500:
-						errorMsg +=
-								String.format(" (%s)", mainActivity.getString(R.string.str_Error_500));
+						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_500));
 						break;
 					case 1001:
 					case 1002:
 					case 1006:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_preLogin_100_1_2_6));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_preLogin_100_1_2_6));
 						break;
 					case 1003:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_preLogin_100_3));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_preLogin_100_3));
 						break;
 					case 1004:
 					case 1005:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_preLogin_100_4_5));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_preLogin_100_4_5));
 						break;
 					}
 
-					Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
+					Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
 					return true;
 				}
 
@@ -574,51 +539,57 @@ public class Authentification {
 
 					int error = Integer.parseInt(matcher1.group(1));
 
-					String errorMsg = mainActivity.getString(R.string.str_Error_Login, error);
+					String errorMsg = bhApp.getString(R.string.str_Error_Login, error);
 
 					switch (error) {
 					case 1:
 					case 4:
 					case 5:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_1_4_5));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_1_4_5));
 						break;
 					case 404:
-						errorMsg +=
-								String.format(" (%s)", mainActivity.getString(R.string.str_Error_404));
+						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_404));
 						break;
 					case 500:
-						errorMsg +=
-								String.format(" (%s)", mainActivity.getString(R.string.str_Error_500));
+						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_500));
 						break;
 					case 1001:
 					case 1002:
 					case 1003:
 					case 1011:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_1_2_3_11));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_1_2_3_11));
 						break;
 					case 1004:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_4));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_4));
 						break;
 					case 1005:
 					case 1007:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_5_7));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_5_7));
 						break;
 					case 1006:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_6));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_6));
 						break;
 					case 1008:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_8));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_8));
 						break;
 					case 1009:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_9));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_9));
 						break;
 					case 1010:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_Login_100_10));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_10));
 						break;
 
 					}
 
-					Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
+					Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
 					return true;
 				}
 
@@ -634,21 +605,21 @@ public class Authentification {
 					Authentification.this.storeLoginToken(tokenString);
 					this.loginToken = tokenString;
 
-					mainActivity.passSet = passExists;
+					bhApp.mainActivity.passSet = passExists;
 
 					setLoginState(true);
 
 					if (!passExists) {
-						Toast.makeText(mainActivity, String.format("%s%n%s", mainActivity.getString(R.string.str_auth_loginSuccess), mainActivity.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
-						Toast.makeText(mainActivity, String.format("%s%n%s", mainActivity.getString(R.string.str_auth_loginSuccess), mainActivity.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
+						Toast.makeText(bhApp, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess), bhApp.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
+						Toast.makeText(bhApp, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess), bhApp.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
 					}
 					else {
-						Toast.makeText(mainActivity, mainActivity.getString(R.string.str_auth_loginSuccess), Toast.LENGTH_LONG).show();
+						Toast.makeText(bhApp, bhApp.getString(R.string.str_auth_loginSuccess), Toast.LENGTH_LONG).show();
 					}
 
 				}
 				else {
-					Toast.makeText(mainActivity, mainActivity.getString(R.string.str_auth_storeTokenFailed), Toast.LENGTH_LONG).show();
+					Toast.makeText(bhApp, bhApp.getString(R.string.str_auth_storeTokenFailed), Toast.LENGTH_LONG).show();
 				}
 
 				return true;
@@ -663,42 +634,46 @@ public class Authentification {
 
 					int error = Integer.parseInt(matcher2.group(1));
 
-					String errorMsg = mainActivity.getString(R.string.str_Error_checkLogin, error);
+					String errorMsg = bhApp.getString(R.string.str_Error_checkLogin, error);
 
 					switch (error) {
 					case 1:
 					case 4:
 					case 5:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_1_4_5));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_1_4_5));
 						break;
 					case 404:
-						errorMsg +=
-								String.format(" (%s)", mainActivity.getString(R.string.str_Error_404));
+						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_404));
 						break;
 					case 500:
-						errorMsg +=
-								String.format(" (%s)", mainActivity.getString(R.string.str_Error_500));
+						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_500));
 						break;
 					case 1001:
 					case 1002:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_1_2));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_1_2));
 						break;
 					case 1003:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_3));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_3));
 						break;
 					case 1004:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_4));
-						mainActivity.passSet = true;
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_4));
+						bhApp.mainActivity.passSet = true;
 						break;
 					case 1005:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_5));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_5));
 						break;
 					case 1006:
 					case 1007:
-						errorMsg += String.format(" (%s)", mainActivity.getString(R.string.str_Error_checkLogin_100_6_7));
+						errorMsg +=
+								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_6_7));
 						break;
 					}
-					Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
+					Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
 					return true;
 				}
 
@@ -710,7 +685,7 @@ public class Authentification {
 					setLoginState("1".equals(checkLoginMatcher.group(1)));
 
 					boolean passExists = "1".equals(checkLoginMatcher.group(2));
-					mainActivity.passSet = passExists;
+					bhApp.mainActivity.passSet = passExists;
 
 					if (!loggedIn) {
 						preLogin();
@@ -781,7 +756,7 @@ public class Authentification {
 	private void checkInternetConnection() {
 
 		ConnectivityManager connectivityManager =
-				(ConnectivityManager) mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+				(ConnectivityManager) bhApp.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
 		if (networkInfo == null) {
