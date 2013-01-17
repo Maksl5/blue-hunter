@@ -37,7 +37,7 @@
         android:layout_alignParentTop="true"
         android:background="@color/text_holo_light_blue"
         android:gravity="center"
-        android:visibility="visible" >
+        android:visibility="invisible" >
 
         <TextView
             android:id="@+id/userInfoTxtView"

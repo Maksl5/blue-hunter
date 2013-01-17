@@ -2,22 +2,22 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <header
-        android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$BehaviourFragment"
+        android:fragment="com.maksl5.bl_hunt.activity.SettingsActivity$BehaviourFragment"
         android:icon="@drawable/ic_settings_behaviour"
         android:summary="@string/str_PreferenceHeader_behaviour_sum"
         android:title="@string/str_PreferenceHeader_behaviour" />
     <header
-        android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$ProfileFragment"
+        android:fragment="com.maksl5.bl_hunt.activity.SettingsActivity$ProfileFragment"
         android:icon="@drawable/ic_settings_profile"
         android:summary="@string/str_PreferenceHeader_profile_sum"
         android:title="@string/str_PreferenceHeader_profile" />
     <header
-        android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$MiscFragment"
+        android:fragment="com.maksl5.bl_hunt.activity.SettingsActivity$MiscFragment"
         android:icon="@drawable/ic_settings_misc"
         android:summary="@string/str_PreferenceHeader_misc_sum"
         android:title="@string/str_PreferenceHeader_misc" />
     <header
-        android:fragment="com.maksl5.bl_hunt.activity.PreferenceActivity$InfoFragment"
+        android:fragment="com.maksl5.bl_hunt.activity.SettingsActivity$InfoFragment"
         android:icon="@drawable/ic_settings_info"
         android:summary="@string/str_PreferenceHeader_info_sum"
         android:title="@string/str_PreferenceHeader_info" />

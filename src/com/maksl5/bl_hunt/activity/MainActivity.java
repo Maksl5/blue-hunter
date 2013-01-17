@@ -329,6 +329,11 @@ public class MainActivity extends FragmentActivity {
 		new DatabaseManager(bhApp, bhApp.getVersionCode()).close();
 
 		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
+		
+		TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
+		userInfoRow.setVisibility(View.VISIBLE);
+		userInfoRow.invalidate();
+		userInfoRow.setVisibility(View.INVISIBLE);
 
 		NetworkThread getUserInfo = new NetworkThread(bhApp);
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
