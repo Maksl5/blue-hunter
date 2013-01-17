@@ -45,7 +45,7 @@ This game uses some Android Permissions. Here I want to explain, for what these 
  - **_android.permission.BLUETOOTH_** - Is used to receive the state of Bluetooth and to start the discovery of Bluetooth devices.
  - **_android.permission.BLUETOOTH\_ADMIN_** - Is used to turn Bluetooth on, when necessary.
  - **_android.permission.INTERNET_** - Is used to connect to the internet, to get the game synchronized with the game servers.
- - **_android.permission.ACCESS_NETWORK_STATE_** - Is used to determinate internet connectivity change.
+ - **_android.permission.ACCESS\_NETWORK\_STATE_** - Is used to determinate internet connectivity change.
  - **_android.permission.VIBRATE_** - Is used to notify the user about a new found device by vibration.
 
 
@@ -54,7 +54,7 @@ This game uses some Android Permissions. Here I want to explain, for what these 
 
 ## Compatibility
 
-As this game is still in a very early development stage (pre-alpha), this game can only installed on devices with **_Honeycomb (3.\*)_** and above. It should work well under **_ICS (4.0.\*)_** and **_Jelly Bean (4.1)_**. Under **_Honeycomb_** should be a _Force Close_ when opening the app. If not so, feel lucky.
+As this game is still in a very early development stage (pre-alpha), this game can only be installed on devices with **_Honeycomb (3.\*)_** and above. It should work well under **_ICS (4.0.\*)_** and **_Jelly Bean (4.1)_**. Under **_Honeycomb_** should be a _Force Close_ when opening the app. If not so, feel lucky.
 
 Support for **_Gingerbread (2.3.\*)_** will come, when the game reaches an playable development state. Please be patient. Thank you.
 
@@ -69,7 +69,7 @@ At this point I want to ask you, if you think you can translate the game into yo
 ### Included Translations:
 
 > - English
-> - Dutch (Marc.)
+> - Dutch (Marc.) _- Outdated_
 >
 
 ### Oncoming Translations:
@@ -103,6 +103,10 @@ _This information is **NOT** sent to the game server, but stored in the offline 
 
  - **_Local Time_** - This is the time, that is saved, when you find a new device. This is used to display as information to you.<br>
 _This information is **NOT** sent to the game server, but stored in the offline game database._
+
+### Error Reporting
+
+At the current developing state the game reports errors by default and you haven't the possibility to change this. The setting to control, wether the game reports an error or not will come in the near future for 100%. Until then the game reports an error, when occuring, and collects a whole bunch of information, that is very useful for me to fix that specific error. A complete list of information about your device, that is collected, can be found [here](https://github.com/ACRA/acra/wiki/ReportContent). Important to know for you is, that the data collected during an error **is not** and **will not** be linked in any case to the other information located in the remote database. This is only for bug fixing purpose.
 
 
 All information gathered from the game and send to the game server into the database is completely nonpublic. The database is completely locked. The only person, who has access to this database is me ! No companies and no other persons have access and are allowed to gather information from this database in any way. Your stored information will not be used for any other purposes, that don't have to do with the game functionality and with statistic purposes !
