@@ -1,41 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
+    <!--
 		Dutch translation for Blue Hunter 
-		Author: Marc.
-		2012 © Marc.
+		Author: Marc1510 [Marc]
+		2012 © Marc1510 [Marc]
 -->
-
-
-
 <resources>
     <string name="str_mainTitle">Blue Hunter</string>
     <string name="str_versionName">0.1_alpha</string>
     
-    <string name="str_pageTitle_main">Device Discovery</string>
+    <string name="str_pageTitle_main">Apparaten scannen</string>
     <string name="str_pageTitle_leaderboard">Rankings</string>
     <string name="str_pageTitle_foundDevices">Gevonden apparaten</string>
     <string name="str_pageTitle_achievements">Doelen</string>
+    <string name="str_pageTitle_profile">Profiel</string>
+    
     <string name="str_menu_settings">Instellingen</string>
+    <string name="str_menu_info">Help</string>
+    <string name="str_menu_search">Zoeken</string>
+    <string name="str_menu_context_remove">Verwijderen</string>
+    
+    <string name="str_actBar_userInfo">Gebruiker informatie</string>
     <string name="str_mainActTitle">Blue Hunter</string>
 
     <string name="str_discoveryState_running">Bezig met scannen.</string>
     <string name="str_discoveryState_stopped">Scannen is gestopt.</string>
-    <string name="str_discoveryState_btOff">Bluetooth staat uit.</string>
-    <string name="str_discoveryState_finished">Scannen is afgelopen.</string>
-    <string name="str_discoveryState_btEnabling">Bluetooth aanzetten...</string>
+    <string name="str_discoveryState_btOff">Zet bluetooth uit.</string>
+    <string name="str_discoveryState_finished">Scannen voltooid. Opnieuw starten...</string>
+    <string name="str_discoveryState_btEnabling">Bluetooth aanzetten.</string>
     <string name="str_discoveryState_btDisabling">Bluetooth uitzetten...</string>
     <string name="str_discoveryState_error">Scan error.</string>
     <string name="str_discoveryState_off">Scannen staat uit.</string>
     
-    <string name="str_enableBT_title">Bluetooth aanzetten?</string>
-    <string name="str_enableBT_text">Dit spel vereist dat Bluetooth aan staat om te kunnen scannen voor apparaten. Wil je Bluetooth aanzetten en deze applicatie toestemming geven om Bluetooth te gebruiken om te scannen?</string>
+    <string name="str_enableBT_title">Zet Bluetooth aan?</string>
+    <string name="str_enableBT_text">    Dit spel vereist dat Bluetooth aan staat om apparaten te kunnen scannen. Wil je Bluetooth aanzetten en deze applicatie apparaten te laten scannen?</string>
     <string name="str_enableBT_yesButton">Ja</string>
     <string name="str_enableBT_noButton">Nee</string>
     
-    <string name="str_Preference_Header_info">Informatie</string>
-    <string name="str_Preference_Header_info_sum">Laat wat informatie over het spel zien.</string>
+    <string name="str_PreferenceHeader_info">Informatie</string>
+    <string name="str_PreferenceHeader_info_sum">Laat wat informatie over het spel zien.</string>
+    <string name="str_PreferenceHeader_behaviour">Gedrag</string>
+    <string name="str_PreferenceHeader_behaviour_sum">Beheer apparaat specifieke instellingen van het spel.</string>
+    <string name="str_PreferenceHeader_profile">Profiel</string>
+    <string name="str_PreferenceHeader_profile_sum">Verander je profiel instellingen. (Online)</string>
+    <string name="str_PreferenceHeader_misc">Diversen</string>
+    <string name="str_PreferenceHeader_misc_sum">Verander diversen instellingen of beheer gegevens.</string>
+    <string name="str_Preferences_changePass_title">Verander wachtwoord</string>
+    <string name="str_Preferences_changePass_sum">Verander profiel wachtwoord. (Online)</string>
+    <string name="str_Preferences_changePass_new_title">Bevestig wachtwoord</string>
+    <string name="str_Preferences_changePass_new_sum">Verander profiel wachtwoord. (Online)</string>
+    <string name="str_Preferences_changePass_success">Wachtwoord succesvol veranderd.</string>
+    <string name="str_Preferences_localPass_title">Login wachtwoord</string>
+    <string name="str_Preferences_localPass_sum">Zet een wachtwoord dat het spel gebruikt om in te loggen op je profiel.</string>
     <string name="str_Preferences_version_title">Versie</string>
-    <string name="str_Preferences_checkUpdate_title">Controleer automatisch for updates</string>
+    <string name="str_Preferences_showChangelog_title">Laat veranderingen zien</string>
+    <string name="str_Preferences_checkUpdate_title">Controleer automatisch voor updates</string>
     <string name="str_Preferences_checkUpdate_sum">Controleer automatisch voor nieuwe nightly updates.</string>
+    <string name="str_Preferences_newUpdateAvailable_title">Nieuwe update is beschikbaar</string>
+    <string name="str_Preferences_newUpdateAvailable_sum">Een nieuwe versie is beschikbaar. Klik hier om de nieuwe versie te downloaden.</string>
+    <string name="str_Preferences_vibrate_title">Trillen</string>
+    <string name="str_Preferences_vibrate_sum">Tril als er een nieuw apparaat wordt gevonden</string>
+    <string name="str_Preferences_showNotification_title">Laat een notificatie zien.</string>
+    <string name="str_Preferences_showNotification_sum">Laat huidige status van het scannen, level en exp zien als notificatie.</string>
+    <string name="str_Preferences_rebuildDB_title">Bouw database opnieuw op (ALPHA! MAAK EEN BACKUP VOORDAT JE DIT DOE!)</string>
+    <string name="str_Preferences_rebuildDB_sum">Bouw de lokale gevonden apparaten database opnieuw op. Probeer dit alleen als je problemen of bugs tegenkomt.</string>
     
+    <string name="str_foundDevices_manu_unkown">Onbekend</string>
+    <string name="str_foundDevices_exp_abbreviation">Exp</string>
+    <string name="str_foundDevices_level">Level</string>
+    
+    <string name="str_statistics_editName_apply">Toepassen</string>
+    
+    <string name="str_changePass_title">Verander profiel wachtwoord</string>
+    <string name="str_changePass_new_title">Zet profiel wachtwoord</string>
+    <string name="str_changePass_cancelButton">Annuleren</string>
+    <string name="str_changePass_applyButton">Toepassen</string>
+    <string name="str_changePass_sureButton">Weet je het zeker?</string>
+    <string name="str_changePass_oldPass">Vul oud wachtwoord in...</string>
+    <string name="str_changePass_newPass">Vul nieuw wachtwoord in...</string>
+    <string name="str_changePass_confirmNewPass">Bevestig nieuw wachtwoord...</string>
+    <string name="str_loginPass_title">Zet login wachtwoord</string>
+    
+    <string name="str_auth_newUpdateAvailable" formatted="false">Nieuwe nightly versie beschikbaar %n Momenteel geinstalleerde versie: %d. %n Beschikbare versie: %d.</string>
+    <string name="str_auth_updated" formatted="false">Geupdate naar nieuwe versie: %s.%n</string>
+    <string name="str_auth_updated_1_4_5">Kon geen veranderingen ophalen. Waarschijnlijk geen internet verbinding.</string>
+    <string name="str_auth_updated_90">Geen veranderingen beschikbaar.</string>
+    <string name="str_auth_updated_404">Kon geen veranderingen ophalen. Waarschijnlijk is de server offline of is het veranderingen script niet beschikbaar.</string>
+    <string name="str_auth_updated_500">Kon geen veranderingen ophalen. Server error. Neem graag contact op met de ontwikkelaar.</string>
+    <string name="str_auth_changelog">Veranderingen</string>
+    <string name="str_auth_loginSuccess">Succesvol ingelogd.</string>
+
+    <string name="str_auth_securityMsg">Opmerking: Door veiligheids aspecten zou je moeten overwegen om een wachtwoord voor het spel in te voeren. Je kan dit doen in je profiel instellingen.</string>
+    <string name="str_auth_storeTokenFailed">Kon de login token niet opslaan.</string>
+    <string name="str_auth_changelog_ok">Oké</string>
+    
+    
+    <!-- Error strings -->
+    
+    
+    <string name="str_Error_1_4_5">Kon de data niet ophalen. Waarschijnlijk geen internet verbinding.</string>
+    <string name="str_Error_404">Kon de data niet ophalen. Waarschijnlijk is de server offline of is het script niet beschikbaar.</string>
+    <string name="str_Error_500">Kon de data niet ophalen. Server error. Neem graag contact op met de ontwikkelaar..</string>
+    
+    <string name="str_Error_serialCheck">Error %d tijdens het serial nummer controleren.</string>
+    <string name="str_Error_serialCheck_100_1_2_4">Niet voltooide parameters.</string>
+    <string name="str_Error_serialCheck_100_3">Hashes kloppen niet met elkaar.</string>
+    <string name="str_Error_serialCheck_100_5">Invullen serial in de DB mislukt.</string>
+    <string name="str_Error_serialCheck_100_6">Updaten serial in de DB mislukt.</string>
+    <string name="str_Error_serialCheck_100_7">Meer dan 1 rij in het DB query resultaat.</string>
+    
+    <string name="str_Error_getUserInfo">Error %d tijdens gebruikers informatie ophalen.</string>
+    
+    <string name="str_Error_checkUpdate">Error %d tijdens het controleren voor updates.</string>
+    
+    <string name="str_Error_changePass">Error %d tijdens het wachtwoord veranderen.</string>
+    <string name="str_Error_changePass_100_1_2_3_4_16">Niet voltooide parameters.</string>
+    <string name="str_Error_changePass_100_5">Hashes kloppen niet.</string>
+    <string name="str_Error_changePass_100_6_8">Kon het nieuew wachtwoord niet veranderen in de DB.</string>
+    <string name="str_Error_changePass_100_7">Oude wachtwoord moet worden gecommit.</string>
+    <string name="str_Error_changePass_100_9">Wachtwoord klopt niet met het ingevoerde wachtwoord.</string>
+    <string name="str_Error_changePass_100_10_13">Onverwacht aantal rijen in het DB query resultaat.</string>
+    <string name="str_Error_changePass_100_11">Onbekende login token. [Error verwijderen het van de DB.]</string>
+    <string name="str_Error_changePass_100_12">Onbekende login token. Probeer het opnieuw.</string>
+    <string name="str_Error_changePass_100_14">Meer dan 1 login token gevonden. [Error verwijderen het van de DB.]</string>
+    <string name="str_Error_changePass_100_15">Meer dan 1 login token gevonden. Probeer opnieuw.</string>
+    
+    <string name="str_Error_preLogin">Error %d voor het inloggen.</string>
+    <string name="str_Error_preLogin_100_1_2_6">Niet complete parameters.</string>
+    <string name="str_Error_preLogin_100_3">Hashes kloppen niet.</string>
+    <string name="str_Error_preLogin_100_4_5">Onverwacht aantal rijen in het DB query resultaat.</string>
+    
+    <string name="str_Error_Login">Error %d tijdens login.</string>
+    <string name="str_Error_Login_100_1_2_3_11">Niet voltooide parameters.</string>
+    <string name="str_Error_Login_100_4">Hashes kloppen niet.</string>
+    <string name="str_Error_Login_100_5_7">Invullen in de DB mislukt.</string>
+    <string name="str_Error_Login_100_6">Wachtwoord moet worden gecommit.</string>
+    <string name="str_Error_Login_100_8">Wachtwoord is fout.</string>
+    <string name="str_Error_Login_100_9">Onverwacht aantal rijen in het DB query resultaat.</string>
+    <string name="str_Error_Login_100_10">Aanvraag timeout.</string>
+    
+    <string name="str_Error_checkLogin">Error %d tijdens login check.</string>
+    <string name="str_Error_checkLogin_100_1_2">Niet complete parameters.</string>
+    <string name="str_Error_checkLogin_100_3">Wachtwoord moet worden gecommit.</string>
+    <string name="str_Error_checkLogin_100_4">Wachtwoord is fout.</string>
+    <string name="str_Error_checkLogin_100_5">Onverwacht aantal rijen in het DB query resultaat.</string>
+    <string name="str_Error_checkLogin_100_6_7">Verwijderen van rijen in de DB mislukt.</string>
+
+
 </resources>
