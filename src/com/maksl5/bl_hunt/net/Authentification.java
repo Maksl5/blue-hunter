@@ -9,6 +9,7 @@ package com.maksl5.bl_hunt.net;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +47,7 @@ public class Authentification {
 	private AuthentificationSecure secure;
 	private Context context;
 	protected BlueHunter bhApp;
+	private SynchronizeFoundDevices synchronizeFoundDevices;
 	private volatile ArrayList<OnNetworkResultAvailableListener> listenerList =
 			new ArrayList<Authentification.OnNetworkResultAvailableListener>();
 	private ArrayList<OnLoginChangeListener> loginChangeListeners =
@@ -73,6 +75,7 @@ public class Authentification {
 		checkInternetConnection();
 
 		secure = new AuthentificationSecure(this);
+		synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
 
 	}
 
@@ -227,6 +230,7 @@ public class Authentification {
 					if (matcher.find()) {
 						int error = Integer.parseInt(matcher.group(1));
 						String updateMsg = ErrorHandler.getErrorString(context, requestId, error);
+						updateMsg = String.format(updateMsg, bhApp.getVersionName());
 
 						Toast.makeText(bhApp, updateMsg, Toast.LENGTH_LONG).show();
 					}
@@ -304,7 +308,10 @@ public class Authentification {
 
 	public synchronized void setOnNetworkResultAvailableListener(OnNetworkResultAvailableListener listener) {
 
-		listenerList.add(listener);
+		synchronized (listenerList) {
+			listenerList.add(listener);
+		}
+
 	}
 
 	/**
@@ -312,19 +319,22 @@ public class Authentification {
 	 */
 	public synchronized void fireOnNetworkResultAvailable(	int requestId,
 															String resultString) {
-
-		for (Iterator<OnNetworkResultAvailableListener> listenerIt = listenerList.iterator(); listenerIt.hasNext();) {
-			OnNetworkResultAvailableListener listener = listenerIt.next();
-
-			if (listener.onResult(requestId, resultString)) {
-				listenerIt.remove();
+		
+		List<OnNetworkResultAvailableListener> iterateList = new ArrayList<Authentification.OnNetworkResultAvailableListener>(listenerList);
+		
+		for (OnNetworkResultAvailableListener onNetworkResultAvailableListener : iterateList) {
+			if(onNetworkResultAvailableListener.onResult(requestId, resultString)) {
+				listenerList.remove(onNetworkResultAvailableListener);
 			}
 		}
 	}
 
 	public synchronized void unregisterListener(OnNetworkResultAvailableListener listener) {
 
-		listenerList.remove(listener);
+		synchronized (listenerList) {
+			listenerList.remove(listener);
+		}
+
 	}
 
 	/**
@@ -549,6 +559,8 @@ public class Authentification {
 				if (checkLoginMatcher.find()) {
 
 					setLoginState("1".equals(checkLoginMatcher.group(1)));
+
+					synchronizeFoundDevices.start();
 
 					boolean passExists = "1".equals(checkLoginMatcher.group(2));
 					bhApp.mainActivity.passSet = passExists;
