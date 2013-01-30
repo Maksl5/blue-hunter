@@ -31,6 +31,7 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
@@ -58,6 +59,8 @@ public class Authentification {
 	public static final int NETRESULT_ID_LOGIN = 6;
 	public static final int NETRESULT_ID_CHECK_LOGIN = 7;
 	public static final int NETRESULT_ID_PASS_CHANGE = 8;
+	public static final int NETRESULT_ID_SYNC_FD_CHECK = 9;
+	public static final int NETRESULT_ID_SYNC_FD_APPLY = 10;
 
 	public static boolean newUpdateAvailable = false;
 	public boolean internetIsAvailable = false;
@@ -221,32 +224,9 @@ public class Authentification {
 					Pattern pattern = Pattern.compile("Error=(\\d+)");
 					Matcher matcher = pattern.matcher(resultString);
 
-					String updateMsg =
-							bhApp.getString(R.string.str_auth_updated, bhApp.getVersionName());
-
 					if (matcher.find()) {
 						int error = Integer.parseInt(matcher.group(1));
-
-						switch (error) {
-						case 1:
-						case 4:
-						case 5:
-							updateMsg +=
-									String.format("(%s)", bhApp.getString(R.string.str_auth_updated_1_4_5));
-							break;
-						case 90:
-							updateMsg +=
-									String.format("(%s)", bhApp.getString(R.string.str_auth_updated_90));
-							break;
-						case 404:
-							updateMsg +=
-									String.format("(%s)", bhApp.getString(R.string.str_auth_updated_404));
-							break;
-						case 500:
-							updateMsg +=
-									String.format("(%s)", bhApp.getString(R.string.str_auth_updated_500));
-							break;
-						}
+						String updateMsg = ErrorHandler.getErrorString(context, requestId, error);
 
 						Toast.makeText(bhApp, updateMsg, Toast.LENGTH_LONG).show();
 					}
@@ -333,9 +313,9 @@ public class Authentification {
 	public synchronized void fireOnNetworkResultAvailable(	int requestId,
 															String resultString) {
 
-		for (Iterator<OnNetworkResultAvailableListener> listenerIt = listenerList.iterator(); listenerIt.hasNext(); ) {
+		for (Iterator<OnNetworkResultAvailableListener> listenerIt = listenerList.iterator(); listenerIt.hasNext();) {
 			OnNetworkResultAvailableListener listener = listenerIt.next();
-			
+
 			if (listener.onResult(requestId, resultString)) {
 				listenerIt.remove();
 			}
@@ -484,37 +464,7 @@ public class Authentification {
 
 					int error = Integer.parseInt(matcher.group(1));
 
-					String errorMsg = bhApp.getString(R.string.str_Error_preLogin, error);
-
-					switch (error) {
-					case 1:
-					case 4:
-					case 5:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_1_4_5));
-						break;
-					case 404:
-						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_404));
-						break;
-					case 500:
-						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_500));
-						break;
-					case 1001:
-					case 1002:
-					case 1006:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_preLogin_100_1_2_6));
-						break;
-					case 1003:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_preLogin_100_3));
-						break;
-					case 1004:
-					case 1005:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_preLogin_100_4_5));
-						break;
-					}
+					String errorMsg = ErrorHandler.getErrorString(context, requestId, error);
 
 					Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
 					return true;
@@ -533,55 +483,7 @@ public class Authentification {
 
 					int error = Integer.parseInt(matcher1.group(1));
 
-					String errorMsg = bhApp.getString(R.string.str_Error_Login, error);
-
-					switch (error) {
-					case 1:
-					case 4:
-					case 5:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_1_4_5));
-						break;
-					case 404:
-						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_404));
-						break;
-					case 500:
-						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_500));
-						break;
-					case 1001:
-					case 1002:
-					case 1003:
-					case 1011:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_1_2_3_11));
-						break;
-					case 1004:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_4));
-						break;
-					case 1005:
-					case 1007:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_5_7));
-						break;
-					case 1006:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_6));
-						break;
-					case 1008:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_8));
-						break;
-					case 1009:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_9));
-						break;
-					case 1010:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_Login_100_10));
-						break;
-
-					}
+					String errorMsg = ErrorHandler.getErrorString(context, requestId, error);
 
 					Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
 					return true;
@@ -628,45 +530,15 @@ public class Authentification {
 
 					int error = Integer.parseInt(matcher2.group(1));
 
-					String errorMsg = bhApp.getString(R.string.str_Error_checkLogin, error);
+					String errorMsg = ErrorHandler.getErrorString(context, requestId, error);
 
 					switch (error) {
-					case 1:
-					case 4:
-					case 5:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_1_4_5));
-						break;
-					case 404:
-						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_404));
-						break;
-					case 500:
-						errorMsg += String.format(" (%s)", bhApp.getString(R.string.str_Error_500));
-						break;
-					case 1001:
-					case 1002:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_1_2));
-						break;
-					case 1003:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_3));
-						break;
+
 					case 1004:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_4));
 						bhApp.mainActivity.passSet = true;
 						break;
-					case 1005:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_5));
-						break;
-					case 1006:
-					case 1007:
-						errorMsg +=
-								String.format(" (%s)", bhApp.getString(R.string.str_Error_checkLogin_100_6_7));
-						break;
 					}
+
 					Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
 					return true;
 				}

@@ -28,7 +28,7 @@
     <string name="str_discoveryState_error">Scan error.</string>
     <string name="str_discoveryState_off">Scannen staat uit.</string>
     <string name="str_enableBT_title">Zet Bluetooth aan?</string>
-    <string name="str_enableBT_text">    Dit spel vereist dat Bluetooth aan staat om apparaten te kunnen scannen. Wil je Bluetooth aanzetten en deze applicatie apparaten te laten scannen?</string>
+    <string name="str_enableBT_text">Dit spel vereist dat Bluetooth aan staat om apparaten te kunnen scannen. Wil je Bluetooth aanzetten en deze applicatie apparaten te laten scannen?</string>
     <string name="str_enableBT_yesButton">Ja</string>
     <string name="str_enableBT_noButton">Nee</string>
     <string name="str_PreferenceHeader_info">Informatie</string>

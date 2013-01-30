@@ -53,6 +53,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
@@ -226,66 +227,13 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 			if (matcher.find()) {
 				int error = Integer.parseInt(matcher.group(1));
 
-				String errorMsg = getString(R.string.str_Error_changePass, error);
+				String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
 
 				switch (error) {
-				case 1:
-				case 4:
-				case 5:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_1_4_5));
-					break;
-				case 404:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_404));
-					break;
-				case 500:
-					errorMsg += String.format(" (%s)", getString(R.string.str_Error_500));
-					break;
-				case 1001:
-				case 1002:
-				case 1003:
-				case 1004:
-				case 10016:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_1_2_3_4_16));
-					break;
-				case 1005:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_5));
-					break;
-				case 1006:
-				case 1008:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_6_8));
-					break;
-				case 1007:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_7));
-					break;
-				case 1009:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_9));
-					break;
-				case 1010:
-				case 1013:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_10_13));
-					break;
-				case 1011:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_11));
-					break;
 				case 1012:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_12));
 					bhApp.loginManager.login();
 					break;
-				case 1014:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_14));
-					break;
 				case 1015:
-					errorMsg +=
-							String.format(" (%s)", getString(R.string.str_Error_changePass_100_15));
 					bhApp.loginManager.login();
 					break;
 				}

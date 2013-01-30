@@ -582,7 +582,7 @@ public class MacAddressAllocations {
 
 	static final String[] Novero = { "00:23:3D" };
 
-	static final int Unknown_exp = 12;
+	public static final int Unknown_exp = 2;
 	static final int Apple_exp = 5;
 	static final int Nokia_exp = 10;
 	static final int Samsung_exp = 5;

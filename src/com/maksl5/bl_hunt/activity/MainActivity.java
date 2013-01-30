@@ -34,6 +34,7 @@ import android.widget.Toast;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.DiscoveryManager;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
+import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.FragmentLayoutManager;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
@@ -191,43 +192,7 @@ public class MainActivity extends FragmentActivity {
 					if (matcher.find()) {
 						int error = Integer.parseInt(matcher.group(1));
 
-						String errorMsg = getString(R.string.str_Error_serialCheck, error);
-
-						switch (error) {
-						case 1:
-						case 4:
-						case 5:
-							errorMsg += String.format(" (%s)", getString(R.string.str_Error_1_4_5));
-							break;
-						case 404:
-							errorMsg += String.format(" (%s)", getString(R.string.str_Error_404));
-							break;
-						case 500:
-							errorMsg += String.format(" (%s)", getString(R.string.str_Error_500));
-							break;
-						case 1001:
-						case 1002:
-						case 1004:
-							errorMsg +=
-									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_1_2_4));
-							break;
-						case 1003:
-							errorMsg +=
-									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_3));
-							break;
-						case 1005:
-							errorMsg +=
-									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_5));
-							break;
-						case 1006:
-							errorMsg +=
-									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_6));
-							break;
-						case 1007:
-							errorMsg +=
-									String.format(" (%s)", getString(R.string.str_Error_serialCheck_100_7));
-							break;
-						}
+						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
 
 						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
 						break;
@@ -243,21 +208,7 @@ public class MainActivity extends FragmentActivity {
 					if (matcher2.find()) {
 						int error = Integer.parseInt(matcher2.group(1));
 
-						String errorMsg = getString(R.string.str_Error_getUserInfo, error);
-
-						switch (error) {
-						case 1:
-						case 4:
-						case 5:
-							errorMsg += String.format(" (%s)", getString(R.string.str_Error_1_4_5));
-							break;
-						case 404:
-							errorMsg += String.format(" (%s)", getString(R.string.str_Error_404));
-							break;
-						case 500:
-							errorMsg += String.format(" (%s)", getString(R.string.str_Error_500));
-							break;
-						}
+						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
 
 						userInfoTextView.setText(errorMsg);
 						userInfoTextView.setVisibility(View.VISIBLE);

@@ -33,7 +33,7 @@ public class LevelSystem {
 			String manufacturer = foundDevice.get(DatabaseHelper.COLUMN_MANUFACTURER);
 
 			if (manufacturer == null) {
-				exp += 12;
+				exp += MacAddressAllocations.Unknown_exp;
 			}
 			else {
 				exp += MacAddressAllocations.getExp(manufacturer.replace(" ", "_"));

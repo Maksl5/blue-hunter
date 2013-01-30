@@ -18,6 +18,7 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -158,6 +159,14 @@ public class DatabaseManager {
 		return devices;
 	}
 
+	public synchronized int getDeviceNum() {
+
+		int num = (int) DatabaseUtils.queryNumEntries(db, DatabaseHelper.FOUND_DEVICES_TABLE);
+		close();
+		
+		return num;
+	}
+
 	public void addNameToDevice(String macAddress,
 								String name) {
 
@@ -205,53 +214,51 @@ public class DatabaseManager {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		try {
-			
 
-		
-		if (bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME)) {
+			if (bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME)) {
 
-			dbHelper = new DatabaseHelper(bhApp, version);
-			db = dbHelper.getWritableDatabase();
+				dbHelper = new DatabaseHelper(bhApp, version);
+				db = dbHelper.getWritableDatabase();
 
-			List<Integer> failureRows = new ArrayList<Integer>();
+				List<Integer> failureRows = new ArrayList<Integer>();
 
-			for (HashMap<String, String> device : allDevices) {
+				for (HashMap<String, String> device : allDevices) {
 
-				ContentValues values = new ContentValues();
-				values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.get(DatabaseHelper.COLUMN_MAC_ADDRESS));
-				values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(device.get(DatabaseHelper.COLUMN_MAC_ADDRESS)));
-				values.put(DatabaseHelper.COLUMN_NAME, device.get(DatabaseHelper.COLUMN_NAME));
-				values.put(DatabaseHelper.COLUMN_RSSI, device.get(DatabaseHelper.COLUMN_RSSI));
-				values.put(DatabaseHelper.COLUMN_TIME, device.get(DatabaseHelper.COLUMN_TIME));
+					ContentValues values = new ContentValues();
+					values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.get(DatabaseHelper.COLUMN_MAC_ADDRESS));
+					values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(device.get(DatabaseHelper.COLUMN_MAC_ADDRESS)));
+					values.put(DatabaseHelper.COLUMN_NAME, device.get(DatabaseHelper.COLUMN_NAME));
+					values.put(DatabaseHelper.COLUMN_RSSI, device.get(DatabaseHelper.COLUMN_RSSI));
+					values.put(DatabaseHelper.COLUMN_TIME, device.get(DatabaseHelper.COLUMN_TIME));
 
-				if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) == -1) {
-					failureRows.add(allDevices.indexOf(device));
+					if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) == -1) {
+						failureRows.add(allDevices.indexOf(device));
+					}
 				}
-			}
 
-			close();
+				close();
 
-			if (failureRows.size() == 0) {
-				return 0;
+				if (failureRows.size() == 0) {
+					return 0;
+				}
+				else {
+					return -failureRows.size();
+				}
+
 			}
 			else {
-				return -failureRows.size();
+				return 1001;
 			}
 
 		}
-		else {
-			return 1001;
-		}
-		
-		}
 		catch (Exception e) {
-			
+
 			bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME);
 			dbFile.delete();
 			backup.renameTo(dbFile);
-			
+
 			return 1002;
 		}
 
@@ -262,19 +269,21 @@ public class DatabaseManager {
 		db.close();
 		dbHelper.close();
 	}
-	
-	private void copy(File src, File dst) throws IOException {
-	    InputStream in = new FileInputStream(src);
-	    OutputStream out = new FileOutputStream(dst);
 
-	    // Transfer bytes from in to out
-	    byte[] buf = new byte[1024];
-	    int len;
-	    while ((len = in.read(buf)) > 0) {
-	        out.write(buf, 0, len);
-	    }
-	    in.close();
-	    out.close();
+	private void copy(	File src,
+						File dst) throws IOException {
+
+		InputStream in = new FileInputStream(src);
+		OutputStream out = new FileOutputStream(dst);
+
+		// Transfer bytes from in to out
+		byte[] buf = new byte[1024];
+		int len;
+		while ((len = in.read(buf)) > 0) {
+			out.write(buf, 0, len);
+		}
+		in.close();
+		out.close();
 	}
 
 	/**
@@ -318,10 +327,9 @@ public class DatabaseManager {
 		public void onCreate(SQLiteDatabase db) {
 
 			db.execSQL(FOUND_DEVICES_CREATE);
-			if(bhApplication != null)
-				if(bhApplication.authentification != null)
+			if (bhApplication != null)
+				if (bhApplication.authentification != null)
 					bhApplication.authentification.showChangelog(10);
-			
 
 		}
 

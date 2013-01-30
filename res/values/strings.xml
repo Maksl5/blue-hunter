@@ -144,6 +144,17 @@
     <string name="str_Error_checkLogin_100_4">Password is wrong.</string>
     <string name="str_Error_checkLogin_100_5">Unexpected number of rows in DB query result.</string>
     <string name="str_Error_checkLogin_100_6_7">Failed to delete rows in DB.</string>
+    
+    <string name="str_Error_checkSync">Error %d while checking synchronization of the database.</string>
+    <string name="str_Error_checkSync_100_1_2_3">Uncomplete parameters.</string>
+    <string name="str_Error_checkSync_100_4">Password must be committed.</string>
+    <string name="str_Error_checkSync_100_5">Password is wrong.</string>
+    <string name="str_Error_checkSync_100_6">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_checkSync_100_7">Not logged in. Wrong login token.</string>
+    <string name="str_Error_checkSync_100_8">Not logged in.</string>
+    <string name="str_Error_checkSync_100_9">Not logged in. More than one login token found.</string>
+    
+    
 
 
     
