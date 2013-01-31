@@ -62,8 +62,16 @@
     <string name="str_Preferences_vibrate_sum">Vibrate when a new device is found.</string>
     <string name="str_Preferences_showNotification_title">Show Notification</string>
     <string name="str_Preferences_showNotification_sum">Show the current status of discovery, level and exp as notification.</string>
-    <string name="str_Preferences_rebuildDB_title">Rebuild Database (ALPHA! MAKE BACKUP BEFORE DOING THIS!)</string>
+    <string name="str_Preferences_rebuildDB_title">Rebuild database (ALPHA! MAKE BACKUP BEFORE DOING THIS!)</string>
     <string name="str_Preferences_rebuildDB_sum">Rebuild the locale found devices database. Only try this, if you\'re noticing problems and bugs.</string>
+    <string name="str_Preferences_activateSync_title">Sync found devices</string>
+    <string name="str_Preferences_activateSync_sum">Sync your found devices with online leaderboard.</string>
+    <string name="str_Preferences_syncInterval_title">Interval for syncing</string>
+    <string name="str_Preferences_syncInterval_sum">Set the interval in which you want sync the data.</string>
+    <string name="str_Preferences_forceUpSync_title">Force syncing entire data</string>
+    <string name="str_Preferences_forceUpSync_sum">This will override the complete online data with your local data.</string>
+    <string name="str_Preferences_forceDownSync_title">Get remote database.</string>
+    <string name="str_Preferences_forceDownSync_sum">Overrides your local found devices with the ones stored online.</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>
@@ -91,7 +99,7 @@
     <string name="str_auth_loginSuccess">Login was successfully.</string>
     <string name="str_auth_securityMsg">Note: Because of security aspects, you should consider to set a password for the game. You can do that in your profile settings.</string>
     <string name="str_auth_storeTokenFailed">Could not store login token.</string>
-    <string name="str_auth_changelog_ok">Ok</string>
+    <string name="str_auth_changelog_ok">OK</string>
     
     
     <!-- Error strings -->
@@ -153,6 +161,16 @@
     <string name="str_Error_checkSync_100_7">Not logged in. Wrong login token.</string>
     <string name="str_Error_checkSync_100_8">Not logged in.</string>
     <string name="str_Error_checkSync_100_9">Not logged in. More than one login token found.</string>
+    
+    <string name="str_Error_applySync">Error %d while synchronizing database.</string>
+    <string name="str_Error_applySync_100_1_2_3">Uncomplete parameters.</string>
+    <string name="str_Error_applySync_100_4_7">Failed initiating database entry.</string>
+    <string name="str_Error_applySync_100_5_8">Failed updating database.</string>
+    <string name="str_Error_applySync_100_6">Password must be committed.</string>
+    <string name="str_Error_applySync_100_9">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_applySync_100_10">Not logged in. Wrong login token.</string>
+    <string name="str_Error_applySync_100_11">Not logged in.</string>
+    <string name="str_Error_applySync_100_12">Not logged in. More than one login token found.</string>
     
     
 

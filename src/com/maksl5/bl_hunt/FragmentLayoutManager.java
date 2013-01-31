@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -184,7 +185,7 @@ public class FragmentLayoutManager {
 
 			}
 			else if (text.length() == 0) {
-				if (showedFdList != completeFdList) {
+				if (!showedFdList.equals(completeFdList)) {
 					showedFdList = completeFdList;
 					fdAdapter.refill(showedFdList);
 				}
@@ -261,7 +262,7 @@ public class FragmentLayoutManager {
 			@Override
 			protected List<String> doInBackground(Void... params) {
 
-				List<HashMap<String, String>> devices =
+				List<SparseArray<String>> devices =
 						new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
 				List<String> listViewList = new ArrayList<String>();
 
@@ -272,18 +273,18 @@ public class FragmentLayoutManager {
 
 				for (int i = 0; i < devices.size(); i++) {
 
-					HashMap<String, String> device = devices.get(i);
+					SparseArray<String> device = devices.get(i);
 
-					String deviceMac = device.get(DatabaseHelper.COLUMN_MAC_ADDRESS);
-					String manufacturer = device.get(DatabaseHelper.COLUMN_MANUFACTURER);
-					String deviceTime = device.get(DatabaseHelper.COLUMN_TIME);
+					String deviceMac = device.get(DatabaseManager.INDEX_MAC_ADDRESS);
+					String manufacturer = device.get(DatabaseManager.INDEX_MANUFACTURER);
+					String deviceTime = device.get(DatabaseManager.INDEX_TIME);
 
 					if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
 						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
-						new DatabaseManager(bhApp, bhApp.getVersionCode()).addManufacturerToDevice(deviceMac, manufacturer);
-
 						if (manufacturer.equals("Unknown")) {
 							manufacturer = bhApp.getString(R.string.str_foundDevices_manu_unkown);
+						}else {
+							new DatabaseManager(bhApp, bhApp.getVersionCode()).addManufacturerToDevice(deviceMac, manufacturer);
 						}
 					}
 
@@ -291,7 +292,7 @@ public class FragmentLayoutManager {
 							(deviceTime == null || deviceTime.equals("null")) ? 0 : Long.parseLong(deviceTime);
 
 					tempString =
-							deviceMac + (char) 30 + device.get(DatabaseHelper.COLUMN_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseHelper.COLUMN_RSSI) + (char) 30 + manufacturer + (char) 30 + "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString + (char) 30 + dateFormat.format(new Date(time));
+							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseManager.INDEX_RSSI) + (char) 30 + manufacturer + (char) 30 + "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString + (char) 30 + dateFormat.format(new Date(time));
 
 					listViewList.add(tempString);
 

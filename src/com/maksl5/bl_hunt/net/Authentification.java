@@ -47,7 +47,7 @@ public class Authentification {
 	private AuthentificationSecure secure;
 	private Context context;
 	protected BlueHunter bhApp;
-	private SynchronizeFoundDevices synchronizeFoundDevices;
+	public SynchronizeFoundDevices synchronizeFoundDevices;
 	private volatile ArrayList<OnNetworkResultAvailableListener> listenerList =
 			new ArrayList<Authentification.OnNetworkResultAvailableListener>();
 	private ArrayList<OnLoginChangeListener> loginChangeListeners =
@@ -76,6 +76,7 @@ public class Authentification {
 
 		secure = new AuthentificationSecure(this);
 		synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
+		setOnLoginChangeListener(synchronizeFoundDevices);
 
 	}
 
@@ -309,7 +310,7 @@ public class Authentification {
 	public synchronized void setOnNetworkResultAvailableListener(OnNetworkResultAvailableListener listener) {
 
 		synchronized (listenerList) {
-			listenerList.add(listener);
+			if (!listenerList.contains(listener)) listenerList.add(listener);
 		}
 
 	}
@@ -319,11 +320,12 @@ public class Authentification {
 	 */
 	public synchronized void fireOnNetworkResultAvailable(	int requestId,
 															String resultString) {
-		
-		List<OnNetworkResultAvailableListener> iterateList = new ArrayList<Authentification.OnNetworkResultAvailableListener>(listenerList);
-		
+
+		List<OnNetworkResultAvailableListener> iterateList =
+				new ArrayList<Authentification.OnNetworkResultAvailableListener>(listenerList);
+
 		for (OnNetworkResultAvailableListener onNetworkResultAvailableListener : iterateList) {
-			if(onNetworkResultAvailableListener.onResult(requestId, resultString)) {
+			if (onNetworkResultAvailableListener.onResult(requestId, resultString)) {
 				listenerList.remove(onNetworkResultAvailableListener);
 			}
 		}
@@ -560,8 +562,6 @@ public class Authentification {
 
 					setLoginState("1".equals(checkLoginMatcher.group(1)));
 
-					synchronizeFoundDevices.start();
-
 					boolean passExists = "1".equals(checkLoginMatcher.group(2));
 					bhApp.mainActivity.passSet = passExists;
 
@@ -615,7 +615,8 @@ public class Authentification {
 
 	public synchronized void setOnLoginChangeListener(OnLoginChangeListener onLoginChangeListener) {
 
-		loginChangeListeners.add(onLoginChangeListener);
+		if (!loginChangeListeners.contains(onLoginChangeListener))
+			loginChangeListeners.add(onLoginChangeListener);
 	}
 
 	public synchronized void fireLoginChange(boolean loggedIn) {

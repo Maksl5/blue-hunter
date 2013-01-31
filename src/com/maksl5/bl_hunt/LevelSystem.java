@@ -9,6 +9,8 @@ package com.maksl5.bl_hunt;
 import java.util.HashMap;
 import java.util.List;
 
+import android.util.SparseArray;
+
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.storage.MacAddressAllocations;
@@ -25,12 +27,12 @@ public class LevelSystem {
 
 		int exp = 0;
 
-		List<HashMap<String, String>> foundDevices =
+		List<SparseArray<String>> foundDevices =
 				new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
 
-		for (HashMap<String, String> foundDevice : foundDevices) {
+		for (SparseArray<String> foundDevice : foundDevices) {
 
-			String manufacturer = foundDevice.get(DatabaseHelper.COLUMN_MANUFACTURER);
+			String manufacturer = foundDevice.get(DatabaseManager.INDEX_MANUFACTURER);
 
 			if (manufacturer == null) {
 				exp += MacAddressAllocations.Unknown_exp;

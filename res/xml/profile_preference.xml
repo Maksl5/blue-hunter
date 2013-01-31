@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <Preference android:title="@string/str_Preferences_changePass_title" android:key="pref_changePass" android:summary="@string/str_Preferences_changePass_sum" android:enabled="false"/>
-    <Preference android:title="@string/str_Preferences_localPass_title" android:key="pref_localPass" android:summary="@string/str_Preferences_localPass_sum"/>
-    
+
+    <Preference
+        android:enabled="false"
+        android:key="pref_changePass"
+        android:summary="@string/str_Preferences_changePass_sum"
+        android:title="@string/str_Preferences_changePass_title" />
+    <Preference
+        android:key="pref_localPass"
+        android:summary="@string/str_Preferences_localPass_sum"
+        android:title="@string/str_Preferences_localPass_title" />
+
+    <CheckBoxPreference android:key="pref_syncingActivated" android:title="@string/str_Preferences_activateSync_title" android:summary="@string/str_Preferences_activateSync_sum" android:persistent="true"/>
+    <Preference android:summary="@string/str_Preferences_syncInterval_sum" android:key="pref_syncInterval" android:title="@string/str_Preferences_syncInterval_title" android:dependency="pref_syncingActivated" android:persistent="true"/>
+    <Preference android:summary="@string/str_Preferences_forceUpSync_sum" android:key="pref_forceUpSync" android:title="@string/str_Preferences_forceUpSync_title" android:dependency="pref_syncingActivated"/>
+    <Preference android:summary="@string/str_Preferences_forceDownSync_sum" android:key="pref_forceDownSync" android:title="@string/str_Preferences_forceDownSync_title" android:dependency="pref_syncingActivated"/>
 
 </PreferenceScreen>

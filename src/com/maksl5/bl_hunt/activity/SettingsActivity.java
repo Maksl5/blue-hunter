@@ -37,18 +37,28 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -60,7 +70,9 @@ import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.net.EasySSLSocketFactory;
+import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 
@@ -488,6 +500,98 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 						changeOnlinePass.setEnabled(false);
 					}
 
+				}
+			});
+
+			android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+				
+				@Override
+				public void onSharedPreferenceChanged(	SharedPreferences sharedPreferences,
+														String key) {
+				
+					if(key.equals("pref_syncingActivated")) {
+						if(sharedPreferences.getBoolean(key, false)) {
+							bhApp.authentification.synchronizeFoundDevices.start();
+						}
+					}
+					
+				}
+			});
+			
+			Preference syncInterval = findPreference("pref_syncInterval");
+			syncInterval.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+
+					Builder builder = new Builder(getActivity());
+					builder.setTitle("Set sync interval.");
+					builder.setPositiveButton("Save", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog,
+											int which) {
+
+							NumberPicker numberPicker =
+									(NumberPicker) ((AlertDialog) dialog).findViewById(R.id.numberPicker1);
+
+							int value = numberPicker.getValue();
+
+							PreferenceManager.setPref(getActivity(), "pref_syncInterval", value);
+							dialog.dismiss();
+
+						}
+					});
+					
+					builder.setNegativeButton("Cancel", new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog,
+											int which) {
+						
+							dialog.dismiss();
+							
+						}
+					});
+					
+					builder.setView(LayoutInflater.from(builder.getContext()).inflate(R.layout.dlg_sync_interval, null));
+					
+					AlertDialog alertDialog = builder.show();
+					
+					NumberPicker numberPicker = (NumberPicker) alertDialog.findViewById(R.id.numberPicker1);
+					numberPicker.setMinValue(1);
+				    numberPicker.setMaxValue(100);
+				    numberPicker.setWrapSelectorWheel(false);
+				    numberPicker.setValue(PreferenceManager.getPref(getActivity(), "pref_syncInterval", 5));
+					
+
+					return true;
+				}
+			});
+			
+			
+			Preference forceUpSync = findPreference("pref_forceUpSync");
+			Preference forceDownSync = findPreference("pref_forceDownSync");
+			
+			forceUpSync.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+				
+					bhApp.authentification.synchronizeFoundDevices.startSyncing(1, true);
+
+					return true;
+				}
+			});
+			
+			forceDownSync.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+	
+					bhApp.authentification.synchronizeFoundDevices.startSyncing(2, true);
+					
+					return true;
 				}
 			});
 
