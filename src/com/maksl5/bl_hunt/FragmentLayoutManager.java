@@ -27,6 +27,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ListView;
@@ -111,14 +112,23 @@ public class FragmentLayoutManager {
 											int position,
 											long id) {
 
-				if (view.getContext() instanceof BlueHunter) {
+				if (view.getContext() instanceof MainActivity) {
 
-					BlueHunter bhApp = (BlueHunter) view.getContext();
+					MainActivity mainActivity = (MainActivity) view.getContext();
 
 					selectedItem = position;
 
-					bhApp.mainActivity.startActionMode(bhApp.actionBarHandler.actionModeCallback);
-					view.setSelected(true);
+					mainActivity.startActionMode(((BlueHunter) mainActivity.getApplication()).actionBarHandler.actionModeCallback);
+
+					ListView foundDevListView = (ListView) parent;
+
+//					for (int i = 0; i < foundDevListView.getChildCount(); i++) {
+//						View child = foundDevListView.getChildAt(i);
+//						((CheckBox) child.findViewById(R.id.selectCheckbox)).setVisibility(View.VISIBLE);
+//					}
+
+					foundDevListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+					foundDevListView.setItemChecked(position, true);
 
 					return true;
 				}
@@ -762,6 +772,7 @@ public class FragmentLayoutManager {
 			TextView time;
 			TextView exp;
 			TableRow nameTableRow;
+			CheckBox selectCheckBox;
 		}
 
 	}

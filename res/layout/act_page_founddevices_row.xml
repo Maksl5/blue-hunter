@@ -7,10 +7,17 @@
     android:orientation="vertical"
     android:padding="@dimen/padding_medium" >
 
+    <CheckBox
+        android:id="@+id/selectCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
     <TableRow
         android:id="@+id/tableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/selectCheckbox"
         android:background="@color/text_holo_light_blue"
         android:gravity="center"
         android:padding="@dimen/padding_small"
@@ -31,6 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tableRow1"
+        android:layout_toRightOf="@id/selectCheckbox"
         android:gravity="center" >
 
         <RelativeLayout
