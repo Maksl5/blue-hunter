@@ -80,7 +80,7 @@ public class DatabaseManager {
 			changes.put(INDEX_MAC_ADDRESS, macAddress);
 			changes.put(INDEX_TIME, String.valueOf(time));
 
-			bhApp.authentification.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
+			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
 
 			updateModifiedTime(System.currentTimeMillis());
 			return true;
@@ -115,7 +115,7 @@ public class DatabaseManager {
 			changes.put(INDEX_TIME, String.valueOf(time));
 			changes.put(INDEX_RSSI, String.valueOf(RSSI));
 
-			bhApp.authentification.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
+			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
 
 			updateModifiedTime(System.currentTimeMillis());
 			return true;
@@ -153,7 +153,7 @@ public class DatabaseManager {
 			changes.put(INDEX_TIME, String.valueOf(time));
 			changes.put(INDEX_RSSI, String.valueOf(RSSI));
 
-			bhApp.authentification.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
+			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
 
 			updateModifiedTime(System.currentTimeMillis());
 			return true;
@@ -247,12 +247,12 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_NAME, name);
 
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
-		
+
 		SparseArray<String> change = new SparseArray<String>();
 		change.put(INDEX_NAME, name);
-		
-		bhApp.authentification.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
-		
+
+		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
+
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		close();
 		updateModifiedTime(System.currentTimeMillis());
@@ -282,9 +282,9 @@ public class DatabaseManager {
 
 		SparseArray<String> change = new SparseArray<String>();
 		change.put(INDEX_MAC_ADDRESS, macAddress);
-		
-		bhApp.authentification.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_REMOVE, change);
-		
+
+		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_REMOVE, change);
+
 		return true;
 	}
 
@@ -301,6 +301,64 @@ public class DatabaseManager {
 		}
 		updateModifiedTime(System.currentTimeMillis());
 		close();
+	}
+
+	public boolean addChange(String changeToSync) {
+
+		ContentValues values = new ContentValues();
+		values.put(DatabaseHelper.COLUMN_CHANGE, changeToSync);
+
+		if (db.insert(DatabaseHelper.CHANGES_SYNC_TABLE, null, values) != -1) {
+			close();
+			updateModifiedTime(System.currentTimeMillis());
+			return true;
+		}
+		else {
+			close();
+			updateModifiedTime(System.currentTimeMillis());
+			return false;
+		}
+
+	}
+
+	public void addChanges(List<String> changesToSync) {
+
+		for (String change : changesToSync) {
+
+			ContentValues values = new ContentValues();
+			values.put(DatabaseHelper.COLUMN_CHANGE, change);
+
+			db.insert(DatabaseHelper.CHANGES_SYNC_TABLE, null, values);
+			updateModifiedTime(System.currentTimeMillis());
+		}
+
+		close();
+	}
+
+	public List<String> getAllChanges() {
+
+		List<String> changes = new ArrayList<String>();
+
+		Cursor cursor =
+				db.query(DatabaseHelper.CHANGES_SYNC_TABLE, new String[] { DatabaseHelper.COLUMN_CHANGE }, null, null, null, null, null);
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			changes.add(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_CHANGE)));
+			cursor.moveToNext();
+		}
+		cursor.close();
+		close();
+		return changes;
+	}
+
+	public void resetChanges() {
+
+		db.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.CHANGES_SYNC_TABLE);
+		db.execSQL(DatabaseHelper.CHANGES_SYNC_CREATE);
+
+		close();
+
 	}
 
 	public int rebuildDatabase() {
@@ -418,7 +476,7 @@ public class DatabaseManager {
 		public final static String COLUMN_RSSI = "RSSI";
 		public final static String COLUMN_TIME = "time";
 		public final static String COLUMN_MANUFACTURER = "manufacturer";
-		
+
 		public final static String COLUMN_CHANGE = "change";
 
 		private BlueHunter bhApplication;
@@ -428,8 +486,9 @@ public class DatabaseManager {
 		public final static String FOUND_DEVICES_CREATE =
 				"Create Table " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME + " Integer, " + COLUMN_MANUFACTURER + " Text);";
 
-		public final static String CHANGES_SYNC_CREATE = "Create Table " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
-		
+		public final static String CHANGES_SYNC_CREATE =
+				"Create Table " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
+
 		public DatabaseHelper(BlueHunter app,
 				int version) {
 
@@ -473,8 +532,8 @@ public class DatabaseManager {
 			if (oldVersion < 566) {
 				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_MANUFACTURER + " Text;");
 			}
-			
-			if(oldVersion < 916) {
+
+			if (oldVersion < 916) {
 				db.execSQL(CHANGES_SYNC_CREATE);
 			}
 

@@ -17,6 +17,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import com.maksl5.bl_hunt.activity.ActionBarHandler;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.net.Authentification.LoginManager;
 import com.maksl5.bl_hunt.net.NetworkManager;
 
@@ -34,6 +35,7 @@ public class BlueHunter extends Application {
 	public DiscoveryManager disMan;
 	public NetworkManager netMananger;
 	public LoginManager loginManager;
+	public SynchronizeFoundDevices synchronizeFoundDevices;
 
 	public MainActivity mainActivity;
 	public Activity currentActivity;

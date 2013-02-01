@@ -47,7 +47,6 @@ public class Authentification {
 	private AuthentificationSecure secure;
 	private Context context;
 	protected BlueHunter bhApp;
-	public SynchronizeFoundDevices synchronizeFoundDevices;
 	private volatile ArrayList<OnNetworkResultAvailableListener> listenerList =
 			new ArrayList<Authentification.OnNetworkResultAvailableListener>();
 	private ArrayList<OnLoginChangeListener> loginChangeListeners =
@@ -75,8 +74,6 @@ public class Authentification {
 		checkInternetConnection();
 
 		secure = new AuthentificationSecure(this);
-		synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
-		setOnLoginChangeListener(synchronizeFoundDevices);
 
 	}
 

@@ -52,6 +52,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 	public SynchronizeFoundDevices(BlueHunter blHunt) {
 
 		blueHunter = blHunt;
+		changesToSync = new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getAllChanges();
 
 	}
 
@@ -81,12 +82,15 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 		switch (mode) {
 		case MODE_ADD:
 			changesToSync.add("[+]" + rulesString);
+			new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChange("[+]" + rulesString);
 			break;
 		case MODE_REMOVE:
 			changesToSync.add("[-]" + rulesString);
+			new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChange("[-]" + rulesString);
 			break;
 		case MODE_CHANGE:
 			changesToSync.add("[+-]" + rulesString);
+			new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChange("[+-]" + rulesString);
 			break;
 
 		default:
@@ -156,6 +160,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 			backupList = changesToSync;
 			changesToSync.clear();
+			new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
 
 			applySync.execute(AuthentificationSecure.SERVER_SYNC_FD_APPLY, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY), "lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(), "p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified, "r=" + rules, "m=" + mode);
 
@@ -227,9 +232,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				String errorMsg = ErrorHandler.getErrorString(blueHunter, requestId, error);
 
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
-
-				if (changesToSync.isEmpty()) changesToSync = backupList;
-
+				
 				return false;
 			}
 
@@ -276,6 +279,12 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				String errorMsg = ErrorHandler.getErrorString(blueHunter, requestId, error);
 
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
+				
+				if (changesToSync.isEmpty()) {
+					changesToSync = backupList; 
+				new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
+				new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChanges(changesToSync);
+				}
 				return false;
 			}
 
@@ -364,6 +373,11 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 			start();
 		}
 
+	}
+	
+	public void saveChanges() {
+		new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
+		new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChanges(changesToSync);
 	}
 
 }

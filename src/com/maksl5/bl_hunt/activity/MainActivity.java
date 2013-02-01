@@ -43,6 +43,7 @@ import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.NetworkThread;
+import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
@@ -103,7 +104,7 @@ public class MainActivity extends FragmentActivity {
 
 		bhApp.loginManager =
 				bhApp.authentification.new LoginManager(Authentification.getSerialNumber(), bhApp.authentification.getStoredPass(), bhApp.authentification.getStoredLoginToken());
-
+		
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -278,6 +279,9 @@ public class MainActivity extends FragmentActivity {
 		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
 
 		new DatabaseManager(bhApp, bhApp.getVersionCode()).close();
+		
+		bhApp.synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
+		bhApp.authentification.setOnLoginChangeListener(bhApp.synchronizeFoundDevices);
 
 		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
 		
@@ -424,6 +428,9 @@ public class MainActivity extends FragmentActivity {
 
 		bhApp.disMan.unregisterReceiver();
 		bhApp.disMan.stopDiscoveryManager();
+		
+		bhApp.synchronizeFoundDevices.saveChanges();
+		
 		destroyed = true;
 
 		super.onDestroy();

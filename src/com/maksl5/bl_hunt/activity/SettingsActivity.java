@@ -511,7 +511,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 				
 					if(key.equals("pref_syncingActivated")) {
 						if(sharedPreferences.getBoolean(key, false)) {
-							bhApp.authentification.synchronizeFoundDevices.start();
+							bhApp.synchronizeFoundDevices.start();
 						}
 					}
 					
@@ -578,7 +578,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 				
-					bhApp.authentification.synchronizeFoundDevices.startSyncing(1, true);
+					bhApp.synchronizeFoundDevices.startSyncing(1, true);
 
 					return true;
 				}
@@ -589,7 +589,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 	
-					bhApp.authentification.synchronizeFoundDevices.startSyncing(2, true);
+					bhApp.synchronizeFoundDevices.startSyncing(2, true);
 					
 					return true;
 				}
