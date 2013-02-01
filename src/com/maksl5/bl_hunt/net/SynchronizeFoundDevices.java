@@ -126,7 +126,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 								boolean forceSync) {
 
 		if (mode == 0) return;
-		
+
 		exp = LevelSystem.getUserExp(blueHunter);
 		deviceNum = new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getDeviceNum();
 
@@ -135,7 +135,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 		blueHunter.authentification.setOnNetworkResultAvailableListener(this);
 
-		if (mode == 1 && changesToSync.size() != 0) {
+		if (mode == 1 && (changesToSync.size() != 0 || forceSync)) {
 
 			if (!PreferenceManager.getPref(blueHunter, "pref_syncingActivated", false) && !forceSync)
 				return;
@@ -144,14 +144,19 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 			for (String change : changesToSync) {
 				builder.append(change + ";");
 			}
-			builder.deleteCharAt(builder.lastIndexOf(";"));
-			String rules = builder.toString();
+			
+			String rules = "[UP]";
+			
+			if (builder.length() != 0) {
+				builder.deleteCharAt(builder.lastIndexOf(";"));
+				rules = builder.toString();
+			}
 
 			NetworkThread applySync = new NetworkThread(blueHunter);
-			
+
 			backupList = changesToSync;
 			changesToSync.clear();
-			
+
 			applySync.execute(AuthentificationSecure.SERVER_SYNC_FD_APPLY, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY), "lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(), "p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified, "r=" + rules, "m=" + mode);
 
 		}
@@ -222,9 +227,9 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				String errorMsg = ErrorHandler.getErrorString(blueHunter, requestId, error);
 
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
-				
-				if(changesToSync.isEmpty()) changesToSync = backupList;
-				
+
+				if (changesToSync.isEmpty()) changesToSync = backupList;
+
 				return false;
 			}
 
@@ -251,8 +256,12 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 				Toast.makeText(blueHunter, tempMsg, Toast.LENGTH_LONG).show();
 
-				startSyncing(needsSync, false);
-
+				if (needsSync == 1 && changesToSync.isEmpty()) {
+					startSyncing(needsSync, true);
+				}
+				else {
+					startSyncing(needsSync, false);
+				}
 			}
 			return false;
 

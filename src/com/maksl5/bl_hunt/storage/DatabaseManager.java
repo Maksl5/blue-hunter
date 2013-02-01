@@ -411,12 +411,15 @@ public class DatabaseManager {
 
 		public final static String DATABASE_NAME = "foundDevicesDataStorage.db";
 		public final static String FOUND_DEVICES_TABLE = "foundDevices";
+		public final static String CHANGES_SYNC_TABLE = "changesSync";
 
 		public final static String COLUMN_MAC_ADDRESS = "macAddress";
 		public final static String COLUMN_NAME = "name";
 		public final static String COLUMN_RSSI = "RSSI";
 		public final static String COLUMN_TIME = "time";
 		public final static String COLUMN_MANUFACTURER = "manufacturer";
+		
+		public final static String COLUMN_CHANGE = "change";
 
 		private BlueHunter bhApplication;
 		private int version;
@@ -425,6 +428,8 @@ public class DatabaseManager {
 		public final static String FOUND_DEVICES_CREATE =
 				"Create Table " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME + " Integer, " + COLUMN_MANUFACTURER + " Text);";
 
+		public final static String CHANGES_SYNC_CREATE = "Create Table " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
+		
 		public DatabaseHelper(BlueHunter app,
 				int version) {
 
@@ -444,6 +449,7 @@ public class DatabaseManager {
 		public void onCreate(SQLiteDatabase db) {
 
 			db.execSQL(FOUND_DEVICES_CREATE);
+			db.execSQL(CHANGES_SYNC_CREATE);
 			if (bhApplication != null)
 				if (bhApplication.authentification != null)
 					bhApplication.authentification.showChangelog(10);
@@ -466,6 +472,10 @@ public class DatabaseManager {
 
 			if (oldVersion < 566) {
 				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_MANUFACTURER + " Text;");
+			}
+			
+			if(oldVersion < 916) {
+				db.execSQL(CHANGES_SYNC_CREATE);
 			}
 
 			bhApp.authentification.showChangelog(oldVersion, newVersion, 0);
