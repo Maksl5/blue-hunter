@@ -31,7 +31,9 @@ import android.widget.Toast;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.FragmentLayoutManager;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.RandomToast;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 
@@ -242,6 +244,10 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 			onQueryTextChange("");
 			menu.findItem(R.id.menu_search).collapseActionView();
+
+			if (PreferenceManager.getPref(bhApp, "pref_syncActivated", false))
+				RandomToast.create(bhApp, "Tip: To make you visible in the leaderboard you want to enable the sync feature in the settings.", 0.01).show();
+
 			break;
 		case FragmentLayoutManager.PAGE_FOUND_DEVICES:
 			menu.findItem(R.id.menu_search).setVisible(true);
