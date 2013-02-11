@@ -1,4 +1,4 @@
-package com.maksl5.bl_hunt;
+package com.maksl5.bl_hunt.custom_ui;
 
 
 
@@ -36,11 +36,15 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.R.id;
+import com.maksl5.bl_hunt.R.layout;
+import com.maksl5.bl_hunt.R.string;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
-import com.maksl5.bl_hunt.custom_ui.AdjustedEditText;
 import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
-import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.storage.MacAddressAllocations;

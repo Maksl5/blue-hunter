@@ -28,7 +28,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.FragmentLayoutManager;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.net.Authentification.LoginManager;
 
