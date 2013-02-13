@@ -69,7 +69,8 @@ At this point I want to ask you, if you think you can translate the game into yo
 ### Included Translations:
 
 > - English
-> - Dutch (Marc.) _- Outdated_
+> - Dutch (Marc.)
+> - Czech (Scorpio-cz)
 >
 
 ### Oncoming Translations:
@@ -92,17 +93,23 @@ _This information is sent to the game server and stored in a database._
  - **_Version Code_** - This is the internal version code of the game. It is used to check, if a new nightly version is available.<br>
 _This information is sent to the game server and stored in a database._
 
+ - **_User Name_** - This is the name you use for the game. It is used to give you personalization possibilities. It's also showed in the leaderboard.<br>
+_This information is sent to the game server and stored in a database._
+
  - **_Remote MAC Address_** - This is the MAC Address of devices which you will found. It is used to determinate the manufacturer of the device and to give you specific expierence values for each manufacturer. (Some devices are more rare than others.)<br>
-_This information is **NOT** sent to the game server, but stored in the offline game database._
+_This information is **ONLY** sent to the game server, when you are syncing your data with the game server._
 
  - **_Remote Device RSSI_** - This is the **R**eceived **S**ignal **S**trength **I**ndication. This is used to display as information to you.<br>
-_This information is **NOT** sent to the game server, but stored in the offline game database._
+_This information is **ONLY** sent to the game server, when you are syncing your data with the game server._
 
  - **_Remote Device Name_** - This is the name of the remote Bluetooth device. This is used to display as information to you.<br>
-_This information is **NOT** sent to the game server, but stored in the offline game database._
+_This information is **ONLY** sent to the game server, when you are syncing your data with the game server._
 
  - **_Local Time_** - This is the time, that is saved, when you find a new device. This is used to display as information to you.<br>
-_This information is **NOT** sent to the game server, but stored in the offline game database._
+_This information is **ONLY** sent to the game server, when you are syncing your data with the game server._
+
+
+_**Note:**_ All the information gathered by the game from your device or other devices is not associated with any other data or information. It will not be used for ad personalization or other things. It is not given to 3rd party companies or persons. This information is private and is only gathered to guarantee an optimal game experience. Your information is used to create statistics for the game itself.
 
 ### Error Reporting
 
