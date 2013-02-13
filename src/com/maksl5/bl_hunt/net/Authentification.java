@@ -62,6 +62,7 @@ public class Authentification {
 	public static final int NETRESULT_ID_PASS_CHANGE = 8;
 	public static final int NETRESULT_ID_SYNC_FD_CHECK = 9;
 	public static final int NETRESULT_ID_SYNC_FD_APPLY = 10;
+	public static final int NETRESULT_ID_APPLY_NAME = 11;
 
 	public static boolean newUpdateAvailable = false;
 	public boolean internetIsAvailable = false;
@@ -300,6 +301,13 @@ public class Authentification {
 
 	public interface OnNetworkResultAvailableListener {
 
+		/**
+		 * Called, when a network result is available.
+		 *
+		 * @param requestId The requestId, that identifies the request.
+		 * @param resultString The String, that is returned.
+		 * @return True, if you want to remove the listener from listening to the results available. False, if not removing.
+		 */
 		public abstract boolean onResult(	int requestId,
 											String resultString);
 	}
@@ -595,7 +603,8 @@ public class Authentification {
 				boolean afterCheck = isInternetAvailable();
 
 				if (beforeCheck == false && afterCheck == true) {
-					login();
+					NetworkThread serialSubmit = new NetworkThread(bhApp);
+					serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
 				}
 				else if (beforeCheck == true && afterCheck == false) {
 					setLoginState(false);

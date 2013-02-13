@@ -2,6 +2,8 @@ package com.maksl5.bl_hunt.activity;
 
 
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +24,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -186,7 +189,7 @@ public class MainActivity extends FragmentActivity {
 
 				switch (requestId) {
 				case Authentification.NETRESULT_ID_SERIAL_CHECK:
-
+					
 					Pattern pattern = Pattern.compile("Error=(\\d+)");
 					Matcher matcher = pattern.matcher(resultString);
 
@@ -194,9 +197,30 @@ public class MainActivity extends FragmentActivity {
 						int error = Integer.parseInt(matcher.group(1));
 
 						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
+						FragmentLayoutManager.StatisticLayout.setName(bhApp, errorMsg, true);
 
 						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
 						break;
+					}
+					
+					Pattern xmlPattern = Pattern.compile("<done name=\"(.+)\" />");
+					Matcher xmlMatcher = xmlPattern.matcher(resultString);
+					
+					if(xmlMatcher.find()) {
+						
+						String nameString = "";
+						
+						try {
+							nameString = URLDecoder.decode(xmlMatcher.group(1), "UTF-8");
+						}
+						catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						FragmentLayoutManager.StatisticLayout.setName(bhApp, nameString, false);
+						
+						
 					}
 
 					bhApp.loginManager.login();
@@ -440,7 +464,11 @@ public class MainActivity extends FragmentActivity {
 
 		return destroyed;
 	}
-
+	
+	public BlueHunter getBlueHunter() {
+		return bhApp;	
+	}
+	
 	@SuppressWarnings("deprecation")
 	public void updateNotification() {
 

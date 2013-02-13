@@ -351,7 +351,7 @@ public class ErrorHandler {
 			
 		case Authentification.NETRESULT_ID_SYNC_FD_APPLY:
 			
-			errorMsg = con.getString(R.string.str_Error_checkSync, error);
+			errorMsg = con.getString(R.string.str_Error_applySync, error);
 
 			switch (error) {
 			case 1:
@@ -401,6 +401,57 @@ public class ErrorHandler {
 			case 1012:
 				errorMsg +=
 						String.format(" (%s)", con.getString(R.string.str_Error_applySync_100_12));
+				break;
+			}
+			return errorMsg;
+			
+case Authentification.NETRESULT_ID_APPLY_NAME:
+			
+			errorMsg = con.getString(R.string.str_Error_applyName, error);
+
+			switch (error) {
+			case 1:
+			case 4:
+			case 5:
+				errorMsg += String.format(" (%s)", con.getString(R.string.str_Error_1_4_5));
+				break;
+			case 404:
+				errorMsg += String.format(" (%s)", con.getString(R.string.str_Error_404));
+				break;
+			case 500:
+				errorMsg += String.format(" (%s)", con.getString(R.string.str_Error_500));
+				break;
+			case 1001:
+			case 1002:
+			case 1003:
+				errorMsg +=
+						String.format(" (%s)", con.getString(R.string.str_Error_applyName_100_1_2_3));
+				break;
+			case 1004:
+			case 1006:
+				errorMsg +=
+						String.format(" (%s)", con.getString(R.string.str_Error_applyName_100_4_6));
+				break;
+			case 1005:
+				errorMsg +=
+						String.format(" (%s)", con.getString(R.string.str_Error_applyName_100_5));
+
+				break;
+			case 1007:
+				errorMsg +=
+						String.format(" (%s)", con.getString(R.string.str_Error_applyName_100_7));
+				break;
+			case 1008:
+				errorMsg +=
+						String.format(" (%s)", con.getString(R.string.str_Error_applyName_100_8));
+				break;
+			case 109:
+				errorMsg +=
+						String.format(" (%s)", con.getString(R.string.str_Error_applyName_100_9));
+				break;
+			case 1010:
+				errorMsg +=
+						String.format(" (%s)", con.getString(R.string.str_Error_applyName_100_10));
 				break;
 			}
 			return errorMsg;

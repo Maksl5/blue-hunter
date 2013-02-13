@@ -10,8 +10,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -34,9 +38,11 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.R.id;
@@ -45,6 +51,11 @@ import com.maksl5.bl_hunt.R.string;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
 import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.NetworkThread;
+import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.storage.MacAddressAllocations;
@@ -123,14 +134,14 @@ public class FragmentLayoutManager {
 
 					selectedItem = position;
 
-					mainActivity.startActionMode(((BlueHunter) mainActivity.getApplication()).actionBarHandler.actionModeCallback);
+					mainActivity.startActionMode(mainActivity.getBlueHunter().actionBarHandler.actionModeCallback);
 
 					ListView foundDevListView = (ListView) parent;
 
-//					for (int i = 0; i < foundDevListView.getChildCount(); i++) {
-//						View child = foundDevListView.getChildAt(i);
-//						((CheckBox) child.findViewById(R.id.selectCheckbox)).setVisibility(View.VISIBLE);
-//					}
+					// for (int i = 0; i < foundDevListView.getChildCount(); i++) {
+					// View child = foundDevListView.getChildAt(i);
+					// ((CheckBox) child.findViewById(R.id.selectCheckbox)).setVisibility(View.VISIBLE);
+					// }
 
 					foundDevListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 					foundDevListView.setItemChecked(position, true);
@@ -287,7 +298,8 @@ public class FragmentLayoutManager {
 						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
 						if (manufacturer.equals("Unknown")) {
 							manufacturer = bhApp.getString(R.string.str_foundDevices_manu_unkown);
-						}else {
+						}
+						else {
 							new DatabaseManager(bhApp, bhApp.getVersionCode()).addManufacturerToDevice(deviceMac, manufacturer);
 						}
 					}
@@ -795,7 +807,7 @@ public class FragmentLayoutManager {
 			PatternProgressBar progressBar =
 					(PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
-			int exp = LevelSystem.getUserExp((BlueHunter) mainActivity.getApplication());
+			int exp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
 			mainActivity.exp = exp;
 			int level = LevelSystem.getLevel(exp);
 
@@ -814,6 +826,10 @@ public class FragmentLayoutManager {
 	 */
 	public static class StatisticLayout {
 
+		private static String userName = "";
+		private static String backUpName = "";
+		private static boolean isEditable = true;
+
 		public static void initializeView(final MainActivity mainActivity) {
 
 			View parentContainer = mainActivity.mViewPager.getChildAt(PAGE_PROFILE + 1);
@@ -829,19 +845,20 @@ public class FragmentLayoutManager {
 				@Override
 				public boolean onLongClick(View v) {
 
-					nameEditText.setText(nameTextView.getText());
+					if (isEditable) {
+						nameEditText.setText(nameTextView.getText());
 
-					nameTextView.animate().setDuration(500).alpha(0f);
-					nameTextView.setVisibility(TextView.GONE);
+						nameTextView.animate().setDuration(500).alpha(0f);
+						nameTextView.setVisibility(TextView.GONE);
 
-					nameEditText.setAlpha(0f);
-					nameEditText.setVisibility(EditText.VISIBLE);
-					nameEditText.animate().setDuration(500).alpha(1f);
+						nameEditText.setAlpha(0f);
+						nameEditText.setVisibility(EditText.VISIBLE);
+						nameEditText.animate().setDuration(500).alpha(1f);
 
-					InputMethodManager imm =
-							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-
+						InputMethodManager imm =
+								(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+					}
 					return true;
 				}
 			});
@@ -860,8 +877,11 @@ public class FragmentLayoutManager {
 
 						imm.hideSoftInputFromWindow(nameEditText.getWindowToken(), 0);
 
-						// submit();
-						nameTextView.setText(nameEditText.getText());
+						backUpName = userName;
+						userName = nameEditText.getText().toString();
+
+						nameTextView.setText("Applying...");
+						submit(nameTextView);
 
 						nameEditText.animate().setDuration(500).alpha(1f);
 						nameEditText.setVisibility(EditText.GONE);
@@ -873,6 +893,46 @@ public class FragmentLayoutManager {
 						return true;
 					}
 					return false;
+				}
+
+				private void submit(TextView nameTextView) {
+
+					isEditable = false;
+
+					mainActivity.getBlueHunter().authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
+
+						@Override
+						public boolean onResult(int requestId,
+												String resultString) {
+
+							if (requestId == Authentification.NETRESULT_ID_APPLY_NAME) {
+
+								Pattern pattern = Pattern.compile("Error=(\\d+)");
+								Matcher matcher = pattern.matcher(resultString);
+
+								if (matcher.find()) {
+									int error = Integer.parseInt(matcher.group(1));
+									String errorMsg =
+											ErrorHandler.getErrorString(mainActivity, requestId, error);
+
+									setName(mainActivity.getBlueHunter(), backUpName, true);
+
+									Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
+								}
+								else if (resultString.equals("<done />")) {
+									setName(mainActivity.getBlueHunter(), userName, true);
+								}
+								if(mainActivity.getBlueHunter().loginManager.getLoginState())
+									isEditable = true;
+							}
+
+							return true;
+						}
+					});
+
+					NetworkThread applyName = new NetworkThread(mainActivity.getBlueHunter());
+					applyName.execute(AuthentificationSecure.SERVER_APPLY_NAME, String.valueOf(Authentification.NETRESULT_ID_APPLY_NAME), "lt=" + mainActivity.getBlueHunter().authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(), "p=" + mainActivity.getBlueHunter().authentification.getStoredPass(), "n=" + userName);
+
 				}
 			});
 
@@ -897,6 +957,51 @@ public class FragmentLayoutManager {
 					}
 				}
 			});
+
+			mainActivity.getBlueHunter().authentification.setOnLoginChangeListener(new OnLoginChangeListener() {
+
+				@Override
+				public void loginStateChange(boolean loggedIn) {
+
+					if (loggedIn) {
+						nameTextView.setText(userName);
+						nameTextView.setTextColor(mainActivity.getResources().getColor(R.color.text_holo_light_blue));
+						isEditable = true;
+					}
+					else {
+						nameTextView.setText("Not logged in.");
+						nameTextView.setTextColor(Color.GRAY);
+						isEditable = false;
+					}
+
+				}
+			});
+
+		}
+
+		/**
+		 * @param nameString
+		 */
+		public static void setName(	BlueHunter blueHunter,
+									String nameString,
+									boolean forceSet) {
+
+			userName = nameString;
+
+			View parentContainer = blueHunter.mainActivity.mViewPager.getChildAt(PAGE_PROFILE + 1);
+
+			TextView nameTextView = (TextView) parentContainer.findViewById(R.id.nameTextView);
+
+			if (blueHunter.loginManager.getLoginState()) {
+				nameTextView.setText(userName);
+				nameTextView.setTextColor(blueHunter.getResources().getColor(R.color.text_holo_light_blue));
+				isEditable = true;
+			}
+			else {
+				nameTextView.setText("Not logged in.");
+				nameTextView.setTextColor(Color.GRAY);
+				isEditable = false;
+			}
 
 		}
 
