@@ -863,8 +863,8 @@ public class FragmentLayoutManager {
 				}
 			});
 
-			nameEditText.setOnEditorActionListener(new OnEditorActionListener() {
-
+			OnEditorActionListener onEditorActionListener = new OnEditorActionListener() {
+				
 				@Override
 				public boolean onEditorAction(	TextView v,
 												int actionId,
@@ -873,7 +873,7 @@ public class FragmentLayoutManager {
 					InputMethodManager imm =
 							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-					if (actionId == EditorInfo.IME_ACTION_DONE && nameEditText.isShown()) {
+					if (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && nameEditText.isShown()) {
 
 						imm.hideSoftInputFromWindow(nameEditText.getWindowToken(), 0);
 
@@ -894,7 +894,7 @@ public class FragmentLayoutManager {
 					}
 					return false;
 				}
-
+				
 				private void submit(TextView nameTextView) {
 
 					isEditable = false;
@@ -934,7 +934,9 @@ public class FragmentLayoutManager {
 					applyName.execute(AuthentificationSecure.SERVER_APPLY_NAME, String.valueOf(Authentification.NETRESULT_ID_APPLY_NAME), "lt=" + mainActivity.getBlueHunter().authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(), "p=" + mainActivity.getBlueHunter().authentification.getStoredPass(), "n=" + userName);
 
 				}
-			});
+			};
+			
+			nameEditText.setOnEditorActionListener(onEditorActionListener);
 
 			nameEditText.setOnBackKeyClickListener(new OnBackKeyClickedListener() {
 
