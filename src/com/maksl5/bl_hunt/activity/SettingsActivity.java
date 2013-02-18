@@ -578,7 +578,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 				
-					bhApp.synchronizeFoundDevices.startSyncing(1, true);
+					bhApp.synchronizeFoundDevices.startSyncing(3, true);
 
 					return true;
 				}
