@@ -245,7 +245,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			onQueryTextChange("");
 			menu.findItem(R.id.menu_search).collapseActionView();
 
-			if (!PreferenceManager.getPref(bhApp, "pref_syncActivated", false))
+			if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated", false))
 				RandomToast.create(bhApp, "Tip: To make you visible in the leaderboard you want to enable the sync feature in the settings.", 0.25).show();
 
 			break;
