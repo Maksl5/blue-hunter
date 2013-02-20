@@ -9,6 +9,8 @@ package com.maksl5.bl_hunt.storage;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import android.R.integer;
+
 
 
 /**
@@ -237,7 +239,8 @@ public class MacAddressAllocations {
 								"00:22:A9", "00:24:83", "00:25:E5", "00:26:E2", "00:AA:70",
 								"00:E0:91", "10:F9:6F", "20:21:A5", "3C:BD:D8", "6C:D6:8A",
 								"70:05:14", "74:A7:22", "A8:16:B2", "A8:92:2C", "C0:41:F6",
-								"E8:5B:5B", "E8:92:A4", "F0:1C:13", "F8:0C:F3" };
+								"E8:5B:5B", "E8:92:A4", "F0:1C:13", "F8:0C:F3", "5C:17:D3",
+								"64:99:5D", "8C:54:1D", "B0:89:91" };
 
 	static final String[] HTC = {
 									"00:09:2D", "00:23:76", "18:87:96", "1C:B0:94", "38:E7:D8",
@@ -581,6 +584,9 @@ public class MacAddressAllocations {
 	static final String[] Transystem = { "00:1C:88" };
 
 	static final String[] Novero = { "00:23:3D" };
+	static final String[] Parrot= { "00:12:1C", "00:26:7E", "90:03:B7" };
+	static final String[] Ingenico= { "00:03:81", "54:7F:54" };
+	static final String[] Bury = { "00:16:73" };
 
 	public static final int Unknown_exp = 2;
 	static final int Apple_exp = 5;
@@ -630,5 +636,8 @@ public class MacAddressAllocations {
 	static final int Murata_exp = 15;
 	static final int Transystem_exp = 20;
 	static final int Novero_exp = 20;
+	static final int Parrot_exp = 20;
+	static final int Ingenico_exp = 20;
+	static final int Bury_exp = 20;
 
 }
