@@ -13,24 +13,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import android.R.bool;
-import android.R.integer;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.format.Time;
 import android.util.Log;
 import android.util.SparseArray;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
-import com.maksl5.bl_hunt.net.Authentification.LoginManager;
 
 
 

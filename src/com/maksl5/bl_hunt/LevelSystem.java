@@ -6,13 +6,11 @@ package com.maksl5.bl_hunt;
 
 
 
-import java.util.HashMap;
 import java.util.List;
 
 import android.util.SparseArray;
 
 import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 
 

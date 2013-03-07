@@ -10,15 +10,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
@@ -52,7 +49,8 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 	public SynchronizeFoundDevices(BlueHunter blHunt) {
 
 		blueHunter = blHunt;
-		changesToSync = new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getAllChanges();
+		changesToSync =
+				new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getAllChanges();
 
 	}
 
@@ -148,9 +146,9 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 			for (String change : changesToSync) {
 				builder.append(change + ";");
 			}
-			
+
 			String rules = "[UP]";
-			
+
 			if (builder.length() != 0) {
 				builder.deleteCharAt(builder.lastIndexOf(";"));
 				rules = builder.toString();
@@ -232,7 +230,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				String errorMsg = ErrorHandler.getErrorString(blueHunter, requestId, error);
 
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
-				
+
 				return false;
 			}
 
@@ -279,11 +277,11 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				String errorMsg = ErrorHandler.getErrorString(blueHunter, requestId, error);
 
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
-				
+
 				if (changesToSync.isEmpty()) {
-					changesToSync = backupList; 
-				new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
-				new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChanges(changesToSync);
+					changesToSync = backupList;
+					new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
+					new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChanges(changesToSync);
 				}
 				return false;
 			}
@@ -374,8 +372,9 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 		}
 
 	}
-	
+
 	public void saveChanges() {
+
 		new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
 		new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChanges(changesToSync);
 	}

@@ -42,7 +42,9 @@ public class PatternProgressBar extends ProgressBar {
 	 * @param attrs
 	 * @param defStyle
 	 */
-	public PatternProgressBar(Context context, AttributeSet attrs, int defStyle) {
+	public PatternProgressBar(Context context,
+			AttributeSet attrs,
+			int defStyle) {
 
 		super(context, attrs, defStyle);
 		// TODO Auto-generated constructor stub
@@ -58,7 +60,8 @@ public class PatternProgressBar extends ProgressBar {
 		m_textPaint.setFakeBoldText(true);
 
 		// get the styleable attributes as defined in the xml
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PatternProgressBar, defStyle, 0);
+		TypedArray a =
+				context.obtainStyledAttributes(attrs, R.styleable.PatternProgressBar, defStyle, 0);
 
 		if (a != null) {
 			m_textPaint.setTextSize(a.getDimension(R.styleable.PatternProgressBar_textSize, 10));
@@ -101,7 +104,8 @@ public class PatternProgressBar extends ProgressBar {
 	 * @param context
 	 * @param attrs
 	 */
-	public PatternProgressBar(Context context, AttributeSet attrs) {
+	public PatternProgressBar(Context context,
+			AttributeSet attrs) {
 
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
@@ -199,7 +203,8 @@ public class PatternProgressBar extends ProgressBar {
 	}
 
 	@Override
-	protected synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+	protected synchronized void onMeasure(	int widthMeasureSpec,
+											int heightMeasureSpec) {
 
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -207,8 +212,7 @@ public class PatternProgressBar extends ProgressBar {
 		// accomodate the indicator
 		if (m_indicator != null) {
 			final int width = getMeasuredWidth();
-			final int height = getMeasuredHeight()
-								+ getIndicatorHeight();
+			final int height = getMeasuredHeight() + getIndicatorHeight();
 
 			// make the view the original height + indicator height size
 			setMeasuredDimension(width, height);
@@ -244,8 +248,7 @@ public class PatternProgressBar extends ProgressBar {
 		// the progress bar and its layers (if the drawable is a layer drawable).
 		// This will ensure the progress bar gets drawn in the correct position
 		if (m_indicator != null) {
-			if (progressDrawable != null
-				&& progressDrawable instanceof LayerDrawable) {
+			if (progressDrawable != null && progressDrawable instanceof LayerDrawable) {
 				LayerDrawable d = (LayerDrawable) progressDrawable;
 
 				for (int i = 0; i < d.getNumberOfLayers(); i++) {
@@ -254,16 +257,16 @@ public class PatternProgressBar extends ProgressBar {
 					// thanks to Dave [dave@pds-uk.com] for point out a bug which eats up
 					// a lot of cpu cycles. It turns out the issue was linked to calling
 					// getIntrinsicHeight which proved to be very cpu intensive.
-					d.getDrawable(i).getBounds().bottom = d.getDrawable(i).getBounds().height()
-															+ getIndicatorHeight();
+					d.getDrawable(i).getBounds().bottom =
+							d.getDrawable(i).getBounds().height() + getIndicatorHeight();
 				}
 			}
 			else if (progressDrawable != null) {
 				// It's not a layer drawable but we still need to adjust the bounds
 				progressDrawable.getBounds().top = m_indicator.getIntrinsicHeight();
 				// thanks to Dave[dave@pds-uk.com] -- see note above for explaination.
-				progressDrawable.getBounds().bottom = progressDrawable.getBounds().height()
-														+ getIndicatorHeight();
+				progressDrawable.getBounds().bottom =
+						progressDrawable.getBounds().height() + getIndicatorHeight();
 			}
 		}
 
@@ -278,8 +281,7 @@ public class PatternProgressBar extends ProgressBar {
 			int dx = 0;
 
 			// get the position of the progress bar's right end
-			if (progressDrawable != null
-				&& progressDrawable instanceof LayerDrawable) {
+			if (progressDrawable != null && progressDrawable instanceof LayerDrawable) {
 				LayerDrawable d = (LayerDrawable) progressDrawable;
 				Drawable progressBar = d.findDrawableByLayerId(R.id.progress);
 				dx = progressBar.getBounds().right;
@@ -289,21 +291,14 @@ public class PatternProgressBar extends ProgressBar {
 			}
 
 			// adjust for any additional offset
-			dx = dx
-					- getIndicatorWidth()
-					/ 2
-					- m_offset
-					+ getPaddingLeft();
+			dx = dx - getIndicatorWidth() / 2 - m_offset + getPaddingLeft();
 
 			// translate the canvas to the position where we should draw the indicator
 			canvas.translate(dx, 0);
 
 			m_indicator.draw(canvas);
 
-			canvas.drawText(m_formatter != null
-					? m_formatter.getText(getProgress())
-					: Math.round(getScale(getProgress()) * 100.0f)
-						+ "%", getIndicatorWidth() / 2, getIndicatorHeight() / 2 + 1, m_textPaint);
+			canvas.drawText(m_formatter != null ? m_formatter.getText(getProgress()) : Math.round(getScale(getProgress()) * 100.0f) + "%", getIndicatorWidth() / 2, getIndicatorHeight() / 2 + 1, m_textPaint);
 
 			// restore canvas to original
 			canvas.restore();
@@ -322,10 +317,7 @@ public class PatternProgressBar extends ProgressBar {
 
 	private float getScale(int progress) {
 
-		float scale = getMax() > 0
-				? (float) progress
-					/ (float) getMax()
-				: 0;
+		float scale = getMax() > 0 ? (float) progress / (float) getMax() : 0;
 
 		return scale;
 	}
@@ -339,8 +331,7 @@ public class PatternProgressBar extends ProgressBar {
 
 		Drawable progressDrawable = getProgressDrawable();
 
-		if (progressDrawable != null
-			&& progressDrawable instanceof LayerDrawable) {
+		if (progressDrawable != null && progressDrawable instanceof LayerDrawable) {
 			LayerDrawable d = (LayerDrawable) progressDrawable;
 
 			final float scale = getScale(getProgress());
@@ -348,14 +339,11 @@ public class PatternProgressBar extends ProgressBar {
 			// get the progress bar and update it's size
 			Drawable progressBar = d.findDrawableByLayerId(R.id.progress);
 
-			final int width = d.getBounds().right
-								- d.getBounds().left;
+			final int width = d.getBounds().right - d.getBounds().left;
 
 			if (progressBar != null) {
 				Rect progressBarBounds = progressBar.getBounds();
-				progressBarBounds.right = progressBarBounds.left
-											+ (int) (width
-														* scale + 0.5f);
+				progressBarBounds.right = progressBarBounds.left + (int) (width * scale + 0.5f);
 				progressBar.setBounds(progressBarBounds);
 			}
 
@@ -369,20 +357,15 @@ public class PatternProgressBar extends ProgressBar {
 					final int left = patternOverlayBounds.left;
 					final int right = patternOverlayBounds.right;
 
-					patternOverlayBounds.left = (left + 1 > right)
-							? left
-							: left + 1;
-					patternOverlayBounds.right = (right > 0)
-							? right - 1
-							: right;
+					patternOverlayBounds.left = (left + 1 > right) ? left : left + 1;
+					patternOverlayBounds.right = (right > 0) ? right - 1 : right;
 					patternOverlay.setBounds(patternOverlayBounds);
 				}
 				else {
 					// we don't have a progress bar so just treat this like the progress bar
 					Rect patternOverlayBounds = patternOverlay.getBounds();
-					patternOverlayBounds.right = patternOverlayBounds.left
-													+ (int) (width
-																* scale + 0.5f);
+					patternOverlayBounds.right =
+							patternOverlayBounds.left + (int) (width * scale + 0.5f);
 					patternOverlay.setBounds(patternOverlayBounds);
 				}
 			}

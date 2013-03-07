@@ -9,8 +9,6 @@ package com.maksl5.bl_hunt.storage;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import android.R.integer;
-
 
 
 /**
@@ -584,8 +582,10 @@ public class MacAddressAllocations {
 	static final String[] Transystem = { "00:1C:88" };
 
 	static final String[] Novero = { "00:23:3D" };
-	static final String[] Parrot= { "00:12:1C", "00:26:7E", "90:03:B7" };
-	static final String[] Ingenico= { "00:03:81", "54:7F:54" };
+	static final String[] Parrot = {
+									"00:12:1C", "00:26:7E", "90:03:B7" };
+	static final String[] Ingenico = {
+										"00:03:81", "54:7F:54" };
 	static final String[] Bury = { "00:16:73" };
 
 	public static final int Unknown_exp = 2;

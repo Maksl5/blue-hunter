@@ -6,14 +6,12 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.security.cert.LDAPCertStoreParameters;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,25 +20,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnManagerPNames;
-import org.apache.http.conn.params.ConnPerRouteBean;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,10 +34,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.SparseArray;
@@ -63,7 +48,6 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -71,33 +55,26 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Filter;
-import android.widget.ProgressBar;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.R.id;
-import com.maksl5.bl_hunt.R.layout;
-import com.maksl5.bl_hunt.R.string;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
 import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager.FoundDevicesLayout.FoundDevicesAdapter;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager.FoundDevicesLayout.ViewHolder;
-import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.net.EasySSLSocketFactory;
-import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 
 
@@ -214,6 +191,11 @@ public class FragmentLayoutManager {
 
 			List<String> searchedList = new ArrayList<String>();
 
+			if (bhApp.mainActivity.mViewPager == null) {
+				bhApp.mainActivity.mViewPager =
+						(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+			}
+
 			ListView lv =
 					(ListView) bhApp.mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
 			FoundDevicesAdapter fdAdapter = (FoundDevicesAdapter) lv.getAdapter();
@@ -285,6 +267,12 @@ public class FragmentLayoutManager {
 
 				super();
 				this.bhApp = app;
+
+				if (bhApp.mainActivity.mViewPager == null) {
+					bhApp.mainActivity.mViewPager =
+							(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+				}
+
 				this.listView =
 						(ListView) bhApp.mainActivity.mViewPager.getChildAt(PAGE_FOUND_DEVICES + 1).findViewById(R.id.listView2);
 
@@ -1032,7 +1020,16 @@ public class FragmentLayoutManager {
 
 			View parentContainer = blueHunter.mainActivity.mViewPager.getChildAt(PAGE_PROFILE + 1);
 
-			TextView nameTextView = (TextView) parentContainer.findViewById(R.id.nameTextView);
+			TextView nameTextView;
+
+			if (parentContainer == null) {
+				nameTextView = (TextView) blueHunter.mainActivity.findViewById(R.id.nameTextView);
+			}
+			else {
+				nameTextView = (TextView) parentContainer.findViewById(R.id.nameTextView);
+			}
+
+			if (nameTextView == null) return;
 
 			if (blueHunter.loginManager.getLoginState()) {
 				nameTextView.setText(userName);
@@ -1406,7 +1403,7 @@ public class FragmentLayoutManager {
 				}
 				else {
 
-					ldAdapter.refill(showedFdList);
+					ldAdapter.notifyDataSetChanged();
 					new RefreshThread(bhApp, threadManager).execute(startIndex + length, length);
 
 				}

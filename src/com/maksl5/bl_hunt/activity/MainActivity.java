@@ -24,7 +24,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -107,7 +106,7 @@ public class MainActivity extends FragmentActivity {
 
 		bhApp.loginManager =
 				bhApp.authentification.new LoginManager(Authentification.getSerialNumber(), bhApp.authentification.getStoredPass(), bhApp.authentification.getStoredLoginToken());
-		
+
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -189,7 +188,7 @@ public class MainActivity extends FragmentActivity {
 
 				switch (requestId) {
 				case Authentification.NETRESULT_ID_SERIAL_CHECK:
-					
+
 					Pattern pattern = Pattern.compile("Error=(\\d+)");
 					Matcher matcher = pattern.matcher(resultString);
 
@@ -202,14 +201,14 @@ public class MainActivity extends FragmentActivity {
 						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
 						break;
 					}
-					
+
 					Pattern xmlPattern = Pattern.compile("<done name=\"(.+)\" />");
 					Matcher xmlMatcher = xmlPattern.matcher(resultString);
-					
-					if(xmlMatcher.find()) {
-						
+
+					if (xmlMatcher.find()) {
+
 						String nameString = "";
-						
+
 						try {
 							nameString = URLDecoder.decode(xmlMatcher.group(1), "UTF-8");
 						}
@@ -217,10 +216,9 @@ public class MainActivity extends FragmentActivity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						
+
 						FragmentLayoutManager.StatisticLayout.setName(bhApp, nameString, false);
-						
-						
+
 					}
 
 					bhApp.loginManager.login();
@@ -303,12 +301,12 @@ public class MainActivity extends FragmentActivity {
 		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
 
 		new DatabaseManager(bhApp, bhApp.getVersionCode()).close();
-		
+
 		bhApp.synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
 		bhApp.authentification.setOnLoginChangeListener(bhApp.synchronizeFoundDevices);
 
 		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
-		
+
 		TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
 		userInfoRow.setVisibility(View.VISIBLE);
 		userInfoRow.invalidate();
@@ -453,9 +451,9 @@ public class MainActivity extends FragmentActivity {
 
 		bhApp.disMan.unregisterReceiver();
 		bhApp.disMan.stopDiscoveryManager();
-		
+
 		bhApp.synchronizeFoundDevices.saveChanges();
-		
+
 		destroyed = true;
 
 		super.onDestroy();
@@ -465,11 +463,12 @@ public class MainActivity extends FragmentActivity {
 
 		return destroyed;
 	}
-	
+
 	public BlueHunter getBlueHunter() {
-		return bhApp;	
+
+		return bhApp;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public void updateNotification() {
 

@@ -46,10 +46,10 @@ public class PreferenceManager {
 		return shPreferences.getString(key, defValue);
 
 	}
-	
+
 	public static long getPref(	Context con,
-									String key,
-									long defValue) {
+								String key,
+								long defValue) {
 
 		SharedPreferences shPreferences =
 				android.preference.PreferenceManager.getDefaultSharedPreferences(con);
@@ -86,7 +86,7 @@ public class PreferenceManager {
 		shPreferences.edit().putInt(key, value).apply();
 
 	}
-	
+
 	public static void setPref(	Context con,
 								String key,
 								long value) {

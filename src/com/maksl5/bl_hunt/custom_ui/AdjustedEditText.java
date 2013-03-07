@@ -26,7 +26,9 @@ public class AdjustedEditText extends EditText {
 	 * @param attrs
 	 * @param defStyle
 	 */
-	public AdjustedEditText(Context context, AttributeSet attrs, int defStyle) {
+	public AdjustedEditText(Context context,
+			AttributeSet attrs,
+			int defStyle) {
 
 		super(context, attrs, defStyle);
 		// TODO Auto-generated constructor stub
@@ -36,7 +38,8 @@ public class AdjustedEditText extends EditText {
 	 * @param context
 	 * @param attrs
 	 */
-	public AdjustedEditText(Context context, AttributeSet attrs) {
+	public AdjustedEditText(Context context,
+			AttributeSet attrs) {
 
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
@@ -54,10 +57,10 @@ public class AdjustedEditText extends EditText {
 	}
 
 	@Override
-	public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+	public boolean onKeyPreIme(	int keyCode,
+								KeyEvent event) {
 
-		if (keyCode == KeyEvent.KEYCODE_BACK
-			&& event.getAction() == KeyEvent.ACTION_UP) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
 
 			fireOnBackKeyClicked();
 

@@ -6,9 +6,6 @@ package com.maksl5.bl_hunt;
 
 
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.content.Context;
 
 import com.maksl5.bl_hunt.net.Authentification;

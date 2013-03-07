@@ -8,7 +8,6 @@ package com.maksl5.bl_hunt.net;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -303,10 +302,13 @@ public class Authentification {
 
 		/**
 		 * Called, when a network result is available.
-		 *
-		 * @param requestId The requestId, that identifies the request.
-		 * @param resultString The String, that is returned.
-		 * @return True, if you want to remove the listener from listening to the results available. False, if not removing.
+		 * 
+		 * @param requestId
+		 *            The requestId, that identifies the request.
+		 * @param resultString
+		 *            The String, that is returned.
+		 * @return True, if you want to remove the listener from listening to the results available. False, if not
+		 *         removing.
 		 */
 		public abstract boolean onResult(	int requestId,
 											String resultString);
@@ -393,7 +395,13 @@ public class Authentification {
 
 		public void unregisterInternetReceiver() {
 
-			bhApp.unregisterReceiver(this);
+			try {
+				bhApp.unregisterReceiver(this);
+			}
+			catch (IllegalArgumentException e) {
+
+			}
+
 		}
 
 		public void login() {

@@ -17,9 +17,9 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import com.maksl5.bl_hunt.activity.ActionBarHandler;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.net.Authentification.LoginManager;
 import com.maksl5.bl_hunt.net.NetworkManager;
+import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 
 
 
