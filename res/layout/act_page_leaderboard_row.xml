@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_medium" >
+
+    <TextView
+        android:id="@+id/rankTxtView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="1."
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/textView2"
+        android:gravity="center"
+        android:padding="@dimen/padding_small" >
+
+        <QuickContactBadge
+            android:id="@+id/picture"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/nameTxtView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_small"
+            android:text="Player"
+            android:textColor="@color/text_holo_light_blue"
+            android:textSize="@dimen/foundDevices_name_text"
+            android:textStyle="italic|bold" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tableRow1"
+        android:layout_below="@+id/tableRow1"
+        android:gravity="center" >
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/padding_small" >
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <com.maksl5.bl_hunt.custom_ui.PatternProgressBar
+                    android:id="@+id/levelPrgBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="false"
+                    android:minHeight="1dip"
+                    android:minWidth="100dip"
+                    android:progress="35"
+                    android:progressDrawable="@drawable/bh_progress_bar" />
+
+                <TextView
+                    android:id="@+id/levelTxtView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:paddingRight="@dimen/padding_small"
+                    android:text="1"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#bb000000"
+                    android:textSize="@dimen/foundDevices_secondary_text"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_small" >
+
+            <TextView
+                android:id="@+id/devTxtView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 Dev"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </TableRow>
+    </TableRow>
+
+</RelativeLayout>

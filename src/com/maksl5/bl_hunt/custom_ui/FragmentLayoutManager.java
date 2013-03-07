@@ -2,6 +2,11 @@ package com.maksl5.bl_hunt.custom_ui;
 
 
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.security.cert.LDAPCertStoreParameters;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +18,36 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerPNames;
+import org.apache.http.conn.params.ConnPerRouteBean;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.util.EntityUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -23,6 +58,7 @@ import android.text.TextWatcher;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
@@ -35,6 +71,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Filter;
+import android.widget.ProgressBar;
 import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -51,9 +88,12 @@ import com.maksl5.bl_hunt.R.string;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
 import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager.FoundDevicesLayout.FoundDevicesAdapter;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager.FoundDevicesLayout.ViewHolder;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.EasySSLSocketFactory;
 import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
@@ -864,7 +904,7 @@ public class FragmentLayoutManager {
 			});
 
 			OnEditorActionListener onEditorActionListener = new OnEditorActionListener() {
-				
+
 				@Override
 				public boolean onEditorAction(	TextView v,
 												int actionId,
@@ -894,7 +934,7 @@ public class FragmentLayoutManager {
 					}
 					return false;
 				}
-				
+
 				private void submit(TextView nameTextView) {
 
 					isEditable = false;
@@ -922,7 +962,7 @@ public class FragmentLayoutManager {
 								else if (resultString.equals("<done />")) {
 									setName(mainActivity.getBlueHunter(), userName, true);
 								}
-								if(mainActivity.getBlueHunter().loginManager.getLoginState())
+								if (mainActivity.getBlueHunter().loginManager.getLoginState())
 									isEditable = true;
 							}
 
@@ -935,7 +975,7 @@ public class FragmentLayoutManager {
 
 				}
 			};
-			
+
 			nameEditText.setOnEditorActionListener(onEditorActionListener);
 
 			nameEditText.setOnBackKeyClickListener(new OnBackKeyClickedListener() {
@@ -1126,6 +1166,701 @@ public class FragmentLayoutManager {
 			}
 
 		}
+	}
+
+	/**
+	 * @author Maksl5
+	 * 
+	 */
+	public static class LeaderboardLayout {
+
+		public static final int ARRAY_INDEX_NAME = 0;
+		public static final int ARRAY_INDEX_LEVEL = 1;
+		public static final int ARRAY_INDEX_PROGRESS_MAX = 2;
+		public static final int ARRAY_INDEX_PROGRESS_VALUE = 3;
+		public static final int ARRAY_INDEX_DEV_NUMBER = 4;
+
+		private volatile static List<String> showedFdList = new ArrayList<String>();
+		private volatile static List<String> completeFdList = new ArrayList<String>();
+
+		private static ThreadManager threadManager = null;
+
+		public static void refreshLeaderboard(final BlueHunter bhApp) {
+
+			if (threadManager == null) {
+				threadManager = new LeaderboardLayout().new ThreadManager();
+			}
+
+			RefreshThread refreshThread =
+					new LeaderboardLayout().new RefreshThread(bhApp, threadManager);
+			if (refreshThread.canRun()) {
+				showedFdList.clear();
+				bhApp.actionBarHandler.getMenuItem(R.id.menu_search).collapseActionView();
+				refreshThread.execute(1, 5);
+			}
+
+		}
+
+		public static void filterFoundDevices(	String text,
+												BlueHunter bhApp) {
+
+			List<String> searchedList = new ArrayList<String>();
+
+			ListView lv =
+					(ListView) bhApp.mainActivity.mViewPager.getChildAt(PAGE_LEADERBOARD + 1).findViewById(R.id.listView1);
+			LeaderboardAdapter lbAdapter = (LeaderboardAdapter) lv.getAdapter();
+			if (lbAdapter == null || lbAdapter.isEmpty()) {
+				lbAdapter =
+						new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
+				lv.setAdapter(lbAdapter);
+			}
+
+			else if (text.length() == 0) {
+				if (!showedFdList.equals(completeFdList)) {
+					showedFdList = completeFdList;
+					lbAdapter.refill(showedFdList);
+				}
+			}
+			else {
+				lbAdapter.getFilter().filter(text);
+			}
+
+		}
+
+		private class RefreshThread extends AsyncTask<Integer, Void, String> {
+
+			private BlueHunter bhApp;
+			private ListView listView;
+
+			private LeaderboardAdapter ldAdapter;
+
+			private ThreadManager threadManager;
+
+			private boolean canRun = true;
+
+			private int scrollIndex;
+			private int scrollTop;
+
+			private int startIndex;
+			private int length;
+
+			private RefreshThread(BlueHunter app,
+					ThreadManager threadManager) {
+
+				super();
+				this.bhApp = app;
+				this.listView =
+						(ListView) bhApp.mainActivity.mViewPager.getChildAt(PAGE_LEADERBOARD + 1).findViewById(R.id.listView1);
+
+				scrollIndex = listView.getFirstVisiblePosition();
+				View v = listView.getChildAt(0);
+				scrollTop = (v == null) ? 0 : v.getTop();
+
+				this.ldAdapter = (LeaderboardAdapter) listView.getAdapter();
+				if (this.ldAdapter == null || this.ldAdapter.isEmpty()) {
+					this.ldAdapter =
+							new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
+					this.listView.setAdapter(ldAdapter);
+				}
+
+				this.threadManager = threadManager;
+
+				if (!this.threadManager.setThread(this)) {
+					canRun = false;
+				}
+
+			}
+
+			public boolean canRun() {
+
+				return canRun;
+			}
+
+			@Override
+			protected String doInBackground(Integer... params) {
+
+				startIndex = params[0];
+				length = params[1];
+
+				try {
+
+					List<NameValuePair> postValues = new ArrayList<NameValuePair>();
+
+					URI httpUri =
+							URI.create("http://maks.mph-p.de/blueHunter/getLeaderboard.php?s=" + startIndex + "&l=" + length);
+
+					HttpClient httpClient;
+
+					httpClient = new DefaultHttpClient();
+
+					HttpPost postRequest = new HttpPost(httpUri);
+
+					postRequest.setEntity(new UrlEncodedFormEntity(postValues));
+
+					HttpResponse httpResponse = httpClient.execute(postRequest);
+
+					String result = EntityUtils.toString(httpResponse.getEntity());
+
+					if (!String.valueOf(httpResponse.getStatusLine().getStatusCode()).startsWith("2")) { return "Error=" + httpResponse.getStatusLine().getStatusCode(); }
+
+					return result;
+				}
+				catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return "Error=5\n" + e.getMessage();
+				}
+				catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return "Error=4\n" + e.getMessage();
+				}
+				catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return "Error=1\n" + e.getMessage();
+				}
+
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+			 */
+			@Override
+			protected void onPostExecute(String result) {
+
+				Pattern pattern = Pattern.compile("Error=(\\d+)");
+				Matcher matcher = pattern.matcher(result);
+				if (matcher.find()) {
+					int errorCode = Integer.parseInt(matcher.group(1));
+					String array =
+							"Error " + errorCode + (char) 30 + "" + (char) 30 + 100 + (char) 30 + 0 + (char) 30 + 0;
+
+					showedFdList.add(array);
+
+					ldAdapter.notifyDataSetChanged();
+
+					listView.setSelectionFromTop(scrollIndex, scrollTop);
+
+					return;
+				}
+
+				DocumentBuilder docBuilder;
+				Document document = null;
+
+				try {
+					docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					document = docBuilder.parse(new InputSource(new StringReader(result)));
+				}
+				catch (Exception e) {
+
+				}
+
+				document.getDocumentElement().normalize();
+
+				NodeList nodes = document.getElementsByTagName("user");
+
+				boolean last = false;
+
+				for (int i = 0; i < nodes.getLength(); i++) {
+
+					Node node = nodes.item(i);
+					if (node.getNodeType() == Node.ELEMENT_NODE) {
+
+						Element element = (Element) node;
+
+						int rank = Integer.parseInt(element.getAttribute("rank"));
+
+						String name = element.getElementsByTagName("name").item(0).getTextContent();
+						int exp =
+								Integer.parseInt(element.getElementsByTagName("exp").item(0).getTextContent());
+						int num =
+								Integer.parseInt(element.getElementsByTagName("number").item(0).getTextContent());
+
+						int level = LevelSystem.getLevel(exp);
+						int progressMax =
+								LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level);
+						int progressValue = exp - LevelSystem.getLevelStartExp(level);
+
+						last = element.getAttribute("last").equals("1");
+
+						String array =
+								name + (char) 30 + level + (char) 30 + progressMax + (char) 30 + progressValue + (char) 30 + num;
+
+						showedFdList.add(array);
+						showedFdList.set(rank - 1, array);
+
+					}
+
+				}
+
+				threadManager.finished(this);
+
+				if (last) {
+					completeFdList = showedFdList;
+					ldAdapter.notifyDataSetChanged();
+
+					listView.setSelectionFromTop(scrollIndex, scrollTop);
+				}
+				else {
+
+					ldAdapter.refill(showedFdList);
+					new RefreshThread(bhApp, threadManager).execute(startIndex + length, length);
+
+				}
+
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+			 */
+			@Override
+			protected void onProgressUpdate(Void... values) {
+
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.os.AsyncTask#onPreExecute()
+			 */
+			@Override
+			protected void onPreExecute() {
+
+			}
+		}
+
+		private class ThreadManager {
+
+			RefreshThread refreshThread;
+			boolean running;
+
+			/**
+			 * @param refreshThread2
+			 * @return
+			 */
+			public boolean setThread(RefreshThread refreshThread) {
+
+				if (running) { return false; }
+
+				this.refreshThread = refreshThread;
+				running = true;
+				return true;
+			}
+
+			public boolean finished(RefreshThread refreshThread) {
+
+				if (this.refreshThread.equals(refreshThread)) {
+					running = false;
+					return true;
+				}
+				return false;
+			}
+
+			private void setRunning(boolean running) {
+
+				this.running = running;
+
+				if (!running) {
+					if (refreshThread.bhApp.netMananger.areThreadsRunning()) {
+						MenuItem progressBar =
+								refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+						progressBar.setVisible(false);
+					}
+				}
+				else {
+					MenuItem progressBar =
+							refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+					progressBar.setVisible(true);
+				}
+
+			}
+		}
+
+		public class LeaderboardAdapter extends ArrayAdapter<String> {
+
+			private final Object lock = new Object();
+
+			private Context context;
+
+			private LeaderboardFilter filter;
+
+			private List<String> users;
+
+			private ArrayList<String> originalValues;
+
+			private boolean notifyOnChange = true;
+
+			private LayoutInflater inflater;
+
+			public LeaderboardAdapter(Context context,
+					int textViewResourceId,
+					List<String> objects) {
+
+				super(context, textViewResourceId, objects);
+				init(context, textViewResourceId, 0, objects);
+
+				users = objects;
+
+			}
+
+			private void init(	Context context,
+								int resource,
+								int textViewResourceId,
+								List<String> objects) {
+
+				this.context = context;
+				inflater =
+						(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				this.users = objects;
+
+			}
+
+			@Override
+			public View getView(int position,
+								View convertView,
+								ViewGroup parent) {
+
+				if (users == null || users.get(position) == null) { return new View(context); }
+
+				View rowView = convertView;
+				if (rowView == null) {
+					rowView = inflater.inflate(R.layout.act_page_leaderboard_row, parent, false);
+
+					ViewHolder viewHolder = new ViewHolder();
+
+					viewHolder.rank = (TextView) rowView.findViewById(R.id.rankTxtView);
+					viewHolder.name = (TextView) rowView.findViewById(R.id.nameTxtView);
+					viewHolder.level = (TextView) rowView.findViewById(R.id.levelTxtView);
+					viewHolder.levelPrg = (ProgressBar) rowView.findViewById(R.id.levelPrgBar);
+					viewHolder.devices = (TextView) rowView.findViewById(R.id.devTxtView);
+
+					rowView.setTag(viewHolder);
+				}
+
+				ViewHolder holder = (ViewHolder) rowView.getTag();
+
+				if (holder != null) {
+
+					String userAsString = users.get(position);
+					String[] user = userAsString.split(String.valueOf((char) 30));
+
+					String nameString = user[ARRAY_INDEX_NAME];
+
+					holder.rank.setText("" + (position + 1) + ".");
+					holder.name.setText(nameString);
+					holder.level.setText(user[ARRAY_INDEX_LEVEL]);
+					holder.levelPrg.setMax(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_MAX]));
+					holder.levelPrg.setProgress(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_VALUE]));
+					holder.devices.setText(user[ARRAY_INDEX_DEV_NUMBER] + " Devices");
+
+				}
+				return rowView;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#getFilter()
+			 */
+			@Override
+			public Filter getFilter() {
+
+				if (filter == null) {
+					filter = new LeaderboardFilter();
+				}
+
+				return filter;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#add(java.lang.Object)
+			 */
+			@Override
+			public void add(String object) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.add(object);
+					}
+					else {
+						users.add(object);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#addAll(java.util.Collection)
+			 */
+			@Override
+			public void addAll(Collection<? extends String> collection) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.addAll(collection);
+					}
+					else {
+						users.addAll(collection);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#addAll(T[])
+			 */
+			@Override
+			public void addAll(String... items) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						Collections.addAll(originalValues, items);
+					}
+					else {
+						Collections.addAll(users, items);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#clear()
+			 */
+			@Override
+			public void clear() {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.clear();
+					}
+					else {
+						users.clear();
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#getCount()
+			 */
+			@Override
+			public int getCount() {
+
+				return users.size();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#getItem(int)
+			 */
+			@Override
+			public String getItem(int position) {
+
+				return users.get(position);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#getPosition(java.lang.Object)
+			 */
+			@Override
+			public int getPosition(String item) {
+
+				return users.indexOf(item);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#insert(java.lang.Object, int)
+			 */
+			@Override
+			public void insert(	String object,
+								int index) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.add(index, object);
+					}
+					else {
+						users.add(index, object);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#remove(java.lang.Object)
+			 */
+			@Override
+			public void remove(String object) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						originalValues.remove(object);
+					}
+					else {
+						users.remove(object);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see android.widget.ArrayAdapter#sort(java.util.Comparator)
+			 */
+			@Override
+			public void sort(Comparator<? super String> comparator) {
+
+				synchronized (lock) {
+					if (originalValues != null) {
+						Collections.sort(originalValues, comparator);
+					}
+					else {
+						Collections.sort(users, comparator);
+					}
+				}
+				if (notifyOnChange) notifyDataSetChanged();
+			}
+
+			@Override
+			public void notifyDataSetChanged() {
+
+				super.notifyDataSetChanged();
+				notifyOnChange = true;
+			}
+
+			@Override
+			public void setNotifyOnChange(boolean notifyOnChange) {
+
+				this.notifyOnChange = notifyOnChange;
+			}
+
+			public void refill(List<String> devices) {
+
+				this.users.clear();
+				this.users.addAll(devices);
+				notifyDataSetChanged();
+			}
+
+			/**
+			 * @author Maksl5[Markus Bensing]
+			 * 
+			 */
+			private class LeaderboardFilter extends Filter {
+
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see android.widget.Filter#performFiltering(java.lang.CharSequence)
+				 */
+				@Override
+				protected FilterResults performFiltering(CharSequence filterSequence) {
+
+					FilterResults results = new FilterResults();
+
+					if (originalValues == null) {
+						synchronized (lock) {
+							originalValues = new ArrayList<String>(users);
+						}
+					}
+
+					if (filterSequence == null || filterSequence.length() == 0) {
+						ArrayList<String> list;
+						synchronized (lock) {
+							list = new ArrayList<String>(originalValues);
+						}
+						results.values = list;
+						results.count = list.size();
+					}
+					else {
+						String filterString = filterSequence.toString().toLowerCase();
+
+						ArrayList<String> devicesList;
+						synchronized (lock) {
+							devicesList = new ArrayList<String>(originalValues);
+						}
+
+						final int count = devicesList.size();
+						final ArrayList<String> newValues = new ArrayList<String>();
+
+						for (int i = 0; i < count; i++) {
+							final String device = devicesList.get(i);
+							final String deviceString = device.toString().toLowerCase();
+
+							final String[] deviceAsArray =
+									deviceString.split(String.valueOf((char) 30));
+
+							for (String property : deviceAsArray) {
+								if (property.contains(filterString)) {
+									if (!newValues.contains(device)) newValues.add(device);
+								}
+							}
+
+						}
+
+						results.values = newValues;
+						results.count = newValues.size();
+					}
+
+					return results;
+				}
+
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see android.widget.Filter#publishResults(java.lang.CharSequence,
+				 * android.widget.Filter.FilterResults)
+				 */
+				@Override
+				protected void publishResults(	CharSequence constraint,
+												FilterResults results) {
+
+					users = (List<String>) results.values;
+					showedFdList = users;
+					if (results.count > 0) {
+						notifyDataSetChanged();
+					}
+					else {
+						notifyDataSetInvalidated();
+					}
+
+				}
+
+			}
+
+		}
+
+		static class ViewHolder {
+
+			TextView rank;
+			TextView name;
+			TextView level;
+			ProgressBar levelPrg;
+			TextView devices;
+		}
+
 	}
 
 }

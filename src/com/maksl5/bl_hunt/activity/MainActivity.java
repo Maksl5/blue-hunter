@@ -320,6 +320,7 @@ public class MainActivity extends FragmentActivity {
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 		FragmentLayoutManager.StatisticLayout.initializeView(this);
+		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
 
 		updateNotification();
 

@@ -42,6 +42,13 @@ public class NetworkManager {
 		checkList();
 	}
 
+	public boolean areThreadsRunning() {
+
+		if (curRunningThreads.size() == 0) return false;
+
+		return true;
+	}
+
 	/**
 	 * 
 	 */
