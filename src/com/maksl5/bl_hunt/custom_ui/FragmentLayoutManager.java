@@ -1176,6 +1176,7 @@ public class FragmentLayoutManager {
 		public static final int ARRAY_INDEX_PROGRESS_MAX = 2;
 		public static final int ARRAY_INDEX_PROGRESS_VALUE = 3;
 		public static final int ARRAY_INDEX_DEV_NUMBER = 4;
+		public static final int ARRAY_INDEX_EXP = 5;
 
 		private volatile static List<String> showedFdList = new ArrayList<String>();
 		private volatile static List<String> completeFdList = new ArrayList<String>();
@@ -1384,7 +1385,7 @@ public class FragmentLayoutManager {
 						last = element.getAttribute("last").equals("1");
 
 						String array =
-								name + (char) 30 + level + (char) 30 + progressMax + (char) 30 + progressValue + (char) 30 + num;
+								name + (char) 30 + level + (char) 30 + progressMax + (char) 30 + progressValue + (char) 30 + num + (char) 30 + exp;
 
 						showedFdList.add(array);
 						showedFdList.set(rank - 1, array);
@@ -1445,14 +1446,14 @@ public class FragmentLayoutManager {
 				if (running) { return false; }
 
 				this.refreshThread = refreshThread;
-				running = true;
+				setRunning(true);
 				return true;
 			}
 
 			public boolean finished(RefreshThread refreshThread) {
 
 				if (this.refreshThread.equals(refreshThread)) {
-					running = false;
+					setRunning(false);
 					return true;
 				}
 				return false;
@@ -1535,6 +1536,7 @@ public class FragmentLayoutManager {
 					viewHolder.level = (TextView) rowView.findViewById(R.id.levelTxtView);
 					viewHolder.levelPrg = (ProgressBar) rowView.findViewById(R.id.levelPrgBar);
 					viewHolder.devices = (TextView) rowView.findViewById(R.id.devTxtView);
+					viewHolder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
 
 					rowView.setTag(viewHolder);
 				}
@@ -1554,6 +1556,7 @@ public class FragmentLayoutManager {
 					holder.levelPrg.setMax(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_MAX]));
 					holder.levelPrg.setProgress(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_VALUE]));
 					holder.devices.setText(user[ARRAY_INDEX_DEV_NUMBER] + " Devices");
+					holder.exp.setText(user[ARRAY_INDEX_EXP] + " " + context.getString(R.string.str_foundDevices_exp_abbreviation));
 
 				}
 				return rowView;
@@ -1856,6 +1859,7 @@ public class FragmentLayoutManager {
 			TextView level;
 			ProgressBar levelPrg;
 			TextView devices;
+			TextView exp;
 		}
 
 	}
