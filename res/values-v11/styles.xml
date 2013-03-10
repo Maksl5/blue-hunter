@@ -2,7 +2,7 @@
 
     <style name="AppTheme" parent="android:Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/bhActionBar</item>
-        <item name="android:windowBackground">@drawable/bg_main</item>
+<!--    <item name="android:windowBackground">@drawable/bg_main</item>  -->
         <item name="android:actionOverflowButtonStyle">@style/OverflowButton</item>
     </style>
 

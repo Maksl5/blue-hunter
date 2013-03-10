@@ -536,7 +536,7 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
 
-		getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+		//getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
 
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 
