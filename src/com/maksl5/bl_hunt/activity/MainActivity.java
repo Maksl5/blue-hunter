@@ -39,6 +39,8 @@ import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.ColorSystem;
+import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
@@ -61,6 +63,9 @@ public class MainActivity extends FragmentActivity {
 	 */
 	SectionsPagerAdapter mSectionsPagerAdapter;
 
+	
+	public static final int REQ_PICK_USER_IMAGE = 32;
+	
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
@@ -111,6 +116,7 @@ public class MainActivity extends FragmentActivity {
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(5);
+		mViewPager.setPageTransformer(true, new CustomPagerTransformer());
 
 		registerListener();
 
@@ -196,7 +202,7 @@ public class MainActivity extends FragmentActivity {
 						int error = Integer.parseInt(matcher.group(1));
 
 						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
-						FragmentLayoutManager.StatisticLayout.setName(bhApp, errorMsg, true);
+						FragmentLayoutManager.ProfileLayout.setName(bhApp, errorMsg, true);
 
 						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
 						break;
@@ -217,7 +223,7 @@ public class MainActivity extends FragmentActivity {
 							e.printStackTrace();
 						}
 
-						FragmentLayoutManager.StatisticLayout.setName(bhApp, nameString, false);
+						FragmentLayoutManager.ProfileLayout.setName(bhApp, nameString, false);
 
 					}
 
@@ -317,7 +323,7 @@ public class MainActivity extends FragmentActivity {
 
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
-		FragmentLayoutManager.StatisticLayout.initializeView(this);
+		FragmentLayoutManager.ProfileLayout.initializeView(this);
 		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
 
 		updateNotification();
@@ -436,6 +442,9 @@ public class MainActivity extends FragmentActivity {
 
 		if ((requestCode == 64 | requestCode == 128) & bhApp.disMan != null)
 			bhApp.disMan.passEnableBTActivityResult(resultCode, requestCode);
+		
+		if(requestCode == REQ_PICK_USER_IMAGE && resultCode == RESULT_OK)
+			FragmentLayoutManager.ProfileLayout.passPickedImage(this, intent);
 	}
 
 	/*
@@ -526,6 +535,8 @@ public class MainActivity extends FragmentActivity {
 
 		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
+
+		getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
 
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 

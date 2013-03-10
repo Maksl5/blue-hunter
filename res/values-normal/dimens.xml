@@ -8,4 +8,6 @@
     <dimen name="foundDevices_time_text">11sp</dimen>
     
 	<dimen name="statistics_contactBadge_size">70sp</dimen>
+	
+	<dimen name="levelIndicator_text">22sp</dimen>
 </resources>

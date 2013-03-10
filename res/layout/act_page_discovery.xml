@@ -34,17 +34,33 @@
             android:layout_height="wrap_content"
             android:gravity="center" >
 
-            <com.maksl5.bl_hunt.custom_ui.PatternProgressBar
-                android:id="@+id/progressBar1"
-                style="?android:attr/progressBarStyleHorizontal"
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:indeterminate="false"
-                android:minHeight="1dip"
-                android:minWidth="200dip"
-                android:progress="35"
-                android:progressDrawable="@drawable/bh_progress_bar" />
+                android:gravity="center" >
+
+                <com.maksl5.bl_hunt.custom_ui.PatternProgressBar
+                    android:id="@+id/progressBar1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="false"
+                    android:minHeight="1dip"
+                    android:minWidth="200dip"
+                    android:progress="35"
+                    android:progressDrawable="@drawable/bh_progress_bar" />
+
+                <TextView
+                    android:id="@+id/lvlIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="7"
+                    android:textSize="@dimen/levelIndicator_text"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
         </TableRow>
 
         <TableRow
@@ -55,20 +71,6 @@
 
             <TextView
                 android:id="@+id/expIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="TextView" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/lvlIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

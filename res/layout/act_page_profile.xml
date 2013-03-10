@@ -58,4 +58,24 @@
         </com.maksl5.bl_hunt.custom_ui.AdjustedEditText>
     </TableRow>
 
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/contactBadge"
+        android:layout_below="@+id/contactBadge"
+        android:layout_toLeftOf="@+id/tableRow1"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/contactBadge"
+        android:layout_alignLeft="@+id/contactBadge"
+        android:layout_alignRight="@+id/contactBadge"
+        android:layout_alignTop="@+id/contactBadge"
+        android:visibility="gone" />
+
 </RelativeLayout>

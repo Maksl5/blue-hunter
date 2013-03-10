@@ -2,6 +2,7 @@ package com.maksl5.bl_hunt.custom_ui;
 
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -34,7 +35,13 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -45,6 +52,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
@@ -57,6 +65,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.QuickContactBadge;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -840,7 +849,7 @@ public class FragmentLayoutManager {
 			int level = LevelSystem.getLevel(exp);
 
 			expTextView.setText(String.format("%d %s / %d %s", exp, mainActivity.getString(R.string.str_foundDevices_exp_abbreviation), LevelSystem.getLevelEndExp(level), mainActivity.getString(R.string.str_foundDevices_exp_abbreviation)));
-			lvlTextView.setText(String.format("%s %d", mainActivity.getString(R.string.str_foundDevices_level), level));
+			lvlTextView.setText(String.format("%d", level));
 
 			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
 			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
@@ -852,7 +861,7 @@ public class FragmentLayoutManager {
 	 * @author Maksl5
 	 * 
 	 */
-	public static class StatisticLayout {
+	public static class ProfileLayout {
 
 		private static String userName = "";
 		private static String backUpName = "";
@@ -866,6 +875,9 @@ public class FragmentLayoutManager {
 					(TextView) parentContainer.findViewById(R.id.nameTextView);
 			final AdjustedEditText nameEditText =
 					(AdjustedEditText) parentContainer.findViewById(R.id.nameEditText);
+
+			final QuickContactBadge contactImage =
+					(QuickContactBadge) parentContainer.findViewById(R.id.contactBadge);
 
 			// Listener
 			nameTextView.setOnLongClickListener(new OnLongClickListener() {
@@ -997,12 +1009,34 @@ public class FragmentLayoutManager {
 						nameTextView.setText(userName);
 						nameTextView.setTextColor(mainActivity.getResources().getColor(R.color.text_holo_light_blue));
 						isEditable = true;
+
+						contactImage.setEnabled(true);
+						contactImage.setColorFilter(null);
 					}
 					else {
 						nameTextView.setText("Not logged in.");
 						nameTextView.setTextColor(Color.GRAY);
 						isEditable = false;
+
+						ColorMatrix cMatrix = new ColorMatrix();
+						cMatrix.setSaturation(0);
+
+						contactImage.setEnabled(false);
+						contactImage.setColorFilter(new ColorMatrixColorFilter(cMatrix));
 					}
+
+				}
+			});
+
+			contactImage.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+
+					Intent intent = new Intent();
+					intent.setType("image/*");
+					intent.setAction(Intent.ACTION_GET_CONTENT);
+					mainActivity.startActivityForResult(Intent.createChooser(intent, "Select User Image"), MainActivity.REQ_PICK_USER_IMAGE);
 
 				}
 			});
@@ -1040,6 +1074,54 @@ public class FragmentLayoutManager {
 				nameTextView.setText("Not logged in.");
 				nameTextView.setTextColor(Color.GRAY);
 				isEditable = false;
+			}
+
+		}
+
+		public static void passPickedImage(	MainActivity mainActivity,
+											Intent intent) {
+
+			BitmapFactory.Options o = new BitmapFactory.Options();
+			o.inJustDecodeBounds = true;
+			try {
+				BitmapFactory.decodeStream(mainActivity.getContentResolver().openInputStream(intent.getData()), null, o);
+			}
+			catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			final int REQUIRED_SIZE = 200;
+
+			int width_tmp = o.outWidth, height_tmp = o.outHeight;
+			int scale = 1;
+			while (true) {
+				if (width_tmp / 2 < REQUIRED_SIZE || height_tmp / 2 < REQUIRED_SIZE) {
+					break;
+				}
+				width_tmp /= 2;
+				height_tmp /= 2;
+				scale *= 2;
+			}
+
+			BitmapFactory.Options o2 = new BitmapFactory.Options();
+			o2.inSampleSize = scale;
+			o2.inDither = true;
+
+			try {
+				Bitmap scaledUserImage =
+						BitmapFactory.decodeStream(mainActivity.getContentResolver().openInputStream(intent.getData()), null, o2);
+
+				View parentContainer = mainActivity.mViewPager.getChildAt(PAGE_PROFILE + 1);
+				QuickContactBadge contactBadge =
+						(QuickContactBadge) parentContainer.findViewById(R.id.contactBadge);
+
+				contactBadge.setImageBitmap(scaledUserImage);
+
+			}
+			catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 		}
@@ -1247,6 +1329,12 @@ public class FragmentLayoutManager {
 
 				super();
 				this.bhApp = app;
+
+				if (bhApp.mainActivity.mViewPager == null) {
+					bhApp.mainActivity.mViewPager =
+							(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+				}
+
 				this.listView =
 						(ListView) bhApp.mainActivity.mViewPager.getChildAt(PAGE_LEADERBOARD + 1).findViewById(R.id.listView1);
 
@@ -1334,7 +1422,7 @@ public class FragmentLayoutManager {
 				if (matcher.find()) {
 					int errorCode = Integer.parseInt(matcher.group(1));
 					String array =
-							"Error " + errorCode + (char) 30 + "" + (char) 30 + 100 + (char) 30 + 0 + (char) 30 + 0;
+							"Error " + errorCode + (char) 30 + "" + (char) 30 + 100 + (char) 30 + 0 + (char) 30 + 0 + (char) 30 + 0;
 
 					showedFdList.add(array);
 

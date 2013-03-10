@@ -2,6 +2,8 @@
 
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/bhActionBar</item>
+        <item name="android:windowBackground">@drawable/bg_main</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverflowButton</item>
     </style>
 
     <style name="bhActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">

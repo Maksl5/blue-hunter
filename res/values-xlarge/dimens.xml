@@ -18,5 +18,5 @@
 	<dimen name="statistics_contactBadge_size">128sp</dimen>
 	
 	<dimen name="changePass_layout_margin">39dp</dimen>
-
+	<dimen name="levelIndicator_text">26sp</dimen>
 </resources>

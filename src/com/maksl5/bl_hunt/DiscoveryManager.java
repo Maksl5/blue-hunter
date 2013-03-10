@@ -107,8 +107,12 @@ public class DiscoveryManager {
 
 	public void unregisterReceiver() {
 
-		bhApp.unregisterReceiver(btHandler);
+		try {
+			bhApp.unregisterReceiver(btHandler);
+		}
+		catch (IllegalArgumentException e) {
 
+		}
 	}
 
 	public void stopDiscoveryManager() {

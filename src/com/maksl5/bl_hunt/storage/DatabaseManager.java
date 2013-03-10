@@ -359,6 +359,7 @@ public class DatabaseManager {
 	public int rebuildDatabase() {
 
 		List<SparseArray<String>> allDevices = getAllDevices();
+		List<String> allChanges = getAllChanges();
 
 		File dbFile = new File(db.getPath());
 		File backup = new File(dbFile.getPath() + ".bak");
@@ -392,6 +393,14 @@ public class DatabaseManager {
 						failureRows.add(allDevices.indexOf(device));
 					}
 				}
+				
+				for(String change : allChanges) {
+					ContentValues values = new ContentValues();
+					values.put(DatabaseHelper.COLUMN_CHANGE, change);
+					
+					db.insert(DatabaseHelper.CHANGES_SYNC_TABLE, null, values);
+				}
+				
 
 				close();
 				updateModifiedTime(System.currentTimeMillis());
@@ -534,6 +543,23 @@ public class DatabaseManager {
 
 			bhApp.authentification.showChangelog(oldVersion, newVersion, 0);
 
+		}
+
+		/* (non-Javadoc)
+		 * @see android.database.sqlite.SQLiteOpenHelper#onOpen(android.database.sqlite.SQLiteDatabase)
+		 */
+		@Override
+		public void onOpen(SQLiteDatabase db) {
+
+			final String FOUND_DEVICES_CREATE_IF_NOT_EXISTS =
+					"Create Table If Not Exists " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME + " Integer, " + COLUMN_MANUFACTURER + " Text);";
+
+			final String CHANGES_SYNC_CREATE_IF_NOT_EXISTS =
+					"Create Table If Not Exists " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
+
+			db.execSQL(FOUND_DEVICES_CREATE_IF_NOT_EXISTS);
+			db.execSQL(CHANGES_SYNC_CREATE_IF_NOT_EXISTS);
+			
 		}
 
 	}
