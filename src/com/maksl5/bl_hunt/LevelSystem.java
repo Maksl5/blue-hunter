@@ -31,6 +31,34 @@ public class LevelSystem {
 		for (SparseArray<String> foundDevice : foundDevices) {
 
 			String manufacturer = foundDevice.get(DatabaseManager.INDEX_MANUFACTURER);
+			float bonus =
+					Float.parseFloat((foundDevice.get(DatabaseManager.INDEX_BONUS) == null) ? "" + 0.0f : foundDevice.get(DatabaseManager.INDEX_BONUS));
+
+			if (manufacturer == null) {
+				exp += Math.floor(MacAddressAllocations.Unknown_exp * (1 + bonus));
+			}
+			else {
+				exp +=
+						Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) * (1 + bonus));
+			}
+
+		}
+
+		return exp;
+
+	}
+
+	public static int getExpWoBonus(BlueHunter bhApp) {
+
+		int exp = 0;
+
+		List<SparseArray<String>> foundDevices =
+				new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
+
+		for (SparseArray<String> foundDevice : foundDevices) {
+
+			String manufacturer = foundDevice.get(DatabaseManager.INDEX_MANUFACTURER);
+			float bonus = Float.parseFloat(foundDevice.get(DatabaseManager.INDEX_BONUS));
 
 			if (manufacturer == null) {
 				exp += MacAddressAllocations.Unknown_exp;

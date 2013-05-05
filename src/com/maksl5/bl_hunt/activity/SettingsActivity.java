@@ -436,7 +436,11 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 			addPreferencesFromResource(R.xml.profile_preference);
 
 			changeOnlinePass = findPreference("pref_changePass");
-			changeOnlinePass.setEnabled(bhApp.loginManager.getLoginState());
+
+			if (bhApp.loginManager != null) {
+
+				changeOnlinePass.setEnabled(bhApp.loginManager.getLoginState());
+			}
 
 			changeLoginPass = findPreference("pref_localPass");
 			if (!bhApp.mainActivity.passSet && bhApp.loginManager.getLoginState()) {

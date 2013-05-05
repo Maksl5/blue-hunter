@@ -2,6 +2,7 @@ package com.maksl5.bl_hunt.activity;
 
 
 
+import android.R.integer;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
@@ -237,10 +238,12 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
 			menu.findItem(R.id.menu_search).setVisible(false);
 			menu.findItem(R.id.menu_info).setVisible(false);
+			menu.findItem(R.id.menu_refresh).setVisible(false);
 			break;
 		case FragmentLayoutManager.PAGE_LEADERBOARD:
 			menu.findItem(R.id.menu_search).setVisible(true);
 			menu.findItem(R.id.menu_info).setVisible(false);
+			menu.findItem(R.id.menu_refresh).setVisible(true);
 
 			onQueryTextChange("");
 			menu.findItem(R.id.menu_search).collapseActionView();
@@ -252,6 +255,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		case FragmentLayoutManager.PAGE_FOUND_DEVICES:
 			menu.findItem(R.id.menu_search).setVisible(true);
 			menu.findItem(R.id.menu_info).setVisible(true);
+			menu.findItem(R.id.menu_refresh).setVisible(false);
 
 			onQueryTextChange("");
 			menu.findItem(R.id.menu_search).collapseActionView();
@@ -259,6 +263,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
 			menu.findItem(R.id.menu_search).setVisible(false);
 			menu.findItem(R.id.menu_info).setVisible(false);
+			menu.findItem(R.id.menu_refresh).setVisible(false);
 			break;
 		case FragmentLayoutManager.PAGE_PROFILE:
 
@@ -266,6 +271,10 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		}
 
 		return true;
+	}
+	
+	public int getCurrentPage() {
+		return currentPage;
 	}
 
 	public void supplyMenu(Menu menu) {

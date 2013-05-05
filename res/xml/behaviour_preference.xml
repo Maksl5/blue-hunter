@@ -11,5 +11,6 @@
         android:key="pref_showNotification"
         android:summary="@string/str_Preferences_showNotification_sum"
         android:title="@string/str_Preferences_showNotification_title" />
+    <CheckBoxPreference android:key="pref_enableBackground" android:summary="@string/str_Preferences_enableBackground_sum" android:title="@string/str_Preferences_enableBackground_title" android:defaultValue="false"/>
 
 </PreferenceScreen>

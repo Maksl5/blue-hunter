@@ -2,17 +2,20 @@ package com.maksl5.bl_hunt.custom_ui;
 
 
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,14 +37,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -330,6 +337,7 @@ public class FragmentLayoutManager {
 					String deviceMac = device.get(DatabaseManager.INDEX_MAC_ADDRESS);
 					String manufacturer = device.get(DatabaseManager.INDEX_MANUFACTURER);
 					String deviceTime = device.get(DatabaseManager.INDEX_TIME);
+					String bonusExpString = device.get(DatabaseManager.INDEX_BONUS);
 
 					if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
 						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
@@ -341,11 +349,26 @@ public class FragmentLayoutManager {
 						}
 					}
 
+					if (bonusExpString == null || bonusExpString.equals("null") || bonusExpString.equals("")) {
+						new DatabaseManager(bhApp, bhApp.getVersionCode()).addBonusToDevices(deviceMac, 0f);
+						bonusExpString = "" + 0.0f;
+					}
+
 					Long time =
 							(deviceTime == null || deviceTime.equals("null")) ? 0 : Long.parseLong(deviceTime);
 
+					// exp calc
+					int bonusExp =
+							(int) Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) * Float.valueOf(bonusExpString));
+					bonusExpString =
+							" + " + bonusExp + " " + bhApp.getString(R.string.str_foundDevices_bonusExp_attach);
+
+					if (bonusExp == 0) {
+						bonusExpString = "";
+					}
+
 					tempString =
-							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseManager.INDEX_RSSI) + (char) 30 + manufacturer + (char) 30 + "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString + (char) 30 + dateFormat.format(new Date(time));
+							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseManager.INDEX_RSSI) + (char) 30 + manufacturer + (char) 30 + "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString + bonusExpString + (char) 30 + dateFormat.format(new Date(time));
 
 					listViewList.add(tempString);
 
@@ -389,7 +412,7 @@ public class FragmentLayoutManager {
 			@Override
 			protected void onProgressUpdate(List<String>... values) {
 
-				showedFdList = values[0];
+				// showedFdList = values[0];
 
 				// fdAdapter.refill(showedFdList);
 
@@ -841,6 +864,10 @@ public class FragmentLayoutManager {
 
 			TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
 			TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
+			TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
+			TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
+			TextView devExpTodayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpToday);
+
 			PatternProgressBar progressBar =
 					(PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
@@ -853,6 +880,35 @@ public class FragmentLayoutManager {
 
 			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
 			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
+
+			int deviceNum =
+					new DatabaseManager(mainActivity.getBlueHunter(), mainActivity.getBlueHunter().getVersionCode()).getDeviceNum();
+			String firstTimeString =
+					new DatabaseManager(mainActivity.getBlueHunter(), mainActivity.getBlueHunter().getVersionCode()).getDevice(DatabaseManager.DatabaseHelper.COLUMN_TIME + " != 0", DatabaseManager.DatabaseHelper.COLUMN_TIME + " DESC").get(DatabaseManager.INDEX_TIME);
+
+			long firstTime =
+					(firstTimeString == null) ? System.currentTimeMillis() : Long.parseLong(firstTimeString);
+			long now = System.currentTimeMillis();
+			double devPerDay = (deviceNum / (double) (now - firstTime)) * 86400000;
+			double expPerDay = (exp / (double) (now - firstTime)) * 86400000;
+
+			devicesTextView.setText(String.valueOf(deviceNum));
+			devExpPerDayTxt.setText(String.format("%.2f / %.2f", devPerDay, expPerDay));
+
+			List<SparseArray<String>> devicesToday =
+					new DatabaseManager(mainActivity.getBlueHunter(), mainActivity.getBlueHunter().getVersionCode()).getDevices(DatabaseManager.DatabaseHelper.COLUMN_TIME + " < " + now + " AND " + DatabaseManager.DatabaseHelper.COLUMN_TIME + " > " + (now - 86400000), null);
+			int devicesTodayNum = devicesToday.size();
+
+			int expTodayNum = 0;
+
+			for (Iterator iterator = devicesToday.iterator(); iterator.hasNext();) {
+				SparseArray<String> sparseArray = (SparseArray<String>) iterator.next();
+				String manufacturer = sparseArray.get(DatabaseManager.INDEX_MANUFACTURER);
+				expTodayNum += MacAddressAllocations.getExp(manufacturer);
+			}
+
+			devExpTodayTxt.setText(String.format("%d / %d", devicesTodayNum, expTodayNum));
+
 		}
 
 	}
@@ -1335,8 +1391,15 @@ public class FragmentLayoutManager {
 							(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 				}
 
-				this.listView =
-						(ListView) bhApp.mainActivity.mViewPager.getChildAt(PAGE_LEADERBOARD + 1).findViewById(R.id.listView1);
+				ViewPager pager = bhApp.mainActivity.mViewPager;
+				View pageView = pager.getChildAt(PAGE_LEADERBOARD + 1);
+
+				if (pageView == null) {
+					listView = (ListView) pager.findViewById(R.id.listView1);
+				}
+				else {
+					listView = (ListView) pageView.findViewById(R.id.listView1);
+				}
 
 				scrollIndex = listView.getFirstVisiblePosition();
 				View v = listView.getChildAt(0);
@@ -1552,7 +1615,7 @@ public class FragmentLayoutManager {
 				this.running = running;
 
 				if (!running) {
-					if (refreshThread.bhApp.netMananger.areThreadsRunning()) {
+					if (!refreshThread.bhApp.netMananger.areThreadsRunning()) {
 						MenuItem progressBar =
 								refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
 						progressBar.setVisible(false);

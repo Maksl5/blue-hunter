@@ -19,6 +19,8 @@
     <string name="str_menu_info">Help</string>
     <string name="str_menu_search">Search</string>
     <string name="str_menu_context_remove">Remove</string>
+	<string name="str_menu_refresh">Refresh</string>
+    
     
     <string name="str_actBar_userInfo">User Information</string>
     <string name="str_mainActTitle">Blue Hunter</string>
@@ -31,6 +33,10 @@
     <string name="str_discoveryState_btDisabling">Disabling Bluetooth...</string>
     <string name="str_discoveryState_error">Discovery error.</string>
     <string name="str_discoveryState_off">Discovery off.</string>
+    
+    <string name="str_discovery_devices">Devices:</string>
+    <string name="str_discovery_devExpPerDay">Devices / Exp per day:</string>
+    <string name="str_discovery_devExpToday">Devices / Exp last 24 hours:</string>
     
     <string name="str_enableBT_title">Enable Bluetooth ?</string>
     <string name="str_enableBT_text">This game requires Bluetooth to be enabled in order to run the device discovery and hunting Bluetooth devices. Do you want to enable Bluetooth and allow this application to use Bluetooth for the device discovery ?</string>
@@ -72,10 +78,13 @@
     <string name="str_Preferences_forceUpSync_sum">This will override the complete online data with your local data.</string>
     <string name="str_Preferences_forceDownSync_title">Get remote database.</string>
     <string name="str_Preferences_forceDownSync_sum">Overrides your local found devices with the ones stored online.</string>
+    <string name="str_Preferences_enableBackground_title">Enable Background</string>
+    <string name="str_Preferences_enableBackground_sum">[EXPERIMENTAL. Can lead to force close at start of the app.]</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>
     <string name="str_foundDevices_level">Level</string>
+    <string name="str_foundDevices_bonusExp_attach">bonus Exp</string>
     
     <string name="str_statistics_editName_apply">Apply</string>
     

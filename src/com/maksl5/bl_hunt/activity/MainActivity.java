@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.R.integer;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -63,9 +64,8 @@ public class MainActivity extends FragmentActivity {
 	 */
 	SectionsPagerAdapter mSectionsPagerAdapter;
 
-	
 	public static final int REQ_PICK_USER_IMAGE = 32;
-	
+
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
@@ -84,6 +84,9 @@ public class MainActivity extends FragmentActivity {
 	public int exp = 0;
 
 	private boolean destroyed;
+	
+	public int oldVersion = 0;
+	public int newVersion = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -129,6 +132,17 @@ public class MainActivity extends FragmentActivity {
 		stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
 		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
+		
+		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", false)) {
+			try {
+				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+			}
+			catch (Exception e) {
+				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+			}
+			
+		}
+		
 	}
 
 	/*
@@ -329,8 +343,27 @@ public class MainActivity extends FragmentActivity {
 		updateNotification();
 
 		// Debug.stopMethodTracing();
+		
+		upgrade();
 
 		return true;
+	}
+
+	/**
+	 * 
+	 */
+	private void upgrade() {
+
+		if(oldVersion == 0 || newVersion == 0)
+			return;
+		
+		if(oldVersion > newVersion)
+			return;
+		
+		if(oldVersion < 1065) {
+			bhApp.synchronizeFoundDevices.needForceOverrideUp = true;
+		}
+		
 	}
 
 	/*
@@ -349,6 +382,10 @@ public class MainActivity extends FragmentActivity {
 		case R.id.menu_info:
 
 			break;
+		case R.id.menu_refresh:
+			if (bhApp.actionBarHandler.getCurrentPage() == FragmentLayoutManager.PAGE_LEADERBOARD) {
+				FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
+			}
 		default:
 			break;
 		}
@@ -442,8 +479,8 @@ public class MainActivity extends FragmentActivity {
 
 		if ((requestCode == 64 | requestCode == 128) & bhApp.disMan != null)
 			bhApp.disMan.passEnableBTActivityResult(resultCode, requestCode);
-		
-		if(requestCode == REQ_PICK_USER_IMAGE && resultCode == RESULT_OK)
+
+		if (requestCode == REQ_PICK_USER_IMAGE && resultCode == RESULT_OK)
 			FragmentLayoutManager.ProfileLayout.passPickedImage(this, intent);
 	}
 
@@ -536,7 +573,15 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
 
-		//getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", false)) {
+			try {
+				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+			}
+			catch (Exception e) {
+				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+			}
+			
+		}
 
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.R.bool;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -42,6 +43,8 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 	private List<String> changesToSync = new ArrayList<String>();
 	private List<String> backupList = new ArrayList<String>();
 
+	public boolean needForceOverrideUp = false;
+
 	public static final int MODE_ADD = 1;
 	public static final int MODE_REMOVE = -1;
 	public static final int MODE_CHANGE = 2;
@@ -66,11 +69,13 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				(rules.get(DatabaseManager.INDEX_RSSI) == null) ? (char) 30 + "null" + (char) 30 : rules.get(DatabaseManager.INDEX_RSSI);
 		String timeString =
 				(rules.get(DatabaseManager.INDEX_TIME) == null) ? (char) 30 + "null" + (char) 30 : rules.get(DatabaseManager.INDEX_TIME);
+		String bonusString =
+				(rules.get(DatabaseManager.INDEX_BONUS) == null) ? (char) 30 + "null" + (char) 30 : rules.get(DatabaseManager.INDEX_BONUS);
 
 		String rulesString = "";
 		try {
 			rulesString =
-					String.format("[(%s),(%s),(%s),(%s)]", macString, URLEncoder.encode(nameString, "UTF-8"), rssiString, timeString);
+					String.format("[(%s),(%s),(%s),(%s),(%s)]", macString, URLEncoder.encode(nameString, "UTF-8"), rssiString, timeString, bonusString);
 		}
 		catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
@@ -187,10 +192,12 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 						(device.get(DatabaseManager.INDEX_RSSI) == null) ? (char) 30 + "null" + (char) 30 : device.get(DatabaseManager.INDEX_RSSI);
 				String timeString =
 						(device.get(DatabaseManager.INDEX_TIME) == null) ? (char) 30 + "null" + (char) 30 : device.get(DatabaseManager.INDEX_TIME);
+				String bonusString =
+						(device.get(DatabaseManager.INDEX_BONUS) == null) ? (char) 30 + "null" + (char) 30 : device.get(DatabaseManager.INDEX_BONUS);
 
 				try {
 					rulesString +=
-							String.format("[(%s),(%s),(%s),(%s)]", macString, URLEncoder.encode(nameString, "UTF-8"), rssiString, timeString);
+							String.format("[(%s),(%s),(%s),(%s),(%s)]", macString, URLEncoder.encode(nameString, "UTF-8"), rssiString, timeString, bonusString);
 				}
 				catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
@@ -200,7 +207,10 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				rulesString += ";";
 			}
 
-			rulesString = rulesString.substring(0, rulesString.lastIndexOf(';'));
+			if (!(rulesString.length() == 0 || rulesString.lastIndexOf(';') == -1)) {
+
+				rulesString = rulesString.substring(0, rulesString.lastIndexOf(';'));
+			}
 
 			NetworkThread applySync = new NetworkThread(blueHunter);
 			applySync.execute(AuthentificationSecure.SERVER_SYNC_FD_APPLY, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY), "lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(), "p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified, "r=" + rulesString, "m=" + mode);
@@ -304,7 +314,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 					String[] deviceStrings = resultString.split(";");
 
 					Pattern parsePattern =
-							Pattern.compile("\\[\\(((?:[0-9a-fA-F][0-9a-fA-F]:){5}(?:[0-9a-fA-F][0-9a-fA-F]){1})\\),\\((.*?)\\),\\(([-]{0,1}\\d{0,3})\\),\\((.*?)\\)\\]");
+							Pattern.compile("\\[\\(((?:[0-9a-fA-F][0-9a-fA-F]:){5}(?:[0-9a-fA-F][0-9a-fA-F]){1})\\),\\((.*?)\\),\\(([-]{0,1}\\d{0,3})\\),\\((.*?)\\),\\(([0-1](?:[.]\\d+){0,1})\\)\\]");
 					for (String string : deviceStrings) {
 						Matcher parseMatcher = parsePattern.matcher(string);
 						if (parseMatcher.find()) {
@@ -328,10 +338,13 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 								timeString = "0";
 							}
 
+							String bonusString = parseMatcher.group(5);
+
 							device.put(DatabaseManager.INDEX_MAC_ADDRESS, parseMatcher.group(1));
 							device.put(DatabaseManager.INDEX_NAME, nameString);
 							device.put(DatabaseManager.INDEX_RSSI, parseMatcher.group(3));
 							device.put(DatabaseManager.INDEX_TIME, timeString);
+							device.put(DatabaseManager.INDEX_BONUS, bonusString);
 
 							devices.add(device);
 
@@ -368,7 +381,12 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 	public void loginStateChange(boolean loggedIn) {
 
 		if (loggedIn) {
-			start();
+			if (!needForceOverrideUp) {
+				start();
+			}
+			else {
+				startSyncing(3, true);
+			}
 		}
 
 	}
