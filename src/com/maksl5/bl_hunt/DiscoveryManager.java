@@ -341,10 +341,32 @@ public class DiscoveryManager {
 			if (isBluetoothSupported()) {
 				if (!isBluetoothEnabled()) {
 					if (startDiscovery) {
-						bhApp.mainActivity.startActivityForResult(new Intent(bhApp, EnableBluetoothActivity.class), 128);
+
+						switch (PreferenceManager.getPref(bhApp, "pref_enableBT_remember", 0)) {
+						case 1:
+							enableBluetoothResult(EnableBluetoothActivity.BT_ENABLE_RESULT_ENABLE, 128);
+							break;
+						case 2:
+							bhApp.mainActivity.startActivityForResult(new Intent(bhApp, EnableBluetoothActivity.class), 128);
+							break;
+						case 0:
+							bhApp.mainActivity.startActivityForResult(new Intent(bhApp, EnableBluetoothActivity.class), 128);
+							break;
+						}
 					}
 					else {
-						bhApp.mainActivity.startActivityForResult(new Intent(bhApp, EnableBluetoothActivity.class), 64);
+						switch (PreferenceManager.getPref(bhApp, "pref_enableBT_remember", 0)) {
+						case 1:
+							enableBluetoothResult(EnableBluetoothActivity.BT_ENABLE_RESULT_ENABLE, 64);
+							break;
+						case 2:
+							enableBluetoothResult(EnableBluetoothActivity.BT_ENABLE_RESULT_ENABLE, 64);
+							break;
+						case 0:
+							bhApp.mainActivity.startActivityForResult(new Intent(bhApp, EnableBluetoothActivity.class), 64);
+							break;
+						}
+
 					}
 
 				}

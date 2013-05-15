@@ -45,12 +45,12 @@
                 android:layout_weight="1"
                 android:gravity="center" >
 
-                <Button
-                    android:id="@+id/noButton"
+                <CheckBox
+                    android:id="@+id/chkRemember"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/str_enableBT_noButton"
-                    android:textSize="@dimen/enable_bt_button_text" />
+                    android:text="@string/str_enableBT_remember" />
+
             </TableRow>
 
             <TableRow
@@ -60,6 +60,13 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center" >
+
+                <Button
+                    android:id="@+id/noButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_enableBT_noButton"
+                    android:textSize="@dimen/enable_bt_button_text" />
 
                 <Button
                     android:id="@+id/yesButton"

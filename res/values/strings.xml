@@ -42,6 +42,7 @@
     <string name="str_enableBT_text">This game requires Bluetooth to be enabled in order to run the device discovery and hunting Bluetooth devices. Do you want to enable Bluetooth and allow this application to use Bluetooth for the device discovery ?</string>
     <string name="str_enableBT_yesButton">Yes</string>
     <string name="str_enableBT_noButton">No</string>
+    <string name="str_enableBT_remember">Remember choice.</string>
     
     <string name="str_PreferenceHeader_info">Info</string>
     <string name="str_PreferenceHeader_info_sum">Show some information about the game.</string>
@@ -80,6 +81,8 @@
     <string name="str_Preferences_forceDownSync_sum">Overrides your local found devices with the ones stored online.</string>
     <string name="str_Preferences_enableBackground_title">Enable Background</string>
     <string name="str_Preferences_enableBackground_sum">[EXPERIMENTAL. Can lead to force close at start of the app.]</string>
+    <string name="str_Preferences_deleteRemember_title">Delete remember assignments</string>
+    <string name="str_Preferences_deleteRemember_sum">Delete all remember assignments you\'ve made in the app.</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>

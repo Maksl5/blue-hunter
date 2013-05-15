@@ -11,9 +11,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 
@@ -70,10 +72,15 @@ public class EnableBluetoothActivity extends Activity {
 
 	private void registerListeners() {
 
+		final CheckBox rememberCheckBox = (CheckBox) findViewById(R.id.chkRemember);
+
 		yesButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+
+				if (rememberCheckBox.isChecked())
+					PreferenceManager.setPref(getApplicationContext(), "pref_enableBT_remember", 1);
 
 				EnableBluetoothActivity.this.setResult(BT_ENABLE_RESULT_ENABLE);
 				finish();
@@ -88,6 +95,9 @@ public class EnableBluetoothActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+
+				if (rememberCheckBox.isChecked())
+					PreferenceManager.setPref(getApplicationContext(), "pref_enableBT_remember", 2);
 
 				EnableBluetoothActivity.this.setResult(BT_ENABLE_RESULT_NOT_ENABLE);
 				finish();

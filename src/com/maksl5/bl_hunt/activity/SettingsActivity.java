@@ -409,6 +409,24 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 					}
 				});
 			}
+			
+			Preference deleteRemember = findPreference("pref_deleteRemember");
+			if(deleteRemember != null) {
+				deleteRemember.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					
+					@Override
+					public boolean onPreferenceClick(Preference preference) {
+					
+						PreferenceManager.setPref(bhApp, "pref_enableBT_remember", 0);
+						
+						
+						return true;
+					}
+				});
+				
+				
+				
+			}
 
 		}
 
