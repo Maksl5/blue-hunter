@@ -669,4 +669,13 @@ public class Authentification {
 
 		return internetIsAvailable;
 	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public String getAchieveHash(int id) {
+
+		return secure.getAchieveHash(id);
+	}
 }

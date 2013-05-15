@@ -59,7 +59,7 @@ public class ChangePasswordActivity extends Activity {
 		if (mode == MODE_CHANGE_ONLINE_PASS) {
 			setContentView(R.layout.act_change_online_pass);
 
-			TextView title = (TextView) findViewById(R.id.textView1);
+			TextView title = (TextView) findViewById(R.id.txtName);
 			if (!isPasswordSet) {
 				title.setText(R.string.str_changePass_new_title);
 			}

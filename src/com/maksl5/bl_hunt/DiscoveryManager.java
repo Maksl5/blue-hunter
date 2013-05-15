@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
@@ -504,7 +505,7 @@ public class DiscoveryManager {
 			if (!foundDevices.contains(btDevice.getAddress())) {
 				foundDevicesInCurDiscovery.add(btDevice);
 				attemptVibration();
-				new DatabaseManager(bhApp, bhApp.getVersionCode()).addNewDevice(btDevice.getAddress(), RSSI);
+				new DatabaseManager(bhApp, bhApp.getVersionCode()).addNewDevice(btDevice.getAddress(), RSSI, AchievementSystem.getBonus());
 
 				FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);

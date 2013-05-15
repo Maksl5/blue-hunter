@@ -7,6 +7,7 @@ package com.maksl5.bl_hunt.custom_ui;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
 
+import android.R.integer;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
@@ -33,6 +34,14 @@ public class ColorSystem {
 		return bg;
 		
 		
+	}
+	
+	public static Drawable getColoredDrawable(int color, Drawable image) {
+		float[] HSV = new float[3];
+		Color.colorToHSV(color, HSV);
+		
+		image.setColorFilter(adjustHue(HSV[0] - 196));
+		return image;
 	}
 	
 	

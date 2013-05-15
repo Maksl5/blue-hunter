@@ -96,5 +96,10 @@ public class PreferenceManager {
 		shPreferences.edit().putLong(key, value).apply();
 
 	}
+	
+	public static void deletePreference(Context con, String key) {
+		SharedPreferences shPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(con);
+		shPreferences.edit().remove(key).apply();
+	}
 
 }

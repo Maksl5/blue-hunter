@@ -111,6 +111,21 @@
     <string name="str_auth_changelog_ok">OK</string>
     
     
+    <!-- Achievements -->
+    <string name="str_achievement_accomplish">Congratulations! You have accomplished the achievement "%s".</string>
+    
+    <string name="str_achieve_1_title">Probation Period I</string>
+    <string name="str_achieve_1_description">Get 100 Exp to become accepted.</string>
+    
+    <string name="str_achieve_2_title">Probation Period II</string>
+    <string name="str_achieve_2_description">Find 200 devices to know some mac addresses.</string>
+
+    <string name="str_achieve_3_title">Apple Fanboy I</string>
+    <string name="str_achieve_3_description">Find 25 Apple devices.</string>
+    
+    <string name="str_achieve_4_title">Time Chaser I</string>
+    <string name="str_achieve_4_description">Find 10 devices within 2 minutes.</string>
+    
     <!-- Error strings -->
     
     

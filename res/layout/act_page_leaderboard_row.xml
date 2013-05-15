@@ -17,8 +17,6 @@
         android:id="@+id/tableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/textView2"
         android:gravity="center"
         android:padding="@dimen/padding_xsmall" >
 
@@ -27,17 +25,19 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter" />
+            android:paddingRight="@dimen/padding_xsmall"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/nameTxtView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/padding_small"
             android:text="Player"
             android:textColor="@color/text_holo_light_blue"
             android:textSize="@dimen/foundDevices_name_text"
             android:textStyle="italic|bold" />
+
     </TableRow>
 
     <TableRow

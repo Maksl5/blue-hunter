@@ -8,6 +8,7 @@
 
     <style name="bhActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@drawable/bg_actionbar_tiled</item>
+        <item name="android:backgroundSplit">@drawable/bg_actionbar_tiled</item>
         <item name="android:titleTextStyle">@style/NoTitleText</item>
         <item name="android:subtitleTextStyle">@style/NoTitleText</item>
     </style>

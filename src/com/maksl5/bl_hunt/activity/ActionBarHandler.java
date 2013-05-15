@@ -7,6 +7,7 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.ColorSystem;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.RandomToast;
 import com.maksl5.bl_hunt.storage.DatabaseManager;

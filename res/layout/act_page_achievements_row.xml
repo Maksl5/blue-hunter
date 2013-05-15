@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/txtBoost"
+        android:layout_alignParentTop="true"
+        android:gravity="center" >
+
+        <CheckBox
+            android:id="@+id/chkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:enabled="false" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/tableRow3"
+        android:paddingLeft="@dimen/padding_xsmall"
+        android:paddingRight="@dimen/padding_xsmall"
+        android:paddingTop="@dimen/padding_xsmall" >
+
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:textColor="@color/text_holo_light_blue"
+            android:textSize="@dimen/foundDevices_name_text"
+            android:textStyle="bold" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tableRow1"
+        android:layout_toRightOf="@id/tableRow3"
+        android:paddingBottom="@dimen/padding_xsmall"
+        android:paddingLeft="@dimen/padding_xsmall"
+        android:paddingRight="@dimen/padding_xsmall" >
+
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textSize="@dimen/foundDevices_manufacturer_text"
+            android:textStyle="italic" />
+    </TableRow>
+
+    <TextView
+        android:id="@+id/txtBoost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableRow2"
+        android:layout_centerHorizontal="true"
+        android:text="Bonus: + 0%"
+        android:textSize="@dimen/foundDevices_secondary_text"
+        android:textStyle="italic" />
+
+</RelativeLayout>

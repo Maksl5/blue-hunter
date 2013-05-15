@@ -19,4 +19,6 @@
     <dimen name="changePass_layout_margin">25dp</dimen>
     
     <dimen name="levelIndicator_text">20sp</dimen>
+    
+    <dimen name="achievements_description_margin">-8dp</dimen>
 </resources>

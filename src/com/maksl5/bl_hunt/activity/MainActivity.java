@@ -4,6 +4,7 @@ package com.maksl5.bl_hunt.activity;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -84,7 +87,7 @@ public class MainActivity extends FragmentActivity {
 	public int exp = 0;
 
 	private boolean destroyed;
-	
+
 	public int oldVersion = 0;
 	public int newVersion = 0;
 
@@ -94,7 +97,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		// Debug.startMethodTracing("blHunt_12");
-
+		
 		bhApp = (BlueHunter) getApplication();
 		bhApp.mainActivity = this;
 		bhApp.currentActivity = this;
@@ -132,7 +135,6 @@ public class MainActivity extends FragmentActivity {
 		stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
 		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
-		
 		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", false)) {
 			try {
 				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
@@ -140,9 +142,12 @@ public class MainActivity extends FragmentActivity {
 			catch (Exception e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
 			}
-			
+			catch (OutOfMemoryError e) {
+				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+			}
+
 		}
-		
+
 	}
 
 	/*
@@ -339,11 +344,12 @@ public class MainActivity extends FragmentActivity {
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 		FragmentLayoutManager.ProfileLayout.initializeView(this);
 		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
+		FragmentLayoutManager.AchievementsLayout.initializeAchievements(bhApp);
 
 		updateNotification();
 
 		// Debug.stopMethodTracing();
-		
+
 		upgrade();
 
 		return true;
@@ -354,16 +360,14 @@ public class MainActivity extends FragmentActivity {
 	 */
 	private void upgrade() {
 
-		if(oldVersion == 0 || newVersion == 0)
-			return;
-		
-		if(oldVersion > newVersion)
-			return;
-		
-		if(oldVersion < 1065) {
+		if (oldVersion == 0 || newVersion == 0) return;
+
+		if (oldVersion > newVersion) return;
+
+		if (oldVersion < 1065) {
 			bhApp.synchronizeFoundDevices.needForceOverrideUp = true;
 		}
-		
+
 	}
 
 	/*
@@ -525,7 +529,9 @@ public class MainActivity extends FragmentActivity {
 			if (VERSION.SDK_INT >= 14)
 				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
 
-			stateNotificationBuilder.setContentText(String.format("%s %d\t%d / %d %s", getString(R.string.str_foundDevices_level), level, exp, LevelSystem.getLevelEndExp(level), getString(R.string.str_foundDevices_exp_abbreviation)));
+			DecimalFormat df = new DecimalFormat(",###");
+
+			stateNotificationBuilder.setContentText(String.format("%s %d"+ (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
@@ -546,7 +552,9 @@ public class MainActivity extends FragmentActivity {
 			if (VERSION.SDK_INT >= 14)
 				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
 
-			stateNotificationBuilder.setContentText(String.format("%s %d\t%d / %d %s", getString(R.string.str_foundDevices_level), level, exp, LevelSystem.getLevelEndExp(level), getString(R.string.str_foundDevices_exp_abbreviation)));
+			DecimalFormat df = new DecimalFormat(",###");
+			
+			stateNotificationBuilder.setContentText(String.format("%s %d"+ (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
@@ -580,7 +588,10 @@ public class MainActivity extends FragmentActivity {
 			catch (Exception e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
 			}
-			
+			catch (OutOfMemoryError e) {
+				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+			}
+
 		}
 
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);

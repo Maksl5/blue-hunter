@@ -10,11 +10,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -49,6 +51,7 @@ import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
+import android.net.nsd.NsdManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -73,6 +76,8 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.QuickContactBadge;
+import android.widget.SimpleAdapter;
+import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -90,6 +95,8 @@ import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.net.NetworkThread;
+import com.maksl5.bl_hunt.storage.Achievement;
+import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 
@@ -124,7 +131,7 @@ public class FragmentLayoutManager {
 		case PAGE_FOUND_DEVICES:
 			return parentInflater.inflate(R.layout.act_page_founddevices, rootContainer, false);
 		case PAGE_ACHIEVEMENTS:
-			break;
+			return parentInflater.inflate(R.layout.act_page_achievements, rootContainer, false);
 		case PAGE_PROFILE:
 			return parentInflater.inflate(R.layout.act_page_profile, rootContainer, false);
 
@@ -394,6 +401,7 @@ public class FragmentLayoutManager {
 
 				if (!completeFdList.equals(result)) {
 					completeFdList = result;
+					showedFdList = result;
 				}
 
 				fdAdapter.refill(showedFdList);
@@ -875,7 +883,9 @@ public class FragmentLayoutManager {
 			mainActivity.exp = exp;
 			int level = LevelSystem.getLevel(exp);
 
-			expTextView.setText(String.format("%d %s / %d %s", exp, mainActivity.getString(R.string.str_foundDevices_exp_abbreviation), LevelSystem.getLevelEndExp(level), mainActivity.getString(R.string.str_foundDevices_exp_abbreviation)));
+			DecimalFormat df = new DecimalFormat(",###");
+
+			expTextView.setText(String.format("%s %s / %s %s", df.format(exp), mainActivity.getString(R.string.str_foundDevices_exp_abbreviation), df.format(LevelSystem.getLevelEndExp(level)), mainActivity.getString(R.string.str_foundDevices_exp_abbreviation)));
 			lvlTextView.setText(String.format("%d", level));
 
 			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
@@ -892,7 +902,7 @@ public class FragmentLayoutManager {
 			double devPerDay = (deviceNum / (double) (now - firstTime)) * 86400000;
 			double expPerDay = (exp / (double) (now - firstTime)) * 86400000;
 
-			devicesTextView.setText(String.valueOf(deviceNum));
+			devicesTextView.setText(df.format(deviceNum));
 			devExpPerDayTxt.setText(String.format("%.2f / %.2f", devPerDay, expPerDay));
 
 			List<SparseArray<String>> devicesToday =
@@ -904,7 +914,10 @@ public class FragmentLayoutManager {
 			for (Iterator iterator = devicesToday.iterator(); iterator.hasNext();) {
 				SparseArray<String> sparseArray = (SparseArray<String>) iterator.next();
 				String manufacturer = sparseArray.get(DatabaseManager.INDEX_MANUFACTURER);
-				expTodayNum += MacAddressAllocations.getExp(manufacturer);
+				
+				float bonus = Float.parseFloat(sparseArray.get(DatabaseManager.INDEX_BONUS));
+				
+				expTodayNum += MacAddressAllocations.getExp(manufacturer) * (1 + bonus);
 			}
 
 			devExpTodayTxt.setText(String.format("%d / %d", devicesTodayNum, expTodayNum));
@@ -1706,8 +1719,8 @@ public class FragmentLayoutManager {
 					holder.level.setText(user[ARRAY_INDEX_LEVEL]);
 					holder.levelPrg.setMax(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_MAX]));
 					holder.levelPrg.setProgress(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_VALUE]));
-					holder.devices.setText(user[ARRAY_INDEX_DEV_NUMBER] + " Devices");
-					holder.exp.setText(user[ARRAY_INDEX_EXP] + " " + context.getString(R.string.str_foundDevices_exp_abbreviation));
+					holder.devices.setText(new DecimalFormat(",###").format(Integer.parseInt(user[ARRAY_INDEX_DEV_NUMBER])) + " Devices");
+					holder.exp.setText(new DecimalFormat(",###").format(Integer.parseInt(user[ARRAY_INDEX_EXP])) + " " + context.getString(R.string.str_foundDevices_exp_abbreviation));
 
 				}
 				return rowView;
@@ -2011,6 +2024,77 @@ public class FragmentLayoutManager {
 			ProgressBar levelPrg;
 			TextView devices;
 			TextView exp;
+		}
+
+	}
+
+	/**
+	 * @author Maksl5[Markus Bensing]
+	 * 
+	 */
+	public static class AchievementsLayout {
+
+		public static void initializeAchievements(BlueHunter bhApp) {
+
+			AchievementSystem.checkAchievements(bhApp, true);
+
+			ListView lv = (ListView) bhApp.mainActivity.findViewById(R.id.listView_ach);
+
+			int[] to = new int[] {
+									R.id.txtName, R.id.txtDescription, R.id.txtBoost, R.id.chkBox };
+			String[] from = new String[] {
+											"name", "description", "boost", "accomplished" };
+
+			ViewBinder viewBinder = new ViewBinder() {
+
+				@Override
+				public boolean setViewValue(View view,
+											Object data,
+											String textRepresentation) {
+
+					if (view instanceof CheckBox) {
+
+						if (((String) data).equals("true")) {
+							((CheckBox) view).setChecked(true);
+						}
+						else if (((String) data).equals("false")) {
+							((CheckBox) view).setChecked(false);
+						}
+
+						return true;
+
+					}
+					return false;
+				}
+			};
+
+			List<HashMap<String, String>> rows = new ArrayList<HashMap<String, String>>();
+
+			for (Achievement achievement : AchievementSystem.achievements) {
+
+				HashMap<String, String> dataHashMap = new HashMap<String, String>();
+
+				dataHashMap.put("name", achievement.getName(bhApp));
+				dataHashMap.put("description", achievement.getDescription(bhApp));
+				dataHashMap.put("boost", String.format("Boost: + %s", NumberFormat.getPercentInstance().format(achievement.getBoost())));
+
+				boolean accomplished = false;
+
+				if (AchievementSystem.achievementStates.containsKey(achievement.getId())) {
+					accomplished = AchievementSystem.achievementStates.get(achievement.getId());
+				}
+
+				dataHashMap.put("accomplished", String.valueOf(accomplished));
+
+				rows.add(dataHashMap);
+
+			}
+
+			SimpleAdapter simpleAdapter =
+					new SimpleAdapter(bhApp.mainActivity, rows, R.layout.act_page_achievements_row, from, to);
+			simpleAdapter.setViewBinder(viewBinder);
+			lv.setAdapter(simpleAdapter);
+
 		}
 
 	}
