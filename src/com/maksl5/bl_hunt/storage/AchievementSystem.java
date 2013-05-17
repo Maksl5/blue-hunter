@@ -36,6 +36,22 @@ public class AchievementSystem {
 
 	public static List<Achievement> achievements =
 			Arrays.asList(new Achievement[] {
+												new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
+
+													@Override
+													public boolean check(	BlueHunter bhApp,
+																			int deviceNum,
+																			int exp) {
+
+														if(bhApp.getPackageName().equals("com.maksl5.bl_hunt_sup")) 
+															return true;
+														else 
+															return false;
+
+													}
+
+												}.setBoost(0.5f),
+
 												new Achievement(1, R.string.str_achieve_1_title, R.string.str_achieve_1_description) {
 
 													@Override
@@ -104,8 +120,7 @@ public class AchievementSystem {
 
 															if ((firstTime - secondTime) <= 120000) {
 
-																return true;
-															}
+															return true; }
 														}
 
 														return false;

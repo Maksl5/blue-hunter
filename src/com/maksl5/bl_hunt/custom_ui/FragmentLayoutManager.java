@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -357,7 +358,7 @@ public class FragmentLayoutManager {
 					}
 
 					if (bonusExpString == null || bonusExpString.equals("null") || bonusExpString.equals("")) {
-						new DatabaseManager(bhApp, bhApp.getVersionCode()).addBonusToDevices(deviceMac, 0f);
+						publishProgress(Arrays.asList(new String[] { "[ADDBONUS]", deviceMac }));
 						bonusExpString = "" + 0.0f;
 					}
 
@@ -424,6 +425,9 @@ public class FragmentLayoutManager {
 
 				// fdAdapter.refill(showedFdList);
 
+				if(values[0].get(0).equals("[ADDBONUS]"))
+					new DatabaseManager(bhApp, bhApp.getVersionCode()).addBonusToDevices(values[0].get(1), 0f);
+				
 				listView.setSelectionFromTop(scrollIndex, scrollTop);
 
 			}
@@ -836,7 +840,7 @@ public class FragmentLayoutManager {
 					devices = (List<String>) results.values;
 					showedFdList = devices;
 					if (results.count > 0) {
-						notifyDataSetChanged();
+						refill(showedFdList);
 					}
 					else {
 						notifyDataSetInvalidated();
@@ -914,9 +918,13 @@ public class FragmentLayoutManager {
 			for (Iterator iterator = devicesToday.iterator(); iterator.hasNext();) {
 				SparseArray<String> sparseArray = (SparseArray<String>) iterator.next();
 				String manufacturer = sparseArray.get(DatabaseManager.INDEX_MANUFACTURER);
-				
-				float bonus = Float.parseFloat(sparseArray.get(DatabaseManager.INDEX_BONUS));
-				
+
+				String bonusString = sparseArray.get(DatabaseManager.INDEX_BONUS);
+				float bonus = 0.0f;
+
+				if (bonusString != null) 
+					bonus = Float.parseFloat(bonusString);
+
 				expTodayNum += MacAddressAllocations.getExp(manufacturer) * (1 + bonus);
 			}
 
@@ -1412,6 +1420,15 @@ public class FragmentLayoutManager {
 				}
 				else {
 					listView = (ListView) pageView.findViewById(R.id.listView1);
+				}
+
+				if (listView == null) {
+					listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView1);
+				}
+
+				if (listView == null) {
+					canRun = false;
+					return;
 				}
 
 				scrollIndex = listView.getFirstVisiblePosition();

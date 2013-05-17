@@ -362,6 +362,7 @@ public class DatabaseManager {
 	}
 	
 	public synchronized void addBonusToDevices(String macAddress, float bonus) {
+		
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
 
@@ -375,6 +376,7 @@ public class DatabaseManager {
 		close();
 		updateModifiedTime(System.currentTimeMillis());
 	}
+
 
 	public boolean deleteDevice(String macAddress) {
 
