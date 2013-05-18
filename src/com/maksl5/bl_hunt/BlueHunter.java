@@ -11,8 +11,11 @@ import org.acra.annotation.ReportsCrashes;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.nfc.tech.IsoDep;
 
 import com.maksl5.bl_hunt.activity.ActionBarHandler;
 import com.maksl5.bl_hunt.activity.MainActivity;
@@ -39,6 +42,8 @@ public class BlueHunter extends Application {
 
 	public MainActivity mainActivity;
 	public Activity currentActivity;
+	
+	private boolean isTablet = false;
 
 	/*
 	 * (non-Javadoc)
@@ -52,6 +57,11 @@ public class BlueHunter extends Application {
 		super.onCreate();
 
 		ACRA.init(this);
+		
+	    boolean xlarge = ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
+	    boolean large = ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
+	    isTablet = (xlarge || large);
+		
 	}
 
 	public int getVersionCode() {
@@ -75,6 +85,10 @@ public class BlueHunter extends Application {
 			e.printStackTrace();
 			return "";
 		}
+	}
+	
+	public boolean isTablet() {
+return isTablet;
 	}
 
 }

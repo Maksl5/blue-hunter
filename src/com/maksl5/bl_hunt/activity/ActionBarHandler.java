@@ -241,11 +241,31 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			menu.findItem(R.id.menu_search).setVisible(false);
 			menu.findItem(R.id.menu_info).setVisible(false);
 			menu.findItem(R.id.menu_refresh).setVisible(false);
+			
+			menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+			menu.findItem(R.id.menu_switch).setVisible(true);
+			
+			if(bhApp.isTablet()) {
+				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+				menu.findItem(R.id.menu_switch).setVisible(true);
+			}
+			
+			
+
 			break;
 		case FragmentLayoutManager.PAGE_LEADERBOARD:
 			menu.findItem(R.id.menu_search).setVisible(true);
 			menu.findItem(R.id.menu_info).setVisible(false);
 			menu.findItem(R.id.menu_refresh).setVisible(true);
+
+			
+			menu.findItem(R.id.menu_boostIndicator).setVisible(false);
+			menu.findItem(R.id.menu_switch).setVisible(false);
+
+			if(bhApp.isTablet()) {
+				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+				menu.findItem(R.id.menu_switch).setVisible(true);
+			}
 
 			onQueryTextChange("");
 			menu.findItem(R.id.menu_search).collapseActionView();
@@ -259,6 +279,15 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			menu.findItem(R.id.menu_info).setVisible(true);
 			menu.findItem(R.id.menu_refresh).setVisible(false);
 
+			
+			menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+			menu.findItem(R.id.menu_switch).setVisible(false);
+
+			if(bhApp.isTablet()) {
+				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+				menu.findItem(R.id.menu_switch).setVisible(true);
+			}
+
 			onQueryTextChange("");
 			menu.findItem(R.id.menu_search).collapseActionView();
 			break;
@@ -266,6 +295,15 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			menu.findItem(R.id.menu_search).setVisible(false);
 			menu.findItem(R.id.menu_info).setVisible(false);
 			menu.findItem(R.id.menu_refresh).setVisible(false);
+			
+			menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+			menu.findItem(R.id.menu_switch).setVisible(false);
+
+			if(bhApp.isTablet()) {
+				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+				menu.findItem(R.id.menu_switch).setVisible(true);
+			}
+			
 			break;
 		case FragmentLayoutManager.PAGE_PROFILE:
 

@@ -116,6 +116,7 @@
     
     <!-- Achievements -->
     <string name="str_achievement_accomplish">Congratulations! You have accomplished the achievement "%s".</string>
+    <string name="str_achievement_totalBoost">Total Boost: %s</string>
     
     <string name="str_achieve_1_title">Probation Period I</string>
     <string name="str_achieve_1_description">Get 100 Exp to become accepted.</string>
@@ -127,10 +128,35 @@
     <string name="str_achieve_3_description">Find 25 Apple devices.</string>
     
     <string name="str_achieve_4_title">Time Chaser I</string>
-    <string name="str_achieve_4_description">Find 10 devices within 2 minutes.</string>
+    <string name="str_achieve_4_description">Find 15 devices within 2 minutes.</string>
     
     <string name="str_achieve_5_title">Superior Supporter</string>
     <string name="str_achieve_5_description">This achievement is for people who are grateful for my work I did on this project. Catch the supporter version of this game on the Google Play Store to accomplish this achievement. I really am thankful for each purchase, because I need your help to keep this game available, to pay the bills for the server and maybe to get some earn. Thank you very much! Ps: Look at the bonus. ;-p</string>
+    
+    <string name="str_achieve_6_title">Apple Fanboy II</string>
+    <string name="str_achieve_6_description">Find 5 Apple devices in a row.</string>
+    
+    <string name="str_achieve_7_title">Oldies I</string>
+    <string name="str_achieve_7_description">Find 5 Siemens devices.</string>
+    
+    <string name="str_achieve_8_title">Time Geek I</string>
+    <string name="str_achieve_8_description">Find 15 devices between 10:00pm and 10:30pm.</string>
+    
+    <string name="str_achieve_9_title">Time Geek II</string>
+    <string name="str_achieve_9_description">Get up early and find 65 devices between 5:00am and 7:00am.</string>
+    
+    <string name="str_achieve_10_title">Time Chaser II</string>
+    <string name="str_achieve_10_description">Do a power hunt and find 100 devices in 15 minutes.</string>
+ 
+    <string name="str_achieve_11_title">Precisely Accurate I</string>
+    <string name="str_achieve_11_description">You are an accurate chaser and must find 1 device to a full hour. (E.g. 2:00:00pm)</string>
+    
+    <string name="str_achieve_12_title">Sequence Enthusiast I</string>
+    <string name="str_achieve_12_description">Find 1 Apple, 1 BlackBerry and 1 Samsung device in a row.</string>
+    
+    <string name="str_achieve_13_title">Experienced Player I</string>
+    <string name="str_achieve_13_description">Get 200 Exp within 24 hours.</string>
+    
     
     <!-- Error strings -->
     

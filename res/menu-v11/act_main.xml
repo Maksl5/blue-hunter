@@ -5,7 +5,7 @@
         android:actionViewClass="android.widget.ProgressBar"
         android:showAsAction="always">
     </item>
-    <item
+    <item android:id="@+id/menu_boostIndicator" android:showAsAction="always|withText" android:title="@string/str_achievement_totalBoost"></item><item
         android:id="@+id/menu_switch"
         android:actionViewClass="android.widget.ToggleButton"
         android:showAsAction="always">
@@ -29,5 +29,6 @@
         android:showAsAction="never"
         android:title="@string/str_menu_settings"/>
     <item android:id="@+id/menu_refresh" android:showAsAction="always" android:title="@string/str_menu_refresh" android:icon="@drawable/ic_action_refresh"></item>
+    
 
 </menu>
