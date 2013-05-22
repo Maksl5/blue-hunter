@@ -940,7 +940,7 @@ public class FragmentLayoutManager {
 	 */
 	public static class ProfileLayout {
 
-		private static String userName = "";
+		public static String userName = "";
 		private static String backUpName = "";
 		private static boolean isEditable = true;
 

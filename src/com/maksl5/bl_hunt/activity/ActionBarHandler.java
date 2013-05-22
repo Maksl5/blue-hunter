@@ -271,7 +271,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			menu.findItem(R.id.menu_search).collapseActionView();
 
 			if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated", false))
-				RandomToast.create(bhApp, "Tip: To make you visible in the leaderboard you want to enable the sync feature in the settings.", 0.25).show();
+				RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_leaderboard), 0.25).show();
 
 			break;
 		case FragmentLayoutManager.PAGE_FOUND_DEVICES:
@@ -306,7 +306,9 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			
 			break;
 		case FragmentLayoutManager.PAGE_PROFILE:
-
+if(FragmentLayoutManager.ProfileLayout.userName.startsWith("Player")) {
+	RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_changeName), 0.25).show();
+}
 			break;
 		}
 

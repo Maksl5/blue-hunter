@@ -113,6 +113,9 @@
     <string name="str_auth_storeTokenFailed">Could not store login token.</string>
     <string name="str_auth_changelog_ok">OK</string>
     
+    <string name="str_tip_leaderboard">Tip: To make you visible in the leaderboard you want to enable the sync feature in the settings.</string>
+    <string name="str_tip_changeName">Tip: To change your name just touch the name and hold.</string>
+    
     
     <!-- Achievements -->
     <string name="str_achievement_accomplish">Congratulations! You have accomplished the achievement "%s".</string>

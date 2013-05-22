@@ -54,9 +54,7 @@ This game uses some Android Permissions. Here I want to explain, for what these 
 
 ## Compatibility
 
-As this game is still in a very early development stage (pre-alpha), this game can only be installed on devices with **_Honeycomb (3.\*)_** and above. It should work well under **_ICS (4.0.\*)_** and **_Jelly Bean (4.1)_**. Under **_Honeycomb_** should be a _Force Close_ when opening the app. If not so, feel lucky.
-
-Support for **_Gingerbread (2.3.\*)_** will come, when the game reaches an playable development state. Please be patient. Thank you.
+As this game is still in a very early development stage (alpha), this game can only be installed on devices with **_Honeycomb (3.\*)_** and above. It should work well under **_ICS (4.0.\*)_** and **_Jelly Bean (4.1)_**. Under **_Honeycomb_** should be a _Force Close_ when opening the app. If not so, feel lucky.
 
 
 ----------
@@ -116,7 +114,7 @@ _**Note:**_ All the information gathered by the game from your device or other d
 At the current developing state the game reports errors by default and you haven't the possibility to change this. The setting to control, wether the game reports an error or not will come in the near future for 100%. Until then the game reports an error, when occuring, and collects a whole bunch of information, that is very useful for me to fix that specific error. A complete list of information about your device, that is collected, can be found [here](https://github.com/ACRA/acra/wiki/ReportContent). Important to know for you is, that the data collected during an error **is not** and **will not** be linked in any case to the other information located in the remote database. This is only for bug fixing purpose.
 
 
-All information gathered from the game and send to the game server into the database is completely nonpublic. The database is completely locked. The only person, who has access to this database is me ! No companies and no other persons have access and are allowed to gather information from this database in any way. Your stored information will not be used for any other purposes, that don't have to do with the game functionality and with statistic purposes !
+All information gathered from the game and send to the game server into the database is completely nonpublic. The database is completely locked. The only person, who has access to this database is me! No companies and no other persons have access and are allowed to gather information from this database in any way. Your stored information will not be used for any other purposes, that don't have to do with the game functionality and with statistic purposes!
 
 
 ----------
