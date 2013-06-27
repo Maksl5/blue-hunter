@@ -5,6 +5,7 @@ package com.maksl5.bl_hunt.activity;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,7 +98,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		// Debug.startMethodTracing("blHunt_12");
-		
+
 		bhApp = (BlueHunter) getApplication();
 		bhApp.mainActivity = this;
 		bhApp.currentActivity = this;
@@ -343,6 +344,7 @@ public class MainActivity extends FragmentActivity {
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 		FragmentLayoutManager.ProfileLayout.initializeView(this);
+		FragmentLayoutManager.LeaderboardLayout.changeList = new DatabaseManager(bhApp, bhApp.getVersionCode()).getLeaderboardChanges();
 		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
 		FragmentLayoutManager.AchievementsLayout.initializeAchievements(bhApp);
 
@@ -502,6 +504,20 @@ public class MainActivity extends FragmentActivity {
 		bhApp.disMan.unregisterReceiver();
 		bhApp.disMan.stopDiscoveryManager();
 
+		HashMap<Integer, Integer> leaderboardChanges = new HashMap<Integer, Integer>();
+
+		for (int i = 0; i < FragmentLayoutManager.LeaderboardLayout.completeFdList.size(); i++) {
+			String leaderboardEntry = FragmentLayoutManager.LeaderboardLayout.completeFdList.get(i);
+
+			String[] leaderboardAtts = leaderboardEntry.split(String.valueOf((char) 30));
+
+			leaderboardChanges.put(Integer.parseInt(leaderboardAtts[FragmentLayoutManager.LeaderboardLayout.ARRAY_INDEX_ID]), i + 1);
+
+		}
+		
+		new DatabaseManager(bhApp, bhApp.getVersionCode()).resetLeaderboardChanges();
+		new DatabaseManager(bhApp, bhApp.getVersionCode()).setLeaderboardChanges(leaderboardChanges);
+
 		bhApp.synchronizeFoundDevices.saveChanges();
 
 		destroyed = true;
@@ -531,7 +547,7 @@ public class MainActivity extends FragmentActivity {
 
 			DecimalFormat df = new DecimalFormat(",###");
 
-			stateNotificationBuilder.setContentText(String.format("%s %d"+ (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
@@ -553,8 +569,8 @@ public class MainActivity extends FragmentActivity {
 				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
 
 			DecimalFormat df = new DecimalFormat(",###");
-			
-			stateNotificationBuilder.setContentText(String.format("%s %d"+ (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+
+			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());

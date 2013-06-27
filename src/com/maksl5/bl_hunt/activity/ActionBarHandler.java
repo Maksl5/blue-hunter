@@ -234,88 +234,90 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 		checkMenuNull();
 
-		currentPage = newPage;
+		try {
 
-		switch (newPage) {
-		case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
-			menu.findItem(R.id.menu_search).setVisible(false);
-			menu.findItem(R.id.menu_info).setVisible(false);
-			menu.findItem(R.id.menu_refresh).setVisible(false);
-			
-			menu.findItem(R.id.menu_boostIndicator).setVisible(true);
-			menu.findItem(R.id.menu_switch).setVisible(true);
-			
-			if(bhApp.isTablet()) {
+			currentPage = newPage;
+
+			switch (newPage) {
+			case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
+				menu.findItem(R.id.menu_search).setVisible(false);
+				menu.findItem(R.id.menu_info).setVisible(false);
+				menu.findItem(R.id.menu_refresh).setVisible(false);
+
 				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 				menu.findItem(R.id.menu_switch).setVisible(true);
-			}
-			
-			
 
-			break;
-		case FragmentLayoutManager.PAGE_LEADERBOARD:
-			menu.findItem(R.id.menu_search).setVisible(true);
-			menu.findItem(R.id.menu_info).setVisible(false);
-			menu.findItem(R.id.menu_refresh).setVisible(true);
+				if (bhApp.isTablet()) {
+					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+					menu.findItem(R.id.menu_switch).setVisible(true);
+				}
 
-			
-			menu.findItem(R.id.menu_boostIndicator).setVisible(false);
-			menu.findItem(R.id.menu_switch).setVisible(false);
+				break;
+			case FragmentLayoutManager.PAGE_LEADERBOARD:
+				menu.findItem(R.id.menu_search).setVisible(true);
+				menu.findItem(R.id.menu_info).setVisible(false);
+				menu.findItem(R.id.menu_refresh).setVisible(true);
 
-			if(bhApp.isTablet()) {
+				menu.findItem(R.id.menu_boostIndicator).setVisible(false);
+				menu.findItem(R.id.menu_switch).setVisible(false);
+
+				if (bhApp.isTablet()) {
+					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+					menu.findItem(R.id.menu_switch).setVisible(true);
+				}
+
+				onQueryTextChange("");
+				menu.findItem(R.id.menu_search).collapseActionView();
+
+				if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated", false))
+					RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_leaderboard), 0.25).show();
+
+				break;
+			case FragmentLayoutManager.PAGE_FOUND_DEVICES:
+				menu.findItem(R.id.menu_search).setVisible(true);
+				menu.findItem(R.id.menu_info).setVisible(true);
+				menu.findItem(R.id.menu_refresh).setVisible(false);
+
 				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
-				menu.findItem(R.id.menu_switch).setVisible(true);
-			}
+				menu.findItem(R.id.menu_switch).setVisible(false);
 
-			onQueryTextChange("");
-			menu.findItem(R.id.menu_search).collapseActionView();
+				if (bhApp.isTablet()) {
+					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+					menu.findItem(R.id.menu_switch).setVisible(true);
+				}
 
-			if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated", false))
-				RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_leaderboard), 0.25).show();
+				onQueryTextChange("");
+				menu.findItem(R.id.menu_search).collapseActionView();
+				break;
+			case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
+				menu.findItem(R.id.menu_search).setVisible(false);
+				menu.findItem(R.id.menu_info).setVisible(false);
+				menu.findItem(R.id.menu_refresh).setVisible(false);
 
-			break;
-		case FragmentLayoutManager.PAGE_FOUND_DEVICES:
-			menu.findItem(R.id.menu_search).setVisible(true);
-			menu.findItem(R.id.menu_info).setVisible(true);
-			menu.findItem(R.id.menu_refresh).setVisible(false);
-
-			
-			menu.findItem(R.id.menu_boostIndicator).setVisible(true);
-			menu.findItem(R.id.menu_switch).setVisible(false);
-
-			if(bhApp.isTablet()) {
 				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
-				menu.findItem(R.id.menu_switch).setVisible(true);
-			}
+				menu.findItem(R.id.menu_switch).setVisible(false);
 
-			onQueryTextChange("");
-			menu.findItem(R.id.menu_search).collapseActionView();
-			break;
-		case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
-			menu.findItem(R.id.menu_search).setVisible(false);
-			menu.findItem(R.id.menu_info).setVisible(false);
-			menu.findItem(R.id.menu_refresh).setVisible(false);
-			
-			menu.findItem(R.id.menu_boostIndicator).setVisible(true);
-			menu.findItem(R.id.menu_switch).setVisible(false);
+				if (bhApp.isTablet()) {
+					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+					menu.findItem(R.id.menu_switch).setVisible(true);
+				}
 
-			if(bhApp.isTablet()) {
-				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
-				menu.findItem(R.id.menu_switch).setVisible(true);
+				break;
+			case FragmentLayoutManager.PAGE_PROFILE:
+				if (FragmentLayoutManager.ProfileLayout.userName.startsWith("Player")) {
+					RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_changeName), 0.25).show();
+				}
+				break;
 			}
-			
-			break;
-		case FragmentLayoutManager.PAGE_PROFILE:
-if(FragmentLayoutManager.ProfileLayout.userName.startsWith("Player")) {
-	RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_changeName), 0.25).show();
-}
-			break;
 		}
-
+		catch (NullPointerException e) {
+			return false;
+		}
 		return true;
 	}
-	
+
 	public int getCurrentPage() {
+
 		return currentPage;
 	}
 

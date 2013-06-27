@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -89,8 +92,9 @@ public class DatabaseManager {
 		}
 
 	}
-	
-	public boolean addNewDevice(String macAddress, float bonus) {
+
+	public boolean addNewDevice(String macAddress,
+								float bonus) {
 
 		long time = System.currentTimeMillis();
 
@@ -125,7 +129,8 @@ public class DatabaseManager {
 	 * 
 	 */
 	public boolean addNewDevice(String macAddress,
-								short RSSI, float bonus) {
+								short RSSI,
+								float bonus) {
 
 		long time = System.currentTimeMillis();
 
@@ -163,7 +168,8 @@ public class DatabaseManager {
 	 */
 	public boolean addNewDevice(String macAddress,
 								String name,
-								short RSSI, float bonus) {
+								short RSSI,
+								float bonus) {
 
 		long time = System.currentTimeMillis();
 
@@ -266,8 +272,9 @@ public class DatabaseManager {
 		close();
 		return devices;
 	}
-	
-	public synchronized List<SparseArray<String>> getDevices(String where, String orderBy) {
+
+	public synchronized List<SparseArray<String>> getDevices(	String where,
+																String orderBy) {
 
 		List<SparseArray<String>> devices = new ArrayList<SparseArray<String>>();
 
@@ -293,27 +300,29 @@ public class DatabaseManager {
 		return devices;
 	}
 
-
 	public synchronized int getDeviceNum() {
 
 		return getDeviceNum(null);
 	}
-	
+
 	public synchronized int getDeviceNum(String where) {
 
-		int num = (int) DatabaseUtils.queryNumEntries(db, DatabaseHelper.FOUND_DEVICES_TABLE, where);
+		int num =
+				(int) DatabaseUtils.queryNumEntries(db, DatabaseHelper.FOUND_DEVICES_TABLE, where);
 		close();
 
 		return num;
 	}
-	
-	public synchronized SparseArray<String> getDevice(String where, String orderBy) {
+
+	public synchronized SparseArray<String> getDevice(	String where,
+														String orderBy) {
+
 		Cursor cursor =
 				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, where, null, null, null, orderBy);
 		cursor.moveToFirst();
-		
+
 		SparseArray<String> device = new SparseArray<String>();
-		
+
 		while (!cursor.isAfterLast()) {
 
 			device.put(INDEX_MAC_ADDRESS, cursor.getString(1));
@@ -331,8 +340,8 @@ public class DatabaseManager {
 		return device;
 	}
 
-	public synchronized void addNameToDevice(String macAddress,
-								String name) {
+	public synchronized void addNameToDevice(	String macAddress,
+												String name) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_NAME, name);
@@ -360,23 +369,23 @@ public class DatabaseManager {
 		close();
 		updateModifiedTime(System.currentTimeMillis());
 	}
-	
-	public synchronized void addBonusToDevices(String macAddress, float bonus) {
-		
+
+	public synchronized void addBonusToDevices(	String macAddress,
+												float bonus) {
+
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
 
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
-		
+
 		SparseArray<String> change = new SparseArray<String>();
-		change.put(INDEX_BONUS, ""+bonus);
-		
+		change.put(INDEX_BONUS, "" + bonus);
+
 		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
-				
+
 		close();
 		updateModifiedTime(System.currentTimeMillis());
 	}
-
 
 	public boolean deleteDevice(String macAddress) {
 
@@ -543,6 +552,48 @@ public class DatabaseManager {
 
 	}
 
+	// LEADERBOARD CHANGE
+
+	public void setLeaderboardChanges(HashMap<Integer, Integer> changes) {
+		
+		Set<Integer> keySet = changes.keySet();
+		for (Integer uid : keySet) {
+			ContentValues values = new ContentValues();
+			values.put(DatabaseHelper.COLUMN_UID, uid);
+			values.put(DatabaseHelper.COLUMN_RANK, changes.get(uid));
+			
+			db.insert(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, values);
+		}
+		
+		close();
+		
+	}
+	
+	public void resetLeaderboardChanges() {
+		db.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.LEADERBOARD_CHANGES_TABLE);
+		db.execSQL(DatabaseHelper.LEADERBOARD_CHANGES_TABLE);
+
+		close();
+	}
+	
+	public HashMap<Integer, Integer> getLeaderboardChanges() {
+		
+		HashMap<Integer, Integer> changes= new HashMap<Integer, Integer>();
+		
+		Cursor cursor =
+				db.query(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, null, null, null, null, null);
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			changes.put(cursor.getInt(0), cursor.getInt(1));
+			cursor.moveToNext();
+		}
+
+		cursor.close();
+		close();
+		
+		return changes;
+	}
+
 	public long getLastModifiedTime() {
 
 		long time = PreferenceManager.getPref(bhApp, "dbLastModified", (long) 0);
@@ -587,6 +638,7 @@ public class DatabaseManager {
 		public final static String DATABASE_NAME = "foundDevicesDataStorage.db";
 		public final static String FOUND_DEVICES_TABLE = "foundDevices";
 		public final static String CHANGES_SYNC_TABLE = "changesSync";
+		public final static String LEADERBOARD_CHANGES_TABLE = "ldChanges";
 
 		public final static String COLUMN_MAC_ADDRESS = "macAddress";
 		public final static String COLUMN_NAME = "name";
@@ -597,6 +649,9 @@ public class DatabaseManager {
 
 		public final static String COLUMN_CHANGE = "change";
 
+		public final static String COLUMN_UID = "uid";
+		public final static String COLUMN_RANK = "rank";
+
 		private BlueHunter bhApplication;
 		private int version;
 
@@ -606,6 +661,9 @@ public class DatabaseManager {
 
 		public final static String CHANGES_SYNC_CREATE =
 				"Create Table " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
+
+		public final static String LEADERBOARD_CHANGES_CREATE =
+				"Create Table " + LEADERBOARD_CHANGES_TABLE + " (uid Integer Not Null, " + COLUMN_RANK + " Integer Not Null);";
 
 		public DatabaseHelper(BlueHunter app,
 				int version) {
@@ -645,7 +703,7 @@ public class DatabaseManager {
 
 			bhApp.mainActivity.oldVersion = oldVersion;
 			bhApp.mainActivity.newVersion = newVersion;
-			
+
 			if (oldVersion < 499) {
 				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_TIME + " Integer;");
 			}
@@ -657,10 +715,10 @@ public class DatabaseManager {
 			if (oldVersion < 916) {
 				db.execSQL(CHANGES_SYNC_CREATE);
 			}
-			
+
 			if (oldVersion < 1065) {
 				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_BONUS + " Real;");
-				
+
 			}
 
 			bhApp.authentification.showChangelog(oldVersion, newVersion, 0);
@@ -681,8 +739,12 @@ public class DatabaseManager {
 			final String CHANGES_SYNC_CREATE_IF_NOT_EXISTS =
 					"Create Table If Not Exists " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
 
+			final String LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS =
+					"Create Table If Not Exists " + LEADERBOARD_CHANGES_TABLE + " (uid Integer Not Null, " + COLUMN_RANK + " Integer Not Null);";
+
 			db.execSQL(FOUND_DEVICES_CREATE_IF_NOT_EXISTS);
 			db.execSQL(CHANGES_SYNC_CREATE_IF_NOT_EXISTS);
+			db.execSQL(LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS);
 
 		}
 

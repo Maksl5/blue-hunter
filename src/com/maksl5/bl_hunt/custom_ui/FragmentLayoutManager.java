@@ -74,6 +74,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.QuickContactBadge;
@@ -358,7 +359,8 @@ public class FragmentLayoutManager {
 					}
 
 					if (bonusExpString == null || bonusExpString.equals("null") || bonusExpString.equals("")) {
-						publishProgress(Arrays.asList(new String[] { "[ADDBONUS]", deviceMac }));
+						publishProgress(Arrays.asList(new String[] {
+																	"[ADDBONUS]", deviceMac }));
 						bonusExpString = "" + 0.0f;
 					}
 
@@ -367,7 +369,7 @@ public class FragmentLayoutManager {
 
 					// exp calc
 					int bonusExp =
-							(int) Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) * Float.valueOf(bonusExpString));
+							(int) Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_").replace("-", "__")) * Float.valueOf(bonusExpString));
 					bonusExpString =
 							" + " + bonusExp + " " + bhApp.getString(R.string.str_foundDevices_bonusExp_attach);
 
@@ -425,9 +427,9 @@ public class FragmentLayoutManager {
 
 				// fdAdapter.refill(showedFdList);
 
-				if(values[0].get(0).equals("[ADDBONUS]"))
+				if (values[0].get(0).equals("[ADDBONUS]"))
 					new DatabaseManager(bhApp, bhApp.getVersionCode()).addBonusToDevices(values[0].get(1), 0f);
-				
+
 				listView.setSelectionFromTop(scrollIndex, scrollTop);
 
 			}
@@ -922,8 +924,7 @@ public class FragmentLayoutManager {
 				String bonusString = sparseArray.get(DatabaseManager.INDEX_BONUS);
 				float bonus = 0.0f;
 
-				if (bonusString != null) 
-					bonus = Float.parseFloat(bonusString);
+				if (bonusString != null) bonus = Float.parseFloat(bonusString);
 
 				expTodayNum += MacAddressAllocations.getExp(manufacturer) * (1 + bonus);
 			}
@@ -1336,11 +1337,14 @@ public class FragmentLayoutManager {
 		public static final int ARRAY_INDEX_PROGRESS_VALUE = 3;
 		public static final int ARRAY_INDEX_DEV_NUMBER = 4;
 		public static final int ARRAY_INDEX_EXP = 5;
+		public static final int ARRAY_INDEX_ID = 6;
 
 		private volatile static List<String> showedFdList = new ArrayList<String>();
-		private volatile static List<String> completeFdList = new ArrayList<String>();
+		public volatile static List<String> completeFdList = new ArrayList<String>();
 
 		private static ThreadManager threadManager = null;
+
+		public static HashMap<Integer, Integer> changeList = new HashMap<Integer, Integer>();
 
 		public static void refreshLeaderboard(final BlueHunter bhApp) {
 
@@ -1510,83 +1514,95 @@ public class FragmentLayoutManager {
 			@Override
 			protected void onPostExecute(String result) {
 
-				Pattern pattern = Pattern.compile("Error=(\\d+)");
-				Matcher matcher = pattern.matcher(result);
-				if (matcher.find()) {
-					int errorCode = Integer.parseInt(matcher.group(1));
-					String array =
-							"Error " + errorCode + (char) 30 + "" + (char) 30 + 100 + (char) 30 + 0 + (char) 30 + 0 + (char) 30 + 0;
-
-					showedFdList.add(array);
-
-					ldAdapter.notifyDataSetChanged();
-
-					listView.setSelectionFromTop(scrollIndex, scrollTop);
-
-					return;
-				}
-
-				DocumentBuilder docBuilder;
-				Document document = null;
-
 				try {
-					docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-					document = docBuilder.parse(new InputSource(new StringReader(result)));
-				}
-				catch (Exception e) {
 
-				}
-
-				document.getDocumentElement().normalize();
-
-				NodeList nodes = document.getElementsByTagName("user");
-
-				boolean last = false;
-
-				for (int i = 0; i < nodes.getLength(); i++) {
-
-					Node node = nodes.item(i);
-					if (node.getNodeType() == Node.ELEMENT_NODE) {
-
-						Element element = (Element) node;
-
-						int rank = Integer.parseInt(element.getAttribute("rank"));
-
-						String name = element.getElementsByTagName("name").item(0).getTextContent();
-						int exp =
-								Integer.parseInt(element.getElementsByTagName("exp").item(0).getTextContent());
-						int num =
-								Integer.parseInt(element.getElementsByTagName("number").item(0).getTextContent());
-
-						int level = LevelSystem.getLevel(exp);
-						int progressMax =
-								LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level);
-						int progressValue = exp - LevelSystem.getLevelStartExp(level);
-
-						last = element.getAttribute("last").equals("1");
-
+					Pattern pattern = Pattern.compile("Error=(\\d+)");
+					Matcher matcher = pattern.matcher(result);
+					if (matcher.find()) {
+						int errorCode = Integer.parseInt(matcher.group(1));
 						String array =
-								name + (char) 30 + level + (char) 30 + progressMax + (char) 30 + progressValue + (char) 30 + num + (char) 30 + exp;
+								"Error " + errorCode + (char) 30 + "" + (char) 30 + 100 + (char) 30 + 0 + (char) 30 + 0 + (char) 30 + 0 + (char) 30 + 0;
 
 						showedFdList.add(array);
-						showedFdList.set(rank - 1, array);
+
+						ldAdapter.notifyDataSetChanged();
+
+						listView.setSelectionFromTop(scrollIndex, scrollTop);
+
+						return;
+					}
+
+					DocumentBuilder docBuilder;
+					Document document = null;
+
+					try {
+						docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+						document = docBuilder.parse(new InputSource(new StringReader(result)));
+					}
+					catch (Exception e) {
+
+					}
+
+					document.getDocumentElement().normalize();
+
+					NodeList nodes = document.getElementsByTagName("user");
+
+					boolean last = false;
+
+					for (int i = 0; i < nodes.getLength(); i++) {
+
+						Node node = nodes.item(i);
+						if (node.getNodeType() == Node.ELEMENT_NODE) {
+
+							Element element = (Element) node;
+
+							int id = Integer.parseInt(element.getAttribute("id"));
+							int rank = Integer.parseInt(element.getAttribute("rank"));
+
+							String name =
+									element.getElementsByTagName("name").item(0).getTextContent();
+							int exp =
+									Integer.parseInt(element.getElementsByTagName("exp").item(0).getTextContent());
+							int num =
+									Integer.parseInt(element.getElementsByTagName("number").item(0).getTextContent());
+
+							int level = LevelSystem.getLevel(exp);
+							int progressMax =
+									LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level);
+							int progressValue = exp - LevelSystem.getLevelStartExp(level);
+
+							last = element.getAttribute("last").equals("1");
+
+							String array =
+									name + (char) 30 + level + (char) 30 + progressMax + (char) 30 + progressValue + (char) 30 + num + (char) 30 + exp + (char) 30 + id;
+
+							showedFdList.add(array);
+							showedFdList.set(rank - 1, array);
+
+						}
+
+					}
+
+					threadManager.finished(this);
+
+					if (last) {
+						completeFdList = showedFdList;
+						ldAdapter.notifyDataSetChanged();
+
+						listView.setSelectionFromTop(scrollIndex, scrollTop);
+					}
+					else {
+
+						ldAdapter.notifyDataSetChanged();
+						new RefreshThread(bhApp, threadManager).execute(startIndex + length, length);
 
 					}
 
 				}
-
-				threadManager.finished(this);
-
-				if (last) {
-					completeFdList = showedFdList;
-					ldAdapter.notifyDataSetChanged();
-
-					listView.setSelectionFromTop(scrollIndex, scrollTop);
-				}
-				else {
-
-					ldAdapter.notifyDataSetChanged();
-					new RefreshThread(bhApp, threadManager).execute(startIndex + length, length);
+				catch (NullPointerException e) {
+					if (bhApp != null && threadManager != null) {
+						new RefreshThread(bhApp, threadManager).execute(startIndex, length);
+					}
 
 				}
 
@@ -1718,6 +1734,8 @@ public class FragmentLayoutManager {
 					viewHolder.levelPrg = (ProgressBar) rowView.findViewById(R.id.levelPrgBar);
 					viewHolder.devices = (TextView) rowView.findViewById(R.id.devTxtView);
 					viewHolder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
+					viewHolder.changeImg = (ImageView) rowView.findViewById(R.id.changeImgView);
+					viewHolder.changeTxt = (TextView) rowView.findViewById(R.id.changeTxtView);
 
 					rowView.setTag(viewHolder);
 				}
@@ -1733,11 +1751,35 @@ public class FragmentLayoutManager {
 
 					holder.rank.setText("" + (position + 1) + ".");
 					holder.name.setText(nameString);
+					holder.name.setTag(user[ARRAY_INDEX_ID]);
 					holder.level.setText(user[ARRAY_INDEX_LEVEL]);
 					holder.levelPrg.setMax(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_MAX]));
 					holder.levelPrg.setProgress(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_VALUE]));
 					holder.devices.setText(new DecimalFormat(",###").format(Integer.parseInt(user[ARRAY_INDEX_DEV_NUMBER])) + " Devices");
 					holder.exp.setText(new DecimalFormat(",###").format(Integer.parseInt(user[ARRAY_INDEX_EXP])) + " " + context.getString(R.string.str_foundDevices_exp_abbreviation));
+
+					int rankNow = position + 1;
+					Integer rankBefore = changeList.get(Integer.parseInt(user[ARRAY_INDEX_ID]));
+
+					if (rankBefore == null) rankBefore = position + 1;
+
+					holder.changeTxt.setText("" + Math.abs(rankBefore - rankNow));
+
+					if ((rankBefore - rankNow) > 0) {
+
+						holder.changeImg.setImageResource(R.drawable.ic_change_up);
+
+					}
+					else if ((rankBefore - rankNow) < 0) {
+
+						holder.changeImg.setImageResource(R.drawable.ic_change_down);
+
+					}
+					else if ((rankBefore - rankNow) == 0) {
+
+						holder.changeImg.setImageResource(0);
+						holder.changeTxt.setText("");
+					}
 
 				}
 				return rowView;
@@ -2041,6 +2083,8 @@ public class FragmentLayoutManager {
 			ProgressBar levelPrg;
 			TextView devices;
 			TextView exp;
+			ImageView changeImg;
+			TextView changeTxt;
 		}
 
 	}

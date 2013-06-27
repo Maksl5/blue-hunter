@@ -38,7 +38,7 @@ public class MacAddressAllocations {
 				String[] macStrings;
 				try {
 					macStrings = (String[]) field.get(MacAddressAllocations.class);
-					hsHashMap.put(field.getName().replace("_", " "), macStrings);
+					hsHashMap.put(field.getName().replace("__", "-").replace("_", " "), macStrings);
 				}
 				catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block
@@ -238,7 +238,8 @@ public class MacAddressAllocations {
 								"00:E0:91", "10:F9:6F", "20:21:A5", "3C:BD:D8", "6C:D6:8A",
 								"70:05:14", "74:A7:22", "A8:16:B2", "A8:92:2C", "C0:41:F6",
 								"E8:5B:5B", "E8:92:A4", "F0:1C:13", "F8:0C:F3", "5C:17:D3",
-								"64:99:5D", "8C:54:1D", "B0:89:91" };
+								"64:99:5D", "8C:54:1D", "B0:89:91", "00:05:C9", "00:1E:B2",
+								"1C:08:C1", "94:44:44" };
 
 	static final String[] HTC = {
 									"00:09:2D", "00:23:76", "18:87:96", "1C:B0:94", "38:E7:D8",
@@ -318,7 +319,7 @@ public class MacAddressAllocations {
 									"F8:3D:FF", "FC:48:EF", "04:C0:6F", "1C:1D:67", "20:2B:C1",
 									"24:DB:AC", "28:5F:DB", "30:87:30", "40:4D:8E", "4C:54:99",
 									"54:A5:1B", "5C:4C:A9", "84:A8:E4", "BC:76:70", "CC:96:A0",
-									"F4:C7:14" };
+									"F4:C7:14", "00:1E:10", "00:25:68" };
 
 	static final String[] ZTE = {
 									"00:15:EB", "00:19:C6", "00:1E:73", "00:22:93", "00:25:12",
@@ -402,7 +403,8 @@ public class MacAddressAllocations {
 												"BC:0D:A5", "BC:6A:29", "C0:E4:22", "C4:ED:BA",
 												"C8:3E:99", "C8:A0:30", "CC:8C:E3", "D0:07:90",
 												"D0:37:61", "D0:8C:B5", "D4:94:A1", "D8:54:3A",
-												"D8:95:2F", "E0:C7:9D", "E0:D7:BA", "F4:FC:32" };
+												"D8:95:2F", "E0:C7:9D", "E0:D7:BA", "F4:FC:32",
+												"08:00:17", "10:00:E8" };
 
 	static final String[] Foxconn = {
 										"00:14:A4", "00:16:CE", "00:16:CF", "00:19:7D", "00:19:7E",
@@ -588,6 +590,18 @@ public class MacAddressAllocations {
 										"00:03:81", "54:7F:54" };
 	static final String[] Bury = { "00:16:73" };
 
+	static final String[] D__Link = {
+										"00:05:5D", "00:0D:88", "00:0F:3D", "00:11:95", "00:13:46",
+										"00:15:E9", "00:17:9A", "00:19:5B", "00:1B:11", "00:1C:F0",
+										"00:1E:58", "00:21:91", "00:22:B0", "00:24:01", "00:26:5A",
+										"00:50:BA", "00:80:C8", "14:D6:4D", "1C:7E:E5", "1C:AF:F7",
+										"1C:BD:B9", "28:10:7B", "34:08:04", "5C:D9:98", "78:54:2E",
+										"84:C9:B2", "90:94:E4", "AC:F1:DF", "B8:A3:86", "BC:F6:85",
+										"C8:BE:19", "C8:D3:A3", "CC:B2:55", "D8:FE:E3", "F0:7D:68",
+										"FC:75:16" };
+
+	static final String[] Mavin = { "00:09:DD" };
+
 	public static final int Unknown_exp = 4;
 	static final int Apple_exp = 10;
 	static final int Nokia_exp = 20;
@@ -607,7 +621,7 @@ public class MacAddressAllocations {
 	static final int Google_exp = 20;
 	static final int Toshiba_exp = 40;
 	static final int HP_exp = 30;
-	static final int Gigabyte_exp = 50;
+	static final int Gigabyte_exp = 30;
 	static final int TomTom_exp = 30;
 	static final int Siemens_exp = 40;
 	static final int Qcom_Bluetooth_Module_exp = 40;
@@ -639,5 +653,7 @@ public class MacAddressAllocations {
 	static final int Parrot_exp = 40;
 	static final int Ingenico_exp = 40;
 	static final int Bury_exp = 40;
+	static final int D__Link_exp = 30;
+	static final int Mavin_exp = 50;
 
 }
