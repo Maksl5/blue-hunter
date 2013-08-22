@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.R.bool;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -53,7 +52,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 		blueHunter = blHunt;
 		changesToSync =
-				new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getAllChanges();
+				new DatabaseManager(blueHunter).getAllChanges();
 
 	}
 
@@ -85,15 +84,15 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 		switch (mode) {
 		case MODE_ADD:
 			changesToSync.add("[+]" + rulesString);
-			new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChange("[+]" + rulesString);
+			new DatabaseManager(blueHunter).addChange("[+]" + rulesString);
 			break;
 		case MODE_REMOVE:
 			changesToSync.add("[-]" + rulesString);
-			new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChange("[-]" + rulesString);
+			new DatabaseManager(blueHunter).addChange("[-]" + rulesString);
 			break;
 		case MODE_CHANGE:
 			changesToSync.add("[+-]" + rulesString);
-			new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChange("[+-]" + rulesString);
+			new DatabaseManager(blueHunter).addChange("[+-]" + rulesString);
 			break;
 
 		default:
@@ -110,7 +109,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 	public void start() {
 
 		exp = LevelSystem.getUserExp(blueHunter);
-		deviceNum = new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getDeviceNum();
+		deviceNum = new DatabaseManager(blueHunter).getDeviceNum();
 
 		Log.d("exp", String.valueOf(exp));
 		Log.d("deviceNum", String.valueOf(deviceNum));
@@ -120,7 +119,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 			blueHunter.authentification.setOnNetworkResultAvailableListener(this);
 
 			long lastModified =
-					new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getLastModifiedTime();
+					new DatabaseManager(blueHunter).getLastModifiedTime();
 
 			NetworkThread checkSync = new NetworkThread(blueHunter);
 			checkSync.execute(AuthentificationSecure.SERVER_SYNC_FD_CHECK, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_CHECK), "lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(), "p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified);
@@ -135,10 +134,10 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 		if (mode == 0) return;
 
 		exp = LevelSystem.getUserExp(blueHunter);
-		deviceNum = new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getDeviceNum();
+		deviceNum = new DatabaseManager(blueHunter).getDeviceNum();
 
 		long lastModified =
-				new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getLastModifiedTime();
+				new DatabaseManager(blueHunter).getLastModifiedTime();
 
 		blueHunter.authentification.setOnNetworkResultAvailableListener(this);
 
@@ -163,7 +162,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 			backupList = changesToSync;
 			changesToSync.clear();
-			new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
+			new DatabaseManager(blueHunter).resetChanges();
 
 			applySync.execute(AuthentificationSecure.SERVER_SYNC_FD_APPLY, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY), "lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(), "p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified, "r=" + rules, "m=" + mode);
 
@@ -180,7 +179,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				return;
 
 			List<SparseArray<String>> devices =
-					new DatabaseManager(blueHunter, blueHunter.getVersionCode()).getAllDevices();
+					new DatabaseManager(blueHunter).getAllDevices();
 
 			String rulesString = "";
 
@@ -290,8 +289,8 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 				if (changesToSync.isEmpty()) {
 					changesToSync = backupList;
-					new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
-					new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChanges(changesToSync);
+					new DatabaseManager(blueHunter).resetChanges();
+					new DatabaseManager(blueHunter).addChanges(changesToSync);
 				}
 				return false;
 			}
@@ -351,10 +350,11 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 						}
 					}
 
-					new DatabaseManager(blueHunter, blueHunter.getVersionCode()).newSyncedDatabase(devices);
+					new DatabaseManager(blueHunter).newSyncedDatabase(devices);
 
 					FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(blueHunter.mainActivity);
 					FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(blueHunter);
+					FragmentLayoutManager.AchievementsLayout.initializeAchievements(blueHunter);
 
 					resultMsg = "Successfully synced down database.";
 				}
@@ -393,8 +393,8 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 	public void saveChanges() {
 
-		new DatabaseManager(blueHunter, blueHunter.getVersionCode()).resetChanges();
-		new DatabaseManager(blueHunter, blueHunter.getVersionCode()).addChanges(changesToSync);
+		new DatabaseManager(blueHunter).resetChanges();
+		new DatabaseManager(blueHunter).addChanges(changesToSync);
 	}
 
 }

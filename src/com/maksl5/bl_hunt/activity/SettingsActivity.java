@@ -89,6 +89,8 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 	BlueHunter bhApp;
 	PrefNetManager netManager;
 
+	List<Header> headers;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -110,15 +112,12 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.preference.PreferenceActivity#onBuildHeaders(java.util.List)
-	 */
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 
+		headers = new ArrayList<Header>();
 		loadHeadersFromResource(R.xml.preference_headers, target);
+		headers = target;
 	}
 
 	/*
@@ -147,6 +146,20 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 		progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
 		this.menu.findItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
 		progressBar.setPadding(5, 0, 5, 0);
+
+		boolean goToInfoPref = getIntent().getBooleanExtra("goToInfoPref", false);
+
+		if (goToInfoPref) {
+
+//			switchToHeader(bhApp.getPackageName() + ".activity.SettingsActivity$InfoFragment", null);
+
+			for (Header header : headers) {
+				if (header.fragment.equals(bhApp.getPackageName() + ".activity.SettingsActivity$InfoFragment")) {
+					switchToHeader(header);
+					break;
+				}
+			}
+		}
 
 		return true;
 	}
@@ -409,23 +422,20 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 					}
 				});
 			}
-			
+
 			Preference deleteRemember = findPreference("pref_deleteRemember");
-			if(deleteRemember != null) {
+			if (deleteRemember != null) {
 				deleteRemember.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-					
+
 					@Override
 					public boolean onPreferenceClick(Preference preference) {
-					
+
 						PreferenceManager.setPref(bhApp, "pref_enableBT_remember", 0);
-						
-						
+
 						return true;
 					}
 				});
-				
-				
-				
+
 			}
 
 		}
@@ -461,13 +471,17 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 			}
 
 			changeLoginPass = findPreference("pref_localPass");
-			if (!bhApp.mainActivity.passSet && bhApp.loginManager.getLoginState()) {
+
+			if (bhApp.loginManager != null && bhApp.mainActivity != null && !bhApp.mainActivity.passSet && bhApp.loginManager.getLoginState()) {
 				changeOnlinePass.setTitle(R.string.str_Preferences_changePass_new_title);
 				changeOnlinePass.setSummary(R.string.str_Preferences_changePass_new_sum);
 				changeLoginPass.setEnabled(false);
 			}
 
-			bhApp.loginManager.login();
+			if (bhApp.loginManager != null) {
+				bhApp.loginManager.login();
+			}
+
 			registerListeners();
 
 		}
@@ -652,8 +666,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 
-					int result =
-							new DatabaseManager(bhApp, bhApp.getVersionCode()).rebuildDatabase();
+					int result = new DatabaseManager(bhApp).rebuildDatabase();
 
 					if (result == 0) {
 						Toast.makeText(getActivity(), "Successfully rebuilt database. App will now restart.", Toast.LENGTH_LONG).show();

@@ -26,7 +26,7 @@ public class LevelSystem {
 		int exp = 0;
 
 		List<SparseArray<String>> foundDevices =
-				new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
+				new DatabaseManager(bhApp).getAllDevices();
 
 		for (SparseArray<String> foundDevice : foundDevices) {
 
@@ -53,7 +53,7 @@ public class LevelSystem {
 		int exp = 0;
 
 		List<SparseArray<String>> foundDevices =
-				new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
+				new DatabaseManager(bhApp).getAllDevices();
 
 		for (SparseArray<String> foundDevice : foundDevices) {
 

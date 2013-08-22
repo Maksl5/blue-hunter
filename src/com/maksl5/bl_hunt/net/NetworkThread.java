@@ -41,6 +41,7 @@ import android.view.MenuItem;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
 
 
 
@@ -64,6 +65,9 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 		bhApp.netMananger.addRunningThread(this);
 	}
 
+	
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -180,7 +184,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 	@Override
 	protected void onPreExecute() {
 
-		if (!bhApp.mainActivity.isDestroyed()) {
+		if (!MainActivity.destroyed) {
 			MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
 			progressBar.setVisible(true);
 		}

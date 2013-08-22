@@ -9,14 +9,11 @@ package com.maksl5.bl_hunt.storage;
 import java.util.HashMap;
 import java.util.List;
 
+import android.content.Context;
+import android.widget.Toast;
+
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-
-import android.R.integer;
-import android.content.Context;
-import android.widget.Checkable;
-import android.widget.Toast;
 
 
 

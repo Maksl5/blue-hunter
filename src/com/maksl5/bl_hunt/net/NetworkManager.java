@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
 
 
 
@@ -55,7 +56,7 @@ public class NetworkManager {
 	private void checkList() {
 
 		if (curRunningThreads.size() == 0) {
-			if (!bhApp.mainActivity.isDestroyed()) {
+			if (!MainActivity.destroyed) {
 				MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
 				progressBar.setVisible(false);
 			}

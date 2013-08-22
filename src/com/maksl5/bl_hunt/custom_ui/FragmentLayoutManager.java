@@ -2,7 +2,6 @@ package com.maksl5.bl_hunt.custom_ui;
 
 
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
@@ -40,19 +39,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.drawable.Drawable;
-import android.net.nsd.NsdManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -331,7 +324,7 @@ public class FragmentLayoutManager {
 			protected List<String> doInBackground(Void... params) {
 
 				List<SparseArray<String>> devices =
-						new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
+						new DatabaseManager(bhApp).getAllDevices();
 				List<String> listViewList = new ArrayList<String>();
 
 				String expString = bhApp.getString(R.string.str_foundDevices_exp_abbreviation);
@@ -354,7 +347,7 @@ public class FragmentLayoutManager {
 							manufacturer = bhApp.getString(R.string.str_foundDevices_manu_unkown);
 						}
 						else {
-							new DatabaseManager(bhApp, bhApp.getVersionCode()).addManufacturerToDevice(deviceMac, manufacturer);
+							new DatabaseManager(bhApp).addManufacturerToDevice(deviceMac, manufacturer);
 						}
 					}
 
@@ -428,7 +421,7 @@ public class FragmentLayoutManager {
 				// fdAdapter.refill(showedFdList);
 
 				if (values[0].get(0).equals("[ADDBONUS]"))
-					new DatabaseManager(bhApp, bhApp.getVersionCode()).addBonusToDevices(values[0].get(1), 0f);
+					new DatabaseManager(bhApp).addBonusToDevices(values[0].get(1), 0f);
 
 				listView.setSelectionFromTop(scrollIndex, scrollTop);
 
@@ -898,9 +891,9 @@ public class FragmentLayoutManager {
 			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 
 			int deviceNum =
-					new DatabaseManager(mainActivity.getBlueHunter(), mainActivity.getBlueHunter().getVersionCode()).getDeviceNum();
+					new DatabaseManager(mainActivity.getBlueHunter()).getDeviceNum();
 			String firstTimeString =
-					new DatabaseManager(mainActivity.getBlueHunter(), mainActivity.getBlueHunter().getVersionCode()).getDevice(DatabaseManager.DatabaseHelper.COLUMN_TIME + " != 0", DatabaseManager.DatabaseHelper.COLUMN_TIME + " DESC").get(DatabaseManager.INDEX_TIME);
+					new DatabaseManager(mainActivity.getBlueHunter()).getDevice(DatabaseManager.DatabaseHelper.COLUMN_TIME + " != 0", DatabaseManager.DatabaseHelper.COLUMN_TIME + " DESC").get(DatabaseManager.INDEX_TIME);
 
 			long firstTime =
 					(firstTimeString == null) ? System.currentTimeMillis() : Long.parseLong(firstTimeString);
@@ -912,7 +905,7 @@ public class FragmentLayoutManager {
 			devExpPerDayTxt.setText(String.format("%.2f / %.2f", devPerDay, expPerDay));
 
 			List<SparseArray<String>> devicesToday =
-					new DatabaseManager(mainActivity.getBlueHunter(), mainActivity.getBlueHunter().getVersionCode()).getDevices(DatabaseManager.DatabaseHelper.COLUMN_TIME + " < " + now + " AND " + DatabaseManager.DatabaseHelper.COLUMN_TIME + " > " + (now - 86400000), null);
+					new DatabaseManager(mainActivity.getBlueHunter()).getDevices(DatabaseManager.DatabaseHelper.COLUMN_TIME + " < " + now + " AND " + DatabaseManager.DatabaseHelper.COLUMN_TIME + " > " + (now - 86400000), null);
 			int devicesTodayNum = devicesToday.size();
 
 			int expTodayNum = 0;
@@ -1525,7 +1518,8 @@ public class FragmentLayoutManager {
 
 						showedFdList.add(array);
 
-						ldAdapter.notifyDataSetChanged();
+						if(ldAdapter != null)
+							ldAdapter.notifyDataSetChanged();
 
 						listView.setSelectionFromTop(scrollIndex, scrollTop);
 
@@ -1742,7 +1736,7 @@ public class FragmentLayoutManager {
 
 				ViewHolder holder = (ViewHolder) rowView.getTag();
 
-				if (holder != null) {
+				if (holder != null && users.size() > position) {
 
 					String userAsString = users.get(position);
 					String[] user = userAsString.split(String.valueOf((char) 30));

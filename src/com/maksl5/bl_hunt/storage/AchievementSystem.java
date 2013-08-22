@@ -8,20 +8,15 @@ package com.maksl5.bl_hunt.storage;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import android.util.SparseArray;
-import android.util.SparseBooleanArray;
-import android.util.TimeUtils;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
@@ -97,7 +92,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getDevices(DatabaseHelper.COLUMN_MANUFACTURER + " = 'Apple'", null);
+																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_MANUFACTURER + " = 'Apple'", null);
 														if (devices.size() >= 25)
 															return true;
 														else
@@ -115,7 +110,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
+																new DatabaseManager(bhApp).getAllDevices();
 
 														for (int i = 4; i < devices.size(); i++) {
 
@@ -159,7 +154,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 14; i < devices.size(); i++) {
 
@@ -186,7 +181,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 99; i < devices.size(); i++) {
 
@@ -213,7 +208,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getDevices(DatabaseHelper.COLUMN_MANUFACTURER + " = 'Siemens'", null);
+																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_MANUFACTURER + " = 'Siemens'", null);
 														if (devices.size() >= 5)
 															return true;
 														else
@@ -224,13 +219,15 @@ public class AchievementSystem {
 
 												new Achievement(8, R.string.str_achieve_8_title, R.string.str_achieve_8_description) {
 
+													@SuppressWarnings({
+														"deprecation" })
 													@Override
 													public boolean check(	BlueHunter bhApp,
 																			int deviceNum,
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 14; i < devices.size(); i++) {
 
@@ -245,7 +242,7 @@ public class AchievementSystem {
 																		new Date(firstTime);
 																Date firstDate =
 																		new Date(secondTime);
-
+																
 																if (recentDate.getHours() == 22 && firstDate.getHours() == 22) {
 																	if (recentDate.getMinutes() >= 0 && recentDate.getMinutes() < 30) {
 																		if (firstDate.getMinutes() >= 0 && firstDate.getMinutes() < 30) { return true; }
@@ -268,7 +265,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 14; i < devices.size(); i++) {
 
@@ -308,7 +305,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 0; i < devices.size(); i++) {
 
@@ -338,7 +335,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getAllDevices();
+																new DatabaseManager(bhApp).getAllDevices();
 
 														for (int i = 2; i < devices.size(); i++) {
 
@@ -369,7 +366,7 @@ public class AchievementSystem {
 																			int exp) {
 
 														List<SparseArray<String>> devices =
-																new DatabaseManager(bhApp, bhApp.getVersionCode()).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 0; i < devices.size(); i++) {
 
@@ -384,13 +381,15 @@ public class AchievementSystem {
 																		Long.parseLong(devices.get(j).get(DatabaseManager.INDEX_TIME));
 
 																if ((recentTime - earlyTime) < 86400000) {
-																	
-																	String bonusString = devices.get(j).get(DatabaseManager.INDEX_BONUS);
+
+																	String bonusString =
+																			devices.get(j).get(DatabaseManager.INDEX_BONUS);
 																	float bonus = 0.0f;
 
-																	if (bonusString != null) 
-																		bonus = Float.parseFloat(bonusString);
-																	
+																	if (bonusString != null)
+																		bonus =
+																				Float.parseFloat(bonusString);
+
 																	exp24 +=
 																			MacAddressAllocations.getExp(devices.get(j).get(DatabaseManager.INDEX_MANUFACTURER)) * (1 + bonus);
 																}
@@ -413,7 +412,7 @@ public class AchievementSystem {
 
 		achievementStates = new HashMap<Integer, Boolean>();
 
-		int deviceNum = new DatabaseManager(bhApp, bhApp.getVersionCode()).getDeviceNum();
+		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
 		int exp = LevelSystem.getUserExp(bhApp);
 
 		for (Achievement achievement : achievements) {
@@ -465,7 +464,7 @@ public class AchievementSystem {
 
 		List<Integer> ids = Arrays.asList(id);
 
-		int deviceNum = new DatabaseManager(bhApp, bhApp.getVersionCode()).getDeviceNum();
+		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
 		int exp = LevelSystem.getUserExp(bhApp);
 
 		for (Achievement achievement : achievements) {

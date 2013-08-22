@@ -4,17 +4,14 @@
  */
 package com.maksl5.bl_hunt.custom_ui;
 
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-
-import android.R.integer;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
 
 
 /**

@@ -150,6 +150,8 @@ public class Authentification {
 
 	public void checkUpdate() {
 
+		if (true) return;
+
 		if (PreferenceManager.getPref(context, "pref_checkUpdate", true)) {
 
 			// Set result listener

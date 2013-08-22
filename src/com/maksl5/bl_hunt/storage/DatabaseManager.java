@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -49,10 +48,9 @@ public class DatabaseManager {
 	/**
 	 * 
 	 */
-	public DatabaseManager(BlueHunter app,
-			int version) {
+	public DatabaseManager(BlueHunter app) {
 
-		this.version = version;
+		this.version = app.getVersionCode();
 		this.bhApp = app;
 
 		this.dbHelper = new DatabaseHelper(bhApp, version);
@@ -571,7 +569,7 @@ public class DatabaseManager {
 	
 	public void resetLeaderboardChanges() {
 		db.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.LEADERBOARD_CHANGES_TABLE);
-		db.execSQL(DatabaseHelper.LEADERBOARD_CHANGES_TABLE);
+		db.execSQL(DatabaseHelper.LEADERBOARD_CHANGES_CREATE);
 
 		close();
 	}

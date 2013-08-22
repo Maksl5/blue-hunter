@@ -302,7 +302,7 @@ public class DiscoveryManager {
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-			foundDevices = new DatabaseManager(bhApp, bhApp.getVersionCode()).getMacAddresses();
+			foundDevices = new DatabaseManager(bhApp).getMacAddresses();
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 
 			discoveryButton =
@@ -492,7 +492,7 @@ public class DiscoveryManager {
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
 
 				for (BluetoothDevice btDevice : foundDevicesInCurDiscovery) {
-					new DatabaseManager(bhApp, bhApp.getVersionCode()).addNameToDevice(btDevice.getAddress(), btDevice.getName());
+					new DatabaseManager(bhApp).addNameToDevice(btDevice.getAddress(), btDevice.getName());
 				}
 
 				foundDevicesInCurDiscovery = null;
@@ -522,12 +522,12 @@ public class DiscoveryManager {
 		public void onDeviceFound(	BluetoothDevice btDevice,
 									short RSSI) {
 
-			foundDevices = new DatabaseManager(bhApp, bhApp.getVersionCode()).getMacAddresses();
+			foundDevices = new DatabaseManager(bhApp).getMacAddresses();
 
 			if (!foundDevices.contains(btDevice.getAddress())) {
 				foundDevicesInCurDiscovery.add(btDevice);
 				attemptVibration();
-				new DatabaseManager(bhApp, bhApp.getVersionCode()).addNewDevice(btDevice.getAddress(), RSSI, AchievementSystem.getBonus());
+				new DatabaseManager(bhApp).addNewDevice(btDevice.getAddress(), RSSI, AchievementSystem.getBonus());
 
 				FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);

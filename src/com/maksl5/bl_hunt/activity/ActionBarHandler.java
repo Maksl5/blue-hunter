@@ -2,12 +2,10 @@ package com.maksl5.bl_hunt.activity;
 
 
 
-import android.R.integer;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -32,7 +30,6 @@ import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.custom_ui.ColorSystem;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.RandomToast;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
@@ -186,7 +183,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 							mode.finish();
 						}
 
-						if (!new DatabaseManager(bhApp, bhApp.getVersionCode()).deleteDevice(macAddress)) {
+						if (!new DatabaseManager(bhApp).deleteDevice(macAddress)) {
 							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
 						}
 						else {
@@ -331,14 +328,16 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	 * @throws NullMenuException
 	 * 
 	 */
-	private void checkMenuNull() {
+	private boolean checkMenuNull() {
 
 		if (menu == null) {
 
 			bhApp.mainActivity.invalidateOptionsMenu();
-
+			return true;
 		}
 
+		return false;
+		
 	}
 
 	public View getActionView(int resourceId) {

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.R.integer;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -19,6 +19,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -32,8 +33,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,12 +43,12 @@ import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.custom_ui.ColorSystem;
 import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.CheckUpdateService;
 import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
@@ -87,7 +86,7 @@ public class MainActivity extends FragmentActivity {
 
 	public int exp = 0;
 
-	private boolean destroyed;
+	public static boolean destroyed = true;
 
 	public int oldVersion = 0;
 	public int newVersion = 0;
@@ -97,6 +96,8 @@ public class MainActivity extends FragmentActivity {
 
 		super.onCreate(savedInstanceState);
 
+		destroyed = false;
+		
 		// Debug.startMethodTracing("blHunt_12");
 
 		bhApp = (BlueHunter) getApplication();
@@ -165,7 +166,17 @@ public class MainActivity extends FragmentActivity {
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
 		bhApp.currentActivity = this;
+		
+		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+		Intent serviceIntent = new Intent(this, CheckUpdateService.class);
+		PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
+		alarmManager.cancel(pendingIntent);
+		
+		if (PreferenceManager.getPref(this, "pref_checkUpdate", true)) {
+			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 0 * 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
+		}
+		
 	}
 
 	/**
@@ -326,7 +337,7 @@ public class MainActivity extends FragmentActivity {
 		NetworkThread serialSubmit = new NetworkThread(bhApp);
 		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
 
-		new DatabaseManager(bhApp, bhApp.getVersionCode()).close();
+		new DatabaseManager(bhApp).close();
 
 		bhApp.synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
 		bhApp.authentification.setOnLoginChangeListener(bhApp.synchronizeFoundDevices);
@@ -344,7 +355,7 @@ public class MainActivity extends FragmentActivity {
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 		FragmentLayoutManager.ProfileLayout.initializeView(this);
-		FragmentLayoutManager.LeaderboardLayout.changeList = new DatabaseManager(bhApp, bhApp.getVersionCode()).getLeaderboardChanges();
+		FragmentLayoutManager.LeaderboardLayout.changeList = new DatabaseManager(bhApp).getLeaderboardChanges();
 		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
 		FragmentLayoutManager.AchievementsLayout.initializeAchievements(bhApp);
 
@@ -498,7 +509,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onDestroy() {
 
-		notificationManager.cancelAll();
+		notificationManager.cancel(1);
 		bhApp.loginManager.unregisterInternetReceiver();
 
 		bhApp.disMan.unregisterReceiver();
@@ -515,19 +526,16 @@ public class MainActivity extends FragmentActivity {
 
 		}
 		
-		new DatabaseManager(bhApp, bhApp.getVersionCode()).resetLeaderboardChanges();
-		new DatabaseManager(bhApp, bhApp.getVersionCode()).setLeaderboardChanges(leaderboardChanges);
+		
+		
+		new DatabaseManager(bhApp).resetLeaderboardChanges();
+		new DatabaseManager(bhApp).setLeaderboardChanges(leaderboardChanges);
 
 		bhApp.synchronizeFoundDevices.saveChanges();
 
 		destroyed = true;
 
 		super.onDestroy();
-	}
-
-	public boolean isDestroyed() {
-
-		return destroyed;
 	}
 
 	public BlueHunter getBlueHunter() {
@@ -581,7 +589,7 @@ public class MainActivity extends FragmentActivity {
 
 		}
 		else {
-			notificationManager.cancelAll();
+			notificationManager.cancel(1);
 		}
 
 	}
