@@ -174,7 +174,7 @@ public class MainActivity extends FragmentActivity {
 		alarmManager.cancel(pendingIntent);
 		
 		if (PreferenceManager.getPref(this, "pref_checkUpdate", true)) {
-			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 0 * 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
+			alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 0 * 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
 		}
 		
 	}
