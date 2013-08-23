@@ -36,7 +36,7 @@ public class BootReceiver extends BroadcastReceiver {
 		alarmManager.cancel(pendingIntent);
 		
 		if (PreferenceManager.getPref(context, "pref_checkUpdate", true)) {
-			alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1 * 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
+			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1 * 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
 		}
 
 
