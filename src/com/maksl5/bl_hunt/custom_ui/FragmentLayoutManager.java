@@ -291,8 +291,24 @@ public class FragmentLayoutManager {
 							(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 				}
 
-				this.listView =
-						(ListView) bhApp.mainActivity.mViewPager.getChildAt(PAGE_FOUND_DEVICES + 1).findViewById(R.id.listView2);
+				ViewPager pager = bhApp.mainActivity.mViewPager;
+				View pageView = pager.getChildAt(PAGE_FOUND_DEVICES + 1);
+
+				if (pageView == null) {
+					listView = (ListView) pager.findViewById(R.id.listView2);
+				}
+				else {
+					listView = (ListView) pageView.findViewById(R.id.listView2);
+				}
+
+				if (listView == null) {
+					listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView2);
+				}
+
+				if (listView == null) {
+					canRun = false;
+					return;
+				}
 
 				listView.setOnItemLongClickListener(onLongClickListener);
 

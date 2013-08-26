@@ -71,7 +71,7 @@ public class CheckUpdateService extends Service {
 
 		// check the global background data setting
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		if (!cm.getActiveNetworkInfo().isConnected()) {
+		if (cm.getActiveNetworkInfo() == null && !cm.getActiveNetworkInfo().isConnected()) {
 			stopSelf();
 			return;
 		}
