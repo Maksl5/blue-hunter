@@ -479,6 +479,10 @@ public class DatabaseManager {
 	public int rebuildDatabase() {
 
 		List<SparseArray<String>> allDevices = getAllDevices();
+		
+		dbHelper = new DatabaseHelper(bhApp, version);
+		db = dbHelper.getWritableDatabase();
+		
 		List<String> allChanges = getAllChanges();
 
 		File dbFile = new File(db.getPath());

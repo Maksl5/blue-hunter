@@ -337,7 +337,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		}
 
 		return false;
-		
+
 	}
 
 	public View getActionView(int resourceId) {
@@ -467,11 +467,11 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	@Override
 	public boolean onQueryTextChange(String newText) {
 
-		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES) {
-
+		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES)
 			FragmentLayoutManager.FoundDevicesLayout.filterFoundDevices(newText, bhApp);
 
-		}
+		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD)
+			FragmentLayoutManager.LeaderboardLayout.filterLeaderboard(newText, bhApp);
 
 		return false;
 	}

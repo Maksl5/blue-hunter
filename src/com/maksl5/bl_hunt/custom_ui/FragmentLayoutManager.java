@@ -148,8 +148,8 @@ public class FragmentLayoutManager {
 		public static final int ARRAY_INDEX_EXP = 4;
 		public static final int ARRAY_INDEX_TIME = 5;
 
-		private volatile static List<String> showedFdList = new ArrayList<String>();
-		private volatile static List<String> completeFdList = new ArrayList<String>();
+		private static List<String> showedFdList = new ArrayList<String>();
+		private static List<String> completeFdList = new ArrayList<String>();
 
 		private static ThreadManager threadManager = null;
 
@@ -292,6 +292,12 @@ public class FragmentLayoutManager {
 				}
 
 				ViewPager pager = bhApp.mainActivity.mViewPager;
+
+				if (pager == null) {
+					canRun = false;
+					return;
+				}
+
 				View pageView = pager.getChildAt(PAGE_FOUND_DEVICES + 1);
 
 				if (pageView == null) {
@@ -339,8 +345,7 @@ public class FragmentLayoutManager {
 			@Override
 			protected List<String> doInBackground(Void... params) {
 
-				List<SparseArray<String>> devices =
-						new DatabaseManager(bhApp).getAllDevices();
+				List<SparseArray<String>> devices = new DatabaseManager(bhApp).getAllDevices();
 				List<String> listViewList = new ArrayList<String>();
 
 				String expString = bhApp.getString(R.string.str_foundDevices_exp_abbreviation);
@@ -368,8 +373,7 @@ public class FragmentLayoutManager {
 					}
 
 					if (bonusExpString == null || bonusExpString.equals("null") || bonusExpString.equals("")) {
-						publishProgress(Arrays.asList(new String[] {
-																	"[ADDBONUS]", deviceMac }));
+						publishProgress(Arrays.asList(new String[] { "[ADDBONUS]", deviceMac }));
 						bonusExpString = "" + 0.0f;
 					}
 
@@ -768,10 +772,10 @@ public class FragmentLayoutManager {
 				this.notifyOnChange = notifyOnChange;
 			}
 
-			public void refill(List<String> devices) {
+			public void refill(List<String> newDevices) {
 
 				this.devices.clear();
-				this.devices.addAll(devices);
+				this.devices.addAll(newDevices);
 				notifyDataSetChanged();
 			}
 
@@ -810,7 +814,12 @@ public class FragmentLayoutManager {
 
 						ArrayList<String> devicesList;
 						synchronized (lock) {
-							devicesList = new ArrayList<String>(originalValues);
+
+							if (!originalValues.isEmpty())
+								devicesList = new ArrayList<String>(originalValues);
+							else
+								devicesList = new ArrayList<String>(completeFdList);
+
 						}
 
 						final int count = devicesList.size();
@@ -848,8 +857,8 @@ public class FragmentLayoutManager {
 				protected void publishResults(	CharSequence constraint,
 												FilterResults results) {
 
-					devices = (List<String>) results.values;
-					showedFdList = devices;
+					devices = (ArrayList<String>) results.values;
+					showedFdList = new ArrayList<String>(devices);
 					if (results.count > 0) {
 						refill(showedFdList);
 					}
@@ -906,8 +915,7 @@ public class FragmentLayoutManager {
 			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
 			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 
-			int deviceNum =
-					new DatabaseManager(mainActivity.getBlueHunter()).getDeviceNum();
+			int deviceNum = new DatabaseManager(mainActivity.getBlueHunter()).getDeviceNum();
 			String firstTimeString =
 					new DatabaseManager(mainActivity.getBlueHunter()).getDevice(DatabaseManager.DatabaseHelper.COLUMN_TIME + " != 0", DatabaseManager.DatabaseHelper.COLUMN_TIME + " DESC").get(DatabaseManager.INDEX_TIME);
 
@@ -1371,7 +1379,7 @@ public class FragmentLayoutManager {
 
 		}
 
-		public static void filterFoundDevices(	String text,
+		public static void filterLeaderboard(	String text,
 												BlueHunter bhApp) {
 
 			List<String> searchedList = new ArrayList<String>();
@@ -1534,8 +1542,7 @@ public class FragmentLayoutManager {
 
 						showedFdList.add(array);
 
-						if(ldAdapter != null)
-							ldAdapter.notifyDataSetChanged();
+						if (ldAdapter != null) ldAdapter.notifyDataSetChanged();
 
 						listView.setSelectionFromTop(scrollIndex, scrollTop);
 
@@ -1759,7 +1766,7 @@ public class FragmentLayoutManager {
 
 					String nameString = user[ARRAY_INDEX_NAME];
 
-					holder.rank.setText("" + (position + 1) + ".");
+					holder.rank.setText("" + (completeFdList.indexOf(userAsString) + 1) + ".");
 					holder.name.setText(nameString);
 					holder.name.setTag(user[ARRAY_INDEX_ID]);
 					holder.level.setText(user[ARRAY_INDEX_LEVEL]);
@@ -2022,7 +2029,11 @@ public class FragmentLayoutManager {
 					if (filterSequence == null || filterSequence.length() == 0) {
 						ArrayList<String> list;
 						synchronized (lock) {
-							list = new ArrayList<String>(originalValues);
+							if (!originalValues.isEmpty())
+								list = new ArrayList<String>(originalValues);
+							else
+								list = new ArrayList<String>(originalValues);
+
 						}
 						results.values = list;
 						results.count = list.size();
@@ -2111,10 +2122,8 @@ public class FragmentLayoutManager {
 
 			ListView lv = (ListView) bhApp.mainActivity.findViewById(R.id.listView_ach);
 
-			int[] to = new int[] {
-									R.id.txtName, R.id.txtDescription, R.id.txtBoost, R.id.chkBox };
-			String[] from = new String[] {
-											"name", "description", "boost", "accomplished" };
+			int[] to = new int[] { R.id.txtName, R.id.txtDescription, R.id.txtBoost, R.id.chkBox };
+			String[] from = new String[] { "name", "description", "boost", "accomplished" };
 
 			ViewBinder viewBinder = new ViewBinder() {
 

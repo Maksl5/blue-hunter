@@ -65,9 +65,6 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 		bhApp.netMananger.addRunningThread(this);
 	}
 
-	
-	
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -90,9 +87,10 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 				Pattern pattern = Pattern.compile("(.+)=(.+)", Pattern.CASE_INSENSITIVE);
 				Matcher matcher = pattern.matcher(params[i]);
 
-				matcher.matches();
+				if (matcher.matches()) {
 
-				postValues.add(new BasicNameValuePair(matcher.group(1), matcher.group(2)));
+					postValues.add(new BasicNameValuePair(matcher.group(1), matcher.group(2)));
+				}
 			}
 
 			URI httpUri = URI.create(remoteFile);
