@@ -364,10 +364,7 @@ public class FragmentLayoutManager {
 
 					if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
 						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
-						if (manufacturer.equals("Unknown")) {
-							manufacturer = bhApp.getString(R.string.str_foundDevices_manu_unkown);
-						}
-						else {
+						if (!manufacturer.equals("Unknown")) {
 							new DatabaseManager(bhApp).addManufacturerToDevice(deviceMac, manufacturer);
 						}
 					}
@@ -383,8 +380,13 @@ public class FragmentLayoutManager {
 					// exp calc
 					int bonusExp =
 							(int) Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_").replace("-", "__")) * Float.valueOf(bonusExpMultiplier));
-					
-					String completeExpString = (bonusExp == 0) ? "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString : "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " + " + bonusExp + " " + expString;
+
+					String completeExpString =
+							(bonusExp == 0) ? "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString : "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " + " + bonusExp + " " + expString;
+
+					if (manufacturer.equals("Unknown")) {
+						manufacturer = bhApp.getString(R.string.str_foundDevices_manu_unkown);
+					}
 
 					tempString =
 							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseManager.INDEX_RSSI) + (char) 30 + manufacturer + (char) 30 + completeExpString + (char) 30 + dateFormat.format(new Date(time));
@@ -1543,7 +1545,7 @@ public class FragmentLayoutManager {
 						listView.setSelectionFromTop(scrollIndex, scrollTop);
 
 						threadManager.finished(this);
-						
+
 						return;
 					}
 
