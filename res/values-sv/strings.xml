@@ -71,9 +71,9 @@
 	<string name="str_Preferences_showNotification_sum">Visa nuvarande status för sökning, nivå och poäng som avisering.</string>
 	<string name="str_Preferences_rebuildDB_title">Bygg om databas (ALPHAFUNKTION! GÖR EN BACKUP INNAN DU ANVÄNDER FUNKTIONEN!)</string>
 	<string name="str_Preferences_rebuildDB_sum">Bygg om den lokala databasen med funna enheter. Pröva endast detta om du märker problem och buggar.</string>
-	<string name="str_Preferences_activateSync_title">Synkroni sera hittade enheter</string>
-	<string name="str_Preferences_activateSync_sum">Synkronise ra dina hittade enheter med topplistan online.</string>
-	<string name="str_Preferences_syncInterval_title">Interval l för synkronisering</string>
+	<string name="str_Preferences_activateSync_title">Synkronisera hittade enheter</string>
+	<string name="str_Preferences_activateSync_sum">Synkronisera dina hittade enheter med topplistan online.</string>
+	<string name="str_Preferences_syncInterval_title">Intervall för synkronisering</string>
 	<string name="str_Preferences_syncInterval_sum">Bestäm intervallet för att synkronisera data.</string>
 	<string name="str_Preferences_forceUpSync_title">Tvinga synkronisering av all data </string>
 	<string name="str_Preferences_forceUpSync_sum">Detta skriver över all data online med din lokala data.</string>

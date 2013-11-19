@@ -1542,6 +1542,8 @@ public class FragmentLayoutManager {
 
 						listView.setSelectionFromTop(scrollIndex, scrollTop);
 
+						threadManager.finished(this);
+						
 						return;
 					}
 
