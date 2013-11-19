@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
     android:orientation="vertical"
@@ -29,8 +29,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            android:text="Maksl5"
             android:textColor="#ffffff"
             android:textSize="@dimen/foundDevices_name_text" />
+
     </TableRow>
 
     <TableRow
@@ -57,7 +59,9 @@
                     android:id="@+id/macTxtView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="00:00:00:00:00:00"
                     android:textSize="@dimen/foundDevices_secondary_text" />
+
             </TableRow>
 
             <TableRow
@@ -72,10 +76,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/padding_small"
+                    android:text="Apple"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="@color/text_holo_light_blue"
                     android:textSize="@dimen/foundDevices_manufacturer_text"
                     android:textStyle="italic" />
+
             </TableRow>
         </RelativeLayout>
 
@@ -91,15 +97,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:gravity="center" >
 
-                <TextView
-                    android:id="@+id/rssiTxtView"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/rssiView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingRight="@dimen/padding_medium"
-                    android:textColor="@color/text_holo_light_blue"
-                    android:textSize="@dimen/foundDevices_secondary_text" />
+                    android:layout_margin="@dimen/padding_xsmall"
+                    android:background="@drawable/rssi_bg"
+                    android:src="@drawable/rssi_5" />
+
             </TableRow>
 
             <TableRow
@@ -114,24 +122,29 @@
                     android:id="@+id/expTxtView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="+10 + 1 Exp"
                     android:textColor="@color/text_holo_light_blue"
                     android:textSize="@dimen/foundDevices_secondary_text" />
+
             </TableRow>
 
             <TableRow
                 android:id="@+id/tableRow5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/TableRow01"
+                android:layout_below="@id/tableRow3"
+                android:layout_toRightOf="@id/TableRow01"
                 android:paddingLeft="@dimen/padding_small" >
 
                 <TextView
                     android:id="@+id/timeTxtView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="15.05.2013 19:46:08"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textSize="@dimen/foundDevices_time_text"
                     android:textStyle="italic" />
+
             </TableRow>
         </RelativeLayout>
     </TableRow>

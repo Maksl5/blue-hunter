@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -361,6 +362,7 @@ public class FragmentLayoutManager {
 					String manufacturer = device.get(DatabaseManager.INDEX_MANUFACTURER);
 					String deviceTime = device.get(DatabaseManager.INDEX_TIME);
 					String bonusExpMultiplier = device.get(DatabaseManager.INDEX_BONUS);
+					String rssiAsString = device.get(DatabaseManager.INDEX_RSSI);
 
 					if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
 						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
@@ -388,8 +390,30 @@ public class FragmentLayoutManager {
 						manufacturer = bhApp.getString(R.string.str_foundDevices_manu_unkown);
 					}
 
+					// RSSI calculation
+					int rssi = Integer.parseInt(rssiAsString);
+					int rssiRes = 0;
+
+					// 0 bars
+					if (rssi <= -102) rssiRes = 0;
+
+					// 1 bar
+					if (rssi >= -101 && rssi <= -93) rssiRes = R.drawable.rssi_1;
+
+					// 2 bars
+					if (rssi >= -92 && rssi <= -87) rssiRes = R.drawable.rssi_2;
+
+					// 3 bars
+					if (rssi >= -86 && rssi <= -78) rssiRes = R.drawable.rssi_3;
+
+					// 4 bars
+					if (rssi >= -77 && rssi <= -40)rssiRes = R.drawable.rssi_4;
+
+					// 5 bars
+					if (rssi >= -41) rssiRes = R.drawable.rssi_5;
+
 					tempString =
-							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseManager.INDEX_RSSI) + (char) 30 + manufacturer + (char) 30 + completeExpString + (char) 30 + dateFormat.format(new Date(time));
+							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + rssiRes + (char) 30 + manufacturer + (char) 30 + completeExpString + (char) 30 + dateFormat.format(new Date(time));
 
 					listViewList.add(tempString);
 
@@ -540,7 +564,7 @@ public class FragmentLayoutManager {
 					viewHolder.name = (TextView) rowView.findViewById(R.id.nameTxtView);
 					viewHolder.manufacturer =
 							(TextView) rowView.findViewById(R.id.manufacturerTxtView);
-					viewHolder.rssi = (TextView) rowView.findViewById(R.id.rssiTxtView);
+					viewHolder.rssi = (ImageView) rowView.findViewById(R.id.rssiView);
 					viewHolder.time = (TextView) rowView.findViewById(R.id.timeTxtView);
 					viewHolder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
 					viewHolder.nameTableRow = (TableRow) rowView.findViewById(R.id.tableRow1);
@@ -567,7 +591,13 @@ public class FragmentLayoutManager {
 					holder.macAddress.setText(device[ARRAY_INDEX_MAC_ADDRESS]);
 					holder.name.setText(nameString);
 					holder.manufacturer.setText(device[ARRAY_INDEX_MANUFACTURER]);
-					holder.rssi.setText(device[ARRAY_INDEX_RSSI]);
+
+					int rssiId = Integer.parseInt(device[ARRAY_INDEX_RSSI]);
+					if (rssiId == 0)
+						holder.rssi.setImageResource(android.R.color.transparent);
+					else
+						holder.rssi.setImageResource(rssiId);
+
 					holder.time.setText(device[ARRAY_INDEX_TIME]);
 					holder.exp.setText(device[ARRAY_INDEX_EXP]);
 
@@ -777,6 +807,20 @@ public class FragmentLayoutManager {
 				notifyDataSetChanged();
 			}
 
+			public int getResId(String variableName,
+								Context context,
+								Class<?> c) {
+
+				try {
+					Field idField = c.getDeclaredField(variableName);
+					return idField.getInt(idField);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					return -1;
+				}
+			}
+
 			/**
 			 * @author Maksl5[Markus Bensing]
 			 * 
@@ -875,7 +919,7 @@ public class FragmentLayoutManager {
 			TextView macAddress;
 			TextView name;
 			TextView manufacturer;
-			TextView rssi;
+			ImageView rssi;
 			TextView time;
 			TextView exp;
 			TableRow nameTableRow;
