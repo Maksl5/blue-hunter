@@ -77,12 +77,16 @@
     <string name="str_Preferences_syncInterval_sum">Set the interval in which you want sync the data.</string>
     <string name="str_Preferences_forceUpSync_title">Force syncing entire data</string>
     <string name="str_Preferences_forceUpSync_sum">This will override the complete online data with your local data.</string>
-    <string name="str_Preferences_forceDownSync_title">Get remote database.</string>
+    <string name="str_Preferences_forceDownSync_title">Get remote database</string>
     <string name="str_Preferences_forceDownSync_sum">Overrides your local found devices with the ones stored online.</string>
     <string name="str_Preferences_enableBackground_title">Enable Background</string>
     <string name="str_Preferences_enableBackground_sum">[EXPERIMENTAL. Can lead to force close at start of the app.]</string>
     <string name="str_Preferences_deleteRemember_title">Delete remember assignments</string>
     <string name="str_Preferences_deleteRemember_sum">Delete all remember assignments you\'ve made in the app.</string>
+    <string name="str_Preferences_disableBtExit_title">Disable Bluetooth on exit</string>
+    <string name="str_Preferences_disableBtExit_sum">This will turn off Bluetooth when closing the app.</string>
+    <string name="str_Preferences_disableBtSrchOff_title">Disable Bluetooth at discovery stop</string>
+    <string name="str_Preferences_disableBtSrchOff_sum">This will turn off Bluetooth when you manually turn off the device discovery.</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>

@@ -97,7 +97,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		destroyed = false;
-		
+
 		// Debug.startMethodTracing("blHunt_12");
 
 		bhApp = (BlueHunter) getApplication();
@@ -166,17 +166,17 @@ public class MainActivity extends FragmentActivity {
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
 		bhApp.currentActivity = this;
-		
+
 		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 		Intent serviceIntent = new Intent(this, CheckUpdateService.class);
 		PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
 		alarmManager.cancel(pendingIntent);
-		
+
 		if (PreferenceManager.getPref(this, "pref_checkUpdate", true)) {
 			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 0 * 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
 		}
-		
+
 	}
 
 	/**
@@ -355,7 +355,8 @@ public class MainActivity extends FragmentActivity {
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
 		FragmentLayoutManager.ProfileLayout.initializeView(this);
-		FragmentLayoutManager.LeaderboardLayout.changeList = new DatabaseManager(bhApp).getLeaderboardChanges();
+		FragmentLayoutManager.LeaderboardLayout.changeList =
+				new DatabaseManager(bhApp).getLeaderboardChanges();
 		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
 		FragmentLayoutManager.AchievementsLayout.initializeAchievements(bhApp);
 
@@ -509,6 +510,12 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onDestroy() {
 
+		if (PreferenceManager.getPref(bhApp, "pref_disBtExit", false)) {
+
+			bhApp.disMan.disableBluetooth();
+
+		}
+
 		notificationManager.cancel(1);
 		bhApp.loginManager.unregisterInternetReceiver();
 
@@ -525,9 +532,7 @@ public class MainActivity extends FragmentActivity {
 			leaderboardChanges.put(Integer.parseInt(leaderboardAtts[FragmentLayoutManager.LeaderboardLayout.ARRAY_INDEX_ID]), i + 1);
 
 		}
-		
-		
-		
+
 		new DatabaseManager(bhApp).resetLeaderboardChanges();
 		new DatabaseManager(bhApp).setLeaderboardChanges(leaderboardChanges);
 

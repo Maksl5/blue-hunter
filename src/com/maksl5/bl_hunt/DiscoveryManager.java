@@ -116,6 +116,13 @@ public class DiscoveryManager {
 		}
 	}
 
+	public void disableBluetooth() {
+
+		if (btHandler == null) return;
+
+		btHandler.disableBluetooth();
+	}
+
 	public void stopDiscoveryManager() {
 
 		btHandler.stopDiscovery();
@@ -326,7 +333,12 @@ public class DiscoveryManager {
 					}
 					else {
 						if (isBluetoothEnabled()) {
+
 							stopDiscovery();
+
+							if (PreferenceManager.getPref(bhApp, "pref_disBtSrchOff", false)) {
+								disableBluetooth();
+							}
 						}
 
 					}
@@ -427,6 +439,18 @@ public class DiscoveryManager {
 			if (btAdapter.enable()) return true;
 
 			return false;
+		}
+
+		private boolean disableBluetooth() {
+
+			if (isBluetoothEnabled()) {
+				if (btAdapter.disable()) return true;
+
+				return false;
+			}
+
+			return true;
+
 		}
 
 		private boolean runDiscovery() {
