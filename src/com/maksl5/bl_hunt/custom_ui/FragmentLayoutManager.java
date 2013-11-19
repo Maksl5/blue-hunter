@@ -360,7 +360,7 @@ public class FragmentLayoutManager {
 					String deviceMac = device.get(DatabaseManager.INDEX_MAC_ADDRESS);
 					String manufacturer = device.get(DatabaseManager.INDEX_MANUFACTURER);
 					String deviceTime = device.get(DatabaseManager.INDEX_TIME);
-					String bonusExpString = device.get(DatabaseManager.INDEX_BONUS);
+					String bonusExpMultiplier = device.get(DatabaseManager.INDEX_BONUS);
 
 					if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
 						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
@@ -372,9 +372,9 @@ public class FragmentLayoutManager {
 						}
 					}
 
-					if (bonusExpString == null || bonusExpString.equals("null") || bonusExpString.equals("")) {
+					if (bonusExpMultiplier == null || bonusExpMultiplier.equals("null") || bonusExpMultiplier.equals("")) {
 						publishProgress(Arrays.asList(new String[] { "[ADDBONUS]", deviceMac }));
-						bonusExpString = "" + 0.0f;
+						bonusExpMultiplier = "" + 0.0f;
 					}
 
 					Long time =
@@ -382,16 +382,12 @@ public class FragmentLayoutManager {
 
 					// exp calc
 					int bonusExp =
-							(int) Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_").replace("-", "__")) * Float.valueOf(bonusExpString));
-					bonusExpString =
-							" + " + bonusExp + " " + bhApp.getString(R.string.str_foundDevices_bonusExp_attach);
-
-					if (bonusExp == 0) {
-						bonusExpString = "";
-					}
+							(int) Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_").replace("-", "__")) * Float.valueOf(bonusExpMultiplier));
+					
+					String completeExpString = (bonusExp == 0) ? "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString : "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " + " + bonusExp + " " + expString;
 
 					tempString =
-							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseManager.INDEX_RSSI) + (char) 30 + manufacturer + (char) 30 + "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString + bonusExpString + (char) 30 + dateFormat.format(new Date(time));
+							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + "RSSI: " + device.get(DatabaseManager.INDEX_RSSI) + (char) 30 + manufacturer + (char) 30 + completeExpString + (char) 30 + dateFormat.format(new Date(time));
 
 					listViewList.add(tempString);
 
