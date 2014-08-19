@@ -6,7 +6,7 @@
     android:layout_gravity="center"
     android:animateLayoutChanges="false"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="horizontal" >
 
     <TableLayout
         android:id="@+id/discoveryInfoTable"

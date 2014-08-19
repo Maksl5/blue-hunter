@@ -1,6 +1,6 @@
 /**
  *  RegexHelper.java in com.maksl5.bl_hunt.util
- *  © Markus 2013
+ *  Â© Markus 2013
  */
 package com.maksl5.bl_hunt.util;
 

@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -40,6 +39,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import android.R.integer;
+import android.app.Activity;
+import android.bluetooth.BluetoothClass.Device;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -61,6 +63,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
+import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -74,6 +77,7 @@ import android.widget.ProgressBar;
 import android.widget.QuickContactBadge;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -83,6 +87,7 @@ import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
 import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
@@ -99,9 +104,7 @@ import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 
 
 /**
- * 
  * @author Maksl5[Markus Bensing]
- * 
  */
 
 public class FragmentLayoutManager {
@@ -121,6 +124,10 @@ public class FragmentLayoutManager {
 
 		switch (sectionNumber) {
 		case PAGE_DEVICE_DISCOVERY:
+
+			DeviceDiscoveryLayout.lv = null;
+			DeviceDiscoveryLayout.dAdapter = null;
+
 			return parentInflater.inflate(R.layout.act_page_discovery, rootContainer, false);
 		case PAGE_LEADERBOARD:
 			return parentInflater.inflate(R.layout.act_page_leaderboard, rootContainer, false);
@@ -138,7 +145,6 @@ public class FragmentLayoutManager {
 
 	/**
 	 * @author Maksl5
-	 * 
 	 */
 	public static class FoundDevicesLayout {
 
@@ -149,8 +155,8 @@ public class FragmentLayoutManager {
 		public static final int ARRAY_INDEX_EXP = 4;
 		public static final int ARRAY_INDEX_TIME = 5;
 
-		private static List<String> showedFdList = new ArrayList<String>();
-		private static List<String> completeFdList = new ArrayList<String>();
+		private static ArrayList<FDAdapterData> showedFdList = new ArrayList<FDAdapterData>();
+		private static ArrayList<FDAdapterData> completeFdList = new ArrayList<FDAdapterData>();
 
 		private static ThreadManager threadManager = null;
 
@@ -202,72 +208,160 @@ public class FragmentLayoutManager {
 			if (refreshThread.canRun()) {
 				refreshThread.execute();
 			}
+			else {
+
+				ListView listView;
+				FoundDevicesAdapter fdAdapter;
+
+				if (bhApp.mainActivity.mViewPager == null) {
+					bhApp.mainActivity.mViewPager =
+							(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+				}
+
+				ViewPager pager = bhApp.mainActivity.mViewPager;
+
+				if (pager == null) { return; }
+
+				View pageView = pager.getChildAt(PAGE_FOUND_DEVICES + 1);
+
+				if (pageView == null) {
+					listView = (ListView) pager.findViewById(R.id.listView2);
+				}
+				else {
+					listView = (ListView) pageView.findViewById(R.id.listView2);
+				}
+
+				if (listView == null) {
+					listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView2);
+				}
+
+				if (listView == null) return;
+
+				fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
+				if (fdAdapter == null || fdAdapter.isEmpty()) {
+					fdAdapter =
+							new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row, showedFdList);
+					listView.setAdapter(fdAdapter);
+				}
+
+				fdAdapter.refreshList(showedFdList);
+
+			}
 
 		}
 
 		public static void filterFoundDevices(	String text,
 												BlueHunter bhApp) {
 
-			List<String> searchedList = new ArrayList<String>();
+			if (threadManager.running) return;
+
+			ArrayList<FDAdapterData> searchedList = new ArrayList<FDAdapterData>();
+
+			ListView listView;
+			FoundDevicesAdapter fdAdapter;
 
 			if (bhApp.mainActivity.mViewPager == null) {
 				bhApp.mainActivity.mViewPager =
 						(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 			}
 
-			ListView lv =
-					(ListView) bhApp.mainActivity.mViewPager.getChildAt(3).findViewById(R.id.listView2);
-			FoundDevicesAdapter fdAdapter = (FoundDevicesAdapter) lv.getAdapter();
+			ViewPager pager = bhApp.mainActivity.mViewPager;
+
+			if (pager == null) { return; }
+
+			View pageView = pager.getChildAt(PAGE_FOUND_DEVICES + 1);
+
+			if (pageView == null) {
+				listView = (ListView) pager.findViewById(R.id.listView2);
+			}
+			else {
+				listView = (ListView) pageView.findViewById(R.id.listView2);
+			}
+
+			if (listView == null) {
+				listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView2);
+			}
+
+			if (listView == null) return;
+
+			fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 			if (fdAdapter == null || fdAdapter.isEmpty()) {
 				fdAdapter =
 						new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row, showedFdList);
-				lv.setAdapter(fdAdapter);
+				listView.setAdapter(fdAdapter);
 			}
 
-			if (text.equalsIgnoreCase("[unknown]")) {
+			
+			text = text.toLowerCase();
+			
+			
+			if (text.equals("[unknown]")) {
 
 				String unknownString = bhApp.getString(R.string.str_foundDevices_manu_unkown);
 
-				for (String deviceAsString : completeFdList) {
+				for (FDAdapterData data : completeFdList) {
 
-					String[] device = deviceAsString.split(String.valueOf((char) 30));
-
-					if (device[ARRAY_INDEX_MANUFACTURER].equals(unknownString)) {
-						searchedList.add(deviceAsString);
+					if (data.getManufacturer().equals(unknownString)) {
+						searchedList.add(data);
 					}
 				}
 				showedFdList = searchedList;
-				fdAdapter.refill(showedFdList);
+				fdAdapter.refreshList(showedFdList);
 
 			}
 			else if (text.length() == 0) {
 				if (!showedFdList.equals(completeFdList)) {
-					showedFdList = completeFdList;
-					fdAdapter.refill(showedFdList);
+					showedFdList = new ArrayList<FDAdapterData>(completeFdList);
+					fdAdapter.refreshList(showedFdList);
+
 				}
 			}
 			else {
-				fdAdapter.getFilter().filter(text);
+
+				ArrayList<FDAdapterData> filterList = new ArrayList<FDAdapterData>(completeFdList);
+
+				final int count = filterList.size();
+				final ArrayList<FDAdapterData> newValues = new ArrayList<FDAdapterData>();
+
+				for (int i = 0; i < count; i++) {
+					final FDAdapterData data = filterList.get(i);
+
+					if (data.getMacAddress().toLowerCase().contains(text))
+						if (!newValues.contains(data)) newValues.add(data);
+
+					if (data.getName() != null && data.getName().toLowerCase().contains(text))
+						if (!newValues.contains(data)) newValues.add(data);
+
+					if (data.getTimeFormatted().toLowerCase().contains(text))
+						if (!newValues.contains(data)) newValues.add(data);
+
+					if (data.getManufacturer().toLowerCase().contains(text))
+						if (!newValues.contains(data)) newValues.add(data);
+
+					if (data.getExpString().toLowerCase().contains(text))
+						if (!newValues.contains(data)) newValues.add(data);
+
+				}
+
+				showedFdList = newValues;
+				fdAdapter.refreshList(showedFdList);
+
 			}
 
 		}
 
 		/**
-		 * @param mainActivity
 		 * @return
 		 */
 		public static String getSelectedMac() {
 
 			if (selectedItem == -1) return null;
 
-			String macString =
-					showedFdList.get(selectedItem).split(String.valueOf((char) 30))[ARRAY_INDEX_MAC_ADDRESS];
-
-			return macString;
+			return showedFdList.get(selectedItem).getMacAddress();
 
 		}
 
-		private class RefreshThread extends AsyncTask<Void, List<String>, List<String>> {
+		private class RefreshThread extends AsyncTask<Void, ArrayList<FDAdapterData>, ArrayList<FDAdapterData>> {
 
 			private BlueHunter bhApp;
 			private ListView listView;
@@ -344,25 +438,25 @@ public class FragmentLayoutManager {
 			}
 
 			@Override
-			protected List<String> doInBackground(Void... params) {
+			protected ArrayList<FDAdapterData> doInBackground(Void... params) {
 
-				List<SparseArray<String>> devices = new DatabaseManager(bhApp).getAllDevices();
-				List<String> listViewList = new ArrayList<String>();
+				List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
+				ArrayList<FDAdapterData> listViewList = new ArrayList<FDAdapterData>();
 
 				String expString = bhApp.getString(R.string.str_foundDevices_exp_abbreviation);
 				DateFormat dateFormat = DateFormat.getDateTimeInstance();
 
-				String tempString;
+				FDAdapterData adapterData;
 
 				for (int i = 0; i < devices.size(); i++) {
 
-					SparseArray<String> device = devices.get(i);
+					FoundDevice device = devices.get(i);
 
-					String deviceMac = device.get(DatabaseManager.INDEX_MAC_ADDRESS);
-					String manufacturer = device.get(DatabaseManager.INDEX_MANUFACTURER);
-					String deviceTime = device.get(DatabaseManager.INDEX_TIME);
-					String bonusExpMultiplier = device.get(DatabaseManager.INDEX_BONUS);
-					String rssiAsString = device.get(DatabaseManager.INDEX_RSSI);
+					String deviceMac = device.getMacAddress();
+					String manufacturer = device.getManufacturer();
+					Long time = device.getTime();
+					float bonusExpMultiplier = device.getBonus();
+					short rssi = device.getRssi();
 
 					if (manufacturer == null || manufacturer.equals("Unknown") || manufacturer.equals("")) {
 						manufacturer = MacAddressAllocations.getManufacturer(deviceMac);
@@ -371,27 +465,32 @@ public class FragmentLayoutManager {
 						}
 					}
 
-					if (bonusExpMultiplier == null || bonusExpMultiplier.equals("null") || bonusExpMultiplier.equals("")) {
-						publishProgress(Arrays.asList(new String[] { "[ADDBONUS]", deviceMac }));
-						bonusExpMultiplier = "" + 0.0f;
-					}
+					if (time == -1) time = (long) 0;
 
-					Long time =
-							(deviceTime == null || deviceTime.equals("null")) ? 0 : Long.parseLong(deviceTime);
+					if (bonusExpMultiplier == -1f) {
+						FDAdapterData addBonus = new FDAdapterData();
+						addBonus.setMacAddress(deviceMac);
+						addBonus.setManufacturer("[ADDBONUS]");
+
+						ArrayList<FDAdapterData> publishList = new ArrayList<FDAdapterData>();
+						publishList.add(addBonus);
+
+						publishProgress(publishList);
+						bonusExpMultiplier = 0f;
+					}
 
 					// exp calc
 					int bonusExp =
-							(int) Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_").replace("-", "__")) * Float.valueOf(bonusExpMultiplier));
+							(int) Math.floor(MacAddressAllocations.getExp(manufacturer) * bonusExpMultiplier);
 
 					String completeExpString =
-							(bonusExp == 0) ? "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " " + expString : "+" + MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) + " + " + bonusExp + " " + expString;
+							(bonusExp == 0) ? "+" + MacAddressAllocations.getExp(manufacturer) + " " + expString : "+" + MacAddressAllocations.getExp(manufacturer) + " + " + bonusExp + " " + expString;
 
 					if (manufacturer.equals("Unknown")) {
 						manufacturer = bhApp.getString(R.string.str_foundDevices_manu_unkown);
 					}
 
 					// RSSI calculation
-					int rssi = Integer.parseInt(rssiAsString);
 					int rssiRes = 0;
 
 					// 0 bars
@@ -407,15 +506,15 @@ public class FragmentLayoutManager {
 					if (rssi >= -86 && rssi <= -78) rssiRes = R.drawable.rssi_3;
 
 					// 4 bars
-					if (rssi >= -77 && rssi <= -40)rssiRes = R.drawable.rssi_4;
+					if (rssi >= -77 && rssi <= -40) rssiRes = R.drawable.rssi_4;
 
 					// 5 bars
 					if (rssi >= -41) rssiRes = R.drawable.rssi_5;
 
-					tempString =
-							deviceMac + (char) 30 + device.get(DatabaseManager.INDEX_NAME) + (char) 30 + rssiRes + (char) 30 + manufacturer + (char) 30 + completeExpString + (char) 30 + dateFormat.format(new Date(time));
+					adapterData =
+							new FDAdapterData(deviceMac, device.getName(), rssiRes, manufacturer, completeExpString, dateFormat.format(new Date(time)));
 
-					listViewList.add(tempString);
+					listViewList.add(adapterData);
 
 					publishProgress(listViewList);
 
@@ -435,14 +534,14 @@ public class FragmentLayoutManager {
 			 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 			 */
 			@Override
-			protected void onPostExecute(List<String> result) {
+			protected void onPostExecute(ArrayList<FDAdapterData> result) {
 
 				if (!completeFdList.equals(result)) {
-					completeFdList = result;
-					showedFdList = result;
+					completeFdList = new ArrayList<FDAdapterData>(result);
+					showedFdList = new ArrayList<FDAdapterData>(result);
 				}
 
-				fdAdapter.refill(showedFdList);
+				fdAdapter.refreshList(showedFdList);
 
 				listView.setSelectionFromTop(scrollIndex, scrollTop);
 
@@ -456,14 +555,14 @@ public class FragmentLayoutManager {
 			 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
 			 */
 			@Override
-			protected void onProgressUpdate(List<String>... values) {
+			protected void onProgressUpdate(ArrayList<FDAdapterData>... values) {
 
 				// showedFdList = values[0];
 
 				// fdAdapter.refill(showedFdList);
 
-				if (values[0].get(0).equals("[ADDBONUS]"))
-					new DatabaseManager(bhApp).addBonusToDevices(values[0].get(1), 0f);
+				if (values[0].get(0).getManufacturer().equals("[ADDBONUS]"))
+					new DatabaseManager(bhApp).addBonusToDevices(values[0].get(0).getMacAddress(), 0f);
 
 				listView.setSelectionFromTop(scrollIndex, scrollTop);
 
@@ -486,7 +585,7 @@ public class FragmentLayoutManager {
 			boolean running;
 
 			/**
-			 * @param refreshThread2
+			 * @param refreshThread
 			 * @return
 			 */
 			public boolean setThread(RefreshThread refreshThread) {
@@ -508,42 +607,117 @@ public class FragmentLayoutManager {
 			}
 		}
 
-		public class FoundDevicesAdapter extends ArrayAdapter<String> {
+		public class FDAdapterData {
 
-			private final Object lock = new Object();
+			public FDAdapterData(String macAddress,
+					String name,
+					int rssiRes,
+					String manufacturer,
+					String expString,
+					String timeFormatted) {
 
-			private Context context;
-
-			private FoundDevicesFilter filter;
-
-			private List<String> devices;
-
-			private ArrayList<String> originalValues;
-
-			private boolean notifyOnChange = true;
-
-			private LayoutInflater inflater;
-
-			public FoundDevicesAdapter(Context context,
-					int textViewResourceId,
-					List<String> objects) {
-
-				super(context, textViewResourceId, objects);
-				init(context, textViewResourceId, 0, objects);
-
-				devices = objects;
-
+				this.macAddress = macAddress;
+				this.name = name;
+				this.rssiRes = rssiRes;
+				this.manufacturer = manufacturer;
+				this.expString = expString;
+				this.timeFormatted = timeFormatted;
 			}
 
-			private void init(	Context context,
-								int resource,
-								int textViewResourceId,
-								List<String> objects) {
+			/**
+			 * 
+			 */
+			public FDAdapterData() {
 
-				this.context = context;
-				inflater =
-						(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				this.devices = objects;
+				// TODO Auto-generated constructor stub
+			}
+
+			private String macAddress;
+			private String name;
+			private int rssiRes;
+			private String manufacturer;
+			private String expString;
+			private String timeFormatted;
+
+			public String getMacAddress() {
+
+				return macAddress;
+			}
+
+			public void setMacAddress(String macAddress) {
+
+				this.macAddress = macAddress;
+			}
+
+			public String getName() {
+
+				return name;
+			}
+
+			public void setName(String name) {
+
+				this.name = name;
+			}
+
+			public int getRssiRes() {
+
+				return rssiRes;
+			}
+
+			public void setRssiRes(int rssiRes) {
+
+				this.rssiRes = rssiRes;
+			}
+
+			public String getManufacturer() {
+
+				return manufacturer;
+			}
+
+			public void setManufacturer(String manufacturer) {
+
+				this.manufacturer = manufacturer;
+			}
+
+			public String getExpString() {
+
+				return expString;
+			}
+
+			public void setExpString(String expString) {
+
+				this.expString = expString;
+			}
+
+			public String getTimeFormatted() {
+
+				return timeFormatted;
+			}
+
+			public void setTimeFormatted(String timeFormatted) {
+
+				this.timeFormatted = timeFormatted;
+			}
+
+			@Override
+			public boolean equals(Object o) {
+
+				return macAddress.equals(((FDAdapterData) o).macAddress);
+			}
+
+		}
+
+		public class FoundDevicesAdapter extends ArrayAdapter<FDAdapterData> {
+
+			private ArrayList<FDAdapterData> dataList;
+			private ArrayList<FDAdapterData> originalDataList;
+			public FoundDevicesAdapter(Context context,
+					int textViewResourceId,
+					ArrayList<FDAdapterData> objects) {
+
+				super(context, textViewResourceId, objects);
+				dataList = objects;
+				originalDataList = objects;
 
 			}
 
@@ -552,11 +726,11 @@ public class FragmentLayoutManager {
 								View convertView,
 								ViewGroup parent) {
 
-				if (devices == null || devices.get(position) == null) { return new View(context); }
-
 				View rowView = convertView;
 				if (rowView == null) {
-					rowView = inflater.inflate(R.layout.act_page_founddevices_row, parent, false);
+					LayoutInflater inflater =
+							(LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					rowView = inflater.inflate(R.layout.act_page_founddevices_row, null);
 
 					ViewHolder viewHolder = new ViewHolder();
 
@@ -574,12 +748,11 @@ public class FragmentLayoutManager {
 
 				ViewHolder holder = (ViewHolder) rowView.getTag();
 
-				if (holder != null) {
+				FDAdapterData data = dataList.get(position);
 
-					String deviceAsString = devices.get(position);
-					String[] device = deviceAsString.split(String.valueOf((char) 30));
+				if (holder != null && data != null) {
 
-					String nameString = device[ARRAY_INDEX_NAME];
+					String nameString = data.getName();
 					if (nameString == null || nameString.equals("null")) {
 						nameString = "";
 						holder.nameTableRow.setVisibility(View.GONE);
@@ -588,327 +761,28 @@ public class FragmentLayoutManager {
 						holder.nameTableRow.setVisibility(View.VISIBLE);
 					}
 
-					holder.macAddress.setText(device[ARRAY_INDEX_MAC_ADDRESS]);
+					holder.macAddress.setText(data.getMacAddress());
 					holder.name.setText(nameString);
-					holder.manufacturer.setText(device[ARRAY_INDEX_MANUFACTURER]);
+					holder.manufacturer.setText(data.getManufacturer());
 
-					int rssiId = Integer.parseInt(device[ARRAY_INDEX_RSSI]);
+					int rssiId = data.getRssiRes();
 					if (rssiId == 0)
 						holder.rssi.setImageResource(android.R.color.transparent);
 					else
 						holder.rssi.setImageResource(rssiId);
 
-					holder.time.setText(device[ARRAY_INDEX_TIME]);
-					holder.exp.setText(device[ARRAY_INDEX_EXP]);
+					holder.time.setText(data.getTimeFormatted());
+					holder.exp.setText(data.getExpString());
 
 				}
 				return rowView;
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#getFilter()
-			 */
-			@Override
-			public Filter getFilter() {
+			public void refreshList(ArrayList<FDAdapterData> data) {
 
-				if (filter == null) {
-					filter = new FoundDevicesFilter();
-				}
-
-				return filter;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#add(java.lang.Object)
-			 */
-			@Override
-			public void add(String object) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.add(object);
-					}
-					else {
-						devices.add(object);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#addAll(java.util.Collection)
-			 */
-			@Override
-			public void addAll(Collection<? extends String> collection) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.addAll(collection);
-					}
-					else {
-						devices.addAll(collection);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#addAll(T[])
-			 */
-			@Override
-			public void addAll(String... items) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						Collections.addAll(originalValues, items);
-					}
-					else {
-						Collections.addAll(devices, items);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#clear()
-			 */
-			@Override
-			public void clear() {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.clear();
-					}
-					else {
-						devices.clear();
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#getCount()
-			 */
-			@Override
-			public int getCount() {
-
-				return devices.size();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#getItem(int)
-			 */
-			@Override
-			public String getItem(int position) {
-
-				return devices.get(position);
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#getPosition(java.lang.Object)
-			 */
-			@Override
-			public int getPosition(String item) {
-
-				return devices.indexOf(item);
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#insert(java.lang.Object, int)
-			 */
-			@Override
-			public void insert(	String object,
-								int index) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.add(index, object);
-					}
-					else {
-						devices.add(index, object);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#remove(java.lang.Object)
-			 */
-			@Override
-			public void remove(String object) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.remove(object);
-					}
-					else {
-						devices.remove(object);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#sort(java.util.Comparator)
-			 */
-			@Override
-			public void sort(Comparator<? super String> comparator) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						Collections.sort(originalValues, comparator);
-					}
-					else {
-						Collections.sort(devices, comparator);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			@Override
-			public void notifyDataSetChanged() {
-
-				super.notifyDataSetChanged();
-				notifyOnChange = true;
-			}
-
-			@Override
-			public void setNotifyOnChange(boolean notifyOnChange) {
-
-				this.notifyOnChange = notifyOnChange;
-			}
-
-			public void refill(List<String> newDevices) {
-
-				this.devices.clear();
-				this.devices.addAll(newDevices);
+				clear();
+				addAll(new ArrayList<FDAdapterData>(data));
 				notifyDataSetChanged();
-			}
-
-			public int getResId(String variableName,
-								Context context,
-								Class<?> c) {
-
-				try {
-					Field idField = c.getDeclaredField(variableName);
-					return idField.getInt(idField);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-					return -1;
-				}
-			}
-
-			/**
-			 * @author Maksl5[Markus Bensing]
-			 * 
-			 */
-			private class FoundDevicesFilter extends Filter {
-
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see android.widget.Filter#performFiltering(java.lang.CharSequence)
-				 */
-				@Override
-				protected FilterResults performFiltering(CharSequence filterSequence) {
-
-					FilterResults results = new FilterResults();
-
-					if (originalValues == null) {
-						synchronized (lock) {
-							originalValues = new ArrayList<String>(devices);
-						}
-					}
-
-					if (filterSequence == null || filterSequence.length() == 0) {
-						ArrayList<String> list;
-						synchronized (lock) {
-							list = new ArrayList<String>(originalValues);
-						}
-						results.values = list;
-						results.count = list.size();
-					}
-					else {
-						String filterString = filterSequence.toString().toLowerCase();
-
-						ArrayList<String> devicesList;
-						synchronized (lock) {
-
-							if (!originalValues.isEmpty())
-								devicesList = new ArrayList<String>(originalValues);
-							else
-								devicesList = new ArrayList<String>(completeFdList);
-
-						}
-
-						final int count = devicesList.size();
-						final ArrayList<String> newValues = new ArrayList<String>();
-
-						for (int i = 0; i < count; i++) {
-							final String device = devicesList.get(i);
-							final String deviceString = device.toString().toLowerCase();
-
-							final String[] deviceAsArray =
-									deviceString.split(String.valueOf((char) 30));
-
-							for (String property : deviceAsArray) {
-								if (property.contains(filterString)) {
-									if (!newValues.contains(device)) newValues.add(device);
-								}
-							}
-
-						}
-
-						results.values = newValues;
-						results.count = newValues.size();
-					}
-
-					return results;
-				}
-
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see android.widget.Filter#publishResults(java.lang.CharSequence,
-				 * android.widget.Filter.FilterResults)
-				 */
-				@Override
-				protected void publishResults(	CharSequence constraint,
-												FilterResults results) {
-
-					devices = (ArrayList<String>) results.values;
-					showedFdList = new ArrayList<String>(devices);
-					if (results.count > 0) {
-						refill(showedFdList);
-					}
-					else {
-						notifyDataSetInvalidated();
-					}
-
-				}
 
 			}
 
@@ -930,9 +804,13 @@ public class FragmentLayoutManager {
 
 	/**
 	 * @author Maksl5
-	 * 
 	 */
 	public static class DeviceDiscoveryLayout {
+
+		private static DiscoveryAdapter dAdapter;
+		private static ListView lv;
+
+		private static ArrayList<FoundDevice> curList;
 
 		public static void updateIndicatorViews(MainActivity mainActivity) {
 
@@ -958,11 +836,9 @@ public class FragmentLayoutManager {
 			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 
 			int deviceNum = new DatabaseManager(mainActivity.getBlueHunter()).getDeviceNum();
-			String firstTimeString =
-					new DatabaseManager(mainActivity.getBlueHunter()).getDevice(DatabaseManager.DatabaseHelper.COLUMN_TIME + " != 0", DatabaseManager.DatabaseHelper.COLUMN_TIME + " DESC").get(DatabaseManager.INDEX_TIME);
-
 			long firstTime =
-					(firstTimeString == null) ? System.currentTimeMillis() : Long.parseLong(firstTimeString);
+					new DatabaseManager(mainActivity.getBlueHunter()).getDevice(DatabaseManager.DatabaseHelper.COLUMN_TIME + " != 0", DatabaseManager.DatabaseHelper.COLUMN_TIME + " DESC").getTime();
+
 			long now = System.currentTimeMillis();
 			double devPerDay = (deviceNum / (double) (now - firstTime)) * 86400000;
 			double expPerDay = (exp / (double) (now - firstTime)) * 86400000;
@@ -970,25 +846,178 @@ public class FragmentLayoutManager {
 			devicesTextView.setText(df.format(deviceNum));
 			devExpPerDayTxt.setText(String.format("%.2f / %.2f", devPerDay, expPerDay));
 
-			List<SparseArray<String>> devicesToday =
+			List<FoundDevice> devicesToday =
 					new DatabaseManager(mainActivity.getBlueHunter()).getDevices(DatabaseManager.DatabaseHelper.COLUMN_TIME + " < " + now + " AND " + DatabaseManager.DatabaseHelper.COLUMN_TIME + " > " + (now - 86400000), null);
 			int devicesTodayNum = devicesToday.size();
 
 			int expTodayNum = 0;
 
 			for (Iterator iterator = devicesToday.iterator(); iterator.hasNext();) {
-				SparseArray<String> sparseArray = (SparseArray<String>) iterator.next();
-				String manufacturer = sparseArray.get(DatabaseManager.INDEX_MANUFACTURER);
+				FoundDevice deviceIt = (FoundDevice) iterator.next();
+				String manufacturer = deviceIt.getManufacturer();
 
-				String bonusString = sparseArray.get(DatabaseManager.INDEX_BONUS);
-				float bonus = 0.0f;
-
-				if (bonusString != null) bonus = Float.parseFloat(bonusString);
+				float bonus = deviceIt.getBonus();
 
 				expTodayNum += MacAddressAllocations.getExp(manufacturer) * (1 + bonus);
 			}
 
 			devExpTodayTxt.setText(String.format("%d / %d", devicesTodayNum, expTodayNum));
+
+			curList =
+					new ArrayList<FoundDevice>(mainActivity.getBlueHunter().disMan.getFDInCurDiscovery());
+
+			TextView devInCurDisTxt =
+					(TextView) mainActivity.findViewById(R.id.txt_discovery_devInCycle_value);
+			devInCurDisTxt.setText("" + curList.size());
+
+			if (dAdapter == null) {
+				dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, curList);
+
+				if (lv == null) lv = (ListView) mainActivity.findViewById(R.id.discoveryListView);
+
+				lv.setAdapter(dAdapter);
+			}
+
+			if (lv != null && mainActivity != null && mainActivity.getBlueHunter() != null && mainActivity.getBlueHunter().disMan != null && mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != -2) {
+
+				if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() == DiscoveryState.DISCOVERY_STATE_RUNNING && lv.getVisibility() != View.VISIBLE) {
+					startShowLV(mainActivity);
+				}
+				else if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_RUNNING && mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_FINISHED && lv.getVisibility() == View.VISIBLE) {
+					stopShowLV(mainActivity);
+				}
+			}
+
+			dAdapter.notifyDataSetChanged();
+		}
+
+		public static void startShowLV(MainActivity main) {
+
+			AlphaAnimation animation = new AlphaAnimation(1f, 0f);
+			animation.setDuration(250);
+
+			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
+			discoveryInfo.startAnimation(animation);
+
+			lv.setVisibility(View.VISIBLE);
+
+			animation = new AlphaAnimation(0f, 1f);
+
+			animation.setDuration(250);
+			discoveryInfo.startAnimation(animation);
+			lv.startAnimation(animation);
+
+		}
+
+		public static void stopShowLV(MainActivity main) {
+
+			AlphaAnimation animation = new AlphaAnimation(1f, 0f);
+			animation.setDuration(250);
+
+			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
+
+			lv.startAnimation(animation);
+			discoveryInfo.startAnimation(animation);
+
+			lv.setVisibility(View.GONE);
+
+			animation = new AlphaAnimation(0f, 1f);
+			animation.setDuration(250);
+
+			discoveryInfo.startAnimation(animation);
+
+		}
+
+		public class DiscoveryAdapter extends ArrayAdapter<FoundDevice> {
+
+			private Activity context;
+			private ArrayList<FoundDevice> values;
+
+			public DiscoveryAdapter(Activity context,
+					ArrayList<FoundDevice> curList) {
+
+				super(context, R.layout.act_page_discovery_row, curList);
+				this.values = curList;
+				this.context = context;
+			}
+
+			@Override
+			public View getView(int position,
+								View convertView,
+								ViewGroup parent) {
+
+				View rowView = convertView;
+				if (rowView == null) {
+					LayoutInflater inflater = context.getLayoutInflater();
+					rowView = inflater.inflate(R.layout.act_page_discovery_row, null);
+
+					Holder holder = new Holder();
+					holder.macAddress = (TextView) rowView.findViewById(R.id.macTxtView);
+					holder.manufacturer = (TextView) rowView.findViewById(R.id.manufacturerTxtView);
+					holder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
+					holder.rssi = (ImageView) rowView.findViewById(R.id.rssiView);
+
+					rowView.setTag(holder);
+
+				}
+
+				Holder vHolder = (Holder) rowView.getTag();
+
+				FoundDevice device = values.get(position);
+
+				String mac = device.getMacAddress();
+				String manufacturer = device.getManufacturer();
+
+				int exp = MacAddressAllocations.getExp(manufacturer);
+
+				int bonusExp =
+						(int) Math.floor(MacAddressAllocations.getExp(manufacturer) * device.getBonus());
+
+				exp = bonusExp + exp;
+
+				int rssi = device.getRssi();
+				int rssiRes = 0;
+
+				// 0 bars
+				if (rssi <= -102) rssiRes = 0;
+
+				// 1 bar
+				if (rssi >= -101 && rssi <= -93) rssiRes = R.drawable.rssi_1;
+
+				// 2 bars
+				if (rssi >= -92 && rssi <= -87) rssiRes = R.drawable.rssi_2;
+
+				// 3 bars
+				if (rssi >= -86 && rssi <= -78) rssiRes = R.drawable.rssi_3;
+
+				// 4 bars
+				if (rssi >= -77 && rssi <= -40) rssiRes = R.drawable.rssi_4;
+
+				// 5 bars
+				if (rssi >= -41) rssiRes = R.drawable.rssi_5;
+
+				if (manufacturer.equals("Unknown")) {
+					manufacturer = context.getString(R.string.str_foundDevices_manu_unkown);
+				}
+
+				String expString = context.getString(R.string.str_foundDevices_exp_abbreviation);
+
+				vHolder.macAddress.setText(mac);
+				vHolder.manufacturer.setText(manufacturer);
+				vHolder.exp.setText("+" + exp + " " + expString);
+				vHolder.rssi.setImageResource(rssiRes);
+
+				return rowView;
+			}
+
+		}
+
+		static class Holder {
+
+			TextView macAddress;
+			TextView manufacturer;
+			TextView exp;
+			ImageView rssi;
 
 		}
 
@@ -996,7 +1025,6 @@ public class FragmentLayoutManager {
 
 	/**
 	 * @author Maksl5
-	 * 
 	 */
 	public static class ProfileLayout {
 
@@ -1386,7 +1414,6 @@ public class FragmentLayoutManager {
 
 	/**
 	 * @author Maksl5
-	 * 
 	 */
 	public static class LeaderboardLayout {
 
@@ -1398,14 +1425,60 @@ public class FragmentLayoutManager {
 		public static final int ARRAY_INDEX_EXP = 5;
 		public static final int ARRAY_INDEX_ID = 6;
 
-		private volatile static List<String> showedFdList = new ArrayList<String>();
-		public volatile static List<String> completeFdList = new ArrayList<String>();
+		private volatile static ArrayList<LBAdapterData> showedFdList =
+				new ArrayList<LBAdapterData>();
+		public volatile static ArrayList<LBAdapterData> completeFdList =
+				new ArrayList<LBAdapterData>();
 
 		private static ThreadManager threadManager = null;
 
 		public static HashMap<Integer, Integer> changeList = new HashMap<Integer, Integer>();
 
 		public static void refreshLeaderboard(final BlueHunter bhApp) {
+
+			refreshLeaderboard(bhApp, false);
+		}
+
+		public static void refreshLeaderboard(	final BlueHunter bhApp,
+												boolean orientationChanged) {
+
+			if (orientationChanged) {
+
+				ListView listView;
+				LeaderboardAdapter ldAdapter;
+
+				if (bhApp.mainActivity.mViewPager == null) {
+					bhApp.mainActivity.mViewPager =
+							(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+				}
+
+				ViewPager pager = bhApp.mainActivity.mViewPager;
+				View pageView = pager.getChildAt(PAGE_LEADERBOARD + 1);
+
+				if (pageView == null) {
+					listView = (ListView) pager.findViewById(R.id.listView1);
+				}
+				else {
+					listView = (ListView) pageView.findViewById(R.id.listView1);
+				}
+
+				if (listView == null) {
+					listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView1);
+				}
+
+				if (listView == null) { return; }
+
+				ldAdapter = (LeaderboardAdapter) listView.getAdapter();
+				if (ldAdapter == null || ldAdapter.isEmpty()) {
+					ldAdapter =
+							new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
+					listView.setAdapter(ldAdapter);
+				}
+
+				ldAdapter.notifyDataSetChanged();
+				return;
+
+			}
 
 			if (threadManager == null) {
 				threadManager = new LeaderboardLayout().new ThreadManager();
@@ -1424,25 +1497,79 @@ public class FragmentLayoutManager {
 		public static void filterLeaderboard(	String text,
 												BlueHunter bhApp) {
 
+			if (threadManager.running) return;
+
 			List<String> searchedList = new ArrayList<String>();
 
-			ListView lv =
-					(ListView) bhApp.mainActivity.mViewPager.getChildAt(PAGE_LEADERBOARD + 1).findViewById(R.id.listView1);
+			if (bhApp.mainActivity.mViewPager == null) {
+				bhApp.mainActivity.mViewPager =
+						(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+			}
+
+			ViewPager pager = bhApp.mainActivity.mViewPager;
+			View pageView = pager.getChildAt(PAGE_LEADERBOARD + 1);
+			ListView lv;
+			
+			
+			if (pageView == null) {
+				lv = (ListView) pager.findViewById(R.id.listView1);
+			}
+			else {
+				lv = (ListView) pageView.findViewById(R.id.listView1);
+			}
+
+			if (lv == null) {
+				lv = (ListView) bhApp.mainActivity.findViewById(R.id.listView1);
+			}
+
+			if (lv == null) {
+				return;
+			}
+			
 			LeaderboardAdapter lbAdapter = (LeaderboardAdapter) lv.getAdapter();
+			
 			if (lbAdapter == null || lbAdapter.isEmpty()) {
 				lbAdapter =
 						new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
 				lv.setAdapter(lbAdapter);
 			}
-
-			else if (text.length() == 0) {
+			
+			text = text.toLowerCase();
+			
+			if (text.length() == 0) {
 				if (!showedFdList.equals(completeFdList)) {
-					showedFdList = completeFdList;
-					lbAdapter.refill(showedFdList);
+					showedFdList = new ArrayList<LBAdapterData>(completeFdList);
+					lbAdapter.refreshList(showedFdList);
 				}
 			}
 			else {
-				lbAdapter.getFilter().filter(text);
+
+					ArrayList<LBAdapterData> filterList =
+							new ArrayList<LBAdapterData>(completeFdList);
+
+					final int count = filterList.size();
+					final ArrayList<LBAdapterData> newValues = new ArrayList<LBAdapterData>();
+
+					for (int i = 0; i < count; i++) {
+						final LBAdapterData data = filterList.get(i);
+
+						if (data.getName().toLowerCase().contains(text))
+							if (!newValues.contains(data)) newValues.add(data);
+
+						if (("" + data.getDevNum()).toLowerCase().contains(text))
+							if (!newValues.contains(data)) newValues.add(data);
+
+						if (("" + data.getExp()).toLowerCase().contains(text))
+							if (!newValues.contains(data)) newValues.add(data);
+
+						if (("" + data.getLevel()).toLowerCase().contains(text))
+							if (!newValues.contains(data)) newValues.add(data);
+
+					}
+
+					showedFdList = newValues;
+					lbAdapter.refreshList(showedFdList);
+
 			}
 
 		}
@@ -1528,8 +1655,10 @@ public class FragmentLayoutManager {
 
 					List<NameValuePair> postValues = new ArrayList<NameValuePair>();
 
+					
+					
 					URI httpUri =
-							URI.create("http://maks.mph-p.de/blueHunter/getLeaderboard.php?s=" + startIndex + "&l=" + length);
+							URI.create(AuthentificationSecure.SERVER_GET_LEADERBOARD + "?s=" + startIndex + "&l=" + length);
 
 					HttpClient httpClient;
 
@@ -1579,12 +1708,12 @@ public class FragmentLayoutManager {
 					Matcher matcher = pattern.matcher(result);
 					if (matcher.find()) {
 						int errorCode = Integer.parseInt(matcher.group(1));
-						String array =
-								"Error " + errorCode + (char) 30 + "" + (char) 30 + 100 + (char) 30 + 0 + (char) 30 + 0 + (char) 30 + 0 + (char) 30 + 0;
 
-						showedFdList.add(array);
+						LBAdapterData data =
+								new LBAdapterData("Error " + errorCode, 0, 100, 0, 0, 0, 0);
+						showedFdList.add(data);
 
-						if (ldAdapter != null) ldAdapter.notifyDataSetChanged();
+						if (ldAdapter != null) ldAdapter.refreshList(showedFdList);
 
 						listView.setSelectionFromTop(scrollIndex, scrollTop);
 
@@ -1634,11 +1763,12 @@ public class FragmentLayoutManager {
 
 							last = element.getAttribute("last").equals("1");
 
-							String array =
-									name + (char) 30 + level + (char) 30 + progressMax + (char) 30 + progressValue + (char) 30 + num + (char) 30 + exp + (char) 30 + id;
+							LBAdapterData data =
+									new LBAdapterData(name, level, progressMax, progressValue, num, exp, id);
 
-							showedFdList.add(array);
-							showedFdList.set(rank - 1, array);
+							completeFdList.add(data);
+							completeFdList.set(rank - 1, data);
+							showedFdList = completeFdList;
 
 						}
 
@@ -1647,7 +1777,7 @@ public class FragmentLayoutManager {
 					threadManager.finished(this);
 
 					if (last) {
-						completeFdList = showedFdList;
+						showedFdList = completeFdList;
 						ldAdapter.notifyDataSetChanged();
 
 						listView.setSelectionFromTop(scrollIndex, scrollTop);
@@ -1737,42 +1867,125 @@ public class FragmentLayoutManager {
 			}
 		}
 
-		public class LeaderboardAdapter extends ArrayAdapter<String> {
+		public class LBAdapterData {
 
-			private final Object lock = new Object();
+			private String name;
+			private int level;
+			private int progressMax;
+			private int progressValue;
+			private int devNum;
+			private int exp;
+			private int id;
 
-			private Context context;
+			public LBAdapterData(String name,
+					int level,
+					int progressMax,
+					int progressValue,
+					int devNum,
+					int exp,
+					int id) {
 
-			private LeaderboardFilter filter;
+				this.name = name;
+				this.level = level;
+				this.progressMax = progressMax;
+				this.progressValue = progressValue;
+				this.devNum = devNum;
+				this.exp = exp;
+				this.id = id;
+			}
 
-			private List<String> users;
+			public String getName() {
 
-			private ArrayList<String> originalValues;
+				return name;
+			}
 
-			private boolean notifyOnChange = true;
+			public void setName(String name) {
 
-			private LayoutInflater inflater;
+				this.name = name;
+			}
+
+			public int getLevel() {
+
+				return level;
+			}
+
+			public void setLevel(int level) {
+
+				this.level = level;
+			}
+
+			public int getProgressMax() {
+
+				return progressMax;
+			}
+
+			public void setProgressMax(int progressMax) {
+
+				this.progressMax = progressMax;
+			}
+
+			public int getProgressValue() {
+
+				return progressValue;
+			}
+
+			public void setProgressValue(int progressValue) {
+
+				this.progressValue = progressValue;
+			}
+
+			public int getDevNum() {
+
+				return devNum;
+			}
+
+			public void setDevNum(int devNum) {
+
+				this.devNum = devNum;
+			}
+
+			public int getExp() {
+
+				return exp;
+			}
+
+			public void setExp(int exp) {
+
+				this.exp = exp;
+			}
+
+			public int getId() {
+
+				return id;
+			}
+
+			public void setId(int id) {
+
+				this.id = id;
+			}
+
+			@Override
+			public boolean equals(Object o) {
+
+				// TODO Auto-generated method stub
+				return id == ((LBAdapterData) (o)).id;
+			}
+
+		}
+
+		public class LeaderboardAdapter extends ArrayAdapter<LBAdapterData> {
+
+			private ArrayList<LBAdapterData> dataList;
+			private ArrayList<LBAdapterData> originalDataList;
 
 			public LeaderboardAdapter(Context context,
 					int textViewResourceId,
-					List<String> objects) {
+					ArrayList<LBAdapterData> newLbData) {
 
-				super(context, textViewResourceId, objects);
-				init(context, textViewResourceId, 0, objects);
+				super(context, textViewResourceId, showedFdList);
 
-				users = objects;
-
-			}
-
-			private void init(	Context context,
-								int resource,
-								int textViewResourceId,
-								List<String> objects) {
-
-				this.context = context;
-				inflater =
-						(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				this.users = objects;
+				dataList = newLbData;
+				originalDataList = newLbData;
 
 			}
 
@@ -1781,10 +1994,10 @@ public class FragmentLayoutManager {
 								View convertView,
 								ViewGroup parent) {
 
-				if (users == null || users.get(position) == null) { return new View(context); }
-
 				View rowView = convertView;
 				if (rowView == null) {
+					LayoutInflater inflater =
+							(LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					rowView = inflater.inflate(R.layout.act_page_leaderboard_row, parent, false);
 
 					ViewHolder viewHolder = new ViewHolder();
@@ -1803,24 +2016,23 @@ public class FragmentLayoutManager {
 
 				ViewHolder holder = (ViewHolder) rowView.getTag();
 
-				if (holder != null && users.size() > position) {
+				if (holder != null && dataList != null && dataList.size() > position) {
 
-					String userAsString = users.get(position);
-					String[] user = userAsString.split(String.valueOf((char) 30));
+					LBAdapterData user = dataList.get(position);
 
-					String nameString = user[ARRAY_INDEX_NAME];
+					String nameString = user.getName();
 
-					holder.rank.setText("" + (completeFdList.indexOf(userAsString) + 1) + ".");
+					holder.rank.setText("" + (completeFdList.indexOf(user) + 1) + ".");
 					holder.name.setText(nameString);
-					holder.name.setTag(user[ARRAY_INDEX_ID]);
-					holder.level.setText(user[ARRAY_INDEX_LEVEL]);
-					holder.levelPrg.setMax(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_MAX]));
-					holder.levelPrg.setProgress(Integer.parseInt(user[ARRAY_INDEX_PROGRESS_VALUE]));
-					holder.devices.setText(new DecimalFormat(",###").format(Integer.parseInt(user[ARRAY_INDEX_DEV_NUMBER])) + " Devices");
-					holder.exp.setText(new DecimalFormat(",###").format(Integer.parseInt(user[ARRAY_INDEX_EXP])) + " " + context.getString(R.string.str_foundDevices_exp_abbreviation));
+					holder.name.setTag(user.getId());
+					holder.level.setText("" + user.getLevel());
+					holder.levelPrg.setMax(user.getProgressMax());
+					holder.levelPrg.setProgress(user.getProgressValue());
+					holder.devices.setText(new DecimalFormat(",###").format(user.getDevNum()) + " Devices");
+					holder.exp.setText(new DecimalFormat(",###").format(user.getExp()) + " " + getContext().getString(R.string.str_foundDevices_exp_abbreviation));
 
 					int rankNow = position + 1;
-					Integer rankBefore = changeList.get(Integer.parseInt(user[ARRAY_INDEX_ID]));
+					Integer rankBefore = changeList.get(user.getId());
 
 					if (rankBefore == null) rankBefore = position + 1;
 
@@ -1846,296 +2058,12 @@ public class FragmentLayoutManager {
 				return rowView;
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#getFilter()
-			 */
-			@Override
-			public Filter getFilter() {
-
-				if (filter == null) {
-					filter = new LeaderboardFilter();
-				}
-
-				return filter;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#add(java.lang.Object)
-			 */
-			@Override
-			public void add(String object) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.add(object);
-					}
-					else {
-						users.add(object);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#addAll(java.util.Collection)
-			 */
-			@Override
-			public void addAll(Collection<? extends String> collection) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.addAll(collection);
-					}
-					else {
-						users.addAll(collection);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#addAll(T[])
-			 */
-			@Override
-			public void addAll(String... items) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						Collections.addAll(originalValues, items);
-					}
-					else {
-						Collections.addAll(users, items);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#clear()
-			 */
-			@Override
-			public void clear() {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.clear();
-					}
-					else {
-						users.clear();
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#getCount()
-			 */
-			@Override
-			public int getCount() {
-
-				return users.size();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#getItem(int)
-			 */
-			@Override
-			public String getItem(int position) {
-
-				return users.get(position);
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#getPosition(java.lang.Object)
-			 */
-			@Override
-			public int getPosition(String item) {
-
-				return users.indexOf(item);
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#insert(java.lang.Object, int)
-			 */
-			@Override
-			public void insert(	String object,
-								int index) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.add(index, object);
-					}
-					else {
-						users.add(index, object);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#remove(java.lang.Object)
-			 */
-			@Override
-			public void remove(String object) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						originalValues.remove(object);
-					}
-					else {
-						users.remove(object);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see android.widget.ArrayAdapter#sort(java.util.Comparator)
-			 */
-			@Override
-			public void sort(Comparator<? super String> comparator) {
-
-				synchronized (lock) {
-					if (originalValues != null) {
-						Collections.sort(originalValues, comparator);
-					}
-					else {
-						Collections.sort(users, comparator);
-					}
-				}
-				if (notifyOnChange) notifyDataSetChanged();
-			}
-
-			@Override
-			public void notifyDataSetChanged() {
-
-				super.notifyDataSetChanged();
-				notifyOnChange = true;
-			}
-
-			@Override
-			public void setNotifyOnChange(boolean notifyOnChange) {
-
-				this.notifyOnChange = notifyOnChange;
-			}
-
-			public void refill(List<String> devices) {
-
-				this.users.clear();
-				this.users.addAll(devices);
+			public void refreshList(ArrayList<LBAdapterData> data) {
+				
+				clear();
+				addAll(data);
 				notifyDataSetChanged();
-			}
-
-			/**
-			 * @author Maksl5[Markus Bensing]
-			 * 
-			 */
-			private class LeaderboardFilter extends Filter {
-
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see android.widget.Filter#performFiltering(java.lang.CharSequence)
-				 */
-				@Override
-				protected FilterResults performFiltering(CharSequence filterSequence) {
-
-					FilterResults results = new FilterResults();
-
-					if (originalValues == null) {
-						synchronized (lock) {
-							originalValues = new ArrayList<String>(users);
-						}
-					}
-
-					if (filterSequence == null || filterSequence.length() == 0) {
-						ArrayList<String> list;
-						synchronized (lock) {
-							if (!originalValues.isEmpty())
-								list = new ArrayList<String>(originalValues);
-							else
-								list = new ArrayList<String>(originalValues);
-
-						}
-						results.values = list;
-						results.count = list.size();
-					}
-					else {
-						String filterString = filterSequence.toString().toLowerCase();
-
-						ArrayList<String> devicesList;
-						synchronized (lock) {
-							devicesList = new ArrayList<String>(originalValues);
-						}
-
-						final int count = devicesList.size();
-						final ArrayList<String> newValues = new ArrayList<String>();
-
-						for (int i = 0; i < count; i++) {
-							final String device = devicesList.get(i);
-							final String deviceString = device.toString().toLowerCase();
-
-							final String[] deviceAsArray =
-									deviceString.split(String.valueOf((char) 30));
-
-							for (String property : deviceAsArray) {
-								if (property.contains(filterString)) {
-									if (!newValues.contains(device)) newValues.add(device);
-								}
-							}
-
-						}
-
-						results.values = newValues;
-						results.count = newValues.size();
-					}
-
-					return results;
-				}
-
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see android.widget.Filter#publishResults(java.lang.CharSequence,
-				 * android.widget.Filter.FilterResults)
-				 */
-				@Override
-				protected void publishResults(	CharSequence constraint,
-												FilterResults results) {
-
-					users = (List<String>) results.values;
-					showedFdList = users;
-					if (results.count > 0) {
-						notifyDataSetChanged();
-					}
-					else {
-						notifyDataSetInvalidated();
-					}
-
-				}
-
+				
 			}
 
 		}
@@ -2156,7 +2084,6 @@ public class FragmentLayoutManager {
 
 	/**
 	 * @author Maksl5[Markus Bensing]
-	 * 
 	 */
 	public static class AchievementsLayout {
 

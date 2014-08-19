@@ -1,6 +1,6 @@
 /**
  *  RandomToast.java in com.maksl5.bl_hunt.custom_ui
- *  © Maksl5[Markus Bensing] 2013
+ *  Â© Maksl5[Markus Bensing] 2013
  */
 package com.maksl5.bl_hunt.custom_ui;
 

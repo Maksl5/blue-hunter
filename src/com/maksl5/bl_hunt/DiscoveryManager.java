@@ -12,14 +12,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Vibrator;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
+import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
@@ -85,6 +89,15 @@ public class DiscoveryManager {
 
 	}
 
+	public void supplyNewTextView(TextView txtView) {
+
+		int curState = btHandler.disState.curDiscoveryState;
+		DiscoveryState discoveryState = new DiscoveryState(txtView, bhApp);
+		discoveryState.setDiscoveryState(curState);
+		btHandler.supplyNewDiscoveryState(discoveryState);
+
+	}
+
 	public boolean passEnableBTActivityResult(	int result,
 												int request) {
 
@@ -126,6 +139,21 @@ public class DiscoveryManager {
 	public void stopDiscoveryManager() {
 
 		btHandler.stopDiscovery();
+	}
+
+	public List<FoundDevice> getFDInCurDiscovery() {
+
+		return btHandler.fDListCurDiscovery;
+
+	}
+
+	public int getCurDiscoveryState() {
+
+		if (btHandler != null && btHandler.disState != null)
+			return btHandler.disState.getCurDiscoveryState();
+
+		return -2;
+		
 	}
 
 	/**
@@ -302,6 +330,7 @@ public class DiscoveryManager {
 
 		private List<String> foundDevices;
 		private List<BluetoothDevice> foundDevicesInCurDiscovery;
+		private List<FoundDevice> fDListCurDiscovery;
 		private int requestId = 0;
 
 		private BluetoothDiscoveryHandler(DiscoveryState state) {
@@ -311,9 +340,13 @@ public class DiscoveryManager {
 
 			foundDevices = new DatabaseManager(bhApp).getMacAddresses();
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
+			fDListCurDiscovery = new ArrayList<FoundDevice>();
 
 			discoveryButton =
 					(CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
+
+			final ListView discoveryListView =
+					(ListView) bhApp.mainActivity.findViewById(R.id.discoveryListView);
 
 			requestBtEnable(false);
 
@@ -325,6 +358,7 @@ public class DiscoveryManager {
 
 					if (isChecked) {
 						if (isBluetoothEnabled()) {
+							FragmentLayoutManager.DeviceDiscoveryLayout.startShowLV(bhApp.mainActivity);
 							runDiscovery();
 						}
 						else {
@@ -335,6 +369,7 @@ public class DiscoveryManager {
 						if (isBluetoothEnabled()) {
 
 							stopDiscovery();
+							FragmentLayoutManager.DeviceDiscoveryLayout.stopShowLV(bhApp.mainActivity);
 
 							if (PreferenceManager.getPref(bhApp, "pref_disBtSrchOff", false)) {
 								disableBluetooth();
@@ -496,6 +531,7 @@ public class DiscoveryManager {
 				case BluetoothAdapter.STATE_ON:
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_OFF);
 					if (requestId == 128) {
+						FragmentLayoutManager.DeviceDiscoveryLayout.startShowLV(bhApp.mainActivity);
 						runDiscovery();
 					}
 					break;
@@ -522,6 +558,11 @@ public class DiscoveryManager {
 				foundDevicesInCurDiscovery = null;
 				foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 
+				fDListCurDiscovery = null;
+				fDListCurDiscovery = new ArrayList<FoundDevice>();
+
+				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+
 				if (discoveryButton.isChecked()) {
 					runDiscovery();
 				}
@@ -544,14 +585,22 @@ public class DiscoveryManager {
 		}
 
 		public void onDeviceFound(	BluetoothDevice btDevice,
-									short RSSI) {
+									short rssi) {
 
 			foundDevices = new DatabaseManager(bhApp).getMacAddresses();
 
 			if (!foundDevices.contains(btDevice.getAddress())) {
 				foundDevicesInCurDiscovery.add(btDevice);
+
+				FoundDevice device = new FoundDevice();
+				device.setMac(btDevice.getAddress().toUpperCase());
+				device.setRssi(rssi);
+				device.setTime(System.currentTimeMillis());
+				device.setBonus(AchievementSystem.getBonus());
+
+				fDListCurDiscovery.add(device);
 				attemptVibration();
-				new DatabaseManager(bhApp).addNewDevice(btDevice.getAddress(), RSSI, AchievementSystem.getBonus());
+				new DatabaseManager(bhApp).addNewDevice(device);
 
 				FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
@@ -570,6 +619,11 @@ public class DiscoveryManager {
 				vibrator.vibrate(500);
 			}
 
+		}
+
+		public void supplyNewDiscoveryState(DiscoveryState discoveryState) {
+
+			this.disState = discoveryState;
 		}
 
 	}

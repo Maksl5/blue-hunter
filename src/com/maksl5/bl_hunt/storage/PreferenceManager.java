@@ -1,6 +1,6 @@
 /**
  *  PreferenceManager.java in com.maksl5.bl_hunt
- *  © Maksl5[Markus Bensing] 2012
+ *  Â© Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt.storage;
 

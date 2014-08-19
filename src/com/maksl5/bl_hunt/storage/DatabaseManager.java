@@ -1,6 +1,6 @@
 /**
  *  DatabaseHelper.java in com.maksl5.bl_hunt
- *  © Maksl5[Markus Bensing] 2012
+ *  Â© Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt.storage;
 
@@ -23,9 +23,8 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.util.SparseArray;
-
 import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 
@@ -58,27 +57,25 @@ public class DatabaseManager {
 
 	}
 
-	/**
-	 * 
-	 */
-	public boolean addNewDevice(String macAddress) {
+	public boolean addNewDevice(FoundDevice device) {
 
 		long time = System.currentTimeMillis();
 
 		ContentValues values = new ContentValues();
-		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
-		values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(macAddress));
-		values.put(DatabaseHelper.COLUMN_TIME, time);
+
+		if (device.checkNull() == 0) return false;
+
+		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.getMacAddress());
+		values.put(DatabaseHelper.COLUMN_MANUFACTURER, device.getManufacturer());
+		values.put(DatabaseHelper.COLUMN_NAME, device.getName());
+		values.put(DatabaseHelper.COLUMN_RSSI, device.getRssi());
+		values.put(DatabaseHelper.COLUMN_TIME, device.getTime());
+		values.put(DatabaseHelper.COLUMN_BONUS, device.getBonus());
 
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
 			close();
 
-			SparseArray<String> changes = new SparseArray<String>();
-			changes.put(INDEX_MAC_ADDRESS, macAddress);
-			changes.put(INDEX_TIME, String.valueOf(time));
-			changes.put(INDEX_BONUS, String.valueOf(0.0f));
-
-			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
+			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, device);
 
 			updateModifiedTime(System.currentTimeMillis());
 			return true;
@@ -91,131 +88,16 @@ public class DatabaseManager {
 
 	}
 
-	public boolean addNewDevice(String macAddress,
-								float bonus) {
-
-		long time = System.currentTimeMillis();
-
-		ContentValues values = new ContentValues();
-		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
-		values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(macAddress));
-		values.put(DatabaseHelper.COLUMN_TIME, time);
-		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
-
-		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
-			close();
-
-			SparseArray<String> changes = new SparseArray<String>();
-			changes.put(INDEX_MAC_ADDRESS, macAddress);
-			changes.put(INDEX_TIME, String.valueOf(time));
-			changes.put(INDEX_BONUS, String.valueOf(bonus));
-
-			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
-
-			updateModifiedTime(System.currentTimeMillis());
-			return true;
-		}
-		else {
-			close();
-			updateModifiedTime(System.currentTimeMillis());
-			return false;
-		}
-
-	}
-
-	/**
-	 * 
-	 */
-	public boolean addNewDevice(String macAddress,
-								short RSSI,
-								float bonus) {
-
-		long time = System.currentTimeMillis();
-
-		ContentValues values = new ContentValues();
-		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
-		values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(macAddress));
-		values.put(DatabaseHelper.COLUMN_RSSI, RSSI);
-		values.put(DatabaseHelper.COLUMN_TIME, time);
-		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
-
-		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
-			close();
-
-			SparseArray<String> changes = new SparseArray<String>();
-			changes.put(INDEX_MAC_ADDRESS, macAddress);
-			changes.put(INDEX_TIME, String.valueOf(time));
-			changes.put(INDEX_RSSI, String.valueOf(RSSI));
-			changes.put(INDEX_BONUS, String.valueOf(bonus));
-
-			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
-
-			updateModifiedTime(System.currentTimeMillis());
-			return true;
-		}
-		else {
-			close();
-			updateModifiedTime(System.currentTimeMillis());
-			return false;
-		}
-
-	}
-
-	/**
-	 * 
-	 */
-	public boolean addNewDevice(String macAddress,
-								String name,
-								short RSSI,
-								float bonus) {
-
-		long time = System.currentTimeMillis();
-
-		ContentValues values = new ContentValues();
-		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
-		values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(macAddress));
-		values.put(DatabaseHelper.COLUMN_NAME, name);
-		values.put(DatabaseHelper.COLUMN_RSSI, RSSI);
-		values.put(DatabaseHelper.COLUMN_TIME, time);
-		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
-
-		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
-			close();
-
-			SparseArray<String> changes = new SparseArray<String>();
-			changes.put(INDEX_MAC_ADDRESS, macAddress);
-			changes.put(INDEX_NAME, name);
-			changes.put(INDEX_TIME, String.valueOf(time));
-			changes.put(INDEX_RSSI, String.valueOf(RSSI));
-			changes.put(INDEX_BONUS, String.valueOf(bonus));
-
-			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, changes);
-
-			updateModifiedTime(System.currentTimeMillis());
-			return true;
-		}
-		else {
-			close();
-			updateModifiedTime(System.currentTimeMillis());
-			return false;
-		}
-
-	}
-
-	private boolean addNewDeviceForIterate(	String macAddress,
-											String name,
-											short RSSI,
-											long time,
-											float bonus,
+	private boolean addNewDeviceForIterate(	FoundDevice device,
 											boolean close) {
 
 		ContentValues values = new ContentValues();
-		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, macAddress);
-		values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(macAddress));
-		values.put(DatabaseHelper.COLUMN_NAME, name);
-		values.put(DatabaseHelper.COLUMN_RSSI, RSSI);
-		values.put(DatabaseHelper.COLUMN_TIME, time);
-		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
+		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.getMacAddress());
+		values.put(DatabaseHelper.COLUMN_MANUFACTURER, device.getManufacturer());
+		values.put(DatabaseHelper.COLUMN_NAME, device.getName());
+		values.put(DatabaseHelper.COLUMN_RSSI, device.getRssi());
+		values.put(DatabaseHelper.COLUMN_TIME, device.getTime());
+		values.put(DatabaseHelper.COLUMN_BONUS, device.getBonus());
 
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
 			if (close) close();
@@ -245,22 +127,22 @@ public class DatabaseManager {
 		return macStrings;
 	}
 
-	public synchronized List<SparseArray<String>> getAllDevices() {
+	public synchronized List<FoundDevice> getAllDevices() {
 
-		List<SparseArray<String>> devices = new ArrayList<SparseArray<String>>();
+		List<FoundDevice> devices = new ArrayList<FoundDevice>();
 
 		Cursor cursor =
 				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null, DatabaseHelper.COLUMN_TIME + " DESC");
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			SparseArray<String> device = new SparseArray<String>();
+			FoundDevice device = new FoundDevice();
 
-			device.put(INDEX_MAC_ADDRESS, cursor.getString(1));
-			device.put(INDEX_NAME, cursor.getString(2));
-			device.put(INDEX_RSSI, cursor.getString(3));
-			device.put(INDEX_TIME, cursor.getString(4));
-			device.put(INDEX_MANUFACTURER, cursor.getString(5));
-			device.put(INDEX_BONUS, cursor.getString(6));
+			device.setMac(cursor.getString(1));
+			device.setName(cursor.getString(2));
+			device.setRssi(cursor.getString(3));
+			device.setTime(cursor.getString(4));
+			device.setManu(cursor.getString(5));
+			device.setBonus(cursor.getString(6));
 
 			devices.add(device);
 			cursor.moveToNext();
@@ -271,23 +153,23 @@ public class DatabaseManager {
 		return devices;
 	}
 
-	public synchronized List<SparseArray<String>> getDevices(	String where,
+	public synchronized List<FoundDevice> getDevices(	String where,
 																String orderBy) {
 
-		List<SparseArray<String>> devices = new ArrayList<SparseArray<String>>();
+		List<FoundDevice> devices = new ArrayList<FoundDevice>();
 
 		Cursor cursor =
 				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, where, null, null, null, orderBy);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			SparseArray<String> device = new SparseArray<String>();
+			FoundDevice device = new FoundDevice();
 
-			device.put(INDEX_MAC_ADDRESS, cursor.getString(1));
-			device.put(INDEX_NAME, cursor.getString(2));
-			device.put(INDEX_RSSI, cursor.getString(3));
-			device.put(INDEX_TIME, cursor.getString(4));
-			device.put(INDEX_MANUFACTURER, cursor.getString(5));
-			device.put(INDEX_BONUS, cursor.getString(6));
+			device.setMac(cursor.getString(1));
+			device.setName(cursor.getString(2));
+			device.setRssi(cursor.getString(3));
+			device.setTime(cursor.getString(4));
+			device.setManu(cursor.getString(5));
+			device.setBonus(cursor.getString(6));
 
 			devices.add(device);
 			cursor.moveToNext();
@@ -312,23 +194,23 @@ public class DatabaseManager {
 		return num;
 	}
 
-	public synchronized SparseArray<String> getDevice(	String where,
+	public synchronized FoundDevice getDevice(	String where,
 														String orderBy) {
 
 		Cursor cursor =
 				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, where, null, null, null, orderBy);
 		cursor.moveToFirst();
 
-		SparseArray<String> device = new SparseArray<String>();
+		FoundDevice device = new FoundDevice();
 
 		while (!cursor.isAfterLast()) {
-
-			device.put(INDEX_MAC_ADDRESS, cursor.getString(1));
-			device.put(INDEX_NAME, cursor.getString(2));
-			device.put(INDEX_RSSI, cursor.getString(3));
-			device.put(INDEX_TIME, cursor.getString(4));
-			device.put(INDEX_MANUFACTURER, cursor.getString(5));
-			device.put(INDEX_BONUS, cursor.getString(6));
+			
+			device.setMac(cursor.getString(1));
+			device.setName(cursor.getString(2));
+			device.setRssi(cursor.getString(3));
+			device.setTime(cursor.getString(4));
+			device.setManu(cursor.getString(5));
+			device.setBonus(cursor.getString(6));
 
 			cursor.moveToNext();
 		}
@@ -346,8 +228,9 @@ public class DatabaseManager {
 
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
 
-		SparseArray<String> change = new SparseArray<String>();
-		change.put(INDEX_NAME, name);
+		FoundDevice change = new FoundDevice();
+		change.setMac(macAddress);
+		change.setName(name);
 
 		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
 
@@ -375,9 +258,10 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
 
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
-
-		SparseArray<String> change = new SparseArray<String>();
-		change.put(INDEX_BONUS, "" + bonus);
+		
+		FoundDevice change = new FoundDevice();
+		change.setMac(macAddress);
+		change.setBonus(bonus);
 
 		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
 
@@ -394,11 +278,11 @@ public class DatabaseManager {
 		updateModifiedTime(System.currentTimeMillis());
 
 		if (result == 0) return false;
+		
+		FoundDevice removeDevice = new FoundDevice();
+		removeDevice.setMac(macAddress);
 
-		SparseArray<String> change = new SparseArray<String>();
-		change.put(INDEX_MAC_ADDRESS, macAddress);
-
-		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_REMOVE, change);
+		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_REMOVE, removeDevice);
 
 		return true;
 	}
@@ -406,13 +290,13 @@ public class DatabaseManager {
 	/**
 	 * @param devices
 	 */
-	public void newSyncedDatabase(List<SparseArray<String>> devices) {
+	public void newSyncedDatabase(List<FoundDevice> devices) {
 
 		db.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.FOUND_DEVICES_TABLE);
 		db.execSQL(DatabaseHelper.FOUND_DEVICES_CREATE);
 
-		for (SparseArray<String> sparseArray : devices) {
-			addNewDeviceForIterate(sparseArray.get(INDEX_MAC_ADDRESS), sparseArray.get(INDEX_NAME), Short.parseShort(sparseArray.get(INDEX_RSSI)), Long.parseLong(sparseArray.get(INDEX_TIME)), Float.parseFloat(sparseArray.get(INDEX_BONUS)), false);
+		for (FoundDevice device : devices) {
+			addNewDeviceForIterate(device, false);
 		}
 		updateModifiedTime(System.currentTimeMillis());
 		close();
@@ -478,11 +362,11 @@ public class DatabaseManager {
 
 	public int rebuildDatabase() {
 
-		List<SparseArray<String>> allDevices = getAllDevices();
-		
+		List<FoundDevice> allDevices = getAllDevices();
+
 		dbHelper = new DatabaseHelper(bhApp, version);
 		db = dbHelper.getWritableDatabase();
-		
+
 		List<String> allChanges = getAllChanges();
 
 		File dbFile = new File(db.getPath());
@@ -504,15 +388,15 @@ public class DatabaseManager {
 
 				List<Integer> failureRows = new ArrayList<Integer>();
 
-				for (SparseArray<String> device : allDevices) {
+				for (FoundDevice device : allDevices) {
 
 					ContentValues values = new ContentValues();
-					values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.get(INDEX_MAC_ADDRESS));
-					values.put(DatabaseHelper.COLUMN_MANUFACTURER, MacAddressAllocations.getManufacturer(device.get(INDEX_MAC_ADDRESS)));
-					values.put(DatabaseHelper.COLUMN_NAME, device.get(INDEX_NAME));
-					values.put(DatabaseHelper.COLUMN_RSSI, device.get(INDEX_RSSI));
-					values.put(DatabaseHelper.COLUMN_TIME, device.get(INDEX_TIME));
-					values.put(DatabaseHelper.COLUMN_BONUS, device.get(INDEX_BONUS));
+					values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.getMacAddress());
+					values.put(DatabaseHelper.COLUMN_MANUFACTURER, device.getManufacturer());
+					values.put(DatabaseHelper.COLUMN_NAME, device.getName());
+					values.put(DatabaseHelper.COLUMN_RSSI, device.getRssi());
+					values.put(DatabaseHelper.COLUMN_TIME, device.getTime());
+					values.put(DatabaseHelper.COLUMN_BONUS, device.getBonus());
 
 					if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) == -1) {
 						failureRows.add(allDevices.indexOf(device));
@@ -557,31 +441,32 @@ public class DatabaseManager {
 	// LEADERBOARD CHANGE
 
 	public void setLeaderboardChanges(HashMap<Integer, Integer> changes) {
-		
+
 		Set<Integer> keySet = changes.keySet();
 		for (Integer uid : keySet) {
 			ContentValues values = new ContentValues();
 			values.put(DatabaseHelper.COLUMN_UID, uid);
 			values.put(DatabaseHelper.COLUMN_RANK, changes.get(uid));
-			
+
 			db.insert(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, values);
 		}
-		
+
 		close();
-		
+
 	}
-	
+
 	public void resetLeaderboardChanges() {
+
 		db.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.LEADERBOARD_CHANGES_TABLE);
 		db.execSQL(DatabaseHelper.LEADERBOARD_CHANGES_CREATE);
 
 		close();
 	}
-	
+
 	public HashMap<Integer, Integer> getLeaderboardChanges() {
-		
-		HashMap<Integer, Integer> changes= new HashMap<Integer, Integer>();
-		
+
+		HashMap<Integer, Integer> changes = new HashMap<Integer, Integer>();
+
 		Cursor cursor =
 				db.query(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, null, null, null, null, null);
 		cursor.moveToFirst();
@@ -592,7 +477,7 @@ public class DatabaseManager {
 
 		cursor.close();
 		close();
-		
+
 		return changes;
 	}
 

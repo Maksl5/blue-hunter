@@ -1,6 +1,6 @@
 /**
  *  AchievementSystem.java in com.maksl5.bl_hunt.storage
- *  © Maksl5[Markus Bensing] 2013
+ *  Â© Maksl5[Markus Bensing] 2013
  */
 package com.maksl5.bl_hunt.storage;
 
@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 
 
@@ -91,7 +92,7 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_MANUFACTURER + " = 'Apple'", null);
 														if (devices.size() >= 25)
 															return true;
@@ -109,16 +110,16 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getAllDevices();
 
 														for (int i = 4; i < devices.size(); i++) {
 
-															if (devices.get(i - 4).get(DatabaseManager.INDEX_MANUFACTURER).equals("Apple")) {
-																if (devices.get(i - 3).get(DatabaseManager.INDEX_MANUFACTURER).equals("Apple")) {
-																	if (devices.get(i - 2).get(DatabaseManager.INDEX_MANUFACTURER).equals("Apple")) {
-																		if (devices.get(i - 1).get(DatabaseManager.INDEX_MANUFACTURER).equals("Apple")) {
-																			if (devices.get(i).get(DatabaseManager.INDEX_MANUFACTURER).equals("Apple")) {
+															if (devices.get(i - 4).getManufacturer().equals("Apple")) {
+																if (devices.get(i - 3).getManufacturer().equals("Apple")) {
+																	if (devices.get(i - 2).getManufacturer().equals("Apple")) {
+																		if (devices.get(i - 1).getManufacturer().equals("Apple")) {
+																			if (devices.get(i).getManufacturer().equals("Apple")) {
 																				return true;
 																			}
 																			else {
@@ -153,15 +154,15 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 14; i < devices.size(); i++) {
 
 															long firstTime =
-																	Long.parseLong(devices.get(i - 14).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i - 14).getTime();
 															long secondTime =
-																	Long.parseLong(devices.get(i).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i).getTime();
 
 															if ((firstTime - secondTime) <= 120000) {
 
@@ -180,15 +181,15 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 99; i < devices.size(); i++) {
 
 															long firstTime =
-																	Long.parseLong(devices.get(i - 99).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i - 99).getTime();
 															long secondTime =
-																	Long.parseLong(devices.get(i).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i).getTime();
 
 															if ((firstTime - secondTime) <= 900000) {
 
@@ -207,7 +208,7 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_MANUFACTURER + " = 'Siemens'", null);
 														if (devices.size() >= 5)
 															return true;
@@ -219,22 +220,21 @@ public class AchievementSystem {
 
 												new Achievement(8, R.string.str_achieve_8_title, R.string.str_achieve_8_description) {
 
-													@SuppressWarnings({
-														"deprecation" })
+													@SuppressWarnings({ "deprecation" })
 													@Override
 													public boolean check(	BlueHunter bhApp,
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 14; i < devices.size(); i++) {
 
 															long firstTime =
-																	Long.parseLong(devices.get(i - 14).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i - 14).getTime();
 															long secondTime =
-																	Long.parseLong(devices.get(i).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i).getTime();
 
 															if ((firstTime - secondTime) <= 1800000) {
 
@@ -242,7 +242,7 @@ public class AchievementSystem {
 																		new Date(firstTime);
 																Date firstDate =
 																		new Date(secondTime);
-																
+
 																if (recentDate.getHours() == 22 && firstDate.getHours() == 22) {
 																	if (recentDate.getMinutes() >= 0 && recentDate.getMinutes() < 30) {
 																		if (firstDate.getMinutes() >= 0 && firstDate.getMinutes() < 30) { return true; }
@@ -264,15 +264,15 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 14; i < devices.size(); i++) {
 
 															long firstTime =
-																	Long.parseLong(devices.get(i - 14).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i - 14).getTime();
 															long secondTime =
-																	Long.parseLong(devices.get(i).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i).getTime();
 
 															if ((firstTime - secondTime) <= 7200000) {
 
@@ -304,13 +304,12 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 0; i < devices.size(); i++) {
 
-															long time =
-																	Long.parseLong(devices.get(i).get(DatabaseManager.INDEX_TIME));
+															long time = devices.get(i).getTime();
 
 															Date date = new Date(time);
 
@@ -334,14 +333,14 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getAllDevices();
 
 														for (int i = 2; i < devices.size(); i++) {
 
-															if (devices.get(i - 2).get(DatabaseManager.INDEX_MANUFACTURER).equals("Apple")) {
-																if (devices.get(i - 1).get(DatabaseManager.INDEX_MANUFACTURER).equals("BlackBerry")) {
-																	if (devices.get(i).get(DatabaseManager.INDEX_MANUFACTURER).equals("Samsung")) { return true; }
+															if (devices.get(i - 2).getManufacturer().equals("Apple")) {
+																if (devices.get(i - 1).getManufacturer().equals("BlackBerry")) {
+																	if (devices.get(i).getManufacturer().equals("Samsung")) { return true; }
 
 																}
 
@@ -365,33 +364,30 @@ public class AchievementSystem {
 																			int deviceNum,
 																			int exp) {
 
-														List<SparseArray<String>> devices =
+														List<FoundDevice> devices =
 																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
 
 														for (int i = 0; i < devices.size(); i++) {
 
 															long recentTime =
-																	Long.parseLong(devices.get(i).get(DatabaseManager.INDEX_TIME));
+																	devices.get(i).getTime();
 
 															int exp24 = 0;
 
 															for (int j = i + 1; j < devices.size(); j++) {
 
 																long earlyTime =
-																		Long.parseLong(devices.get(j).get(DatabaseManager.INDEX_TIME));
+																		devices.get(j).getTime();
 
 																if ((recentTime - earlyTime) < 86400000) {
 
-																	String bonusString =
-																			devices.get(j).get(DatabaseManager.INDEX_BONUS);
-																	float bonus = 0.0f;
-
-																	if (bonusString != null)
-																		bonus =
-																				Float.parseFloat(bonusString);
+																	float bonus =
+																			devices.get(j).getBonus();
+																	
+																	if (bonus == -1f) bonus = 0.0f;
 
 																	exp24 +=
-																			MacAddressAllocations.getExp(devices.get(j).get(DatabaseManager.INDEX_MANUFACTURER)) * (1 + bonus);
+																			MacAddressAllocations.getExp(devices.get(j).getManufacturer()) * (1 + bonus);
 																}
 																else {
 																	break;
@@ -399,7 +395,7 @@ public class AchievementSystem {
 
 															}
 
-															if (exp >= 200) return true;
+															if (exp24 >= 200) return true;
 														}
 
 														return false;

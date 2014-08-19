@@ -1,6 +1,6 @@
 /**
  *  PatternProgressBar.java in com.maksl5.bl_hunt.CustomUI
- *  © Maksl5[Markus Bensing] 2012
+ *  Â© Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt.custom_ui;
 

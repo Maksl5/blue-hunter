@@ -1,6 +1,6 @@
 /**
  *  SynchronizeFoundDevices.java in com.maksl5.bl_hunt.net
- *  © Maksl5[Markus Bensing] 2013
+ *  Â© Maksl5[Markus Bensing] 2013
  */
 package com.maksl5.bl_hunt.net;
 
@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
@@ -57,19 +58,19 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 	}
 
 	public void addNewChange(	int mode,
-								SparseArray<String> rules) {
+								FoundDevice device) {
 
-		if (rules == null || rules.get(DatabaseManager.INDEX_MAC_ADDRESS) == null) return;
+		if (device == null || device.getMacAddress() == null) return;
 
-		String macString = rules.get(DatabaseManager.INDEX_MAC_ADDRESS);
+		String macString = device.getMacAddress();
 		String nameString =
-				(rules.get(DatabaseManager.INDEX_NAME) == null) ? (char) 30 + "null" + (char) 30 : rules.get(DatabaseManager.INDEX_NAME);
-		String rssiString =
-				(rules.get(DatabaseManager.INDEX_RSSI) == null) ? (char) 30 + "null" + (char) 30 : rules.get(DatabaseManager.INDEX_RSSI);
-		String timeString =
-				(rules.get(DatabaseManager.INDEX_TIME) == null) ? (char) 30 + "null" + (char) 30 : rules.get(DatabaseManager.INDEX_TIME);
-		String bonusString =
-				(rules.get(DatabaseManager.INDEX_BONUS) == null) ? (char) 30 + "null" + (char) 30 : rules.get(DatabaseManager.INDEX_BONUS);
+				(device.getName() == null) ? (char) 30 + "null" + (char) 30 : device.getName();
+		String rssiString = "" + 
+				((device.getRssi() == 1) ? (char) 30 + "null" + (char) 30 : device.getRssi());
+		String timeString = "" +
+				((device.getTime() == -1) ? (char) 30 + "null" + (char) 30 : device.getTime());
+		String bonusString = "" +
+				((device.getBonus() == -1f) ? (char) 30 + "null" + (char) 30 : device.getBonus());
 
 		String rulesString = "";
 		try {
@@ -178,21 +179,21 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 			if (!PreferenceManager.getPref(blueHunter, "pref_syncingActivated", false) && !forceSync)
 				return;
 
-			List<SparseArray<String>> devices =
+			List<FoundDevice> devices =
 					new DatabaseManager(blueHunter).getAllDevices();
 
 			String rulesString = "";
 
-			for (SparseArray<String> device : devices) {
-				String macString = device.get(DatabaseManager.INDEX_MAC_ADDRESS);
+			for (FoundDevice device : devices) {
+				String macString = device.getMacAddress();
 				String nameString =
-						(device.get(DatabaseManager.INDEX_NAME) == null) ? (char) 30 + "null" + (char) 30 : device.get(DatabaseManager.INDEX_NAME);
-				String rssiString =
-						(device.get(DatabaseManager.INDEX_RSSI) == null) ? (char) 30 + "null" + (char) 30 : device.get(DatabaseManager.INDEX_RSSI);
-				String timeString =
-						(device.get(DatabaseManager.INDEX_TIME) == null) ? (char) 30 + "null" + (char) 30 : device.get(DatabaseManager.INDEX_TIME);
-				String bonusString =
-						(device.get(DatabaseManager.INDEX_BONUS) == null) ? (char) 30 + "null" + (char) 30 : device.get(DatabaseManager.INDEX_BONUS);
+						(device.getName() == null) ? (char) 30 + "null" + (char) 30 : device.getName();
+				String rssiString = "" + 
+						((device.getRssi() == 1) ? (char) 30 + "null" + (char) 30 : device.getRssi());
+				String timeString = "" +
+						((device.getTime() == -1) ? (char) 30 + "null" + (char) 30 : device.getTime());
+				String bonusString = "" +
+						((device.getBonus() == -1f) ? (char) 30 + "null" + (char) 30 : device.getBonus());
 
 				try {
 					rulesString +=
@@ -309,7 +310,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				else if (syncMode == 2) {
 					resultString = resultString.replace("<done mode=\"2\" />", "");
 
-					List<SparseArray<String>> devices = new ArrayList<SparseArray<String>>();
+					List<FoundDevice> devices = new ArrayList<FoundDevice>();
 					String[] deviceStrings = resultString.split(";");
 
 					Pattern parsePattern =
@@ -317,7 +318,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 					for (String string : deviceStrings) {
 						Matcher parseMatcher = parsePattern.matcher(string);
 						if (parseMatcher.find()) {
-							SparseArray<String> device = new SparseArray<String>();
+							FoundDevice device = new FoundDevice();
 
 							String nameString = parseMatcher.group(2);
 							if (nameString.equals("%1Enull%1E")) {
@@ -339,11 +340,11 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 							String bonusString = parseMatcher.group(5);
 
-							device.put(DatabaseManager.INDEX_MAC_ADDRESS, parseMatcher.group(1));
-							device.put(DatabaseManager.INDEX_NAME, nameString);
-							device.put(DatabaseManager.INDEX_RSSI, parseMatcher.group(3));
-							device.put(DatabaseManager.INDEX_TIME, timeString);
-							device.put(DatabaseManager.INDEX_BONUS, bonusString);
+							device.setMac(parseMatcher.group(1));
+							device.setName(nameString);
+							device.setRssi(parseMatcher.group(3));
+							device.setTime(timeString);
+							device.setBonus(bonusString);
 
 							devices.add(device);
 

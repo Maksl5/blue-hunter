@@ -1,6 +1,6 @@
 /**
  *  MacAdressAllocations.java in com.maksl5.bl_hunt
- *  © Maksl5[Markus Bensing] 2012
+ *  Â© Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt.storage;
 
@@ -81,7 +81,7 @@ public class MacAddressAllocations {
 		int exp = 0;
 
 		try {
-			Field expField = MacAddressAllocations.class.getDeclaredField(manufacturer + "_exp");
+			Field expField = MacAddressAllocations.class.getDeclaredField(manufacturer.replace("-", "__").replace(" ", "_") + "_exp");
 			exp = expField.getInt(MacAddressAllocations.class);
 		}
 		catch (NoSuchFieldException e) {
@@ -116,7 +116,7 @@ public class MacAddressAllocations {
 				int exp;
 				try {
 					exp = (Integer) field.get(MacAddressAllocations.class);
-					hsHashMap.put(field.getName(), exp);
+					hsHashMap.put(field.getName().replace("__", "-").replace("_", " "), exp);
 				}
 				catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block

@@ -1,6 +1,6 @@
 /**
  *  LevelSystem.java in com.maksl5.bl_hunt
- *  © Maksl5[Markus Bensing] 2012
+ *  Â© Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt;
 
@@ -10,6 +10,7 @@ import java.util.List;
 
 import android.util.SparseArray;
 
+import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.MacAddressAllocations;
 
@@ -25,21 +26,22 @@ public class LevelSystem {
 
 		int exp = 0;
 
-		List<SparseArray<String>> foundDevices =
+		List<FoundDevice> foundDevices =
 				new DatabaseManager(bhApp).getAllDevices();
 
-		for (SparseArray<String> foundDevice : foundDevices) {
+		for (FoundDevice foundDevice : foundDevices) {
 
-			String manufacturer = foundDevice.get(DatabaseManager.INDEX_MANUFACTURER);
-			float bonus =
-					Float.parseFloat((foundDevice.get(DatabaseManager.INDEX_BONUS) == null) ? "" + 0.0f : foundDevice.get(DatabaseManager.INDEX_BONUS));
+			String manufacturer = foundDevice.getManufacturer();
+			float bonus = foundDevice.getBonus();
+			
+			if(bonus == -1f) bonus = 0f;
 
 			if (manufacturer == null) {
 				exp += Math.floor(MacAddressAllocations.Unknown_exp * (1 + bonus));
 			}
 			else {
 				exp +=
-						Math.floor(MacAddressAllocations.getExp(manufacturer.replace(" ", "_")) * (1 + bonus));
+						Math.floor(MacAddressAllocations.getExp(manufacturer) * (1 + bonus));
 			}
 
 		}
@@ -52,19 +54,18 @@ public class LevelSystem {
 
 		int exp = 0;
 
-		List<SparseArray<String>> foundDevices =
+		List<FoundDevice> foundDevices =
 				new DatabaseManager(bhApp).getAllDevices();
 
-		for (SparseArray<String> foundDevice : foundDevices) {
+		for (FoundDevice foundDevice : foundDevices) {
 
-			String manufacturer = foundDevice.get(DatabaseManager.INDEX_MANUFACTURER);
-			float bonus = Float.parseFloat(foundDevice.get(DatabaseManager.INDEX_BONUS));
+			String manufacturer = foundDevice.getManufacturer();
 
 			if (manufacturer == null) {
 				exp += MacAddressAllocations.Unknown_exp;
 			}
 			else {
-				exp += MacAddressAllocations.getExp(manufacturer.replace(" ", "_"));
+				exp += MacAddressAllocations.getExp(manufacturer);
 			}
 
 		}

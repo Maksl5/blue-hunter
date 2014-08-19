@@ -33,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +46,7 @@ import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager.LeaderboardLayout.LBAdapterData;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
@@ -97,7 +99,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		destroyed = false;
-
+		
 		// Debug.startMethodTracing("blHunt_12");
 
 		bhApp = (BlueHunter) getApplication();
@@ -415,6 +417,12 @@ public class MainActivity extends FragmentActivity {
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+
+		@Override
+		public int getItemPosition(Object object) {
+			return POSITION_NONE;
+		}
+
 		public SectionsPagerAdapter(FragmentManager fm) {
 
 			super(fm);
@@ -481,6 +489,9 @@ public class MainActivity extends FragmentActivity {
 			super.onViewCreated(view, savedInstanceState);
 
 		}
+		
+		
+		
 	}
 
 	/*
@@ -525,11 +536,9 @@ public class MainActivity extends FragmentActivity {
 		HashMap<Integer, Integer> leaderboardChanges = new HashMap<Integer, Integer>();
 
 		for (int i = 0; i < FragmentLayoutManager.LeaderboardLayout.completeFdList.size(); i++) {
-			String leaderboardEntry = FragmentLayoutManager.LeaderboardLayout.completeFdList.get(i);
+			LBAdapterData leaderboardEntry = FragmentLayoutManager.LeaderboardLayout.completeFdList.get(i);
 
-			String[] leaderboardAtts = leaderboardEntry.split(String.valueOf((char) 30));
-
-			leaderboardChanges.put(Integer.parseInt(leaderboardAtts[FragmentLayoutManager.LeaderboardLayout.ARRAY_INDEX_ID]), i + 1);
+			leaderboardChanges.put(leaderboardEntry.getId(), i + 1);
 
 		}
 
@@ -622,8 +631,24 @@ public class MainActivity extends FragmentActivity {
 			}
 
 		}
-
+		
+//		Bundle params = new Bundle();
+//		params.putInt(CustomSectionFragment.ARG_SECTION_NUMBER, FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
+//		
+//		View view = FragmentLayoutManager.getSpecificView(params, getLayoutInflater(), viewGroup, this);
+		
+		mSectionsPagerAdapter.notifyDataSetChanged();
+		
+		disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
+		bhApp.disMan.supplyNewTextView(disStateTextView);
+		
+		
+		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
+		FragmentLayoutManager.ProfileLayout.initializeView(this);
+		FragmentLayoutManager.AchievementsLayout.initializeAchievements(bhApp);
+		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp, true);
 		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+		
 
 	}
 
