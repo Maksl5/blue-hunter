@@ -124,7 +124,7 @@
     
     <!-- Achievements -->
     <string name="str_achievement_accomplish">Congratulations! You have accomplished the achievement "%s".</string>
-    <string name="str_achievement_totalBoost">Total Boost:\n%s</string>
+    <string name="str_achievement_totalBoost">Boost:\n%s</string>
     
     <string name="str_achieve_1_title">Probation Period I</string>
     <string name="str_achieve_1_description">Get 100 Exp to become accepted.</string>
@@ -178,7 +178,7 @@
     <string name="str_achieve_17_description">Find 50 Sony Ericsson devices.</string>
     
     <string name="str_achieve_18_title">Sequence Enthusiast II</string>
-    <string name="str_achieve_18_description">You are an alphabet freak. Find these devices in a row:%nAcer -> Bury -> Cisco -> D-Link</string>
+    <string name="str_achieve_18_description">You are an alphabet freak. Find these devices in a row:\nAcer -> Bury -> Cisco -> D-Link</string>
     
     <string name="str_achieve_19_title">Sociality I</string>
     <string name="str_achieve_19_description">Find the device from another player of BlueHunter.</string>
