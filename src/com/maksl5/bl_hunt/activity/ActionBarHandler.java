@@ -32,6 +32,10 @@ import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.RandomToast;
+import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.ProfileLayout;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
@@ -177,7 +181,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 					case R.id.menu_context_remove:
 
 						String macAddress =
-								FragmentLayoutManager.FoundDevicesLayout.getSelectedMac();
+								FoundDevicesLayout.getSelectedMac();
 						if (macAddress == null) {
 							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
 							mode.finish();
@@ -187,8 +191,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
 						}
 						else {
-							FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
-							FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+							FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+							DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
 							bhApp.mainActivity.updateNotification();
 							Toast.makeText(bhApp, "Successfully removed device.", Toast.LENGTH_LONG).show();
@@ -214,7 +218,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				switch (currentPage) {
 				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
 
-					FragmentLayoutManager.FoundDevicesLayout.selectedItem = -1;
+					FoundDevicesLayout.selectedItem = -1;
 
 					break;
 
@@ -301,7 +305,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 				break;
 			case FragmentLayoutManager.PAGE_PROFILE:
-				if (FragmentLayoutManager.ProfileLayout.userName.startsWith("Player")) {
+				if (ProfileLayout.userName.startsWith("Player")) {
 					RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_changeName), 0.25).show();
 				}
 				break;
@@ -468,10 +472,10 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	public boolean onQueryTextChange(String newText) {
 
 		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES)
-			FragmentLayoutManager.FoundDevicesLayout.filterFoundDevices(newText, bhApp);
+			FoundDevicesLayout.filterFoundDevices(newText, bhApp);
 
 		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD)
-			FragmentLayoutManager.LeaderboardLayout.filterLeaderboard(newText, bhApp);
+			LeaderboardLayout.filterLeaderboard(newText, bhApp);
 
 		return false;
 	}

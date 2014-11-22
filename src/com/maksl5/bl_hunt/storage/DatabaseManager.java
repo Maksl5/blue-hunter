@@ -23,9 +23,10 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 
 
@@ -234,7 +235,7 @@ public class DatabaseManager {
 
 		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
 
-		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		close();
 		updateModifiedTime(System.currentTimeMillis());
 

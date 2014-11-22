@@ -123,7 +123,7 @@
     
     <!-- Achievements -->
     <string name="str_achievement_accomplish">Congratulations! You have accomplished the achievement "%s".</string>
-    <string name="str_achievement_totalBoost">Total Boost: %s</string>
+    <string name="str_achievement_totalBoost">Total Boost:\n%s</string>
     
     <string name="str_achieve_1_title">Probation Period I</string>
     <string name="str_achieve_1_description">Get 100 Exp to become accepted.</string>
@@ -164,6 +164,23 @@
     <string name="str_achieve_13_title">Experienced Player I</string>
     <string name="str_achieve_13_description">Get 200 Exp within 24 hours.</string>
     
+    <string name="str_achieve_14_title">Precisely Accurate II</string>
+    <string name="str_achieve_14_description">You are an extremely accurate chaser and must find 1 device at the 11th November at 11:11:11am.</string>
+    
+    <string name="str_achieve_15_title">Probation Period III</string>
+    <string name="str_achieve_15_description">Find 300 devices and get 400 Exp. Now you are out of probation period. Congrats!</string>
+    
+    <string name="str_achieve_16_title">Time Chaser III</string>
+    <string name="str_achieve_16_description">Get on a crowded place and find 20 devices within 15 seconds.</string>
+    
+    <string name="str_achieve_17_title">Oldies II</string>
+    <string name="str_achieve_17_description">Find 50 Sony Ericsson devices.</string>
+    
+    <string name="str_achieve_18_title">Sequence Enthusiast II</string>
+    <string name="str_achieve_18_description">You are an alphabet freak. Find these devices in a row:%nAcer -> Bury -> Cisco -> D-Link</string>
+    
+    <string name="str_achieve_19_title">Sociality I</string>
+    <string name="str_achieve_19_description">Find the device from another player of BlueHunter.</string>
     
     <!-- Error strings -->
     

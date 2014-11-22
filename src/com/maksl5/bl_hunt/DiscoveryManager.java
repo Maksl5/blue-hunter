@@ -20,7 +20,8 @@ import android.widget.TextView;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.MacAddressAllocations;
@@ -358,7 +359,7 @@ public class DiscoveryManager {
 
 					if (isChecked) {
 						if (isBluetoothEnabled()) {
-							FragmentLayoutManager.DeviceDiscoveryLayout.startShowLV(bhApp.mainActivity);
+							DeviceDiscoveryLayout.startShowLV(bhApp.mainActivity);
 							runDiscovery();
 						}
 						else {
@@ -369,7 +370,7 @@ public class DiscoveryManager {
 						if (isBluetoothEnabled()) {
 
 							stopDiscovery();
-							FragmentLayoutManager.DeviceDiscoveryLayout.stopShowLV(bhApp.mainActivity);
+							DeviceDiscoveryLayout.stopShowLV(bhApp.mainActivity);
 
 							if (PreferenceManager.getPref(bhApp, "pref_disBtSrchOff", false)) {
 								disableBluetooth();
@@ -531,7 +532,7 @@ public class DiscoveryManager {
 				case BluetoothAdapter.STATE_ON:
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_OFF);
 					if (requestId == 128) {
-						FragmentLayoutManager.DeviceDiscoveryLayout.startShowLV(bhApp.mainActivity);
+						DeviceDiscoveryLayout.startShowLV(bhApp.mainActivity);
 						runDiscovery();
 					}
 					break;
@@ -561,7 +562,7 @@ public class DiscoveryManager {
 				fDListCurDiscovery = null;
 				fDListCurDiscovery = new ArrayList<FoundDevice>();
 
-				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+				DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
 				if (discoveryButton.isChecked()) {
 					runDiscovery();
@@ -602,8 +603,8 @@ public class DiscoveryManager {
 				attemptVibration();
 				new DatabaseManager(bhApp).addNewDevice(device);
 
-				FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
-				FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+				FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+				DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
 				bhApp.mainActivity.updateNotification();
 

@@ -22,7 +22,9 @@ import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
@@ -353,9 +355,9 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 					new DatabaseManager(blueHunter).newSyncedDatabase(devices);
 
-					FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(blueHunter.mainActivity);
-					FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(blueHunter);
-					FragmentLayoutManager.AchievementsLayout.initializeAchievements(blueHunter);
+					DeviceDiscoveryLayout.updateIndicatorViews(blueHunter.mainActivity);
+					FoundDevicesLayout.refreshFoundDevicesList(blueHunter);
+					AchievementsLayout.initializeAchievements(blueHunter);
 
 					resultMsg = "Successfully synced down database.";
 				}

@@ -4,8 +4,6 @@
  */
 package com.maksl5.bl_hunt.storage;
 
-
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -24,8 +22,6 @@ import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 
-
-
 /**
  * @author Maksl5[Markus Bensing]
  * 
@@ -36,375 +32,555 @@ public class AchievementSystem {
 
 	public static HashMap<Integer, Boolean> achievementStates;
 
-	public static List<Achievement> achievements =
-			Arrays.asList(new Achievement[] {
-												new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
-
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
-
-														if (bhApp.getPackageName().equals("com.maksl5.bl_hunt_sup"))
-															return true;
-														else
-															return false;
+	public static List<Achievement> achievements = Arrays
+			.asList(new Achievement[] {
+					new Achievement(5, R.string.str_achieve_5_title,
+							R.string.str_achieve_5_description) {
 
-													}
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-												}.setBoost(0.5f),
-
-												new Achievement(1, R.string.str_achieve_1_title, R.string.str_achieve_1_description) {
+							if (bhApp.getPackageName().equals(
+									"com.maksl5.bl_hunt_sup"))
+								return true;
+							else
+								return false;
+
+						}
+
+					}.setBoost(1.0f),
+
+					new Achievement(1, R.string.str_achieve_1_title,
+							R.string.str_achieve_1_description) {
+
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
+
+							if (exp >= 100)
+								return true;
+							else
+								return false;
+
+						}
+
+					}.setNumExp(100).setBoost(0.01f),
+
+					new Achievement(2, R.string.str_achieve_2_title,
+							R.string.str_achieve_2_description) {
+
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
+
+							if (deviceNum >= 200)
+								return true;
+							else
+								return false;
+
+						}
+					}.setNumDevices(200).setBoost(0.02f),
+
+					new Achievement(15, R.string.str_achieve_15_title,
+							R.string.str_achieve_15_description) {
+
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
+
+							if (deviceNum >= 300)
+								if (exp >= 4000)
+									return true;
+								else
+									return false;
+							else
+								return false;
+
+						}
+					}.setNumDevices(300).setNumExp(4000).setBoost(0.04f),
+
+					new Achievement(3, R.string.str_achieve_3_title,
+							R.string.str_achieve_3_description) {
+
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
+
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_MANUFACTURER
+											+ " = 'Apple'", null);
+							if (devices.size() >= 25)
+								return true;
+							else
+								return false;
+
+						}
+
+					}.setNumDevices(25)
+							.setManufacturerList(
+									Arrays.asList(new String[] { "Apple" }))
+							.setBoost(0.02f),
+
+					new Achievement(6, R.string.str_achieve_6_title,
+							R.string.str_achieve_6_description) {
+
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
+
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getAllDevices();
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+							for (int i = 4; i < devices.size(); i++) {
 
-														if (exp >= 100)
-															return true;
-														else
-															return false;
+								if (devices.get(i - 4).getManufacturer()
+										.equals("Apple")) {
+									if (devices.get(i - 3).getManufacturer()
+											.equals("Apple")) {
+										if (devices.get(i - 2)
+												.getManufacturer()
+												.equals("Apple")) {
+											if (devices.get(i - 1)
+													.getManufacturer()
+													.equals("Apple")) {
+												if (devices.get(i)
+														.getManufacturer()
+														.equals("Apple")) {
+													return true;
+												} else {
+													i = i + 4;
+												}
+											} else {
+												i = i + 3;
+											}
+										} else {
+											i = i + 2;
+										}
+									} else {
+										i = i + 1;
+									}
+								}
 
-													}
+							}
 
-												}.setNumExp(100).setBoost(0.01f),
+							return false;
 
-												new Achievement(2, R.string.str_achieve_2_title, R.string.str_achieve_2_description) {
+						}
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+					}.setNumDevices(5)
+							.setManufacturerList(
+									Arrays.asList(new String[] { "Apple" }))
+							.setBoost(0.03f),
 
-														if (deviceNum >= 200)
-															return true;
-														else
-															return false;
+					new Achievement(4, R.string.str_achieve_4_title,
+							R.string.str_achieve_4_description) {
 
-													}
-												}.setNumDevices(200).setBoost(0.02f),
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-												new Achievement(3, R.string.str_achieve_3_title, R.string.str_achieve_3_description) {
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_TIME + " != 0",
+									DatabaseHelper.COLUMN_TIME + " DESC");
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+							for (int i = 14; i < devices.size(); i++) {
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_MANUFACTURER + " = 'Apple'", null);
-														if (devices.size() >= 25)
-															return true;
-														else
-															return false;
+								long firstTime = devices.get(i - 14).getTime();
+								long secondTime = devices.get(i).getTime();
 
-													}
+								if ((firstTime - secondTime) <= 120000) {
 
-												}.setNumDevices(25).setManufacturerList(Arrays.asList(new String[] { "Apple" })).setBoost(0.02f),
+									return true;
+								}
+							}
+
+							return false;
+						}
+
+					}.setNumDevices(15).setTimeInterval(120).setBoost(0.05f),
+
+					new Achievement(10, R.string.str_achieve_10_title,
+							R.string.str_achieve_10_description) {
+
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
+
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_TIME + " != 0",
+									DatabaseHelper.COLUMN_TIME + " DESC");
+
+							for (int i = 99; i < devices.size(); i++) {
+
+								long firstTime = devices.get(i - 99).getTime();
+								long secondTime = devices.get(i).getTime();
+
+								if ((firstTime - secondTime) <= 900000) {
 
-												new Achievement(6, R.string.str_achieve_6_title, R.string.str_achieve_6_description) {
+									return true;
+								}
+							}
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+							return false;
+						}
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getAllDevices();
+					}.setNumDevices(100).setTimeInterval(900).setBoost(0.06f),
+
+					new Achievement(16, R.string.str_achieve_16_title,
+							R.string.str_achieve_16_description) {
+
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
+
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_TIME + " != 0",
+									DatabaseHelper.COLUMN_TIME + " DESC");
+
+							for (int i = 19; i < devices.size(); i++) {
+
+								long firstTime = devices.get(i - 19).getTime();
+								long secondTime = devices.get(i).getTime();
+
+								if ((firstTime - secondTime) <= 15000) {
 
-														for (int i = 4; i < devices.size(); i++) {
+									return true;
+								}
+							}
 
-															if (devices.get(i - 4).getManufacturer().equals("Apple")) {
-																if (devices.get(i - 3).getManufacturer().equals("Apple")) {
-																	if (devices.get(i - 2).getManufacturer().equals("Apple")) {
-																		if (devices.get(i - 1).getManufacturer().equals("Apple")) {
-																			if (devices.get(i).getManufacturer().equals("Apple")) {
-																				return true;
-																			}
-																			else {
-																				i = i + 4;
-																			}
-																		}
-																		else {
-																			i = i + 3;
-																		}
-																	}
-																	else {
-																		i = i + 2;
-																	}
-																}
-																else {
-																	i = i + 1;
-																}
-															}
+							return false;
+						}
+
+					}.setNumDevices(20).setTimeInterval(15).setBoost(0.12f),
+
+					new Achievement(7, R.string.str_achieve_7_title,
+							R.string.str_achieve_7_description) {
 
-														}
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-														return false;
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_MANUFACTURER
+											+ " = 'Siemens'", null);
+							if (devices.size() >= 5)
+								return true;
+							else
+								return false;
+						}
 
-													}
+					}.setNumDevices(5)
+							.setManufacturerList(
+									Arrays.asList(new String[] { "Siemens" }))
+							.setBoost(0.04f),
 
-												}.setNumDevices(5).setManufacturerList(Arrays.asList(new String[] { "Apple" })).setBoost(0.03f),
+					new Achievement(17, R.string.str_achieve_17_title,
+							R.string.str_achieve_17_description) {
 
-												new Achievement(4, R.string.str_achieve_4_title, R.string.str_achieve_4_description) {
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_MANUFACTURER
+											+ " = 'Sony Ericsson'", null);
+							if (devices.size() >= 50)
+								return true;
+							else
+								return false;
+						}
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+					}.setNumDevices(50)
+							.setManufacturerList(
+									Arrays.asList(new String[] { "Sony Ericsson" }))
+							.setBoost(0.08f),
 
-														for (int i = 14; i < devices.size(); i++) {
+					new Achievement(8, R.string.str_achieve_8_title,
+							R.string.str_achieve_8_description) {
 
-															long firstTime =
-																	devices.get(i - 14).getTime();
-															long secondTime =
-																	devices.get(i).getTime();
+						@SuppressWarnings({ "deprecation" })
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-															if ((firstTime - secondTime) <= 120000) {
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_TIME + " != 0",
+									DatabaseHelper.COLUMN_TIME + " DESC");
 
-															return true; }
-														}
+							for (int i = 14; i < devices.size(); i++) {
 
-														return false;
-													}
+								long firstTime = devices.get(i - 14).getTime();
+								long secondTime = devices.get(i).getTime();
 
-												}.setNumDevices(15).setTimeInterval(120).setBoost(0.05f),
+								if ((firstTime - secondTime) <= 1800000) {
 
-												new Achievement(10, R.string.str_achieve_10_title, R.string.str_achieve_10_description) {
+									Date recentDate = new Date(firstTime);
+									Date firstDate = new Date(secondTime);
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+									if (recentDate.getHours() == 22
+											&& firstDate.getHours() == 22) {
+										if (recentDate.getMinutes() >= 0
+												&& recentDate.getMinutes() < 30) {
+											if (firstDate.getMinutes() >= 0
+													&& firstDate.getMinutes() < 30) {
+												return true;
+											}
+										}
+									}
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+								}
+							}
 
-														for (int i = 99; i < devices.size(); i++) {
+							return false;
+						}
 
-															long firstTime =
-																	devices.get(i - 99).getTime();
-															long secondTime =
-																	devices.get(i).getTime();
+					}.setNumDevices(15).setTimeInterval(1800).setBoost(0.02f),
 
-															if ((firstTime - secondTime) <= 900000) {
+					new Achievement(9, R.string.str_achieve_9_title,
+							R.string.str_achieve_9_description) {
 
-															return true; }
-														}
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-														return false;
-													}
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_TIME + " != 0",
+									DatabaseHelper.COLUMN_TIME + " DESC");
 
-												}.setNumDevices(100).setTimeInterval(900).setBoost(0.06f),
+							for (int i = 14; i < devices.size(); i++) {
 
-												new Achievement(7, R.string.str_achieve_7_title, R.string.str_achieve_7_description) {
+								long firstTime = devices.get(i - 14).getTime();
+								long secondTime = devices.get(i).getTime();
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+								if ((firstTime - secondTime) <= 7200000) {
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_MANUFACTURER + " = 'Siemens'", null);
-														if (devices.size() >= 5)
-															return true;
-														else
-															return false;
-													}
+									Date recentDate = new Date(firstTime);
+									Date firstDate = new Date(secondTime);
 
-												}.setNumDevices(5).setManufacturerList(Arrays.asList(new String[] { "Siemens" })).setBoost(0.02f),
+									if (firstDate.getHours() >= 5
+											&& firstDate.getHours() < 7) {
+										if (recentDate.getHours() >= 5
+												&& recentDate.getHours() < 7) {
 
-												new Achievement(8, R.string.str_achieve_8_title, R.string.str_achieve_8_description) {
+											return true;
 
-													@SuppressWarnings({ "deprecation" })
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+										}
+									}
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+								}
+							}
 
-														for (int i = 14; i < devices.size(); i++) {
+							return false;
+						}
 
-															long firstTime =
-																	devices.get(i - 14).getTime();
-															long secondTime =
-																	devices.get(i).getTime();
+					}.setNumDevices(65).setTimeInterval(7200).setBoost(0.04f),
 
-															if ((firstTime - secondTime) <= 1800000) {
+					new Achievement(11, R.string.str_achieve_11_title,
+							R.string.str_achieve_11_description) {
 
-																Date recentDate =
-																		new Date(firstTime);
-																Date firstDate =
-																		new Date(secondTime);
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-																if (recentDate.getHours() == 22 && firstDate.getHours() == 22) {
-																	if (recentDate.getMinutes() >= 0 && recentDate.getMinutes() < 30) {
-																		if (firstDate.getMinutes() >= 0 && firstDate.getMinutes() < 30) { return true; }
-																	}
-																}
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_TIME + " != 0",
+									DatabaseHelper.COLUMN_TIME + " DESC");
 
-															}
-														}
+							for (int i = 0; i < devices.size(); i++) {
 
-														return false;
-													}
+								long time = devices.get(i).getTime();
 
-												}.setNumDevices(15).setTimeInterval(1800).setBoost(0.02f),
+								Date date = new Date(time);
 
-												new Achievement(9, R.string.str_achieve_9_title, R.string.str_achieve_9_description) {
+								if (date.getMinutes() == 0
+										&& date.getSeconds() == 0) {
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+									return true;
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+								}
 
-														for (int i = 14; i < devices.size(); i++) {
+							}
 
-															long firstTime =
-																	devices.get(i - 14).getTime();
-															long secondTime =
-																	devices.get(i).getTime();
+							return false;
+						}
 
-															if ((firstTime - secondTime) <= 7200000) {
+					}.setNumDevices(1).setBoost(0.08f),
 
-																Date recentDate =
-																		new Date(firstTime);
-																Date firstDate =
-																		new Date(secondTime);
+					new Achievement(14, R.string.str_achieve_14_title,
+							R.string.str_achieve_14_description) {
 
-																if (firstDate.getHours() >= 5 && firstDate.getHours() < 7) {
-																	if (recentDate.getHours() >= 5 && recentDate.getHours() < 7) {
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-																	return true;
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_TIME + " != 0",
+									DatabaseHelper.COLUMN_TIME + " DESC");
 
-																	}
-																}
+							for (int i = 0; i < devices.size(); i++) {
 
-															}
-														}
+								long time = devices.get(i).getTime();
 
-														return false;
-													}
+								Date date = new Date(time);
 
-												}.setNumDevices(65).setTimeInterval(7200).setBoost(0.04f),
+								if (date.getDate() == 11
+										&& date.getMonth() == 11
+										&& date.getHours() == 11
+										&& date.getMinutes() == 11
+										&& date.getSeconds() == 11) {
 
-												new Achievement(11, R.string.str_achieve_11_title, R.string.str_achieve_11_description) {
+									return true;
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+								}
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+							}
 
-														for (int i = 0; i < devices.size(); i++) {
+							return false;
+						}
 
-															long time = devices.get(i).getTime();
+					}.setNumDevices(1).setBoost(0.25f),
 
-															Date date = new Date(time);
+					new Achievement(12, R.string.str_achieve_12_title,
+							R.string.str_achieve_12_description) {
 
-															if (date.getMinutes() == 0 && date.getSeconds() == 0) {
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-															return true;
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getAllDevices();
 
-															}
+							for (int i = 2; i < devices.size(); i++) {
 
-														}
+								if (devices.get(i - 2).getManufacturer()
+										.equals("Samsung")) {
+									if (devices.get(i - 1).getManufacturer()
+											.equals("BlackBerry")) {
+										if (devices.get(i).getManufacturer()
+												.equals("Apple")) {
+											return true;
+										}
 
-														return false;
-													}
+									}
 
-												}.setNumDevices(1).setBoost(0.08f),
+								}
 
-												new Achievement(12, R.string.str_achieve_12_title, R.string.str_achieve_12_description) {
+							}
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+							return false;
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getAllDevices();
+						}
 
-														for (int i = 2; i < devices.size(); i++) {
+					}.setNumDevices(3)
+							.setManufacturerList(
+									Arrays.asList(new String[] { "Apple",
+											"BlackBerry", "Samsung" }))
+							.setBoost(0.04f),
 
-															if (devices.get(i - 2).getManufacturer().equals("Apple")) {
-																if (devices.get(i - 1).getManufacturer().equals("BlackBerry")) {
-																	if (devices.get(i).getManufacturer().equals("Samsung")) { return true; }
+					new Achievement(18, R.string.str_achieve_18_title,
+							R.string.str_achieve_18_description) {
 
-																}
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-															}
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getAllDevices();
 
-														}
+							for (int i = 3; i < devices.size(); i++) {
 
-														return false;
+								if (devices.get(i - 3).getManufacturer()
+										.equals("D-Link")) {
+									if (devices.get(i - 2).getManufacturer()
+											.equals("Cisco")) {
+										if (devices.get(i - 1)
+												.getManufacturer()
+												.equals("Bury")) {
+											if (devices.get(i)
+													.getManufacturer()
+													.equals("Acer")) {
+												return true;
+											}
+										}
 
-													}
+									}
 
-												}.setNumDevices(3).setManufacturerList(Arrays.asList(new String[] {
-																													"Apple",
-																													"BlackBerry",
-																													"Samsung" })).setBoost(0.02f),
+								}
 
-												new Achievement(13, R.string.str_achieve_13_title, R.string.str_achieve_13_description) {
+							}
 
-													@Override
-													public boolean check(	BlueHunter bhApp,
-																			int deviceNum,
-																			int exp) {
+							return false;
 
-														List<FoundDevice> devices =
-																new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0", DatabaseHelper.COLUMN_TIME + " DESC");
+						}
 
-														for (int i = 0; i < devices.size(); i++) {
+					}.setNumDevices(4)
+							.setManufacturerList(
+									Arrays.asList(new String[] { "Acer",
+											"Bury", "Cisco", "D-Link" }))
+							.setBoost(0.25f),
 
-															long recentTime =
-																	devices.get(i).getTime();
+					new Achievement(13, R.string.str_achieve_13_title,
+							R.string.str_achieve_13_description) {
 
-															int exp24 = 0;
+						@Override
+						public boolean check(BlueHunter bhApp, int deviceNum,
+								int exp) {
 
-															for (int j = i + 1; j < devices.size(); j++) {
+							List<FoundDevice> devices = new DatabaseManager(
+									bhApp).getDevices(
+									DatabaseHelper.COLUMN_TIME + " != 0",
+									DatabaseHelper.COLUMN_TIME + " DESC");
 
-																long earlyTime =
-																		devices.get(j).getTime();
+							for (int i = 0; i < devices.size(); i++) {
 
-																if ((recentTime - earlyTime) < 86400000) {
+								long recentTime = devices.get(i).getTime();
 
-																	float bonus =
-																			devices.get(j).getBonus();
-																	
-																	if (bonus == -1f) bonus = 0.0f;
+								int exp24 = 0;
 
-																	exp24 +=
-																			MacAddressAllocations.getExp(devices.get(j).getManufacturer()) * (1 + bonus);
-																}
-																else {
-																	break;
-																}
+								for (int j = i + 1; j < devices.size(); j++) {
 
-															}
+									long earlyTime = devices.get(j).getTime();
 
-															if (exp24 >= 200) return true;
-														}
+									if ((recentTime - earlyTime) < 86400000) {
 
-														return false;
-													}
+										float bonus = devices.get(j).getBonus();
 
-												}.setNumExp(200).setTimeInterval(86400).setBoost(0.03f) });
+										if (bonus == -1f)
+											bonus = 0.0f;
 
-	public static void checkAchievements(	BlueHunter bhApp,
-											boolean completeCheck) {
+										exp24 += MacAddressAllocations
+												.getExp(devices.get(j)
+														.getManufacturer())
+												* (1 + bonus);
+									} else {
+										break;
+									}
+
+								}
+
+								if (exp24 >= 200)
+									return true;
+							}
+
+							return false;
+						}
+
+					}.setNumExp(200).setTimeInterval(86400).setBoost(0.03f)
+
+			});
+
+	public static void checkAchievements(BlueHunter bhApp, boolean completeCheck) {
 
 		achievementStates = new HashMap<Integer, Boolean>();
 
@@ -413,31 +589,28 @@ public class AchievementSystem {
 
 		for (Achievement achievement : achievements) {
 
-			boolean alreadyAccomplished =
-					PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "").equals(bhApp.authentification.getAchieveHash(achievement.getId()));
+			boolean alreadyAccomplished = PreferenceManager.getPref(bhApp,
+					"pref_achievement_" + achievement.getId(), "").equals(
+					bhApp.authentification.getAchieveHash(achievement.getId()));
 
 			if (!completeCheck) {
 				if (alreadyAccomplished) {
 					achievementStates.put(achievement.getId(), true);
-				}
-				else {
+				} else {
 
 					if (achievement.check(bhApp, deviceNum, exp)) {
 						achievement.accomplish(bhApp, alreadyAccomplished);
 						achievementStates.put(achievement.getId(), true);
-					}
-					else {
+					} else {
 						achievement.invalidate(bhApp);
 						achievementStates.put(achievement.getId(), false);
 					}
 				}
-			}
-			else {
+			} else {
 				if (achievement.check(bhApp, deviceNum, exp)) {
 					achievement.accomplish(bhApp, alreadyAccomplished);
 					achievementStates.put(achievement.getId(), true);
-				}
-				else {
+				} else {
 					achievement.invalidate(bhApp);
 					achievementStates.put(achievement.getId(), false);
 				}
@@ -449,14 +622,15 @@ public class AchievementSystem {
 
 		NumberFormat pFormat = DecimalFormat.getPercentInstance();
 
-		MenuItem boostIndicator = bhApp.actionBarHandler.getMenuItem(R.id.menu_boostIndicator);
-		boostIndicator.setTitleCondensed(bhApp.getString(R.string.str_achievement_totalBoost, pFormat.format(boost)));
+		MenuItem boostIndicator = bhApp.actionBarHandler
+				.getMenuItem(R.id.menu_boostIndicator);
+		boostIndicator.setTitleCondensed(bhApp.getString(
+				R.string.str_achievement_totalBoost, pFormat.format(boost)));
 
 	}
 
-	public static void checkSpecificAchievements(	BlueHunter bhApp,
-													boolean completeCheck,
-													Integer... id) {
+	public static void checkSpecificAchievements(BlueHunter bhApp,
+			boolean completeCheck, Integer... id) {
 
 		List<Integer> ids = Arrays.asList(id);
 
@@ -466,31 +640,29 @@ public class AchievementSystem {
 		for (Achievement achievement : achievements) {
 			if (!ids.contains(achievement.getId())) {
 
-				boolean alreadyAccomplished =
-						PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "").equals(bhApp.authentification.getAchieveHash(achievement.getId()));
+				boolean alreadyAccomplished = PreferenceManager.getPref(bhApp,
+						"pref_achievement_" + achievement.getId(), "").equals(
+						bhApp.authentification.getAchieveHash(achievement
+								.getId()));
 
 				if (!completeCheck) {
 					if (alreadyAccomplished) {
 						achievementStates.put(achievement.getId(), true);
-					}
-					else {
+					} else {
 
 						if (achievement.check(bhApp, deviceNum, exp)) {
 							achievement.accomplish(bhApp, alreadyAccomplished);
 							achievementStates.put(achievement.getId(), true);
-						}
-						else {
+						} else {
 							achievement.invalidate(bhApp);
 							achievementStates.put(achievement.getId(), false);
 						}
 					}
-				}
-				else {
+				} else {
 					if (achievement.check(bhApp, deviceNum, exp)) {
 						achievement.accomplish(bhApp, alreadyAccomplished);
 						achievementStates.put(achievement.getId(), true);
-					}
-					else {
+					} else {
 						achievement.invalidate(bhApp);
 						achievementStates.put(achievement.getId(), false);
 					}

@@ -116,7 +116,7 @@
 	
 	<!-- Achievements -->
 	<string name="str_achievement_accomplish">Grattis! Du har klarat bedriften "%s".</string>
-	<string name="str_achievement_totalBoost">Total boost: %s</string>
+	<string name="str_achievement_totalBoost">Total boost:\n%s</string>
 	
 	<string name="str_achieve_1_title">Prövoperiod I</string>
 	<string name="str_achieve_1_description">Skaffa 100 poäng för att bli accepterad.</string>

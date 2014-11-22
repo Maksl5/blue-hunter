@@ -46,7 +46,12 @@ import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager.LeaderboardLayout.LBAdapterData;
+import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout.LBAdapterData;
+import com.maksl5.bl_hunt.custom_ui.fragment.ProfileLayout;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
@@ -235,7 +240,7 @@ public class MainActivity extends FragmentActivity {
 						int error = Integer.parseInt(matcher.group(1));
 
 						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
-						FragmentLayoutManager.ProfileLayout.setName(bhApp, errorMsg, true);
+						ProfileLayout.setName(bhApp, errorMsg, true);
 
 						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
 						break;
@@ -256,7 +261,7 @@ public class MainActivity extends FragmentActivity {
 							e.printStackTrace();
 						}
 
-						FragmentLayoutManager.ProfileLayout.setName(bhApp, nameString, false);
+						ProfileLayout.setName(bhApp, nameString, false);
 
 					}
 
@@ -354,13 +359,13 @@ public class MainActivity extends FragmentActivity {
 		NetworkThread getUserInfo = new NetworkThread(bhApp);
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
-		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
-		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
-		FragmentLayoutManager.ProfileLayout.initializeView(this);
-		FragmentLayoutManager.LeaderboardLayout.changeList =
+		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+		DeviceDiscoveryLayout.updateIndicatorViews(this);
+		ProfileLayout.initializeView(this);
+		LeaderboardLayout.changeList =
 				new DatabaseManager(bhApp).getLeaderboardChanges();
-		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
-		FragmentLayoutManager.AchievementsLayout.initializeAchievements(bhApp);
+		LeaderboardLayout.refreshLeaderboard(bhApp);
+		AchievementsLayout.initializeAchievements(bhApp);
 
 		updateNotification();
 
@@ -404,7 +409,7 @@ public class MainActivity extends FragmentActivity {
 			break;
 		case R.id.menu_refresh:
 			if (bhApp.actionBarHandler.getCurrentPage() == FragmentLayoutManager.PAGE_LEADERBOARD) {
-				FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp);
+				LeaderboardLayout.refreshLeaderboard(bhApp);
 			}
 		default:
 			break;
@@ -510,7 +515,7 @@ public class MainActivity extends FragmentActivity {
 			bhApp.disMan.passEnableBTActivityResult(resultCode, requestCode);
 
 		if (requestCode == REQ_PICK_USER_IMAGE && resultCode == RESULT_OK)
-			FragmentLayoutManager.ProfileLayout.passPickedImage(this, intent);
+			ProfileLayout.passPickedImage(this, intent);
 	}
 
 	/*
@@ -535,8 +540,8 @@ public class MainActivity extends FragmentActivity {
 
 		HashMap<Integer, Integer> leaderboardChanges = new HashMap<Integer, Integer>();
 
-		for (int i = 0; i < FragmentLayoutManager.LeaderboardLayout.completeFdList.size(); i++) {
-			LBAdapterData leaderboardEntry = FragmentLayoutManager.LeaderboardLayout.completeFdList.get(i);
+		for (int i = 0; i < LeaderboardLayout.completeFdList.size(); i++) {
+			LBAdapterData leaderboardEntry = LeaderboardLayout.completeFdList.get(i);
 
 			leaderboardChanges.put(leaderboardEntry.getId(), i + 1);
 
@@ -643,11 +648,11 @@ public class MainActivity extends FragmentActivity {
 		bhApp.disMan.supplyNewTextView(disStateTextView);
 		
 		
-		FragmentLayoutManager.DeviceDiscoveryLayout.updateIndicatorViews(this);
-		FragmentLayoutManager.ProfileLayout.initializeView(this);
-		FragmentLayoutManager.AchievementsLayout.initializeAchievements(bhApp);
-		FragmentLayoutManager.LeaderboardLayout.refreshLeaderboard(bhApp, true);
-		FragmentLayoutManager.FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+		DeviceDiscoveryLayout.updateIndicatorViews(this);
+		ProfileLayout.initializeView(this);
+		AchievementsLayout.initializeAchievements(bhApp);
+		LeaderboardLayout.refreshLeaderboard(bhApp, true);
+		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		
 
 	}
