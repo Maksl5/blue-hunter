@@ -1,7 +1,5 @@
 package com.maksl5.bl_hunt.activity;
 
-
-
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
@@ -39,16 +37,18 @@ import com.maksl5.bl_hunt.custom_ui.fragment.ProfileLayout;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
-
-
 /**
- * The {@link ActionBarHandler} class handles all communication and events that affect the {@link ActionBar}. It has to
- * be constructed in the {@link Activity#onCreate(Bundle)} method and you must supply the {@link Menu} via the
- * {@link #supplyMenu(Menu)} method in the {@link Activity#onCreateOptionsMenu(Menu)} method. If you won't supply a
- * {@link Menu} or the supplied {@link Menu} is null, all methods in this class will throw a NullMenuException.
+ * The {@link ActionBarHandler} class handles all communication and events that
+ * affect the {@link ActionBar}. It has to be constructed in the
+ * {@link Activity#onCreate(Bundle)} method and you must supply the {@link Menu}
+ * via the {@link #supplyMenu(Menu)} method in the
+ * {@link Activity#onCreateOptionsMenu(Menu)} method. If you won't supply a
+ * {@link Menu} or the supplied {@link Menu} is null, all methods in this class
+ * will throw a NullMenuException.
  */
 
-public class ActionBarHandler implements OnNavigationListener, OnQueryTextListener, OnActionExpandListener {
+public class ActionBarHandler implements OnNavigationListener,
+		OnQueryTextListener, OnActionExpandListener {
 
 	private BlueHunter bhApp;
 	public ActionBar actBar;
@@ -74,6 +74,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		actBar.setDisplayShowTitleEnabled(false);
 		actBar.setDisplayUseLogoEnabled(true);
 		actBar.setDisplayShowHomeEnabled(true);
+		actBar.setIcon(R.drawable.ic_logo);
 
 		menuInflater = bhApp.mainActivity.getMenuInflater();
 	}
@@ -85,17 +86,17 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 		checkMenuNull();
 
-		final ViewPager viewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
-		final TableRow userInfoRow =
-				(TableRow) bhApp.mainActivity.findViewById(R.id.userInfoTableRow);
+		final ViewPager viewPager = (ViewPager) bhApp.mainActivity
+				.findViewById(R.id.pager);
+		final TableRow userInfoRow = (TableRow) bhApp.mainActivity
+				.findViewById(R.id.userInfoTableRow);
 
 		userInfoRow.setVisibility(View.VISIBLE);
 
 		viewPager.getChildAt(0).setOnTouchListener(new OnTouchListener() {
 
 			@Override
-			public boolean onTouch(	View v,
-									MotionEvent event) {
+			public boolean onTouch(View v, MotionEvent event) {
 
 				final int Y = (int) event.getRawY();
 
@@ -113,14 +114,14 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 					viewPager.setTop(top);
 					userInfoRow.setBottom(top);
-					viewPager.getLayoutParams().height = viewPager.getBottom() - top;
+					viewPager.getLayoutParams().height = viewPager.getBottom()
+							- top;
 					return true;
 				case MotionEvent.ACTION_UP:
 
 					if ((Y - beforeLastY) < 0) {
 						onNavigationItemSelected(0, 0);
-					}
-					else {
+					} else {
 						onNavigationItemSelected(1, 0);
 					}
 					return true;
@@ -134,8 +135,10 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
 		disSwitch.setPadding(5, 0, 5, 0);
 
-		progressBar = new ProgressBar(bhApp, null, android.R.attr.progressBarStyleSmall);
-		getMenuItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
+		progressBar = new ProgressBar(bhApp, null,
+				android.R.attr.progressBarStyleSmall);
+		getMenuItem(R.id.menu_progress).setVisible(false).setActionView(
+				progressBar);
 
 		progressBar.setPadding(5, 0, 5, 0);
 
@@ -149,8 +152,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		actionModeCallback = new ActionMode.Callback() {
 
 			@Override
-			public boolean onCreateActionMode(	ActionMode mode,
-												Menu menu) {
+			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
 				MenuInflater inflater = mode.getMenuInflater();
 				switch (currentPage) {
@@ -164,15 +166,13 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			}
 
 			@Override
-			public boolean onPrepareActionMode(	ActionMode mode,
-												Menu menu) {
+			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
 
 				return false;
 			}
 
 			@Override
-			public boolean onActionItemClicked(	ActionMode mode,
-												MenuItem item) {
+			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
 				switch (currentPage) {
 				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
@@ -180,22 +180,26 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 					switch (item.getItemId()) {
 					case R.id.menu_context_remove:
 
-						String macAddress =
-								FoundDevicesLayout.getSelectedMac();
+						String macAddress = FoundDevicesLayout.getSelectedMac();
 						if (macAddress == null) {
-							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
+							Toast.makeText(bhApp, "Error removing device.",
+									Toast.LENGTH_LONG).show();
 							mode.finish();
 						}
 
-						if (!new DatabaseManager(bhApp).deleteDevice(macAddress)) {
-							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
-						}
-						else {
+						if (!new DatabaseManager(bhApp)
+								.deleteDevice(macAddress)) {
+							Toast.makeText(bhApp, "Error removing device.",
+									Toast.LENGTH_LONG).show();
+						} else {
 							FoundDevicesLayout.refreshFoundDevicesList(bhApp);
-							DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+							DeviceDiscoveryLayout
+									.updateIndicatorViews(bhApp.mainActivity);
 
 							bhApp.mainActivity.updateNotification();
-							Toast.makeText(bhApp, "Successfully removed device.", Toast.LENGTH_LONG).show();
+							Toast.makeText(bhApp,
+									"Successfully removed device.",
+									Toast.LENGTH_LONG).show();
 						}
 						mode.finish();
 						return true;
@@ -263,7 +267,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				menu.findItem(R.id.menu_boostIndicator).setVisible(false);
 				menu.findItem(R.id.menu_switch).setVisible(false);
 				menu.findItem(R.id.menu_submit_mac).setVisible(false);
-				
+
 				if (bhApp.isTablet()) {
 					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 					menu.findItem(R.id.menu_switch).setVisible(true);
@@ -272,8 +276,12 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				onQueryTextChange("");
 				menu.findItem(R.id.menu_search).collapseActionView();
 
-				if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated", false))
-					RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_leaderboard), 0.25).show();
+				if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated",
+						false))
+					RandomToast
+							.create(bhApp,
+									bhApp.getString(R.string.str_tip_leaderboard),
+									0.25).show();
 
 				break;
 			case FragmentLayoutManager.PAGE_FOUND_DEVICES:
@@ -284,7 +292,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 				menu.findItem(R.id.menu_switch).setVisible(false);
 				menu.findItem(R.id.menu_submit_mac).setVisible(true);
-				
+
 				if (bhApp.isTablet()) {
 					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 					menu.findItem(R.id.menu_switch).setVisible(true);
@@ -301,7 +309,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 				menu.findItem(R.id.menu_switch).setVisible(false);
 				menu.findItem(R.id.menu_submit_mac).setVisible(false);
-				
+
 				if (bhApp.isTablet()) {
 					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 					menu.findItem(R.id.menu_switch).setVisible(true);
@@ -310,12 +318,13 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				break;
 			case FragmentLayoutManager.PAGE_PROFILE:
 				if (ProfileLayout.userName.startsWith("Player")) {
-					RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_changeName), 0.25).show();
+					RandomToast.create(bhApp,
+							bhApp.getString(R.string.str_tip_changeName), 0.25)
+							.show();
 				}
 				break;
 			}
-		}
-		catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			return false;
 		}
 		return true;
@@ -363,15 +372,17 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see android.app.ActionBar.OnNavigationListener#onNavigationItemSelected(int, long)
+	 * @see
+	 * android.app.ActionBar.OnNavigationListener#onNavigationItemSelected(int,
+	 * long)
 	 */
 	@Override
-	public boolean onNavigationItemSelected(int itemPosition,
-											long itemId) {
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 
-		final ViewPager parentView = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
-		final TableRow userInfoRow =
-				(TableRow) bhApp.mainActivity.findViewById(R.id.userInfoTableRow);
+		final ViewPager parentView = (ViewPager) bhApp.mainActivity
+				.findViewById(R.id.pager);
+		final TableRow userInfoRow = (TableRow) bhApp.mainActivity
+				.findViewById(R.id.userInfoTableRow);
 
 		Animation animation;
 
@@ -391,7 +402,9 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				@Override
 				public void onAnimationStart(Animation animation) {
 
-					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
+					Log.d("layout",
+							"before: view.getBottom = "
+									+ parentView.getBottom());
 
 					// TODO Auto-generated method stub
 
@@ -408,7 +421,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				public void onAnimationEnd(Animation animation) {
 
 					userInfoRow.setVisibility(View.INVISIBLE);
-					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
+					Log.d("layout",
+							"after: view.getBottom = " + parentView.getBottom());
 					parentView.requestLayout();
 					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
 					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
@@ -424,7 +438,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
 			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
 
-			animation = new SizeAnimation(parentView, userInfoRow, userInfoRow.getMeasuredHeight());
+			animation = new SizeAnimation(parentView, userInfoRow,
+					userInfoRow.getMeasuredHeight());
 			animation.setDuration(500);
 			animation.setFillAfter(true);
 
@@ -435,7 +450,9 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				public void onAnimationStart(Animation animation) {
 
 					userInfoRow.setVisibility(View.VISIBLE);
-					Log.d("layout", "before: view.getBottom = " + parentView.getBottom());
+					Log.d("layout",
+							"before: view.getBottom = "
+									+ parentView.getBottom());
 					// TODO Auto-generated method stub
 
 				}
@@ -450,7 +467,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				@Override
 				public void onAnimationEnd(Animation animation) {
 
-					Log.d("layout", "after: view.getBottom = " + parentView.getBottom());
+					Log.d("layout",
+							"after: view.getBottom = " + parentView.getBottom());
 					parentView.requestLayout();
 					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
 					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
@@ -470,7 +488,9 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see android.widget.SearchView.OnQueryTextListener#onQueryTextChange(java.lang.String)
+	 * @see
+	 * android.widget.SearchView.OnQueryTextListener#onQueryTextChange(java.
+	 * lang.String)
 	 */
 	@Override
 	public boolean onQueryTextChange(String newText) {
@@ -487,7 +507,9 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see android.widget.SearchView.OnQueryTextListener#onQueryTextSubmit(java.lang.String)
+	 * @see
+	 * android.widget.SearchView.OnQueryTextListener#onQueryTextSubmit(java.
+	 * lang.String)
 	 */
 	@Override
 	public boolean onQueryTextSubmit(String query) {
@@ -522,9 +544,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		int initialBot;
 		int initialTop;
 
-		public SizeAnimation(ViewPager view,
-				TableRow userRow,
-				int targetTop) {
+		public SizeAnimation(ViewPager view, TableRow userRow, int targetTop) {
 
 			this.view = view;
 			this.userRow = userRow;
@@ -532,23 +552,24 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 			this.initialBot = view.getBottom();
 			this.initialTop = view.getTop();
 
-			Log.d("hardware_accelerated?", String.valueOf(view.isHardwareAccelerated()));
+			Log.d("hardware_accelerated?",
+					String.valueOf(view.isHardwareAccelerated()));
 
 		}
 
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see android.view.animation.Animation#applyTransformation(float, android.view.animation.Transformation)
+		 * @see android.view.animation.Animation#applyTransformation(float,
+		 * android.view.animation.Transformation)
 		 */
 		@Override
-		protected void applyTransformation(	float interpolatedTime,
-											Transformation t) {
+		protected void applyTransformation(float interpolatedTime,
+				Transformation t) {
 
 			if (targetTop == initialTop) {
 				return;
-			}
-			else if (targetTop > initialTop) {
+			} else if (targetTop > initialTop) {
 
 				int top = (int) ((targetTop - initialTop) * interpolatedTime + initialTop);
 
@@ -556,10 +577,10 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 				userRow.setBottom(top);
 				view.getLayoutParams().height = view.getBottom() - top;
 
-			}
-			else if (targetTop < initialTop) {
+			} else if (targetTop < initialTop) {
 
-				int top = (int) ((initialTop - targetTop) * (1 - interpolatedTime) + targetTop);
+				int top = (int) ((initialTop - targetTop)
+						* (1 - interpolatedTime) + targetTop);
 
 				view.setTop(top);
 				userRow.setBottom(top);
@@ -575,10 +596,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 		 * @see android.view.animation.Animation#initialize(int, int, int, int)
 		 */
 		@Override
-		public void initialize(	int width,
-								int height,
-								int parentWidth,
-								int parentHeight) {
+		public void initialize(int width, int height, int parentWidth,
+				int parentHeight) {
 
 			// TODO Auto-generated method stub
 			super.initialize(width, height, parentWidth, parentHeight);
@@ -601,23 +620,41 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see android.view.MenuItem.OnActionExpandListener#onMenuItemActionCollapse(android.view.MenuItem)
+	 * @see
+	 * android.view.MenuItem.OnActionExpandListener#onMenuItemActionCollapse
+	 * (android.view.MenuItem)
 	 */
 	@Override
 	public boolean onMenuItemActionCollapse(MenuItem item) {
 
-		// TODO Auto-generated method stub
+		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES) {
+			menu.findItem(R.id.menu_info).setVisible(true);
+			menu.findItem(R.id.menu_boostIndicator).setVisible(true);
+		}
+		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) {
+			menu.findItem(R.id.menu_refresh).setVisible(true);
+		}
 		return true;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see android.view.MenuItem.OnActionExpandListener#onMenuItemActionExpand(android.view.MenuItem)
+	 * @see
+	 * android.view.MenuItem.OnActionExpandListener#onMenuItemActionExpand(android
+	 * .view.MenuItem)
 	 */
 	@Override
 	public boolean onMenuItemActionExpand(MenuItem item) {
 
+		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES) {
+			menu.findItem(R.id.menu_info).setVisible(false);
+			menu.findItem(R.id.menu_boostIndicator).setVisible(false);
+		}
+		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) {
+			menu.findItem(R.id.menu_refresh).setVisible(false);
+		}
+		
 		return true;
 	}
 
