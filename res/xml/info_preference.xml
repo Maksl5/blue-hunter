@@ -5,6 +5,9 @@
         android:key="pref_version"
         android:title="@string/str_Preferences_version_title" />
     <Preference
+        android:key="pref_issuetracker"
+        android:title="@string/str_Preferences_openIssueTracker_title" android:summary="@string/str_Preferences_openIssueTracker_sum"/>
+    <Preference
         android:key="pref_changelog"
         android:title="@string/str_Preferences_showChangelog_title" />
 

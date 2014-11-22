@@ -89,6 +89,8 @@
     <string name="str_Preferences_disableBtExit_sum">This will turn off Bluetooth when closing the app.</string>
     <string name="str_Preferences_disableBtSrchOff_title">Disable Bluetooth at discovery stop</string>
     <string name="str_Preferences_disableBtSrchOff_sum">This will turn off Bluetooth when you manually turn off the device discovery.</string>
+    <string name="str_Preferences_openIssueTracker_title">Issue Tracker</string>
+    <string name="str_Preferences_openIssueTracker_sum">Report bugs, crashes and feature requests here.\nThank you!</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>

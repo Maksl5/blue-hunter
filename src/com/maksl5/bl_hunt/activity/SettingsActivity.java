@@ -366,6 +366,19 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 					}
 				});
 			}
+			
+			
+			//Implement Issue Tracker linking
+			Preference issueTrackerPref =  findPreference("pref_issuetracker");
+			issueTrackerPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					Intent trackerIntent =  new Intent(Intent.ACTION_VIEW, Uri.parse("http://bluehunter.maks-dev.com/issues"));
+					startActivity(trackerIntent);
+					return true;
+				}
+			});
 
 		}
 
