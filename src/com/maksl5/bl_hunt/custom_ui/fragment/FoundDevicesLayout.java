@@ -5,13 +5,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -19,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
@@ -312,6 +317,24 @@ public class FoundDevicesLayout {
 			}
 
 			listView.setOnItemLongClickListener(onLongClickListener);
+			listView.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					
+					String macString = showedFdList.get(position).getMacAddress();
+					if(macString != null) {
+						
+						ClipboardManager clipboardManager = (ClipboardManager)bhApp.getSystemService(Context.CLIPBOARD_SERVICE);
+						clipboardManager.setPrimaryClip(ClipData.newPlainText("Mac Address", macString));
+						
+						Toast.makeText(bhApp, "Copied Mac Address " + macString +" into clipboard", Toast.LENGTH_SHORT).show();
+						
+					}
+					
+				}
+			});
 
 			scrollIndex = listView.getFirstVisiblePosition();
 			View v = listView.getChildAt(0);

@@ -19,6 +19,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -464,6 +465,9 @@ public class MainActivity extends FragmentActivity {
 			if (bhApp.actionBarHandler.getCurrentPage() == FragmentLayoutManager.PAGE_LEADERBOARD) {
 				LeaderboardLayout.refreshLeaderboard(bhApp);
 			}
+		case R.id.menu_submit_mac:
+			Intent intentSubmit = new Intent(Intent.ACTION_VIEW, Uri.parse("http://bluehunter.mac.maks-dev.com"));
+			startActivity(intentSubmit);
 		default:
 			break;
 		}

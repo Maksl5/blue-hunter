@@ -247,6 +247,7 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 				menu.findItem(R.id.menu_switch).setVisible(true);
+				menu.findItem(R.id.menu_submit_mac).setVisible(false);
 
 				if (bhApp.isTablet()) {
 					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
@@ -261,7 +262,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 				menu.findItem(R.id.menu_boostIndicator).setVisible(false);
 				menu.findItem(R.id.menu_switch).setVisible(false);
-
+				menu.findItem(R.id.menu_submit_mac).setVisible(false);
+				
 				if (bhApp.isTablet()) {
 					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 					menu.findItem(R.id.menu_switch).setVisible(true);
@@ -281,7 +283,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 				menu.findItem(R.id.menu_switch).setVisible(false);
-
+				menu.findItem(R.id.menu_submit_mac).setVisible(true);
+				
 				if (bhApp.isTablet()) {
 					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 					menu.findItem(R.id.menu_switch).setVisible(true);
@@ -297,7 +300,8 @@ public class ActionBarHandler implements OnNavigationListener, OnQueryTextListen
 
 				menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 				menu.findItem(R.id.menu_switch).setVisible(false);
-
+				menu.findItem(R.id.menu_submit_mac).setVisible(false);
+				
 				if (bhApp.isTablet()) {
 					menu.findItem(R.id.menu_boostIndicator).setVisible(true);
 					menu.findItem(R.id.menu_switch).setVisible(true);

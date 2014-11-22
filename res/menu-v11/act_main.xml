@@ -29,6 +29,11 @@
         android:showAsAction="never"
         android:title="@string/str_menu_settings"/>
     <item android:id="@+id/menu_refresh" android:showAsAction="always" android:title="@string/str_menu_refresh" android:icon="@drawable/ic_action_refresh"></item>
-    
+        <item
+        android:id="@+id/menu_submit_mac"
+        android:orderInCategory="99"
+        android:showAsAction="never"
+        android:title="@string/str_menu_submit_mac">
+    </item>
 
 </menu>

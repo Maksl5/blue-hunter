@@ -1,4 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <item
         android:id="@+id/menu_progress"
         android:actionViewClass="android.widget.ProgressBar"
@@ -35,6 +36,12 @@
         android:icon="@drawable/ic_action_refresh"
         android:showAsAction="always"
         android:title="@string/str_menu_refresh">
+    </item>
+    <item
+        android:id="@+id/menu_submit_mac"
+        android:orderInCategory="99"
+        android:showAsAction="never"
+        android:title="@string/str_menu_submit_mac">
     </item>
 
 </menu>

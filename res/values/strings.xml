@@ -20,6 +20,7 @@
     <string name="str_menu_search">Search</string>
     <string name="str_menu_context_remove">Remove</string>
 	<string name="str_menu_refresh">Refresh</string>
+	<string name="str_menu_submit_mac">Submit Unknown Mac Address</string>
     
     
     <string name="str_actBar_userInfo">User Information</string>
