@@ -1,7 +1,5 @@
 package com.maksl5.bl_hunt.activity;
 
-
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
@@ -10,10 +8,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog.Builder;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -27,7 +29,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,14 +66,14 @@ import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
-
-
 public class MainActivity extends FragmentActivity {
 
 	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the sections. We use a
-	 * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which will keep every loaded fragment in memory.
-	 * If this becomes too memory intensive, it may be best to switch to a
+	 * The {@link android.support.v4.view.PagerAdapter} that will provide
+	 * fragments for each of the sections. We use a
+	 * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
+	 * will keep every loaded fragment in memory. If this becomes too memory
+	 * intensive, it may be best to switch to a
 	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
 	SectionsPagerAdapter mSectionsPagerAdapter;
@@ -104,7 +108,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		destroyed = false;
-		
+
 		// Debug.startMethodTracing("blHunt_12");
 
 		bhApp = (BlueHunter) getApplication();
@@ -117,15 +121,19 @@ public class MainActivity extends FragmentActivity {
 		bhApp.actionBarHandler = new ActionBarHandler(bhApp);
 		bhApp.disMan = new DiscoveryManager(bhApp);
 
-		// Create the adapter that will return a fragment for each of the primary sections
+		// Create the adapter that will return a fragment for each of the
+		// primary sections
 		// of the app.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		mSectionsPagerAdapter = new SectionsPagerAdapter(
+				getSupportFragmentManager());
 
 		bhApp.authentification = new Authentification(bhApp);
 		bhApp.netMananger = new NetworkManager(bhApp);
 
-		bhApp.loginManager =
-				bhApp.authentification.new LoginManager(Authentification.getSerialNumber(), bhApp.authentification.getStoredPass(), bhApp.authentification.getStoredLoginToken());
+		bhApp.loginManager = bhApp.authentification.new LoginManager(
+				Authentification.getSerialNumber(),
+				bhApp.authentification.getStoredPass(),
+				bhApp.authentification.getStoredLoginToken());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -141,21 +149,46 @@ public class MainActivity extends FragmentActivity {
 		stateNotificationBuilder.setOngoing(true);
 		stateNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
 		stateNotificationBuilder.setAutoCancel(false);
-		stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
-		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
+		stateNotificationBuilder.setContentTitle(DiscoveryState
+				.getUnformatedDiscoveryState(
+						DiscoveryState.DISCOVERY_STATE_STOPPED, this));
+		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(
+				this, 0, new Intent(this, MainActivity.class)
+						.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+								| Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
 		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", false)) {
 			try {
 				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-			}
-			catch (Exception e) {
-				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-			}
-			catch (OutOfMemoryError e) {
-				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+			} catch (Exception e) {
+				PreferenceManager
+						.setPref(bhApp, "pref_enableBackground", false);
+			} catch (OutOfMemoryError e) {
+				PreferenceManager
+						.setPref(bhApp, "pref_enableBackground", false);
 			}
 
 		}
+
+		Builder builder = new Builder(this);
+		builder.setTitle("Information");
+
+		builder.setMessage(Html.fromHtml("Attention:<br><br>"
+				+ "This version ("
+				+ bhApp.getVersionName()
+				+ ") of BlueHunter is not stable, as it is still in Alpha phase. If you find bugs, crashes, etc. I would appreciate if you go to this <a href=\"http://bluehunter.maks-dev.com/issues\">Issues Tracker</a> and make a quick entry/task. That's it.<br>Thank you very much!"));
+
+		builder.setNeutralButton("Ok", new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+
+			}
+		});
+
+		((TextView) builder.show().findViewById(android.R.id.message))
+				.setMovementMethod(LinkMovementMethod.getInstance());
 
 	}
 
@@ -170,18 +203,22 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.fade_in,
+				android.R.anim.fade_out);
 
 		bhApp.currentActivity = this;
 
 		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 		Intent serviceIntent = new Intent(this, CheckUpdateService.class);
-		PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
+		PendingIntent pendingIntent = PendingIntent.getService(this, 0,
+				serviceIntent, 0);
 		alarmManager.cancel(pendingIntent);
 
 		if (PreferenceManager.getPref(this, "pref_checkUpdate", true)) {
-			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 0 * 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
+			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+					SystemClock.elapsedRealtime() + 0 * 60 * 1000,
+					AlarmManager.INTERVAL_HOUR, pendingIntent);
 		}
 
 	}
@@ -202,9 +239,8 @@ public class MainActivity extends FragmentActivity {
 			}
 
 			@Override
-			public void onPageScrolled(	int position,
-										float positionOffset,
-										int positionOffsetPixels) {
+			public void onPageScrolled(int position, float positionOffset,
+					int positionOffsetPixels) {
 
 			}
 
@@ -224,92 +260,102 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 
-		bhApp.authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
+		bhApp.authentification
+				.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
-			@Override
-			public boolean onResult(int requestId,
-									String resultString) {
+					@Override
+					public boolean onResult(int requestId, String resultString) {
 
-				switch (requestId) {
-				case Authentification.NETRESULT_ID_SERIAL_CHECK:
+						switch (requestId) {
+						case Authentification.NETRESULT_ID_SERIAL_CHECK:
 
-					Pattern pattern = Pattern.compile("Error=(\\d+)");
-					Matcher matcher = pattern.matcher(resultString);
+							Pattern pattern = Pattern.compile("Error=(\\d+)");
+							Matcher matcher = pattern.matcher(resultString);
 
-					if (matcher.find()) {
-						int error = Integer.parseInt(matcher.group(1));
+							if (matcher.find()) {
+								int error = Integer.parseInt(matcher.group(1));
 
-						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
-						ProfileLayout.setName(bhApp, errorMsg, true);
+								String errorMsg = ErrorHandler.getErrorString(
+										bhApp, requestId, error);
+								ProfileLayout.setName(bhApp, errorMsg, true);
 
-						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
-						break;
-					}
+								Toast.makeText(MainActivity.this, errorMsg,
+										Toast.LENGTH_LONG).show();
+								break;
+							}
 
-					Pattern xmlPattern = Pattern.compile("<done name=\"(.+)\" />");
-					Matcher xmlMatcher = xmlPattern.matcher(resultString);
+							Pattern xmlPattern = Pattern
+									.compile("<done name=\"(.+)\" />");
+							Matcher xmlMatcher = xmlPattern
+									.matcher(resultString);
 
-					if (xmlMatcher.find()) {
+							if (xmlMatcher.find()) {
 
-						String nameString = "";
+								String nameString = "";
 
-						try {
-							nameString = URLDecoder.decode(xmlMatcher.group(1), "UTF-8");
+								try {
+									nameString = URLDecoder.decode(
+											xmlMatcher.group(1), "UTF-8");
+								} catch (UnsupportedEncodingException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+
+								ProfileLayout.setName(bhApp, nameString, false);
+
+							}
+
+							bhApp.loginManager.login();
+							break;
+						case Authentification.NETRESULT_ID_GET_USER_INFO:
+
+							Pattern pattern2 = Pattern.compile("Error=(\\d+)");
+							Matcher matcher2 = pattern2.matcher(resultString);
+
+							if (matcher2.find()) {
+								int error = Integer.parseInt(matcher2.group(1));
+
+								String errorMsg = ErrorHandler.getErrorString(
+										bhApp, requestId, error);
+
+								userInfoTextView.setText(errorMsg);
+								userInfoTextView.setVisibility(View.VISIBLE);
+								userInfoTextView.setClickable(true);
+								userInfoTextView
+										.setMovementMethod(LinkMovementMethod
+												.getInstance());
+								userInfoTextView.setLinkTextColor(Color.DKGRAY);
+								userInfoTextView.requestLayout();
+								userInfoTextView.invalidate();
+
+								TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
+								userInfoRow.setVisibility(View.VISIBLE);
+								userInfoRow.invalidate();
+								userInfoRow.setVisibility(View.INVISIBLE);
+								return true;
+							}
+
+							userInfoTextView.setText(Html
+									.fromHtml(resultString));
+							userInfoTextView.setVisibility(View.VISIBLE);
+							userInfoTextView.setClickable(true);
+							userInfoTextView
+									.setMovementMethod(LinkMovementMethod
+											.getInstance());
+							userInfoTextView.setLinkTextColor(Color.DKGRAY);
+							userInfoTextView.requestLayout();
+							userInfoTextView.invalidate();
+
+							TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
+							userInfoRow.setVisibility(View.VISIBLE);
+							userInfoRow.invalidate();
+							userInfoRow.setVisibility(View.INVISIBLE);
+							break;
 						}
-						catch (UnsupportedEncodingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 
-						ProfileLayout.setName(bhApp, nameString, false);
-
+						return false;
 					}
-
-					bhApp.loginManager.login();
-					break;
-				case Authentification.NETRESULT_ID_GET_USER_INFO:
-
-					Pattern pattern2 = Pattern.compile("Error=(\\d+)");
-					Matcher matcher2 = pattern2.matcher(resultString);
-
-					if (matcher2.find()) {
-						int error = Integer.parseInt(matcher2.group(1));
-
-						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
-
-						userInfoTextView.setText(errorMsg);
-						userInfoTextView.setVisibility(View.VISIBLE);
-						userInfoTextView.setClickable(true);
-						userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
-						userInfoTextView.setLinkTextColor(Color.DKGRAY);
-						userInfoTextView.requestLayout();
-						userInfoTextView.invalidate();
-
-						TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
-						userInfoRow.setVisibility(View.VISIBLE);
-						userInfoRow.invalidate();
-						userInfoRow.setVisibility(View.INVISIBLE);
-						return true;
-					}
-
-					userInfoTextView.setText(Html.fromHtml(resultString));
-					userInfoTextView.setVisibility(View.VISIBLE);
-					userInfoTextView.setClickable(true);
-					userInfoTextView.setMovementMethod(LinkMovementMethod.getInstance());
-					userInfoTextView.setLinkTextColor(Color.DKGRAY);
-					userInfoTextView.requestLayout();
-					userInfoTextView.invalidate();
-
-					TableRow userInfoRow = (TableRow) findViewById(R.id.userInfoTableRow);
-					userInfoRow.setVisibility(View.VISIBLE);
-					userInfoRow.invalidate();
-					userInfoRow.setVisibility(View.INVISIBLE);
-					break;
-				}
-
-				return false;
-			}
-		});
+				});
 
 	}
 
@@ -331,8 +377,7 @@ public class MainActivity extends FragmentActivity {
 			if (!bhApp.disMan.supplyTextView(disStateTextView)) {
 
 				// ERROR
-			}
-			else {
+			} else {
 				bhApp.disMan.startDiscoveryManager();
 			}
 		}
@@ -342,12 +387,17 @@ public class MainActivity extends FragmentActivity {
 		bhApp.authentification.checkUpdate();
 
 		NetworkThread serialSubmit = new NetworkThread(bhApp);
-		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
+		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL,
+				String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK),
+				"s=" + Authentification.getSerialNumber(),
+				"v=" + bhApp.getVersionCode(),
+				"h=" + bhApp.authentification.getSerialNumberHash());
 
 		new DatabaseManager(bhApp).close();
 
 		bhApp.synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
-		bhApp.authentification.setOnLoginChangeListener(bhApp.synchronizeFoundDevices);
+		bhApp.authentification
+				.setOnLoginChangeListener(bhApp.synchronizeFoundDevices);
 
 		userInfoTextView = (TextView) findViewById(R.id.userInfoTxtView);
 
@@ -357,13 +407,14 @@ public class MainActivity extends FragmentActivity {
 		userInfoRow.setVisibility(View.INVISIBLE);
 
 		NetworkThread getUserInfo = new NetworkThread(bhApp);
-		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
+		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO,
+				String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 		DeviceDiscoveryLayout.updateIndicatorViews(this);
 		ProfileLayout.initializeView(this);
-		LeaderboardLayout.changeList =
-				new DatabaseManager(bhApp).getLeaderboardChanges();
+		LeaderboardLayout.changeList = new DatabaseManager(bhApp)
+				.getLeaderboardChanges();
 		LeaderboardLayout.refreshLeaderboard(bhApp);
 		AchievementsLayout.initializeAchievements(bhApp);
 
@@ -381,9 +432,11 @@ public class MainActivity extends FragmentActivity {
 	 */
 	private void upgrade() {
 
-		if (oldVersion == 0 || newVersion == 0) return;
+		if (oldVersion == 0 || newVersion == 0)
+			return;
 
-		if (oldVersion > newVersion) return;
+		if (oldVersion > newVersion)
+			return;
 
 		if (oldVersion < 1065) {
 			bhApp.synchronizeFoundDevices.needForceOverrideUp = true;
@@ -418,10 +471,10 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	/**
-	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary sections of the app.
+	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+	 * one of the primary sections of the app.
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
 
 		@Override
 		public int getItemPosition(Object object) {
@@ -456,11 +509,14 @@ public class MainActivity extends FragmentActivity {
 			case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
 				return getString(R.string.str_pageTitle_main).toUpperCase();
 			case FragmentLayoutManager.PAGE_LEADERBOARD:
-				return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
+				return getString(R.string.str_pageTitle_leaderboard)
+						.toUpperCase();
 			case FragmentLayoutManager.PAGE_FOUND_DEVICES:
-				return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
+				return getString(R.string.str_pageTitle_foundDevices)
+						.toUpperCase();
 			case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
-				return getString(R.string.str_pageTitle_achievements).toUpperCase();
+				return getString(R.string.str_pageTitle_achievements)
+						.toUpperCase();
 			case FragmentLayoutManager.PAGE_PROFILE:
 				return getString(R.string.str_pageTitle_profile).toUpperCase();
 			}
@@ -477,37 +533,34 @@ public class MainActivity extends FragmentActivity {
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
 		@Override
-		public View onCreateView(	LayoutInflater inflater,
-									ViewGroup container,
-									Bundle savedInstanceState) {
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
 
 			Bundle args = getArguments();
 
-			return FragmentLayoutManager.getSpecificView(args, inflater, container, container.getContext());
+			return FragmentLayoutManager.getSpecificView(args, inflater,
+					container, container.getContext());
 
 		}
 
 		@Override
-		public void onViewCreated(	View view,
-									Bundle savedInstanceState) {
+		public void onViewCreated(View view, Bundle savedInstanceState) {
 
 			super.onViewCreated(view, savedInstanceState);
 
 		}
-		
-		
-		
+
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
+	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int,
+	 * android.content.Intent)
 	 */
 	@Override
-	protected void onActivityResult(int requestCode,
-									int resultCode,
-									Intent intent) {
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent intent) {
 
 		super.onActivityResult(requestCode, resultCode, intent);
 
@@ -541,7 +594,8 @@ public class MainActivity extends FragmentActivity {
 		HashMap<Integer, Integer> leaderboardChanges = new HashMap<Integer, Integer>();
 
 		for (int i = 0; i < LeaderboardLayout.completeFdList.size(); i++) {
-			LBAdapterData leaderboardEntry = LeaderboardLayout.completeFdList.get(i);
+			LBAdapterData leaderboardEntry = LeaderboardLayout.completeFdList
+					.get(i);
 
 			leaderboardChanges.put(leaderboardEntry.getId(), i + 1);
 
@@ -570,17 +624,25 @@ public class MainActivity extends FragmentActivity {
 			int level = LevelSystem.getLevel(exp);
 
 			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
+				stateNotificationBuilder.setProgress(
+						LevelSystem.getLevelEndExp(level)
+								- LevelSystem.getLevelStartExp(level), exp
+								- LevelSystem.getLevelStartExp(level), false);
 
 			DecimalFormat df = new DecimalFormat(",###");
 
-			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+			stateNotificationBuilder.setContentText(String.format("%s %d"
+					+ (char) 9 + "%s / %s %s",
+					getString(R.string.str_foundDevices_level), level,
+					df.format(exp),
+					df.format(LevelSystem.getLevelEndExp(level)),
+					getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
-			}
-			else {
-				notificationManager.notify(1, stateNotificationBuilder.getNotification());
+			} else {
+				notificationManager.notify(1,
+						stateNotificationBuilder.getNotification());
 			}
 		}
 	}
@@ -593,21 +655,28 @@ public class MainActivity extends FragmentActivity {
 			int level = LevelSystem.getLevel(exp);
 
 			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp - LevelSystem.getLevelStartExp(level), false);
+				stateNotificationBuilder.setProgress(
+						LevelSystem.getLevelEndExp(level)
+								- LevelSystem.getLevelStartExp(level), exp
+								- LevelSystem.getLevelStartExp(level), false);
 
 			DecimalFormat df = new DecimalFormat(",###");
 
-			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+			stateNotificationBuilder.setContentText(String.format("%s %d"
+					+ (char) 9 + "%s / %s %s",
+					getString(R.string.str_foundDevices_level), level,
+					df.format(exp),
+					df.format(LevelSystem.getLevelEndExp(level)),
+					getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
-			}
-			else {
-				notificationManager.notify(1, stateNotificationBuilder.getNotification());
+			} else {
+				notificationManager.notify(1,
+						stateNotificationBuilder.getNotification());
 			}
 
-		}
-		else {
+		} else {
 			notificationManager.cancel(1);
 		}
 
@@ -616,7 +685,9 @@ public class MainActivity extends FragmentActivity {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see android.support.v4.app.FragmentActivity#onConfigurationChanged(android.content.res.Configuration)
+	 * @see
+	 * android.support.v4.app.FragmentActivity#onConfigurationChanged(android
+	 * .content.res.Configuration)
 	 */
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -627,33 +698,33 @@ public class MainActivity extends FragmentActivity {
 		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", false)) {
 			try {
 				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-			}
-			catch (Exception e) {
-				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-			}
-			catch (OutOfMemoryError e) {
-				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+			} catch (Exception e) {
+				PreferenceManager
+						.setPref(bhApp, "pref_enableBackground", false);
+			} catch (OutOfMemoryError e) {
+				PreferenceManager
+						.setPref(bhApp, "pref_enableBackground", false);
 			}
 
 		}
-		
-//		Bundle params = new Bundle();
-//		params.putInt(CustomSectionFragment.ARG_SECTION_NUMBER, FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
-//		
-//		View view = FragmentLayoutManager.getSpecificView(params, getLayoutInflater(), viewGroup, this);
-		
+
+		// Bundle params = new Bundle();
+		// params.putInt(CustomSectionFragment.ARG_SECTION_NUMBER,
+		// FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
+		//
+		// View view = FragmentLayoutManager.getSpecificView(params,
+		// getLayoutInflater(), viewGroup, this);
+
 		mSectionsPagerAdapter.notifyDataSetChanged();
-		
+
 		disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
 		bhApp.disMan.supplyNewTextView(disStateTextView);
-		
-		
+
 		DeviceDiscoveryLayout.updateIndicatorViews(this);
 		ProfileLayout.initializeView(this);
 		AchievementsLayout.initializeAchievements(bhApp);
 		LeaderboardLayout.refreshLeaderboard(bhApp, true);
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
-		
 
 	}
 
