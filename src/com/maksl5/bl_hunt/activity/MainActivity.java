@@ -468,6 +468,10 @@ public class MainActivity extends FragmentActivity {
 		case R.id.menu_submit_mac:
 			Intent intentSubmit = new Intent(Intent.ACTION_VIEW, Uri.parse("http://bluehunter.mac.maks-dev.com"));
 			startActivity(intentSubmit);
+			break;
+		case R.id.menu_boostIndicator:
+			LevelSystem.getBoostCompositionDialog(bhApp).show();
+			break;
 		default:
 			break;
 		}

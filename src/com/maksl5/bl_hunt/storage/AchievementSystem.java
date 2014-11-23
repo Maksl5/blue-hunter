@@ -6,6 +6,7 @@ package com.maksl5.bl_hunt.storage;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,7 +31,7 @@ import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
  */
 public class AchievementSystem {
 
-	private static float bonus = 0.0f;
+	private static float boost = 0.0f;
 
 	public static HashMap<Integer, Boolean> achievementStates;
 
@@ -620,7 +621,7 @@ public class AchievementSystem {
 
 		}
 
-		float boost = getBonus(bhApp);
+		float boost = getBoost(bhApp);
 
 		NumberFormat pFormat = DecimalFormat.getPercentInstance();
 
@@ -675,7 +676,7 @@ public class AchievementSystem {
 
 	}
 
-	public static float getBonus(BlueHunter bhApp) {
+	public static float getBoost(BlueHunter bhApp) {
 
 		float bonus = 0.0f;
 		
@@ -697,33 +698,67 @@ public class AchievementSystem {
 
 	}
 
-	public static HashMap<String, Float> getBonusList(BlueHunter bhApp) {
-		HashMap<String, Float> bonusList = new HashMap<String, Float>();
+	public static List<HashMap<String, String>> getBoostList(BlueHunter bhApp) {
+		List<HashMap<String, String>> boostList = new ArrayList<HashMap<String,String>>();
 
 		int level = LevelSystem.getLevel(LevelSystem.getUserExp(bhApp));
 		float levelBoost = getLevelBoost(bhApp);
-
-		bonusList.put(
-				bhApp.getString(R.string.str_achievement_levelBoost, level),
-				levelBoost);
+		
+		NumberFormat percentage = NumberFormat.getPercentInstance();
+		
+		HashMap<String, String> levelHashMap = new HashMap<String, String>();
+		levelHashMap.put("description", bhApp.getString(R.string.str_boostComposition_levelBoost, level));
+		levelHashMap.put("boost", "+" + percentage.format(levelBoost));
+		
+		boostList.add(levelHashMap);
+		
+		
+		
+		
+		HashMap<String, String> emptyHashMap =  new HashMap<String, String>();
+		
+		emptyHashMap.put("description", "");
+		emptyHashMap.put("boost", "");
+		
+		boostList.add(emptyHashMap);
 
 		Set<Integer> ids = achievementStates.keySet();
 
 		for (Achievement achievement : achievements) {
 			if (ids.contains(achievement.getId())) {
 				if (achievementStates.get(achievement.getId())) {
-					bonusList
-							.put(bhApp.getString(
-									R.string.str_achievement_achievementBoost,
-									achievement.getName(bhApp)), achievement
-									.getBoost());
+					
+					HashMap<String, String> itemHashMap = new HashMap<String, String>();
+					itemHashMap.put("description", bhApp.getString(
+									R.string.str_boostComposition_achievementBoost,
+									achievement.getName(bhApp)));
+					itemHashMap.put("boost", "+" + percentage.format(achievement
+									.getBoost()));
+					
+					boostList.add(itemHashMap);
+					
+
 				}
 			}
 		}
 		
+		HashMap<String, String> sumHashMap =  new HashMap<String, String>();
+		
+		sumHashMap.put("description", "");
+		sumHashMap.put("boost", "-------");
+		
+		boostList.add(sumHashMap);
 		
 		
-		return bonusList;
+		
+		HashMap<String, String> totalHashMap =  new HashMap<String, String>();
+		
+		totalHashMap.put("description", "Total Boost:");
+		totalHashMap.put("boost", percentage.format(getBoost(bhApp)));
+		
+		boostList.add(totalHashMap);
+		
+		return boostList;
 
 	}
 

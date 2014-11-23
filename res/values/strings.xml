@@ -124,8 +124,9 @@
     <string name="str_tip_changeName">Tip: To change your name just touch the name and hold.</string>
     
     
-    <string name="str_achievement_levelBoost">Level %d boost:</string>
-    <string name="str_achievement_achievementBoost">Achievement %s boost:</string>
+    <string name="str_boostComposition_levelBoost">Level %d boost:</string>
+    <string name="str_boostComposition_achievementBoost">Achievement &quot;%s&quot; boost:</string>
+    <string name="str_boostComposition_title">Boost Composition</string>
     
     <!-- Achievements -->
     <string name="str_achievement_accomplish">Congratulations! You have accomplished the achievement "%s".</string>
