@@ -235,7 +235,7 @@ public class DatabaseManager {
 
 		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
 
-		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 		close();
 		updateModifiedTime(System.currentTimeMillis());
 

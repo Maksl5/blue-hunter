@@ -597,13 +597,13 @@ public class DiscoveryManager {
 				device.setMac(btDevice.getAddress().toUpperCase());
 				device.setRssi(rssi);
 				device.setTime(System.currentTimeMillis());
-				device.setBonus(AchievementSystem.getBonus());
+				device.setBonus(AchievementSystem.getBonus(bhApp));
 
 				fDListCurDiscovery.add(device);
 				attemptVibration();
 				new DatabaseManager(bhApp).addNewDevice(device);
 
-				FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+				FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 				DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
 				bhApp.mainActivity.updateNotification();

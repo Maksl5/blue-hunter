@@ -86,12 +86,61 @@ public class FoundDevicesLayout {
 
 	};
 
-	public static void refreshFoundDevicesList(final BlueHunter bhApp) {
+	public static void refreshFoundDevicesList(final BlueHunter bhApp, boolean orientationChanged) {
 
 		if (threadManager == null) {
 			threadManager = new FoundDevicesLayout().new ThreadManager();
 		}
 
+		
+		if(orientationChanged) {
+			
+			
+			ListView listView;
+			FoundDevicesAdapter fdAdapter;
+
+			if (bhApp.mainActivity.mViewPager == null) {
+				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity
+						.findViewById(R.id.pager);
+			}
+
+			ViewPager pager = bhApp.mainActivity.mViewPager;
+
+			if (pager == null) {
+				return;
+			}
+
+			View pageView = pager
+					.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
+
+			if (pageView == null) {
+				listView = (ListView) pager.findViewById(R.id.listView2);
+			} else {
+				listView = (ListView) pageView.findViewById(R.id.listView2);
+			}
+
+			if (listView == null) {
+				listView = (ListView) bhApp.mainActivity
+						.findViewById(R.id.listView2);
+			}
+
+			if (listView == null)
+				return;
+
+			fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
+			if (fdAdapter == null || fdAdapter.isEmpty()) {
+				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(
+						bhApp.mainActivity, R.layout.act_page_founddevices_row,
+						showedFdList);
+				listView.setAdapter(fdAdapter);
+			}
+
+			fdAdapter.notifyDataSetChanged();
+			return;
+			
+		}
+		
+		
 		
 		RefreshThread refreshThread = new FoundDevicesLayout().new RefreshThread(
 				bhApp, threadManager);

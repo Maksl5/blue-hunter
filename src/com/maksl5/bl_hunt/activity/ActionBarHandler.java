@@ -192,7 +192,7 @@ public class ActionBarHandler implements OnNavigationListener,
 							Toast.makeText(bhApp, "Error removing device.",
 									Toast.LENGTH_LONG).show();
 						} else {
-							FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+							FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 							DeviceDiscoveryLayout
 									.updateIndicatorViews(bhApp.mainActivity);
 

@@ -124,9 +124,13 @@
     <string name="str_tip_changeName">Tip: To change your name just touch the name and hold.</string>
     
     
+    <string name="str_achievement_levelBoost">Level %d boost:</string>
+    <string name="str_achievement_achievementBoost">Achievement %s boost:</string>
+    
     <!-- Achievements -->
     <string name="str_achievement_accomplish">Congratulations! You have accomplished the achievement "%s".</string>
     <string name="str_achievement_totalBoost">Boost:\n%s</string>
+   
     
     <string name="str_achieve_1_title">Probation Period I</string>
     <string name="str_achieve_1_description">Get 100 Exp to become accepted.</string>

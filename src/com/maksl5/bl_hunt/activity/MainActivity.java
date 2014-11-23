@@ -411,7 +411,7 @@ public class MainActivity extends FragmentActivity {
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO,
 				String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
-		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 		DeviceDiscoveryLayout.updateIndicatorViews(this);
 		ProfileLayout.initializeView(this);
 		LeaderboardLayout.changeList = new DatabaseManager(bhApp)
@@ -724,11 +724,13 @@ public class MainActivity extends FragmentActivity {
 		disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
 		bhApp.disMan.supplyNewTextView(disStateTextView);
 
+				
 		DeviceDiscoveryLayout.updateIndicatorViews(this);
 		ProfileLayout.initializeView(this);
 		AchievementsLayout.initializeAchievements(bhApp);
+		
 		LeaderboardLayout.refreshLeaderboard(bhApp, true);
-		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 
 	}
 

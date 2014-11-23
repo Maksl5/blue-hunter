@@ -356,7 +356,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 					new DatabaseManager(blueHunter).newSyncedDatabase(devices);
 
 					DeviceDiscoveryLayout.updateIndicatorViews(blueHunter.mainActivity);
-					FoundDevicesLayout.refreshFoundDevicesList(blueHunter);
+					FoundDevicesLayout.refreshFoundDevicesList(blueHunter, false);
 					AchievementsLayout.initializeAchievements(blueHunter);
 
 					resultMsg = "Successfully synced down database.";

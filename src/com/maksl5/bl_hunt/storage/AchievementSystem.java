@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import android.R.integer;
+import android.content.Context;
 import android.util.SparseArray;
 import android.view.MenuItem;
 
@@ -618,7 +620,7 @@ public class AchievementSystem {
 
 		}
 
-		float boost = getBonus();
+		float boost = getBonus(bhApp);
 
 		NumberFormat pFormat = DecimalFormat.getPercentInstance();
 
@@ -673,9 +675,13 @@ public class AchievementSystem {
 
 	}
 
-	public static float getBonus() {
+	public static float getBonus(BlueHunter bhApp) {
 
 		float bonus = 0.0f;
+		
+		
+		bonus += getLevelBoost(bhApp);
+		
 
 		Set<Integer> ids = achievementStates.keySet();
 
@@ -688,6 +694,49 @@ public class AchievementSystem {
 		}
 
 		return bonus;
+
+	}
+
+	public static HashMap<String, Float> getBonusList(BlueHunter bhApp) {
+		HashMap<String, Float> bonusList = new HashMap<String, Float>();
+
+		int level = LevelSystem.getLevel(LevelSystem.getUserExp(bhApp));
+		float levelBoost = getLevelBoost(bhApp);
+
+		bonusList.put(
+				bhApp.getString(R.string.str_achievement_levelBoost, level),
+				levelBoost);
+
+		Set<Integer> ids = achievementStates.keySet();
+
+		for (Achievement achievement : achievements) {
+			if (ids.contains(achievement.getId())) {
+				if (achievementStates.get(achievement.getId())) {
+					bonusList
+							.put(bhApp.getString(
+									R.string.str_achievement_achievementBoost,
+									achievement.getName(bhApp)), achievement
+									.getBoost());
+				}
+			}
+		}
+		
+		
+		
+		return bonusList;
+
+	}
+
+	private static float getLevelBoost(BlueHunter bhApp) {
+
+		float levelBoost = 0f;
+		int curLevel = LevelSystem.getLevel(LevelSystem.getUserExp(bhApp));
+
+		for (int level = 0; level <= curLevel; level++) {
+			levelBoost += (float) level / (float) 100;
+		}
+
+		return levelBoost;
 
 	}
 }
