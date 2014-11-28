@@ -361,12 +361,26 @@ public class SettingsActivity extends android.preference.PreferenceActivity
 
 			addPreferencesFromResource(R.xml.info_preference);
 
-			if (!Authentification.newUpdateAvailable) {
+			if (!Authentification.newUpdateAvailable || bhApp.isPlayStore) {
 				Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
 				PreferenceScreen infoScreen = getPreferenceScreen();
 				infoScreen.removePreference(newUpdatePref);
+				
+				
+				if(bhApp.isPlayStore){
+					
+					Preference checkPref = findPreference("pref_checkUpdate");
+					checkPref.setEnabled(false);
+					infoScreen.removePreference(checkPref);
+					
+				}
+				
+				
 			}
 
+			
+
+			
 			initializeStaticPrefs();
 			registerListeners();
 		}

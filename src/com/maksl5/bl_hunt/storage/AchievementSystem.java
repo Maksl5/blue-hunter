@@ -44,8 +44,7 @@ public class AchievementSystem {
 						public boolean check(BlueHunter bhApp, int deviceNum,
 								int exp) {
 
-							if (bhApp.getPackageName().equals(
-									"com.maksl5.bl_hunt_sup"))
+							if (BlueHunter.isSupport)
 								return true;
 							else
 								return false;

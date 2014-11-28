@@ -21,6 +21,7 @@ import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.LoginManager;
 import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 
@@ -42,6 +43,9 @@ public class BlueHunter extends Application {
 	public Activity currentActivity;
 	
 	private boolean isTablet = false;
+	
+	public static final boolean isPlayStore = true;
+	public static final boolean isSupport = false;
 
 	/*
 	 * (non-Javadoc)
@@ -59,7 +63,21 @@ public class BlueHunter extends Application {
 	    boolean xlarge = ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
 	    boolean large = ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
 	    isTablet = (xlarge || large);
-		
+	    
+	    if(isPlayStore) {
+	    	PreferenceManager.setPref(this, "pref_checkUpdate", false);
+	    }
+	    
+	    if(isSupport) {
+	    	
+	    	if(true)
+	    	{
+	    		
+	    	}
+	    	
+	    }
+	    	
+	    
 	}
 
 	public int getVersionCode() {
