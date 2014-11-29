@@ -44,7 +44,7 @@ public class BlueHunter extends Application {
 	
 	private boolean isTablet = false;
 	
-	public static final boolean isPlayStore = true;
+	public static final boolean isPlayStore = false;
 	public static final boolean isSupport = false;
 
 	/*
