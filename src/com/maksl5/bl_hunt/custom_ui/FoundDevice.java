@@ -63,13 +63,13 @@ public class FoundDevice {
 		
 	}
 
-	public void setBonus(float dBonus) {
+	public void setBoost(float dBonus) {
 
 		bonus = dBonus;
 
 	}
 
-	public void setBonus(String dBonus) {
+	public void setBoost(String dBonus) {
 
 		if (dBonus != null) bonus = Float.valueOf(dBonus);
 
@@ -103,7 +103,7 @@ public class FoundDevice {
 		return manufacturer;
 	}
 
-	public float getBonus() {
+	public float getBoost() {
 
 		return bonus;
 	}

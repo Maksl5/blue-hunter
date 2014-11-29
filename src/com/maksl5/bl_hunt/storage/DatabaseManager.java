@@ -71,7 +71,7 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_NAME, device.getName());
 		values.put(DatabaseHelper.COLUMN_RSSI, device.getRssi());
 		values.put(DatabaseHelper.COLUMN_TIME, device.getTime());
-		values.put(DatabaseHelper.COLUMN_BONUS, device.getBonus());
+		values.put(DatabaseHelper.COLUMN_BONUS, device.getBoost());
 
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
 			close();
@@ -98,7 +98,7 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_NAME, device.getName());
 		values.put(DatabaseHelper.COLUMN_RSSI, device.getRssi());
 		values.put(DatabaseHelper.COLUMN_TIME, device.getTime());
-		values.put(DatabaseHelper.COLUMN_BONUS, device.getBonus());
+		values.put(DatabaseHelper.COLUMN_BONUS, device.getBoost());
 
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
 			if (close) close();
@@ -140,13 +140,15 @@ public class DatabaseManager {
 
 			device.setMac(cursor.getString(1));
 			device.setName(cursor.getString(2));
-			device.setRssi(cursor.getString(3));
-			device.setTime(cursor.getString(4));
+			device.setRssi(cursor.getShort(3));
+			device.setTime(cursor.getLong(4));
 			device.setManu(cursor.getString(5));
-			device.setBonus(cursor.getString(6));
+			device.setBoost(cursor.getFloat(6));
 
 			devices.add(device);
 			cursor.moveToNext();
+			
+			
 		}
 
 		cursor.close();
@@ -167,10 +169,10 @@ public class DatabaseManager {
 
 			device.setMac(cursor.getString(1));
 			device.setName(cursor.getString(2));
-			device.setRssi(cursor.getString(3));
-			device.setTime(cursor.getString(4));
+			device.setRssi(cursor.getShort(3));
+			device.setTime(cursor.getLong(4));
 			device.setManu(cursor.getString(5));
-			device.setBonus(cursor.getString(6));
+			device.setBoost(cursor.getFloat(6));
 
 			devices.add(device);
 			cursor.moveToNext();
@@ -208,10 +210,10 @@ public class DatabaseManager {
 			
 			device.setMac(cursor.getString(1));
 			device.setName(cursor.getString(2));
-			device.setRssi(cursor.getString(3));
-			device.setTime(cursor.getString(4));
+			device.setRssi(cursor.getShort(3));
+			device.setTime(cursor.getLong(4));
 			device.setManu(cursor.getString(5));
-			device.setBonus(cursor.getString(6));
+			device.setBoost(cursor.getFloat(6));
 
 			cursor.moveToNext();
 		}
@@ -252,7 +254,7 @@ public class DatabaseManager {
 		updateModifiedTime(System.currentTimeMillis());
 	}
 
-	public synchronized void addBonusToDevices(	String macAddress,
+	public synchronized void addBoostToDevices(	String macAddress,
 												float bonus) {
 
 		ContentValues values = new ContentValues();
@@ -262,7 +264,7 @@ public class DatabaseManager {
 		
 		FoundDevice change = new FoundDevice();
 		change.setMac(macAddress);
-		change.setBonus(bonus);
+		change.setBoost(bonus);
 
 		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
 
@@ -397,7 +399,7 @@ public class DatabaseManager {
 					values.put(DatabaseHelper.COLUMN_NAME, device.getName());
 					values.put(DatabaseHelper.COLUMN_RSSI, device.getRssi());
 					values.put(DatabaseHelper.COLUMN_TIME, device.getTime());
-					values.put(DatabaseHelper.COLUMN_BONUS, device.getBonus());
+					values.put(DatabaseHelper.COLUMN_BONUS, device.getBoost());
 
 					if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) == -1) {
 						failureRows.add(allDevices.indexOf(device));

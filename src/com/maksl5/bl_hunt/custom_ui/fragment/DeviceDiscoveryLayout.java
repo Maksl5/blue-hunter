@@ -58,15 +58,25 @@ public class DeviceDiscoveryLayout {
 
 		DecimalFormat df = new DecimalFormat(",###");
 
-		expTextView
-				.setText(String.format(
-						"%s %s / %s %s",
-						df.format(exp),
-						mainActivity
-								.getString(R.string.str_foundDevices_exp_abbreviation),
-						df.format(LevelSystem.getLevelEndExp(level)),
-						mainActivity
-								.getString(R.string.str_foundDevices_exp_abbreviation)));
+		String format1 = df.format(exp);
+		String format2 = mainActivity
+				.getString(R.string.str_foundDevices_exp_abbreviation);
+		String format3 = df.format(LevelSystem.getLevelEndExp(level));
+		String format4 = mainActivity
+				.getString(R.string.str_foundDevices_exp_abbreviation);
+
+		if(format1 == null)
+			format1 = "";
+		if(format2 == null)
+			format2 = "";
+		if(format3 == null)
+			format3 = "";
+		if(format4 == null)
+			format4 = "";
+		
+		
+		expTextView.setText(String.format("%s %s / %s %s", format1, format2,
+				format3, format4));
 		lvlTextView.setText(String.format("%d", level));
 
 		progressBar.setMax(LevelSystem.getLevelEndExp(level)
@@ -102,7 +112,7 @@ public class DeviceDiscoveryLayout {
 			FoundDevice deviceIt = (FoundDevice) iterator.next();
 			String manufacturer = deviceIt.getManufacturer();
 
-			float bonus = deviceIt.getBonus();
+			float bonus = deviceIt.getBoost();
 
 			expTodayNum += MacAddressAllocations.getExp(manufacturer)
 					* (1 + bonus);
@@ -236,7 +246,7 @@ public class DeviceDiscoveryLayout {
 			int exp = MacAddressAllocations.getExp(manufacturer);
 
 			int bonusExp = (int) Math.floor(MacAddressAllocations
-					.getExp(manufacturer) * device.getBonus());
+					.getExp(manufacturer) * device.getBoost());
 
 			exp = bonusExp + exp;
 

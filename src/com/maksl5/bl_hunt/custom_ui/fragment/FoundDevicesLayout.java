@@ -429,7 +429,7 @@ public class FoundDevicesLayout {
 				String deviceMac = device.getMacAddress();
 				String manufacturer = device.getManufacturer();
 				Long time = device.getTime();
-				float bonusExpMultiplier = device.getBonus();
+				float bonusExpMultiplier = device.getBoost();
 				short rssi = device.getRssi();
 
 				if (manufacturer == null || manufacturer.equals("Unknown")
@@ -554,7 +554,7 @@ public class FoundDevicesLayout {
 			// fdAdapter.refill(showedFdList);
 
 			if (values[0].get(0).getManufacturer().equals("[ADDBONUS]"))
-				new DatabaseManager(bhApp).addBonusToDevices(values[0].get(0)
+				new DatabaseManager(bhApp).addBoostToDevices(values[0].get(0)
 						.getMacAddress(), 0f);
 
 			listView.setSelectionFromTop(scrollIndex, scrollTop);

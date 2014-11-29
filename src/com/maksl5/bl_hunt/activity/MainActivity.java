@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -110,7 +111,7 @@ public class MainActivity extends FragmentActivity {
 
 		destroyed = false;
 
-		// Debug.startMethodTracing("blHunt_12");
+		// Debug.startMethodTracing("blHunt_13");
 
 		bhApp = (BlueHunter) getApplication();
 		bhApp.mainActivity = this;

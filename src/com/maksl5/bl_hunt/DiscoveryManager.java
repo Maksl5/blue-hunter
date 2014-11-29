@@ -597,7 +597,7 @@ public class DiscoveryManager {
 				device.setMac(btDevice.getAddress().toUpperCase());
 				device.setRssi(rssi);
 				device.setTime(System.currentTimeMillis());
-				device.setBonus(AchievementSystem.getBoost(bhApp));
+				device.setBoost(AchievementSystem.getBoost(bhApp));
 
 				fDListCurDiscovery.add(device);
 				attemptVibration();

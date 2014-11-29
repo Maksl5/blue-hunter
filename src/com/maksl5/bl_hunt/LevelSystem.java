@@ -42,7 +42,7 @@ public class LevelSystem {
 		for (FoundDevice foundDevice : foundDevices) {
 
 			String manufacturer = foundDevice.getManufacturer();
-			float bonus = foundDevice.getBonus();
+			float bonus = foundDevice.getBoost();
 
 			if (bonus == -1f)
 				bonus = 0f;

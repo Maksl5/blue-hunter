@@ -556,7 +556,7 @@ public class AchievementSystem {
 
 									if ((recentTime - earlyTime) < 86400000) {
 
-										float bonus = devices.get(j).getBonus();
+										float bonus = devices.get(j).getBoost();
 
 										if (bonus == -1f)
 											bonus = 0.0f;

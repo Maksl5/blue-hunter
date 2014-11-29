@@ -72,7 +72,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 		String timeString = "" +
 				((device.getTime() == -1) ? (char) 30 + "null" + (char) 30 : device.getTime());
 		String bonusString = "" +
-				((device.getBonus() == -1f) ? (char) 30 + "null" + (char) 30 : device.getBonus());
+				((device.getBoost() == -1f) ? (char) 30 + "null" + (char) 30 : device.getBoost());
 
 		String rulesString = "";
 		try {
@@ -195,7 +195,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				String timeString = "" +
 						((device.getTime() == -1) ? (char) 30 + "null" + (char) 30 : device.getTime());
 				String bonusString = "" +
-						((device.getBonus() == -1f) ? (char) 30 + "null" + (char) 30 : device.getBonus());
+						((device.getBoost() == -1f) ? (char) 30 + "null" + (char) 30 : device.getBoost());
 
 				try {
 					rulesString +=
@@ -346,7 +346,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 							device.setName(nameString);
 							device.setRssi(parseMatcher.group(3));
 							device.setTime(timeString);
-							device.setBonus(bonusString);
+							device.setBoost(bonusString);
 
 							devices.add(device);
 
