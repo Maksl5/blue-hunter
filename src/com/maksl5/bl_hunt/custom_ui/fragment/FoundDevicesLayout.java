@@ -11,7 +11,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -31,7 +30,7 @@ import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.MacAddressAllocations;
+import com.maksl5.bl_hunt.storage.ManufacturerList;
 
 /**
  * @author Maksl5
@@ -248,7 +247,7 @@ public class FoundDevicesLayout {
 
 			for (FDAdapterData data : completeFdList) {
 
-				if (data.getManufacturer().equals(unknownString)) {
+				if (data.getManufacturer() == 0) {
 					searchedList.add(data);
 				}
 			}
@@ -285,7 +284,7 @@ public class FoundDevicesLayout {
 					if (!newValues.contains(data))
 						newValues.add(data);
 
-				if (data.getManufacturer().toLowerCase().contains(text))
+				if (ManufacturerList.getName(data.getManufacturer()).toLowerCase().contains(text))
 					if (!newValues.contains(data))
 						newValues.add(data);
 
@@ -427,16 +426,15 @@ public class FoundDevicesLayout {
 				FoundDevice device = devices.get(i);
 
 				String deviceMac = device.getMacAddress();
-				String manufacturer = device.getManufacturer();
+				int manufacturer = device.getManufacturer();
 				Long time = device.getTime();
 				float bonusExpMultiplier = device.getBoost();
 				short rssi = device.getRssi();
 
-				if (manufacturer == null || manufacturer.equals("Unknown")
-						|| manufacturer.equals("")) {
-					manufacturer = MacAddressAllocations
-							.getManufacturer(deviceMac);
-					if (!manufacturer.equals("Unknown")) {
+				if (manufacturer == 0) {
+					manufacturer = ManufacturerList
+							.getManufacturer(deviceMac).getId();
+					if (manufacturer != 0) {
 						new DatabaseManager(bhApp).addManufacturerToDevice(
 								deviceMac, manufacturer);
 					}
@@ -448,7 +446,7 @@ public class FoundDevicesLayout {
 				if (bonusExpMultiplier == -1f) {
 					FDAdapterData addBonus = new FDAdapterData();
 					addBonus.setMacAddress(deviceMac);
-					addBonus.setManufacturer("[ADDBONUS]");
+					addBonus.setManufacturer(-100);
 
 					ArrayList<FDAdapterData> publishList = new ArrayList<FDAdapterData>();
 					publishList.add(addBonus);
@@ -458,19 +456,15 @@ public class FoundDevicesLayout {
 				}
 
 				// exp calc
-				int bonusExp = (int) Math.floor(MacAddressAllocations
+				int bonusExp = (int) Math.floor(ManufacturerList
 						.getExp(manufacturer) * bonusExpMultiplier);
 
 				String completeExpString = (bonusExp == 0) ? "+"
-						+ MacAddressAllocations.getExp(manufacturer) + " "
+						+ ManufacturerList.getExp(manufacturer) + " "
 						+ expString : "+"
-						+ MacAddressAllocations.getExp(manufacturer) + " + "
+						+ ManufacturerList.getExp(manufacturer) + " + "
 						+ bonusExp + " " + expString;
 
-				if (manufacturer.equals("Unknown")) {
-					manufacturer = bhApp
-							.getString(R.string.str_foundDevices_manu_unkown);
-				}
 
 				// RSSI calculation
 				int rssiRes = 0;
@@ -553,7 +547,7 @@ public class FoundDevicesLayout {
 
 			// fdAdapter.refill(showedFdList);
 
-			if (values[0].get(0).getManufacturer().equals("[ADDBONUS]"))
+			if (values[0].get(0).getManufacturer() == -100)
 				new DatabaseManager(bhApp).addBoostToDevices(values[0].get(0)
 						.getMacAddress(), 0f);
 
@@ -605,7 +599,7 @@ public class FoundDevicesLayout {
 	public class FDAdapterData {
 
 		public FDAdapterData(String macAddress, String name, int rssiRes,
-				String manufacturer, String expString, String timeFormatted) {
+				int manufacturer, String expString, String timeFormatted) {
 
 			this.macAddress = macAddress;
 			this.name = name;
@@ -626,7 +620,7 @@ public class FoundDevicesLayout {
 		private String macAddress;
 		private String name;
 		private int rssiRes;
-		private String manufacturer;
+		private int manufacturer;
 		private String expString;
 		private String timeFormatted;
 
@@ -660,12 +654,12 @@ public class FoundDevicesLayout {
 			this.rssiRes = rssiRes;
 		}
 
-		public String getManufacturer() {
+		public int getManufacturer() {
 
 			return manufacturer;
 		}
 
-		public void setManufacturer(String manufacturer) {
+		public void setManufacturer(int manufacturer) {
 
 			this.manufacturer = manufacturer;
 		}
@@ -759,7 +753,7 @@ public class FoundDevicesLayout {
 
 				holder.macAddress.setText(data.getMacAddress());
 				holder.name.setText(nameString);
-				holder.manufacturer.setText(data.getManufacturer());
+				holder.manufacturer.setText(ManufacturerList.getName(data.getManufacturer()));
 
 				int rssiId = data.getRssiRes();
 				if (rssiId == 0)

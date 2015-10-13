@@ -4,8 +4,6 @@
  */
 package com.maksl5.bl_hunt.storage;
 
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,8 +26,6 @@ import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
-
-
 
 public class DatabaseManager {
 
@@ -64,7 +60,8 @@ public class DatabaseManager {
 
 		ContentValues values = new ContentValues();
 
-		if (device.checkNull() == 0) return false;
+		if (device.checkNull() == 0)
+			return false;
 
 		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.getMacAddress());
 		values.put(DatabaseHelper.COLUMN_MANUFACTURER, device.getManufacturer());
@@ -76,12 +73,12 @@ public class DatabaseManager {
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
 			close();
 
-			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, device);
+			bhApp.synchronizeFoundDevices.addNewChange(
+					SynchronizeFoundDevices.MODE_ADD, device);
 
 			updateModifiedTime(System.currentTimeMillis());
 			return true;
-		}
-		else {
+		} else {
 			close();
 			updateModifiedTime(System.currentTimeMillis());
 			return false;
@@ -89,8 +86,7 @@ public class DatabaseManager {
 
 	}
 
-	private boolean addNewDeviceForIterate(	FoundDevice device,
-											boolean close) {
+	private boolean addNewDeviceForIterate(FoundDevice device, boolean close) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.getMacAddress());
@@ -101,11 +97,12 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_BONUS, device.getBoost());
 
 		if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) != -1) {
-			if (close) close();
+			if (close)
+				close();
 			return true;
-		}
-		else {
-			if (close) close();
+		} else {
+			if (close)
+				close();
 			return false;
 		}
 
@@ -115,12 +112,14 @@ public class DatabaseManager {
 
 		List<String> macStrings = new ArrayList<String>();
 
-		Cursor cursor =
-				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, new String[] { DatabaseHelper.COLUMN_MAC_ADDRESS }, null, null, null, null, null);
+		Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE,
+				new String[] { DatabaseHelper.COLUMN_MAC_ADDRESS }, null, null,
+				null, null, null);
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			macStrings.add(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_MAC_ADDRESS)));
+			macStrings.add(cursor.getString(cursor
+					.getColumnIndex(DatabaseHelper.COLUMN_MAC_ADDRESS)));
 			cursor.moveToNext();
 		}
 		cursor.close();
@@ -132,8 +131,8 @@ public class DatabaseManager {
 
 		List<FoundDevice> devices = new ArrayList<FoundDevice>();
 
-		Cursor cursor =
-				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null, DatabaseHelper.COLUMN_TIME + " DESC");
+		Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null,
+				null, null, null, null, DatabaseHelper.COLUMN_TIME + " DESC");
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			FoundDevice device = new FoundDevice();
@@ -142,13 +141,12 @@ public class DatabaseManager {
 			device.setName(cursor.getString(2));
 			device.setRssi(cursor.getShort(3));
 			device.setTime(cursor.getLong(4));
-			device.setManu(cursor.getString(5));
+			device.setManu(cursor.getInt(5));
 			device.setBoost(cursor.getFloat(6));
 
 			devices.add(device);
 			cursor.moveToNext();
-			
-			
+
 		}
 
 		cursor.close();
@@ -156,13 +154,13 @@ public class DatabaseManager {
 		return devices;
 	}
 
-	public synchronized List<FoundDevice> getDevices(	String where,
-																String orderBy) {
+	public synchronized List<FoundDevice> getDevices(String where,
+			String orderBy) {
 
 		List<FoundDevice> devices = new ArrayList<FoundDevice>();
 
-		Cursor cursor =
-				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, where, null, null, null, orderBy);
+		Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null,
+				where, null, null, null, orderBy);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			FoundDevice device = new FoundDevice();
@@ -171,7 +169,7 @@ public class DatabaseManager {
 			device.setName(cursor.getString(2));
 			device.setRssi(cursor.getShort(3));
 			device.setTime(cursor.getLong(4));
-			device.setManu(cursor.getString(5));
+			device.setManu(cursor.getInt(5));
 			device.setBoost(cursor.getFloat(6));
 
 			devices.add(device);
@@ -190,29 +188,28 @@ public class DatabaseManager {
 
 	public synchronized int getDeviceNum(String where) {
 
-		int num =
-				(int) DatabaseUtils.queryNumEntries(db, DatabaseHelper.FOUND_DEVICES_TABLE, where);
+		int num = (int) DatabaseUtils.queryNumEntries(db,
+				DatabaseHelper.FOUND_DEVICES_TABLE, where);
 		close();
 
 		return num;
 	}
 
-	public synchronized FoundDevice getDevice(	String where,
-														String orderBy) {
+	public synchronized FoundDevice getDevice(String where, String orderBy) {
 
-		Cursor cursor =
-				db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, where, null, null, null, orderBy);
+		Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null,
+				where, null, null, null, orderBy);
 		cursor.moveToFirst();
 
 		FoundDevice device = new FoundDevice();
 
 		while (!cursor.isAfterLast()) {
-			
+
 			device.setMac(cursor.getString(1));
 			device.setName(cursor.getString(2));
 			device.setRssi(cursor.getShort(3));
 			device.setTime(cursor.getLong(4));
-			device.setManu(cursor.getString(5));
+			device.setManu(cursor.getInt(5));
 			device.setBoost(cursor.getFloat(6));
 
 			cursor.moveToNext();
@@ -223,19 +220,21 @@ public class DatabaseManager {
 		return device;
 	}
 
-	public synchronized void addNameToDevice(	String macAddress,
-												String name) {
+	public synchronized void addNameToDevice(String macAddress, String name) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_NAME, name);
 
-		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
+		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values,
+				DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?",
+				new String[] { macAddress });
 
 		FoundDevice change = new FoundDevice();
 		change.setMac(macAddress);
 		change.setName(name);
 
-		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
+		bhApp.synchronizeFoundDevices.addNewChange(
+				SynchronizeFoundDevices.MODE_CHANGE, change);
 
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 		close();
@@ -243,30 +242,34 @@ public class DatabaseManager {
 
 	}
 
-	public synchronized void addManufacturerToDevice(	String macAddress,
-														String manufacturer) {
+	public synchronized void addManufacturerToDevice(String macAddress,
+			int manufacturer) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_MANUFACTURER, manufacturer);
 
-		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
+		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values,
+				DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?",
+				new String[] { macAddress });
 		close();
 		updateModifiedTime(System.currentTimeMillis());
 	}
 
-	public synchronized void addBoostToDevices(	String macAddress,
-												float bonus) {
+	public synchronized void addBoostToDevices(String macAddress, float bonus) {
 
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
 
-		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
-		
+		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values,
+				DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?",
+				new String[] { macAddress });
+
 		FoundDevice change = new FoundDevice();
 		change.setMac(macAddress);
 		change.setBoost(bonus);
 
-		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change);
+		bhApp.synchronizeFoundDevices.addNewChange(
+				SynchronizeFoundDevices.MODE_CHANGE, change);
 
 		close();
 		updateModifiedTime(System.currentTimeMillis());
@@ -274,18 +277,21 @@ public class DatabaseManager {
 
 	public boolean deleteDevice(String macAddress) {
 
-		int result =
-				db.delete(DatabaseHelper.FOUND_DEVICES_TABLE, DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?", new String[] { macAddress });
+		int result = db.delete(DatabaseHelper.FOUND_DEVICES_TABLE,
+				DatabaseHelper.COLUMN_MAC_ADDRESS + " = ?",
+				new String[] { macAddress });
 
 		close();
 		updateModifiedTime(System.currentTimeMillis());
 
-		if (result == 0) return false;
-		
+		if (result == 0)
+			return false;
+
 		FoundDevice removeDevice = new FoundDevice();
 		removeDevice.setMac(macAddress);
 
-		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_REMOVE, removeDevice);
+		bhApp.synchronizeFoundDevices.addNewChange(
+				SynchronizeFoundDevices.MODE_REMOVE, removeDevice);
 
 		return true;
 	}
@@ -314,8 +320,7 @@ public class DatabaseManager {
 			close();
 			updateModifiedTime(System.currentTimeMillis());
 			return true;
-		}
-		else {
+		} else {
 			close();
 			updateModifiedTime(System.currentTimeMillis());
 			return false;
@@ -341,12 +346,14 @@ public class DatabaseManager {
 
 		List<String> changes = new ArrayList<String>();
 
-		Cursor cursor =
-				db.query(DatabaseHelper.CHANGES_SYNC_TABLE, new String[] { DatabaseHelper.COLUMN_CHANGE }, null, null, null, null, null);
+		Cursor cursor = db.query(DatabaseHelper.CHANGES_SYNC_TABLE,
+				new String[] { DatabaseHelper.COLUMN_CHANGE }, null, null,
+				null, null, null);
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			changes.add(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_CHANGE)));
+			changes.add(cursor.getString(cursor
+					.getColumnIndex(DatabaseHelper.COLUMN_CHANGE)));
 			cursor.moveToNext();
 		}
 		cursor.close();
@@ -376,8 +383,7 @@ public class DatabaseManager {
 		File backup = new File(dbFile.getPath() + ".bak");
 		try {
 			copy(dbFile, backup);
-		}
-		catch (IOException e1) {
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -394,14 +400,17 @@ public class DatabaseManager {
 				for (FoundDevice device : allDevices) {
 
 					ContentValues values = new ContentValues();
-					values.put(DatabaseHelper.COLUMN_MAC_ADDRESS, device.getMacAddress());
-					values.put(DatabaseHelper.COLUMN_MANUFACTURER, device.getManufacturer());
+					values.put(DatabaseHelper.COLUMN_MAC_ADDRESS,
+							device.getMacAddress());
+					values.put(DatabaseHelper.COLUMN_MANUFACTURER,
+							device.getManufacturer());
 					values.put(DatabaseHelper.COLUMN_NAME, device.getName());
 					values.put(DatabaseHelper.COLUMN_RSSI, device.getRssi());
 					values.put(DatabaseHelper.COLUMN_TIME, device.getTime());
 					values.put(DatabaseHelper.COLUMN_BONUS, device.getBoost());
 
-					if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) == -1) {
+					if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null,
+							values) == -1) {
 						failureRows.add(allDevices.indexOf(device));
 					}
 				}
@@ -418,18 +427,15 @@ public class DatabaseManager {
 
 				if (failureRows.size() == 0) {
 					return 0;
-				}
-				else {
+				} else {
 					return -failureRows.size();
 				}
 
-			}
-			else {
+			} else {
 				return 1001;
 			}
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 
 			bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME);
 			dbFile.delete();
@@ -460,7 +466,8 @@ public class DatabaseManager {
 
 	public void resetLeaderboardChanges() {
 
-		db.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.LEADERBOARD_CHANGES_TABLE);
+		db.execSQL("DROP TABLE IF EXISTS "
+				+ DatabaseHelper.LEADERBOARD_CHANGES_TABLE);
 		db.execSQL(DatabaseHelper.LEADERBOARD_CHANGES_CREATE);
 
 		close();
@@ -470,8 +477,8 @@ public class DatabaseManager {
 
 		HashMap<Integer, Integer> changes = new HashMap<Integer, Integer>();
 
-		Cursor cursor =
-				db.query(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, null, null, null, null, null);
+		Cursor cursor = db.query(DatabaseHelper.LEADERBOARD_CHANGES_TABLE,
+				null, null, null, null, null, null);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			changes.put(cursor.getInt(0), cursor.getInt(1));
@@ -486,7 +493,8 @@ public class DatabaseManager {
 
 	public long getLastModifiedTime() {
 
-		long time = PreferenceManager.getPref(bhApp, "dbLastModified", (long) 0);
+		long time = PreferenceManager
+				.getPref(bhApp, "dbLastModified", (long) 0);
 		Log.d("SMBD", "Modified time: " + time);
 		close();
 		return time;
@@ -503,8 +511,7 @@ public class DatabaseManager {
 		dbHelper.close();
 	}
 
-	private void copy(	File src,
-						File dst) throws IOException {
+	private void copy(File src, File dst) throws IOException {
 
 		InputStream in = new FileInputStream(src);
 		OutputStream out = new FileOutputStream(dst);
@@ -546,17 +553,24 @@ public class DatabaseManager {
 		private int version;
 
 		// CREATE DECLARATION
-		public final static String FOUND_DEVICES_CREATE =
-				"Create Table " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME + " Integer, " + COLUMN_MANUFACTURER + " Text, " + COLUMN_BONUS + " Real);";
+		public final static String FOUND_DEVICES_CREATE = "Create Table "
+				+ FOUND_DEVICES_TABLE
+				+ " (_id Integer Primary Key Autoincrement, "
+				+ COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME
+				+ " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME
+				+ " Integer, " + COLUMN_MANUFACTURER + " Integer, "
+				+ COLUMN_BONUS + " Real);";
 
-		public final static String CHANGES_SYNC_CREATE =
-				"Create Table " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
+		public final static String CHANGES_SYNC_CREATE = "Create Table "
+				+ CHANGES_SYNC_TABLE
+				+ " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE
+				+ " Text Not Null);";
 
-		public final static String LEADERBOARD_CHANGES_CREATE =
-				"Create Table " + LEADERBOARD_CHANGES_TABLE + " (uid Integer Not Null, " + COLUMN_RANK + " Integer Not Null);";
+		public final static String LEADERBOARD_CHANGES_CREATE = "Create Table "
+				+ LEADERBOARD_CHANGES_TABLE + " (uid Integer Not Null, "
+				+ COLUMN_RANK + " Integer Not Null);";
 
-		public DatabaseHelper(BlueHunter app,
-				int version) {
+		public DatabaseHelper(BlueHunter app, int version) {
 
 			super(app.mainActivity, DATABASE_NAME, null, version);
 
@@ -568,7 +582,9 @@ public class DatabaseManager {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite.SQLiteDatabase)
+		 * @see
+		 * android.database.sqlite.SQLiteOpenHelper#onCreate(android.database
+		 * .sqlite.SQLiteDatabase)
 		 */
 		@Override
 		public void onCreate(SQLiteDatabase db) {
@@ -584,22 +600,24 @@ public class DatabaseManager {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
+		 * @see
+		 * android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database
+		 * .sqlite.SQLiteDatabase, int, int)
 		 */
 		@Override
-		public void onUpgrade(	SQLiteDatabase db,
-								int oldVersion,
-								int newVersion) {
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
 			bhApp.mainActivity.oldVersion = oldVersion;
 			bhApp.mainActivity.newVersion = newVersion;
 
 			if (oldVersion < 499) {
-				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_TIME + " Integer;");
+				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE
+						+ " Add Column " + COLUMN_TIME + " Integer;");
 			}
 
 			if (oldVersion < 566) {
-				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_MANUFACTURER + " Text;");
+				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE
+						+ " Add Column " + COLUMN_MANUFACTURER + " Text;");
 			}
 
 			if (oldVersion < 916) {
@@ -607,7 +625,65 @@ public class DatabaseManager {
 			}
 
 			if (oldVersion < 1065) {
-				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE + " Add Column " + COLUMN_BONUS + " Real;");
+				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE
+						+ " Add Column " + COLUMN_BONUS + " Real;");
+
+			}
+
+			if (oldVersion < 1419) {
+				List<FoundDevice> devices = new ArrayList<FoundDevice>();
+
+				Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE,
+						null, null, null, null, null,
+						DatabaseHelper.COLUMN_TIME + " DESC");
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					FoundDevice device = new FoundDevice();
+
+					device.setMac(cursor.getString(1));
+					device.setName(cursor.getString(2));
+					device.setRssi(cursor.getShort(3));
+					device.setTime(cursor.getLong(4));
+					device.setManu(-1);
+					device.setBoost(cursor.getFloat(6));
+
+					devices.add(device);
+					cursor.moveToNext();
+
+				}
+
+				cursor.close();
+
+				db.execSQL("Drop Table If Exists " + FOUND_DEVICES_TABLE + ";");
+				db.execSQL(FOUND_DEVICES_CREATE);
+
+				for (FoundDevice foundDevice : devices) {
+					ContentValues values = new ContentValues();
+
+					if (foundDevice.checkNull() != 0) {
+
+						values.put(DatabaseHelper.COLUMN_MAC_ADDRESS,
+								foundDevice.getMacAddress());
+						values.put(DatabaseHelper.COLUMN_MANUFACTURER,
+								foundDevice.getManufacturer());
+						values.put(DatabaseHelper.COLUMN_NAME,
+								foundDevice.getName());
+						values.put(DatabaseHelper.COLUMN_RSSI,
+								foundDevice.getRssi());
+						values.put(DatabaseHelper.COLUMN_TIME,
+								foundDevice.getTime());
+						values.put(DatabaseHelper.COLUMN_BONUS,
+								foundDevice.getBoost());
+
+						db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null,
+								values);
+
+						updateModifiedTime(System.currentTimeMillis());
+
+					}
+				}
+				
+				
 
 			}
 
@@ -618,19 +694,36 @@ public class DatabaseManager {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see android.database.sqlite.SQLiteOpenHelper#onOpen(android.database.sqlite.SQLiteDatabase)
+		 * @see
+		 * android.database.sqlite.SQLiteOpenHelper#onOpen(android.database.
+		 * sqlite.SQLiteDatabase)
 		 */
 		@Override
 		public void onOpen(SQLiteDatabase db) {
 
-			final String FOUND_DEVICES_CREATE_IF_NOT_EXISTS =
-					"Create Table If Not Exists " + FOUND_DEVICES_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_MAC_ADDRESS + " Text Not Null, " + COLUMN_NAME + " Text, " + COLUMN_RSSI + " Integer Not Null, " + COLUMN_TIME + " Integer, " + COLUMN_MANUFACTURER + " Text);";
+			final String FOUND_DEVICES_CREATE_IF_NOT_EXISTS = "Create Table If Not Exists "
+					+ FOUND_DEVICES_TABLE
+					+ " (_id Integer Primary Key Autoincrement, "
+					+ COLUMN_MAC_ADDRESS
+					+ " Text Not Null, "
+					+ COLUMN_NAME
+					+ " Text, "
+					+ COLUMN_RSSI
+					+ " Integer Not Null, "
+					+ COLUMN_TIME
+					+ " Integer, "
+					+ COLUMN_MANUFACTURER
+					+ " Text);";
 
-			final String CHANGES_SYNC_CREATE_IF_NOT_EXISTS =
-					"Create Table If Not Exists " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
+			final String CHANGES_SYNC_CREATE_IF_NOT_EXISTS = "Create Table If Not Exists "
+					+ CHANGES_SYNC_TABLE
+					+ " (_id Integer Primary Key Autoincrement, "
+					+ COLUMN_CHANGE + " Text Not Null);";
 
-			final String LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS =
-					"Create Table If Not Exists " + LEADERBOARD_CHANGES_TABLE + " (uid Integer Not Null, " + COLUMN_RANK + " Integer Not Null);";
+			final String LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS = "Create Table If Not Exists "
+					+ LEADERBOARD_CHANGES_TABLE
+					+ " (uid Integer Not Null, "
+					+ COLUMN_RANK + " Integer Not Null);";
 
 			db.execSQL(FOUND_DEVICES_CREATE_IF_NOT_EXISTS);
 			db.execSQL(CHANGES_SYNC_CREATE_IF_NOT_EXISTS);

@@ -137,19 +137,14 @@ public class AchievementSystem {
 
 							for (int i = 4; i < devices.size(); i++) {
 
-								if (devices.get(i - 4).getManufacturer()
-										.equals("Apple")) {
-									if (devices.get(i - 3).getManufacturer()
-											.equals("Apple")) {
+								if (devices.get(i - 4).getManufacturer() == 1) {
+									if (devices.get(i - 3).getManufacturer() == 1) {
 										if (devices.get(i - 2)
-												.getManufacturer()
-												.equals("Apple")) {
+												.getManufacturer() == 1) {
 											if (devices.get(i - 1)
-													.getManufacturer()
-													.equals("Apple")) {
+													.getManufacturer() == 1) {
 												if (devices.get(i)
-														.getManufacturer()
-														.equals("Apple")) {
+														.getManufacturer() == 1) {
 													return true;
 												} else {
 													i = i + 4;
@@ -465,12 +460,9 @@ public class AchievementSystem {
 
 							for (int i = 2; i < devices.size(); i++) {
 
-								if (devices.get(i - 2).getManufacturer()
-										.equals("Samsung")) {
-									if (devices.get(i - 1).getManufacturer()
-											.equals("BlackBerry")) {
-										if (devices.get(i).getManufacturer()
-												.equals("Apple")) {
+								if (devices.get(i - 2).getManufacturer() == 3) {
+									if (devices.get(i - 1).getManufacturer() == 10) {
+										if (devices.get(i).getManufacturer() == 1) {
 											return true;
 										}
 
@@ -502,16 +494,12 @@ public class AchievementSystem {
 
 							for (int i = 3; i < devices.size(); i++) {
 
-								if (devices.get(i - 3).getManufacturer()
-										.equals("D-Link")) {
-									if (devices.get(i - 2).getManufacturer()
-											.equals("Cisco")) {
+								if (devices.get(i - 3).getManufacturer() == 51) {
+									if (devices.get(i - 2).getManufacturer() == 30) {
 										if (devices.get(i - 1)
-												.getManufacturer()
-												.equals("Bury")) {
+												.getManufacturer() == 50) {
 											if (devices.get(i)
-													.getManufacturer()
-													.equals("Acer")) {
+													.getManufacturer() == 11) {
 												return true;
 											}
 										}
@@ -561,7 +549,7 @@ public class AchievementSystem {
 										if (bonus == -1f)
 											bonus = 0.0f;
 
-										exp24 += MacAddressAllocations
+										exp24 += ManufacturerList
 												.getExp(devices.get(j)
 														.getManufacturer())
 												* (1 + bonus);
@@ -678,10 +666,8 @@ public class AchievementSystem {
 	public static float getBoost(BlueHunter bhApp) {
 
 		float bonus = 0.0f;
-		
-		
+
 		bonus += getLevelBoost(bhApp);
-		
 
 		Set<Integer> ids = achievementStates.keySet();
 
@@ -698,27 +684,25 @@ public class AchievementSystem {
 	}
 
 	public static List<HashMap<String, String>> getBoostList(BlueHunter bhApp) {
-		List<HashMap<String, String>> boostList = new ArrayList<HashMap<String,String>>();
+		List<HashMap<String, String>> boostList = new ArrayList<HashMap<String, String>>();
 
 		int level = LevelSystem.getLevel(LevelSystem.getUserExp(bhApp));
 		float levelBoost = getLevelBoost(bhApp);
-		
+
 		NumberFormat percentage = NumberFormat.getPercentInstance();
-		
+
 		HashMap<String, String> levelHashMap = new HashMap<String, String>();
-		levelHashMap.put("description", bhApp.getString(R.string.str_boostComposition_levelBoost, level));
+		levelHashMap.put("description", bhApp.getString(
+				R.string.str_boostComposition_levelBoost, level));
 		levelHashMap.put("boost", "+" + percentage.format(levelBoost));
-		
+
 		boostList.add(levelHashMap);
-		
-		
-		
-		
-		HashMap<String, String> emptyHashMap =  new HashMap<String, String>();
-		
+
+		HashMap<String, String> emptyHashMap = new HashMap<String, String>();
+
 		emptyHashMap.put("description", "");
 		emptyHashMap.put("boost", "");
-		
+
 		boostList.add(emptyHashMap);
 
 		Set<Integer> ids = achievementStates.keySet();
@@ -726,37 +710,34 @@ public class AchievementSystem {
 		for (Achievement achievement : achievements) {
 			if (ids.contains(achievement.getId())) {
 				if (achievementStates.get(achievement.getId())) {
-					
+
 					HashMap<String, String> itemHashMap = new HashMap<String, String>();
 					itemHashMap.put("description", bhApp.getString(
-									R.string.str_boostComposition_achievementBoost,
-									achievement.getName(bhApp)));
-					itemHashMap.put("boost", "+" + percentage.format(achievement
-									.getBoost()));
-					
+							R.string.str_boostComposition_achievementBoost,
+							achievement.getName(bhApp)));
+					itemHashMap.put("boost",
+							"+" + percentage.format(achievement.getBoost()));
+
 					boostList.add(itemHashMap);
-					
 
 				}
 			}
 		}
-		
-		HashMap<String, String> sumHashMap =  new HashMap<String, String>();
-		
+
+		HashMap<String, String> sumHashMap = new HashMap<String, String>();
+
 		sumHashMap.put("description", "");
 		sumHashMap.put("boost", "-------");
-		
+
 		boostList.add(sumHashMap);
-		
-		
-		
-		HashMap<String, String> totalHashMap =  new HashMap<String, String>();
-		
+
+		HashMap<String, String> totalHashMap = new HashMap<String, String>();
+
 		totalHashMap.put("description", "Total Boost:");
 		totalHashMap.put("boost", percentage.format(getBoost(bhApp)));
-		
+
 		boostList.add(totalHashMap);
-		
+
 		return boostList;
 
 	}

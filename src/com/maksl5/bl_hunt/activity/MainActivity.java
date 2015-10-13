@@ -66,6 +66,7 @@ import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 public class MainActivity extends FragmentActivity {
@@ -120,6 +121,8 @@ public class MainActivity extends FragmentActivity {
 		destroyed = false;
 		setContentView(R.layout.act_main);
 
+		ManufacturerList.setContext(this);
+		
 		bhApp.actionBarHandler = new ActionBarHandler(bhApp);
 		bhApp.disMan = new DiscoveryManager(bhApp);
 

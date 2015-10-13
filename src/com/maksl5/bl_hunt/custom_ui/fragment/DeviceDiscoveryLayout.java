@@ -10,21 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Transformation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.MacAddressAllocations;
+import com.maksl5.bl_hunt.storage.ManufacturerList;
 
 /**
  * @author Maksl5
@@ -110,11 +109,11 @@ public class DeviceDiscoveryLayout {
 
 		for (Iterator iterator = devicesToday.iterator(); iterator.hasNext();) {
 			FoundDevice deviceIt = (FoundDevice) iterator.next();
-			String manufacturer = deviceIt.getManufacturer();
+			int manufacturer = deviceIt.getManufacturer();
 
 			float bonus = deviceIt.getBoost();
 
-			expTodayNum += MacAddressAllocations.getExp(manufacturer)
+			expTodayNum += ManufacturerList.getExp(manufacturer)
 					* (1 + bonus);
 		}
 
@@ -241,11 +240,11 @@ public class DeviceDiscoveryLayout {
 			FoundDevice device = values.get(position);
 
 			String mac = device.getMacAddress();
-			String manufacturer = device.getManufacturer();
+			int manufacturer = device.getManufacturer();
 
-			int exp = MacAddressAllocations.getExp(manufacturer);
+			int exp = ManufacturerList.getExp(manufacturer);
 
-			int bonusExp = (int) Math.floor(MacAddressAllocations
+			int bonusExp = (int) Math.floor(ManufacturerList
 					.getExp(manufacturer) * device.getBoost());
 
 			exp = bonusExp + exp;
@@ -277,16 +276,13 @@ public class DeviceDiscoveryLayout {
 			if (rssi >= -41)
 				rssiRes = R.drawable.rssi_5;
 
-			if (manufacturer.equals("Unknown")) {
-				manufacturer = context
-						.getString(R.string.str_foundDevices_manu_unkown);
-			}
+
 
 			String expString = context
 					.getString(R.string.str_foundDevices_exp_abbreviation);
 
 			vHolder.macAddress.setText(mac);
-			vHolder.manufacturer.setText(manufacturer);
+			vHolder.manufacturer.setText(ManufacturerList.getName(manufacturer));
 			vHolder.exp.setText("+" + exp + " " + expString);
 			vHolder.rssi.setImageResource(rssiRes);
 

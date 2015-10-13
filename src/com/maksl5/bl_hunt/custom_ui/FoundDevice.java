@@ -4,9 +4,7 @@
  */
 package com.maksl5.bl_hunt.custom_ui;
 
-import com.maksl5.bl_hunt.storage.MacAddressAllocations;
-
-
+import com.maksl5.bl_hunt.storage.ManufacturerList;
 
 public class FoundDevice {
 
@@ -14,7 +12,7 @@ public class FoundDevice {
 	private String name;
 	private short rssi = 1;
 	private long time = -1;
-	private String manufacturer;
+	private int manufacturer = -1;
 	private float bonus = -1f;
 
 	public FoundDevice() {
@@ -41,7 +39,8 @@ public class FoundDevice {
 
 	public void setRssi(String dRssi) {
 
-		if (dRssi != null) rssi = Short.valueOf(dRssi);
+		if (dRssi != null)
+			rssi = Short.valueOf(dRssi);
 
 	}
 
@@ -53,14 +52,15 @@ public class FoundDevice {
 
 	public void setTime(String dTime) {
 
-		if (dTime != null) time = Long.valueOf(dTime);
+		if (dTime != null)
+			time = Long.valueOf(dTime);
 
 	}
-	
-	public void setManu(String dManu) {
+
+	public void setManu(int dManu) {
 
 		manufacturer = dManu;
-		
+
 	}
 
 	public void setBoost(float dBonus) {
@@ -71,7 +71,16 @@ public class FoundDevice {
 
 	public void setBoost(String dBonus) {
 
-		if (dBonus != null) bonus = Float.valueOf(dBonus);
+		if (dBonus != null) {
+
+			if (dBonus.equals(""))
+				bonus = 0f;
+			else
+				bonus = Float.valueOf(dBonus);
+
+		} else {
+			bonus = 0f;
+		}
 
 	}
 
@@ -95,10 +104,10 @@ public class FoundDevice {
 		return time;
 	}
 
-	public String getManufacturer() {
+	public int getManufacturer() {
 
-		if(manufacturer == null) {
-			manufacturer = MacAddressAllocations.getManufacturer(macAddress);
+		if (manufacturer == -1) {
+			manufacturer = ManufacturerList.getManufacturer(macAddress).getId();
 		}
 		return manufacturer;
 	}
@@ -110,11 +119,16 @@ public class FoundDevice {
 
 	public int checkNull() {
 
-		if (macAddress == null || macAddress.equals("")) return 0;
-		if (name == null || name.equals("")) return -1;
-		if (rssi == 0) return 0;
-		if (time == 0) return 0;
-		if (manufacturer == null || manufacturer.equals("")) return 0;
+		if (macAddress == null || macAddress.equals(""))
+			return 0;
+		if (name == null || name.equals(""))
+			return -1;
+		if (rssi == 0)
+			return 0;
+		if (time == 0)
+			return 0;
+		if (manufacturer == -1)
+			return -2;
 
 		return 1;
 	}
