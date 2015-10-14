@@ -164,7 +164,7 @@
     <string name="str_achieve_10_description">Do a power hunt and find 100 devices in 15 minutes.</string>
  
     <string name="str_achieve_11_title">Precisely Accurate I</string>
-    <string name="str_achieve_11_description">You are an accurate chaser and must find 1 device to a full hour. (E.g. 2:00:00pm)</string>
+    <string name="str_achieve_11_description">You are an accurate chaser and must find 1 device to a full hour. (E.g. 2:00pm)</string>
     
     <string name="str_achieve_12_title">Sequence Enthusiast I</string>
     <string name="str_achieve_12_description">Find 1 Apple, 1 BlackBerry and 1 Samsung device in a row.</string>
@@ -173,10 +173,10 @@
     <string name="str_achieve_13_description">Get 200 Exp within 24 hours.</string>
     
     <string name="str_achieve_14_title">Precisely Accurate II</string>
-    <string name="str_achieve_14_description">You are an extremely accurate chaser and must find 1 device at the 11th November at 11:11:11am.</string>
+    <string name="str_achieve_14_description">You are an extremely accurate chaser and must find 1 device at the 11th November at 11:11am.</string>
     
     <string name="str_achieve_15_title">Probation Period III</string>
-    <string name="str_achieve_15_description">Find 300 devices and get 400 Exp. Now you are out of probation period. Congrats!</string>
+    <string name="str_achieve_15_description">Find 300 devices and get 8000 Exp. Now you are out of probation period. Congrats!</string>
     
     <string name="str_achieve_16_title">Time Chaser III</string>
     <string name="str_achieve_16_description">Get on a crowded place and find 20 devices within 15 seconds.</string>

@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.R.integer;
-import android.os.Debug;
 import android.util.Log;
-import android.util.SparseArray;
 import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
