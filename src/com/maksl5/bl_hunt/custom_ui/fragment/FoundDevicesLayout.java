@@ -531,6 +531,8 @@ public class FoundDevicesLayout {
 
 			listView.setSelectionFromTop(scrollIndex, scrollTop);
 
+			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+			
 			threadManager.finished(this);
 
 		}

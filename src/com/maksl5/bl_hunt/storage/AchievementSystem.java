@@ -14,9 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import android.Manifest.permission;
 import android.R.integer;
 import android.content.Context;
 import android.graphics.Matrix;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MenuItem;
 
@@ -130,8 +132,8 @@ public class AchievementSystem {
 
 					int max = 0;
 
-					//5 Apple in row
-					
+					// 5 Apple in row
+
 					for (int i = 4; i < devices.size(); i++) {
 
 						if (devices.get(i - 4).getManufacturer() == 1) {
@@ -164,9 +166,9 @@ public class AchievementSystem {
 						}
 
 					}
-					
+
 					setNewProgressString("" + max + " / 5");
-					
+
 					return false;
 
 				}
@@ -181,8 +183,8 @@ public class AchievementSystem {
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
 							DatabaseHelper.COLUMN_TIME + " DESC");
 
-					//15D in 2min
-					
+					// 15D in 2min
+
 					for (int i = 14; i < devices.size(); i++) {
 
 						long firstTime = devices.get(i - 14).getTime();
@@ -207,8 +209,8 @@ public class AchievementSystem {
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
 							DatabaseHelper.COLUMN_TIME + " DESC");
 
-					//100D in 15min
-					
+					// 100D in 15min
+
 					for (int i = 99; i < devices.size(); i++) {
 
 						long firstTime = devices.get(i - 99).getTime();
@@ -233,8 +235,8 @@ public class AchievementSystem {
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
 							DatabaseHelper.COLUMN_TIME + " DESC");
 
-					//20D in 15sec
-					
+					// 20D in 15sec
+
 					for (int i = 19; i < devices.size(); i++) {
 
 						long firstTime = devices.get(i - 19).getTime();
@@ -256,7 +258,7 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '21'"); //Siemens
+					int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '21'"); // Siemens
 
 					setNewProgressString("" + devices + " / 5");
 
@@ -273,7 +275,8 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '9'"); //Sony Ericsson
+					int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '9'"); // Sony
+																															// Ericsson
 
 					setNewProgressString("" + devices + " / 50");
 
@@ -294,8 +297,8 @@ public class AchievementSystem {
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
 							DatabaseHelper.COLUMN_TIME + " DESC");
 
-					//15D between 10:00 - 10:30pm
-					
+					// 15D between 10:00 - 10:30pm
+
 					for (int i = 14; i < devices.size(); i++) {
 
 						long firstTime = devices.get(i - 14).getTime();
@@ -330,8 +333,8 @@ public class AchievementSystem {
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
 							DatabaseHelper.COLUMN_TIME + " DESC");
 
-					//65D between 5:00 - 7:00am
-					
+					// 65D between 5:00 - 7:00am
+
 					for (int i = 64; i < devices.size(); i++) {
 
 						long firstTime = devices.get(i - 64).getTime();
@@ -366,8 +369,8 @@ public class AchievementSystem {
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
 							DatabaseHelper.COLUMN_TIME + " DESC");
 
-					//1D to full hour
-					
+					// 1D to full hour
+
 					for (int i = 0; i < devices.size(); i++) {
 
 						long time = devices.get(i).getTime();
@@ -395,8 +398,8 @@ public class AchievementSystem {
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
 							DatabaseHelper.COLUMN_TIME + " DESC");
 
-					//1D 11th Nov 11:11am
-					
+					// 1D 11th Nov 11:11am
+
 					for (int i = 0; i < devices.size(); i++) {
 
 						long time = devices.get(i).getTime();
@@ -423,8 +426,8 @@ public class AchievementSystem {
 
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
 
-					//In row: 1 Apple -> 1 BlackBerry -> 1 Samsung
-					
+					// In row: 1 Apple -> 1 BlackBerry -> 1 Samsung
+
 					for (int i = 2; i < devices.size(); i++) {
 
 						if (devices.get(i - 2).getManufacturer() == 3) {
@@ -452,8 +455,8 @@ public class AchievementSystem {
 
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
 
-					//In row: Acer -> Bury -> Cisco -> D-Link
-					
+					// In row: Acer -> Bury -> Cisco -> D-Link
+
 					for (int i = 3; i < devices.size(); i++) {
 
 						if (devices.get(i - 3).getManufacturer() == 51) {
@@ -484,21 +487,31 @@ public class AchievementSystem {
 					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
 							DatabaseHelper.COLUMN_TIME + " DESC");
 
+					long first = System.nanoTime();
+
+					long end;
 					int max = 0;
 
-					for (int i = 0; i < devices.size(); i++) {
+					int deviceListSize = devices.size();
 
-						long recentTime = devices.get(i).getTime();
+					long recentTime;
+					int exp24;
+					long earlyTime;
+					float bonus;
 
-						int exp24 = 0;
+					for (int i = 0; i < deviceListSize; i++) {
 
-						for (int j = i + 1; j < devices.size(); j++) {
+						recentTime = devices.get(i).getTime();
 
-							long earlyTime = devices.get(j).getTime();
+						exp24 = 0;
+
+						for (int j = i + 1; j < deviceListSize; j++) {
+
+							earlyTime = devices.get(j).getTime();
 
 							if ((recentTime - earlyTime) < 86400000) {
 
-								float bonus = devices.get(j).getBoost();
+								bonus = devices.get(j).getBoost();
 
 								if (bonus == -1f) bonus = 0.0f;
 
@@ -512,10 +525,23 @@ public class AchievementSystem {
 
 						max = (exp24 > max) ? exp24 : max;
 
-						if (exp24 >= 200) return true;
+						if (exp24 >= 200) {
+
+							end = System.nanoTime();
+							float msPerDev = (end - first) / (float) i;
+							Log.d("Exp Achievement Time:", "" + msPerDev / (float) 1000 + "µs/device");
+							Log.d("Exp Achievement Time:", "Total time: " + ((end - first) / (float) 1000000) + "ms | Total dev: " + i);
+
+							return true;
+						}
 					}
 
 					setNewProgressString("" + max + " / 200");
+
+					end = System.nanoTime();
+					float msPerDev = (end - first) / (float) devices.size();
+					Log.d("Exp Achievement Time:", "" + msPerDev / (float) 1000 + "µs/device");
+					Log.d("Exp Achievement Time:", "Total time: " + ((end - first) / (float) 1000000) + "ms | Total dev: " + devices.size());
 
 					return false;
 				}
