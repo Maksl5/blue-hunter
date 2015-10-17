@@ -30,28 +30,32 @@
         android:padding="@dimen/padding_medium"
         android:rowCount="4" >
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tableRow4"
+            android:layout_alignParentTop="true"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/boostTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/str_enableBT_text"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="@dimen/enable_bt_font_text" />
+
+        </RelativeLayout>
+
         <TableRow
             android:id="@+id/tableRow3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:gravity="bottom" >
-
-            <TableRow
-                android:id="@+id/tableRow4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="center" >
-
-                <CheckBox
-                    android:id="@+id/chkRemember"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/str_enableBT_remember" />
-
-            </TableRow>
 
             <TableRow
                 android:id="@+id/tableRow5"
@@ -77,22 +81,21 @@
             </TableRow>
         </TableRow>
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/tableRow3"
-            android:layout_alignParentTop="true" >
+            android:layout_weight="1"
+            android:gravity="center" >
 
-            <TextView
-                android:id="@+id/boostTxt"
+            <CheckBox
+                android:id="@+id/chkRemember"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:text="@string/str_enableBT_text"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="@dimen/enable_bt_font_text" />
-        </RelativeLayout>
+                android:text="@string/str_enableBT_remember" />
+        </TableRow>
+
     </RelativeLayout>
 
 </LinearLayout>
