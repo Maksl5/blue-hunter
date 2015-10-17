@@ -70,6 +70,7 @@ public class BlueHunter extends Application {
 	    
 	    if(isSupport) {
 	    	
+	    	
 	    	if(true)
 	    	{
 	    		

@@ -6,17 +6,16 @@ package com.maksl5.bl_hunt;
 
 import java.util.HashMap;
 import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.widget.SimpleAdapter;
-
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
+import com.maksl5.bl_hunt.R;
 
 /**
  * @author Maksl5[Markus Bensing]

@@ -4,7 +4,6 @@ package com.maksl5.bl_hunt;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -16,7 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
@@ -24,6 +22,7 @@ import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.R;
 
 
 

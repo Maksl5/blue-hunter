@@ -11,7 +11,6 @@ import android.util.SparseArray;
 import android.util.SparseIntArray;
 
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.R.id;
 
 public class ManufacturerList {
 

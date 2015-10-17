@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="1454"
-    android:versionName="alpha_0.3.2.1454_151014-2337" >
+    android:versionCode="1464"
+    android:versionName="alpha_0.3.2.1464_151015-0039" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -22,7 +22,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
-        android:name="BlueHunter"
+        android:name="com.maksl5.bl_hunt.BlueHunter"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
@@ -31,7 +31,7 @@
         android:theme="@style/AppTheme"
         android:uiOptions="none" >
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.maksl5.bl_hunt.activity.MainActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenLayout|screenSize"
             android:screenOrientation="user" >
@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.EnableBluetoothActivity"
+            android:name="com.maksl5.bl_hunt.activity.EnableBluetoothActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="user"
             android:theme="@style/EnableBluetoothTheme" >
@@ -52,20 +52,20 @@
             android:label="@string/str_menu_settings" >
         </activity>
         <activity
-            android:name=".activity.ChangePasswordActivity"
+            android:name="com.maksl5.bl_hunt.activity.ChangePasswordActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="user"
             android:theme="@style/EnableBluetoothTheme"
             android:windowSoftInputMode="adjustResize" >
         </activity>
 
-        <receiver android:name="BootReceiver" >
+        <receiver android:name="com.maksl5.bl_hunt.BootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         
-        <service android:name=".net.CheckUpdateService" />
+        <service android:name="com.maksl5.bl_hunt.net.CheckUpdateService" />
     </application>
 
 </manifest>
