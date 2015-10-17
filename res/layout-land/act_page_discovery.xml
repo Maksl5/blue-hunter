@@ -10,12 +10,13 @@
 
     <TableLayout
         android:id="@+id/discoveryInfoTable"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="1"
+        android:layout_weight="0"
         android:animateLayoutChanges="false"
-        android:gravity="center" >
+        android:gravity="center"
+        android:padding="@dimen/padding_xsmall" >
 
         <TableRow
             android:id="@+id/tableRow5"
@@ -204,7 +205,7 @@
         android:layout_weight="1"
         android:animateLayoutChanges="true"
         android:background="#66cccccc"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
     </ListView>
 
