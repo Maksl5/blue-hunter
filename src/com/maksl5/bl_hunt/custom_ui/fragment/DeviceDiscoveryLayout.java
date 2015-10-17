@@ -206,7 +206,7 @@ public class DeviceDiscoveryLayout {
 			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
 
 			TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, linearLayout.getHeight() - discoveryInfo.getHeight());
-			animation2.setDuration(1000);
+			animation2.setDuration(750);
 
 			lv.startAnimation(animation2);
 
@@ -215,7 +215,7 @@ public class DeviceDiscoveryLayout {
 			float topOfDiscoveryInfo = linearLayout.getHeight() / (float) 2 - discoveryInfo.getHeight() / (float) 2;
 
 			TranslateAnimation animation = new TranslateAnimation(0, 0, -topOfDiscoveryInfo, 0);
-			animation.setDuration(1000);
+			animation.setDuration(750);
 
 			discoveryInfo.startAnimation(animation);
 
@@ -226,7 +226,7 @@ public class DeviceDiscoveryLayout {
 			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
 
 			TranslateAnimation animation2 = new TranslateAnimation(0, linearLayout.getWidth() - discoveryInfo.getWidth(), 0, 0);
-			animation2.setDuration(1000);
+			animation2.setDuration(750);
 
 			lv.startAnimation(animation2);
 
@@ -235,7 +235,7 @@ public class DeviceDiscoveryLayout {
 			float leftOfDiscoveryInfo = linearLayout.getWidth() / (float) 2 - discoveryInfo.getWidth() / (float) 2;
 
 			TranslateAnimation animation = new TranslateAnimation(-leftOfDiscoveryInfo, 0, 0, 0);
-			animation.setDuration(1000);
+			animation.setDuration(750);
 
 			discoveryInfo.startAnimation(animation);
 
