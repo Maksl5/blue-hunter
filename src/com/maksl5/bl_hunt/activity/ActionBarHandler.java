@@ -47,7 +47,7 @@ import com.maksl5.bl_hunt.storage.PreferenceManager;
  * will throw a NullMenuException.
  */
 
-public class ActionBarHandler implements OnNavigationListener,
+public class ActionBarHandler implements
 		OnQueryTextListener, OnActionExpandListener {
 
 	private BlueHunter bhApp;
@@ -88,49 +88,7 @@ public class ActionBarHandler implements OnNavigationListener,
 
 		final ViewPager viewPager = (ViewPager) bhApp.mainActivity
 				.findViewById(R.id.pager);
-		final TableRow userInfoRow = (TableRow) bhApp.mainActivity
-				.findViewById(R.id.userInfoTableRow);
 
-		userInfoRow.setVisibility(View.VISIBLE);
-
-		viewPager.getChildAt(0).setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-
-				final int Y = (int) event.getRawY();
-
-				switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-					moveStartY = (int) event.getY();
-
-					userInfoRow.setVisibility(View.VISIBLE);
-					return true;
-				case MotionEvent.ACTION_MOVE:
-					int top = Y - moveStartY;
-
-					beforeLastY = lastY;
-					lastY = (int) event.getRawY();
-
-					viewPager.setTop(top);
-					userInfoRow.setBottom(top);
-					viewPager.getLayoutParams().height = viewPager.getBottom()
-							- top;
-					return true;
-				case MotionEvent.ACTION_UP:
-
-					if ((Y - beforeLastY) < 0) {
-						onNavigationItemSelected(0, 0);
-					} else {
-						onNavigationItemSelected(1, 0);
-					}
-					return true;
-
-				}
-
-				return false;
-			}
-		});
 
 		disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
 		disSwitch.setPadding(5, 0, 5, 0);
@@ -369,121 +327,6 @@ public class ActionBarHandler implements OnNavigationListener,
 		return menu.findItem(resourceId);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * android.app.ActionBar.OnNavigationListener#onNavigationItemSelected(int,
-	 * long)
-	 */
-	@Override
-	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-
-		final ViewPager parentView = (ViewPager) bhApp.mainActivity
-				.findViewById(R.id.pager);
-		final TableRow userInfoRow = (TableRow) bhApp.mainActivity
-				.findViewById(R.id.userInfoTableRow);
-
-		Animation animation;
-
-		switch (itemPosition) {
-		case 0:
-
-			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
-
-			animation = new SizeAnimation(parentView, userInfoRow, 0);
-			animation.setDuration(500);
-			animation.setFillAfter(true);
-
-			animation.setInterpolator(new AccelerateDecelerateInterpolator());
-			animation.setAnimationListener(new AnimationListener() {
-
-				@Override
-				public void onAnimationStart(Animation animation) {
-
-					Log.d("layout",
-							"before: view.getBottom = "
-									+ parentView.getBottom());
-
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void onAnimationEnd(Animation animation) {
-
-					userInfoRow.setVisibility(View.INVISIBLE);
-					Log.d("layout",
-							"after: view.getBottom = " + parentView.getBottom());
-					parentView.requestLayout();
-					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
-					// TODO Auto-generated method stub
-
-				}
-			});
-
-			parentView.startAnimation(animation);
-			break;
-		case 1:
-
-			// parentView.setLayerType(ViewPager.LAYER_TYPE_HARDWARE, null);
-			// userInfoRow.setLayerType(TableRow.LAYER_TYPE_HARDWARE, null);
-
-			animation = new SizeAnimation(parentView, userInfoRow,
-					userInfoRow.getMeasuredHeight());
-			animation.setDuration(500);
-			animation.setFillAfter(true);
-
-			animation.setInterpolator(new AccelerateDecelerateInterpolator());
-			animation.setAnimationListener(new AnimationListener() {
-
-				@Override
-				public void onAnimationStart(Animation animation) {
-
-					userInfoRow.setVisibility(View.VISIBLE);
-					Log.d("layout",
-							"before: view.getBottom = "
-									+ parentView.getBottom());
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void onAnimationEnd(Animation animation) {
-
-					Log.d("layout",
-							"after: view.getBottom = " + parentView.getBottom());
-					parentView.requestLayout();
-					// parentView.setLayerType(ViewPager.LAYER_TYPE_NONE, null);
-					// userInfoRow.setLayerType(TableRow.LAYER_TYPE_NONE, null);
-					// TODO Auto-generated method stub
-
-				}
-			});
-
-			parentView.startAnimation(animation);
-
-			break;
-		}
-
-		return false;
-	}
 
 	/*
 	 * (non-Javadoc)
