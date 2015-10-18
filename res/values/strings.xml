@@ -82,7 +82,7 @@
     <string name="str_Preferences_forceDownSync_title">Get remote database</string>
     <string name="str_Preferences_forceDownSync_sum">Overrides your local found devices with the ones stored online.</string>
     <string name="str_Preferences_enableBackground_title">Enable Background</string>
-    <string name="str_Preferences_enableBackground_sum">[EXPERIMENTAL. Can lead to force close at start of the app.]</string>
+    <string name="str_Preferences_enableBackground_sum">Enables background image to be displayed.</string>
     <string name="str_Preferences_deleteRemember_title">Delete remember assignments</string>
     <string name="str_Preferences_deleteRemember_sum">Delete all remember assignments you\'ve made in the app.</string>
     <string name="str_Preferences_disableBtExit_title">Disable Bluetooth on exit</string>

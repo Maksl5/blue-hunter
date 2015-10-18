@@ -19,6 +19,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Bundle;
@@ -155,15 +156,17 @@ public class MainActivity extends FragmentActivity {
 		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0,
 				new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
-		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", false)) {
+		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
 			try {
 				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
 			}
 			catch (Exception e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 			}
 			catch (OutOfMemoryError e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 			}
 
 		}
@@ -664,15 +667,17 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
 
-		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", false)) {
+		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
 			try {
 				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
 			}
 			catch (Exception e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 			}
 			catch (OutOfMemoryError e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 			}
 
 		}

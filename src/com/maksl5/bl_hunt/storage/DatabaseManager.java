@@ -20,9 +20,12 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 
 import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
@@ -685,6 +688,24 @@ public class DatabaseManager {
 				
 				
 
+			}
+			
+			if(oldVersion < 1562) {
+				
+				PreferenceManager.setPref(bhApp, "pref_enableBackground", true);
+				
+				try {
+					bhApp.mainActivity.getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+				}
+				catch (Exception e) {
+					PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+					bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+				}
+				catch (OutOfMemoryError e) {
+					PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+					bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+				}
+				
 			}
 
 			bhApp.authentification.showChangelog(oldVersion, newVersion, 0);
