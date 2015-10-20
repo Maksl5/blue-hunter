@@ -612,6 +612,9 @@ public class DatabaseManager {
 
 			bhApp.mainActivity.oldVersion = oldVersion;
 			bhApp.mainActivity.newVersion = newVersion;
+			
+			PreferenceManager.setPref(bhApp, "requireManuCheck", true);
+			
 
 			if (oldVersion < 499) {
 				db.execSQL("Alter Table " + FOUND_DEVICES_TABLE

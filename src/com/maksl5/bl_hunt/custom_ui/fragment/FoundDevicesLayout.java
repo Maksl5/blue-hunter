@@ -31,6 +31,7 @@ import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 /**
  * @author Maksl5
@@ -54,8 +55,7 @@ public class FoundDevicesLayout {
 	private static OnItemLongClickListener onLongClickListener = new OnItemLongClickListener() {
 
 		@Override
-		public boolean onItemLongClick(AdapterView<?> parent, View view,
-				int position, long id) {
+		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
 			if (view.getContext() instanceof MainActivity) {
 
@@ -63,8 +63,7 @@ public class FoundDevicesLayout {
 
 				selectedItem = position;
 
-				mainActivity
-						.startActionMode(mainActivity.getBlueHunter().actionBarHandler.actionModeCallback);
+				mainActivity.startActionMode(mainActivity.getBlueHunter().actionBarHandler.actionModeCallback);
 
 				ListView foundDevListView = (ListView) parent;
 
@@ -78,7 +77,8 @@ public class FoundDevicesLayout {
 				foundDevListView.setItemChecked(position, true);
 
 				return true;
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
@@ -91,16 +91,13 @@ public class FoundDevicesLayout {
 			threadManager = new FoundDevicesLayout().new ThreadManager();
 		}
 
-		
-		if(orientationChanged) {
-			
-			
+		if (orientationChanged) {
+
 			ListView listView;
 			FoundDevicesAdapter fdAdapter;
 
 			if (bhApp.mainActivity.mViewPager == null) {
-				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity
-						.findViewById(R.id.pager);
+				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 			}
 
 			ViewPager pager = bhApp.mainActivity.mViewPager;
@@ -109,50 +106,46 @@ public class FoundDevicesLayout {
 				return;
 			}
 
-			View pageView = pager
-					.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
+			View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
 
 			if (pageView == null) {
 				listView = (ListView) pager.findViewById(R.id.listView2);
-			} else {
+			}
+			else {
 				listView = (ListView) pageView.findViewById(R.id.listView2);
 			}
 
 			if (listView == null) {
-				listView = (ListView) bhApp.mainActivity
-						.findViewById(R.id.listView2);
+				listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView2);
 			}
 
-			if (listView == null)
-				return;
+			if (listView == null) return;
 
 			fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 			if (fdAdapter == null || fdAdapter.isEmpty()) {
-				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(
-						bhApp.mainActivity, R.layout.act_page_founddevices_row,
+				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row,
 						showedFdList);
 				listView.setAdapter(fdAdapter);
 			}
 
 			fdAdapter.notifyDataSetChanged();
 			return;
-			
+
 		}
-		
-		
-		
-		RefreshThread refreshThread = new FoundDevicesLayout().new RefreshThread(
-				bhApp, threadManager);
+
+		RefreshThread refreshThread = new FoundDevicesLayout().new RefreshThread(bhApp, threadManager);
 		if (refreshThread.canRun()) {
+			boolean needManuCheck = PreferenceManager.getPref(bhApp, "requireManuCheck", false);
+			if (needManuCheck) Toast.makeText(bhApp, "Require Manufacturer Check...", Toast.LENGTH_SHORT).show();
 			refreshThread.execute();
-		} else {
+		}
+		else {
 
 			ListView listView;
 			FoundDevicesAdapter fdAdapter;
 
 			if (bhApp.mainActivity.mViewPager == null) {
-				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity
-						.findViewById(R.id.pager);
+				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 			}
 
 			ViewPager pager = bhApp.mainActivity.mViewPager;
@@ -161,27 +154,24 @@ public class FoundDevicesLayout {
 				return;
 			}
 
-			View pageView = pager
-					.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
+			View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
 
 			if (pageView == null) {
 				listView = (ListView) pager.findViewById(R.id.listView2);
-			} else {
+			}
+			else {
 				listView = (ListView) pageView.findViewById(R.id.listView2);
 			}
 
 			if (listView == null) {
-				listView = (ListView) bhApp.mainActivity
-						.findViewById(R.id.listView2);
+				listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView2);
 			}
 
-			if (listView == null)
-				return;
+			if (listView == null) return;
 
 			fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 			if (fdAdapter == null || fdAdapter.isEmpty()) {
-				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(
-						bhApp.mainActivity, R.layout.act_page_founddevices_row,
+				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row,
 						showedFdList);
 				listView.setAdapter(fdAdapter);
 			}
@@ -194,8 +184,7 @@ public class FoundDevicesLayout {
 
 	public static void filterFoundDevices(String text, BlueHunter bhApp) {
 
-		if (threadManager.running)
-			return;
+		if (threadManager.running) return;
 
 		ArrayList<FDAdapterData> searchedList = new ArrayList<FDAdapterData>();
 
@@ -203,8 +192,7 @@ public class FoundDevicesLayout {
 		FoundDevicesAdapter fdAdapter;
 
 		if (bhApp.mainActivity.mViewPager == null) {
-			bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity
-					.findViewById(R.id.pager);
+			bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 		}
 
 		ViewPager pager = bhApp.mainActivity.mViewPager;
@@ -213,27 +201,24 @@ public class FoundDevicesLayout {
 			return;
 		}
 
-		View pageView = pager
-				.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
+		View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
 
 		if (pageView == null) {
 			listView = (ListView) pager.findViewById(R.id.listView2);
-		} else {
+		}
+		else {
 			listView = (ListView) pageView.findViewById(R.id.listView2);
 		}
 
 		if (listView == null) {
-			listView = (ListView) bhApp.mainActivity
-					.findViewById(R.id.listView2);
+			listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView2);
 		}
 
-		if (listView == null)
-			return;
+		if (listView == null) return;
 
 		fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 		if (fdAdapter == null || fdAdapter.isEmpty()) {
-			fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(
-					bhApp.mainActivity, R.layout.act_page_founddevices_row,
+			fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row,
 					showedFdList);
 			listView.setAdapter(fdAdapter);
 		}
@@ -242,8 +227,7 @@ public class FoundDevicesLayout {
 
 		if (text.equals("[unknown]")) {
 
-			String unknownString = bhApp
-					.getString(R.string.str_foundDevices_manu_unkown);
+			String unknownString = bhApp.getString(R.string.str_foundDevices_manu_unkown);
 
 			for (FDAdapterData data : completeFdList) {
 
@@ -254,16 +238,17 @@ public class FoundDevicesLayout {
 			showedFdList = searchedList;
 			fdAdapter.refreshList(showedFdList);
 
-		} else if (text.length() == 0) {
+		}
+		else if (text.length() == 0) {
 			if (!showedFdList.equals(completeFdList)) {
 				showedFdList = new ArrayList<FDAdapterData>(completeFdList);
 				fdAdapter.refreshList(showedFdList);
 
 			}
-		} else {
+		}
+		else {
 
-			ArrayList<FDAdapterData> filterList = new ArrayList<FDAdapterData>(
-					completeFdList);
+			ArrayList<FDAdapterData> filterList = new ArrayList<FDAdapterData>(completeFdList);
 
 			final int count = filterList.size();
 			final ArrayList<FDAdapterData> newValues = new ArrayList<FDAdapterData>();
@@ -271,26 +256,17 @@ public class FoundDevicesLayout {
 			for (int i = 0; i < count; i++) {
 				final FDAdapterData data = filterList.get(i);
 
-				if (data.getMacAddress().toLowerCase().contains(text))
-					if (!newValues.contains(data))
-						newValues.add(data);
+				if (data.getMacAddress().toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
 
-				if (data.getName() != null
-						&& data.getName().toLowerCase().contains(text))
-					if (!newValues.contains(data))
-						newValues.add(data);
+				if (data.getName() != null && data.getName().toLowerCase().contains(text))
+					if (!newValues.contains(data)) newValues.add(data);
 
-				if (data.getTimeFormatted().toLowerCase().contains(text))
-					if (!newValues.contains(data))
-						newValues.add(data);
+				if (data.getTimeFormatted().toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
 
 				if (ManufacturerList.getName(data.getManufacturer()).toLowerCase().contains(text))
-					if (!newValues.contains(data))
-						newValues.add(data);
+					if (!newValues.contains(data)) newValues.add(data);
 
-				if (data.getExpString().toLowerCase().contains(text))
-					if (!newValues.contains(data))
-						newValues.add(data);
+				if (data.getExpString().toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
 
 			}
 
@@ -306,15 +282,13 @@ public class FoundDevicesLayout {
 	 */
 	public static String getSelectedMac() {
 
-		if (selectedItem == -1)
-			return null;
+		if (selectedItem == -1) return null;
 
 		return showedFdList.get(selectedItem).getMacAddress();
 
 	}
 
-	private class RefreshThread extends
-			AsyncTask<Void, ArrayList<FDAdapterData>, ArrayList<FDAdapterData>> {
+	private class RefreshThread extends AsyncTask<Void, ArrayList<FDAdapterData>, ArrayList<FDAdapterData>> {
 
 		private BlueHunter bhApp;
 		private ListView listView;
@@ -334,8 +308,7 @@ public class FoundDevicesLayout {
 			this.bhApp = app;
 
 			if (bhApp.mainActivity.mViewPager == null) {
-				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity
-						.findViewById(R.id.pager);
+				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 			}
 
 			ViewPager pager = bhApp.mainActivity.mViewPager;
@@ -345,18 +318,17 @@ public class FoundDevicesLayout {
 				return;
 			}
 
-			View pageView = pager
-					.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
+			View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_FOUND_DEVICES + 1);
 
 			if (pageView == null) {
 				listView = (ListView) pager.findViewById(R.id.listView2);
-			} else {
+			}
+			else {
 				listView = (ListView) pageView.findViewById(R.id.listView2);
 			}
 
 			if (listView == null) {
-				listView = (ListView) bhApp.mainActivity
-						.findViewById(R.id.listView2);
+				listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView2);
 			}
 
 			if (listView == null) {
@@ -368,19 +340,18 @@ public class FoundDevicesLayout {
 			listView.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
 					String macString = showedFdList.get(position).getMacAddress();
-					if(macString != null) {
-						
-						ClipboardManager clipboardManager = (ClipboardManager)bhApp.getSystemService(Context.CLIPBOARD_SERVICE);
+					if (macString != null) {
+
+						ClipboardManager clipboardManager = (ClipboardManager) bhApp.getSystemService(Context.CLIPBOARD_SERVICE);
 						clipboardManager.setPrimaryClip(ClipData.newPlainText("Mac Address", macString));
-						
-						Toast.makeText(bhApp, "Copied Mac Address " + macString +" into clipboard", Toast.LENGTH_SHORT).show();
-						
+
+						Toast.makeText(bhApp, "Copied Mac Address " + macString + " into clipboard", Toast.LENGTH_SHORT).show();
+
 					}
-					
+
 				}
 			});
 
@@ -390,8 +361,7 @@ public class FoundDevicesLayout {
 
 			this.fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 			if (this.fdAdapter == null || this.fdAdapter.isEmpty()) {
-				this.fdAdapter = new FoundDevicesAdapter(bhApp.mainActivity,
-						R.layout.act_page_founddevices_row, showedFdList);
+				this.fdAdapter = new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row, showedFdList);
 				this.listView.setAdapter(fdAdapter);
 			}
 
@@ -411,15 +381,15 @@ public class FoundDevicesLayout {
 		@Override
 		protected ArrayList<FDAdapterData> doInBackground(Void... params) {
 
-			List<FoundDevice> devices = new DatabaseManager(bhApp)
-					.getAllDevices();
+			List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
 			ArrayList<FDAdapterData> listViewList = new ArrayList<FDAdapterData>();
 
-			String expString = bhApp
-					.getString(R.string.str_foundDevices_exp_abbreviation);
+			String expString = bhApp.getString(R.string.str_foundDevices_exp_abbreviation);
 			DateFormat dateFormat = DateFormat.getDateTimeInstance();
 
 			FDAdapterData adapterData;
+
+			boolean needManuCheck = PreferenceManager.getPref(bhApp, "requireManuCheck", false);
 
 			for (int i = 0; i < devices.size(); i++) {
 
@@ -431,17 +401,15 @@ public class FoundDevicesLayout {
 				float bonusExpMultiplier = device.getBoost();
 				short rssi = device.getRssi();
 
-				if (manufacturer == 0) {
-					manufacturer = ManufacturerList
-							.getManufacturer(deviceMac).getId();
+				if (needManuCheck && manufacturer == 0) {
+					manufacturer = ManufacturerList.getManufacturer(deviceMac).getId();
 					if (manufacturer != 0) {
-						new DatabaseManager(bhApp).addManufacturerToDevice(
-								deviceMac, manufacturer);
+						new DatabaseManager(bhApp).addManufacturerToDevice(deviceMac, manufacturer);
 					}
+
 				}
 
-				if (time == -1)
-					time = (long) 0;
+				if (time == -1) time = (long) 0;
 
 				if (bonusExpMultiplier == -1f) {
 					FDAdapterData addBonus = new FDAdapterData();
@@ -456,45 +424,33 @@ public class FoundDevicesLayout {
 				}
 
 				// exp calc
-				int bonusExp = (int) Math.floor(ManufacturerList
-						.getExp(manufacturer) * bonusExpMultiplier);
+				int bonusExp = (int) Math.floor(ManufacturerList.getExp(manufacturer) * bonusExpMultiplier);
 
-				String completeExpString = (bonusExp == 0) ? "+"
-						+ ManufacturerList.getExp(manufacturer) + " "
-						+ expString : "+"
-						+ ManufacturerList.getExp(manufacturer) + " + "
-						+ bonusExp + " " + expString;
-
+				String completeExpString = (bonusExp == 0) ? "+" + ManufacturerList.getExp(manufacturer) + " " + expString : "+"
+						+ ManufacturerList.getExp(manufacturer) + " + " + bonusExp + " " + expString;
 
 				// RSSI calculation
 				int rssiRes = 0;
 
 				// 0 bars
-				if (rssi <= -102)
-					rssiRes = 0;
+				if (rssi <= -102) rssiRes = 0;
 
 				// 1 bar
-				if (rssi >= -101 && rssi <= -93)
-					rssiRes = R.drawable.rssi_1;
+				if (rssi >= -101 && rssi <= -93) rssiRes = R.drawable.rssi_1;
 
 				// 2 bars
-				if (rssi >= -92 && rssi <= -87)
-					rssiRes = R.drawable.rssi_2;
+				if (rssi >= -92 && rssi <= -87) rssiRes = R.drawable.rssi_2;
 
 				// 3 bars
-				if (rssi >= -86 && rssi <= -78)
-					rssiRes = R.drawable.rssi_3;
+				if (rssi >= -86 && rssi <= -78) rssiRes = R.drawable.rssi_3;
 
 				// 4 bars
-				if (rssi >= -77 && rssi <= -40)
-					rssiRes = R.drawable.rssi_4;
+				if (rssi >= -77 && rssi <= -40) rssiRes = R.drawable.rssi_4;
 
 				// 5 bars
-				if (rssi >= -41)
-					rssiRes = R.drawable.rssi_5;
+				if (rssi >= -41) rssiRes = R.drawable.rssi_5;
 
-				adapterData = new FDAdapterData(deviceMac, device.getName(),
-						rssiRes, manufacturer, completeExpString,
+				adapterData = new FDAdapterData(deviceMac, device.getName(), rssiRes, manufacturer, completeExpString,
 						dateFormat.format(new Date(time)));
 
 				listViewList.add(adapterData);
@@ -502,6 +458,8 @@ public class FoundDevicesLayout {
 				publishProgress(listViewList);
 
 			}
+
+			if (needManuCheck) PreferenceManager.setPref(bhApp, "requireManuCheck", false);
 
 			return listViewList;
 
@@ -525,14 +483,15 @@ public class FoundDevicesLayout {
 				showedFdList = new ArrayList<FDAdapterData>(result);
 
 				fdAdapter.refreshList(showedFdList);
-			} else {
+			}
+			else {
 				fdAdapter.notifyDataSetChanged();
 			}
 
 			listView.setSelectionFromTop(scrollIndex, scrollTop);
 
 			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
-			
+
 			threadManager.finished(this);
 
 		}
@@ -550,8 +509,7 @@ public class FoundDevicesLayout {
 			// fdAdapter.refill(showedFdList);
 
 			if (values[0].get(0).getManufacturer() == -100)
-				new DatabaseManager(bhApp).addBoostToDevices(values[0].get(0)
-						.getMacAddress(), 0f);
+				new DatabaseManager(bhApp).addBoostToDevices(values[0].get(0).getMacAddress(), 0f);
 
 			listView.setSelectionFromTop(scrollIndex, scrollTop);
 
@@ -600,8 +558,7 @@ public class FoundDevicesLayout {
 
 	public class FDAdapterData {
 
-		public FDAdapterData(String macAddress, String name, int rssiRes,
-				int manufacturer, String expString, String timeFormatted) {
+		public FDAdapterData(String macAddress, String name, int rssiRes, int manufacturer, String expString, String timeFormatted) {
 
 			this.macAddress = macAddress;
 			this.name = name;
@@ -699,8 +656,7 @@ public class FoundDevicesLayout {
 		private ArrayList<FDAdapterData> dataList;
 		private ArrayList<FDAdapterData> originalDataList;
 
-		public FoundDevicesAdapter(Context context, int textViewResourceId,
-				ArrayList<FDAdapterData> objects) {
+		public FoundDevicesAdapter(Context context, int textViewResourceId, ArrayList<FDAdapterData> objects) {
 
 			super(context, textViewResourceId, objects);
 			dataList = objects;
@@ -713,33 +669,23 @@ public class FoundDevicesLayout {
 
 			View rowView = convertView;
 			if (rowView == null) {
-				LayoutInflater inflater = (LayoutInflater) getContext()
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				rowView = inflater.inflate(R.layout.act_page_founddevices_row,
-						null);
+				LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				rowView = inflater.inflate(R.layout.act_page_founddevices_row, null);
 
 				FoundDevicesLayout.ViewHolder viewHolder = new ViewHolder();
 
-				viewHolder.macAddress = (TextView) rowView
-						.findViewById(R.id.macTxtView);
-				viewHolder.name = (TextView) rowView
-						.findViewById(R.id.nameTxtView);
-				viewHolder.manufacturer = (TextView) rowView
-						.findViewById(R.id.manufacturerTxtView);
-				viewHolder.rssi = (ImageView) rowView
-						.findViewById(R.id.rssiView);
-				viewHolder.time = (TextView) rowView
-						.findViewById(R.id.timeTxtView);
-				viewHolder.exp = (TextView) rowView
-						.findViewById(R.id.expTxtView);
-				viewHolder.nameTableRow = (TableRow) rowView
-						.findViewById(R.id.tableRow1);
+				viewHolder.macAddress = (TextView) rowView.findViewById(R.id.macTxtView);
+				viewHolder.name = (TextView) rowView.findViewById(R.id.nameTxtView);
+				viewHolder.manufacturer = (TextView) rowView.findViewById(R.id.manufacturerTxtView);
+				viewHolder.rssi = (ImageView) rowView.findViewById(R.id.rssiView);
+				viewHolder.time = (TextView) rowView.findViewById(R.id.timeTxtView);
+				viewHolder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
+				viewHolder.nameTableRow = (TableRow) rowView.findViewById(R.id.tableRow1);
 
 				rowView.setTag(viewHolder);
 			}
 
-			FoundDevicesLayout.ViewHolder holder = (FoundDevicesLayout.ViewHolder) rowView
-					.getTag();
+			FoundDevicesLayout.ViewHolder holder = (FoundDevicesLayout.ViewHolder) rowView.getTag();
 
 			FDAdapterData data = dataList.get(position);
 
@@ -749,7 +695,8 @@ public class FoundDevicesLayout {
 				if (nameString == null || nameString.equals("null")) {
 					nameString = "";
 					holder.nameTableRow.setVisibility(View.GONE);
-				} else {
+				}
+				else {
 					holder.nameTableRow.setVisibility(View.VISIBLE);
 				}
 
