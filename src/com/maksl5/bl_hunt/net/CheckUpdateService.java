@@ -2,35 +2,14 @@ package com.maksl5.bl_hunt.net;
 
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnManagerPNames;
-import org.apache.http.conn.params.ConnPerRouteBean;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.util.EntityUtils;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -95,55 +74,42 @@ public class CheckUpdateService extends Service {
 			if (remoteFile.startsWith("https")) https = true;
 
 			try {
+				
+				
+				URL httpUri = new URL(remoteFile);
 
-				List<NameValuePair> postValues = new ArrayList<NameValuePair>();
+				HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
+				conn.setReadTimeout(15000);
+				conn.setConnectTimeout(15000);
+				conn.setRequestMethod("GET");
 
-				for (int i = 2; i < params.length; i++) {
-					Pattern pattern = Pattern.compile("(.+)=(.+)", Pattern.CASE_INSENSITIVE);
-					Matcher matcher = pattern.matcher(params[i]);
+				conn.connect();
 
-					matcher.matches();
+				int responseCode = conn.getResponseCode();
 
-					postValues.add(new BasicNameValuePair(matcher.group(1), matcher.group(2)));
-				}
+				String result = "";
 
-				URI httpUri = URI.create(remoteFile);
+				if (responseCode == HttpURLConnection.HTTP_OK) {
 
-				// SSL Implementation
+					String line = "";
+					BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-				HttpClient httpClient;
+					StringBuilder stringBuilder = new StringBuilder();
 
-				if (https) {
+					while ((line = br.readLine()) != null) {
+						stringBuilder.append(line + System.lineSeparator());
+					}
 
-					SchemeRegistry schemeRegistry = new SchemeRegistry();
-					// http scheme
-					schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-					// https scheme
-					schemeRegistry.register(new Scheme("https", new EasySSLSocketFactory(), 443));
+					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
+					
+					result = stringBuilder.toString();
 
-					HttpParams httpParams = new BasicHttpParams();
-					httpParams.setParameter(ConnManagerPNames.MAX_TOTAL_CONNECTIONS, 30);
-					httpParams.setParameter(ConnManagerPNames.MAX_CONNECTIONS_PER_ROUTE, new ConnPerRouteBean(30));
-					httpParams.setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
-					HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
-
-					ClientConnectionManager cm =
-							new ThreadSafeClientConnManager(httpParams, schemeRegistry);
-
-					httpClient = new DefaultHttpClient(cm, httpParams);
 				}
 				else {
-					httpClient = new DefaultHttpClient();
+
+					return "Error=" + responseCode + "\n" + conn.getResponseMessage();
+
 				}
-				HttpPost postRequest = new HttpPost(httpUri);
-
-				postRequest.setEntity(new UrlEncodedFormEntity(postValues));
-
-				HttpResponse httpResponse = httpClient.execute(postRequest);
-
-				String result = EntityUtils.toString(httpResponse.getEntity());
-
-				if (!String.valueOf(httpResponse.getStatusLine().getStatusCode()).startsWith("2")) { return String.valueOf(httpResponse.getStatusLine().getStatusCode()); }
 
 				return result;
 			}
@@ -151,11 +117,6 @@ public class CheckUpdateService extends Service {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return "Error=5\n" + e.getMessage();
-			}
-			catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return "Error=4\n" + e.getMessage();
 			}
 			catch (IOException e) {
 				// TODO Auto-generated catch block

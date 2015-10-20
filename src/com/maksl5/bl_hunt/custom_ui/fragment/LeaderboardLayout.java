@@ -1,9 +1,12 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,14 +17,6 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -60,10 +55,8 @@ public class LeaderboardLayout {
 	public static final int ARRAY_INDEX_EXP = 5;
 	public static final int ARRAY_INDEX_ID = 6;
 
-	private volatile static ArrayList<LBAdapterData> showedFdList =
-			new ArrayList<LBAdapterData>();
-	public volatile static ArrayList<LBAdapterData> completeFdList =
-			new ArrayList<LBAdapterData>();
+	private volatile static ArrayList<LBAdapterData> showedFdList = new ArrayList<LBAdapterData>();
+	public volatile static ArrayList<LBAdapterData> completeFdList = new ArrayList<LBAdapterData>();
 
 	private static ThreadManager threadManager = null;
 
@@ -74,8 +67,7 @@ public class LeaderboardLayout {
 		refreshLeaderboard(bhApp, false);
 	}
 
-	public static void refreshLeaderboard(	final BlueHunter bhApp,
-											boolean orientationChanged) {
+	public static void refreshLeaderboard(final BlueHunter bhApp, boolean orientationChanged) {
 
 		if (orientationChanged) {
 
@@ -83,8 +75,7 @@ public class LeaderboardLayout {
 			LeaderboardAdapter ldAdapter;
 
 			if (bhApp.mainActivity.mViewPager == null) {
-				bhApp.mainActivity.mViewPager =
-						(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 			}
 
 			ViewPager pager = bhApp.mainActivity.mViewPager;
@@ -101,12 +92,14 @@ public class LeaderboardLayout {
 				listView = (ListView) bhApp.mainActivity.findViewById(R.id.listView1);
 			}
 
-			if (listView == null) { return; }
+			if (listView == null) {
+				return;
+			}
 
 			ldAdapter = (LeaderboardAdapter) listView.getAdapter();
 			if (ldAdapter == null || ldAdapter.isEmpty()) {
-				ldAdapter =
-						new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
+				ldAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
+						showedFdList);
 				listView.setAdapter(ldAdapter);
 			}
 
@@ -119,8 +112,7 @@ public class LeaderboardLayout {
 			threadManager = new LeaderboardLayout().new ThreadManager();
 		}
 
-		RefreshThread refreshThread =
-				new LeaderboardLayout().new RefreshThread(bhApp, threadManager);
+		RefreshThread refreshThread = new LeaderboardLayout().new RefreshThread(bhApp, threadManager);
 		if (refreshThread.canRun()) {
 			showedFdList.clear();
 			bhApp.actionBarHandler.getMenuItem(R.id.menu_search).collapseActionView();
@@ -129,23 +121,20 @@ public class LeaderboardLayout {
 
 	}
 
-	public static void filterLeaderboard(	String text,
-											BlueHunter bhApp) {
+	public static void filterLeaderboard(String text, BlueHunter bhApp) {
 
 		if (threadManager.running) return;
 
 		List<String> searchedList = new ArrayList<String>();
 
 		if (bhApp.mainActivity.mViewPager == null) {
-			bhApp.mainActivity.mViewPager =
-					(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+			bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 		}
 
 		ViewPager pager = bhApp.mainActivity.mViewPager;
 		View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
 		ListView lv;
-		
-		
+
 		if (pageView == null) {
 			lv = (ListView) pager.findViewById(R.id.listView1);
 		}
@@ -160,17 +149,16 @@ public class LeaderboardLayout {
 		if (lv == null) {
 			return;
 		}
-		
+
 		LeaderboardAdapter lbAdapter = (LeaderboardAdapter) lv.getAdapter();
-		
+
 		if (lbAdapter == null || lbAdapter.isEmpty()) {
-			lbAdapter =
-					new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
+			lbAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
 			lv.setAdapter(lbAdapter);
 		}
-		
+
 		text = text.toLowerCase();
-		
+
 		if (text.length() == 0) {
 			if (!showedFdList.equals(completeFdList)) {
 				showedFdList = new ArrayList<LBAdapterData>(completeFdList);
@@ -179,31 +167,26 @@ public class LeaderboardLayout {
 		}
 		else {
 
-				ArrayList<LBAdapterData> filterList =
-						new ArrayList<LBAdapterData>(completeFdList);
+			ArrayList<LBAdapterData> filterList = new ArrayList<LBAdapterData>(completeFdList);
 
-				final int count = filterList.size();
-				final ArrayList<LBAdapterData> newValues = new ArrayList<LBAdapterData>();
+			final int count = filterList.size();
+			final ArrayList<LBAdapterData> newValues = new ArrayList<LBAdapterData>();
 
-				for (int i = 0; i < count; i++) {
-					final LBAdapterData data = filterList.get(i);
+			for (int i = 0; i < count; i++) {
+				final LBAdapterData data = filterList.get(i);
 
-					if (data.getName().toLowerCase().contains(text))
-						if (!newValues.contains(data)) newValues.add(data);
+				if (data.getName().toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
 
-					if (("" + data.getDevNum()).toLowerCase().contains(text))
-						if (!newValues.contains(data)) newValues.add(data);
+				if (("" + data.getDevNum()).toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
 
-					if (("" + data.getExp()).toLowerCase().contains(text))
-						if (!newValues.contains(data)) newValues.add(data);
+				if (("" + data.getExp()).toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
 
-					if (("" + data.getLevel()).toLowerCase().contains(text))
-						if (!newValues.contains(data)) newValues.add(data);
+				if (("" + data.getLevel()).toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
 
-				}
+			}
 
-				showedFdList = newValues;
-				lbAdapter.refreshList(showedFdList);
+			showedFdList = newValues;
+			lbAdapter.refreshList(showedFdList);
 
 		}
 
@@ -226,15 +209,13 @@ public class LeaderboardLayout {
 		private int startIndex;
 		private int length;
 
-		private RefreshThread(BlueHunter app,
-				ThreadManager threadManager) {
+		private RefreshThread(BlueHunter app, ThreadManager threadManager) {
 
 			super();
 			this.bhApp = app;
 
 			if (bhApp.mainActivity.mViewPager == null) {
-				bhApp.mainActivity.mViewPager =
-						(ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 			}
 
 			ViewPager pager = bhApp.mainActivity.mViewPager;
@@ -262,8 +243,7 @@ public class LeaderboardLayout {
 
 			this.ldAdapter = (LeaderboardAdapter) listView.getAdapter();
 			if (this.ldAdapter == null || this.ldAdapter.isEmpty()) {
-				this.ldAdapter =
-						new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
+				this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
 				this.listView.setAdapter(ldAdapter);
 			}
 
@@ -288,26 +268,40 @@ public class LeaderboardLayout {
 
 			try {
 
-				List<NameValuePair> postValues = new ArrayList<NameValuePair>();
+				URL httpUri = new URL(AuthentificationSecure.SERVER_GET_LEADERBOARD + "?s=" + startIndex + "&l=" + length);
 
-				
-				
-				URI httpUri =
-						URI.create(AuthentificationSecure.SERVER_GET_LEADERBOARD + "?s=" + startIndex + "&l=" + length);
+				HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
+				conn.setReadTimeout(15000);
+				conn.setConnectTimeout(15000);
+				conn.setRequestMethod("GET");
 
-				HttpClient httpClient;
+				conn.connect();
 
-				httpClient = new DefaultHttpClient();
+				int responseCode = conn.getResponseCode();
 
-				HttpPost postRequest = new HttpPost(httpUri);
+				String result = "";
 
-				postRequest.setEntity(new UrlEncodedFormEntity(postValues));
+				if (responseCode == HttpURLConnection.HTTP_OK) {
 
-				HttpResponse httpResponse = httpClient.execute(postRequest);
+					String line = "";
+					BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-				String result = EntityUtils.toString(httpResponse.getEntity());
+					StringBuilder stringBuilder = new StringBuilder();
 
-				if (!String.valueOf(httpResponse.getStatusLine().getStatusCode()).startsWith("2")) { return "Error=" + httpResponse.getStatusLine().getStatusCode(); }
+					while ((line = br.readLine()) != null) {
+						stringBuilder.append(line + System.lineSeparator());
+					}
+					
+					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
+
+					result = stringBuilder.toString();
+
+				}
+				else {
+
+					return "Error=" + responseCode + "\n" + conn.getResponseMessage();
+
+				}
 
 				return result;
 			}
@@ -316,11 +310,7 @@ public class LeaderboardLayout {
 				e.printStackTrace();
 				return "Error=5\n" + e.getMessage();
 			}
-			catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return "Error=4\n" + e.getMessage();
-			}
+
 			catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -344,8 +334,7 @@ public class LeaderboardLayout {
 				if (matcher.find()) {
 					int errorCode = Integer.parseInt(matcher.group(1));
 
-					LBAdapterData data =
-							new LBAdapterData("Error " + errorCode, 0, 100, 0, 0, 0, 0);
+					LBAdapterData data = new LBAdapterData("Error " + errorCode, 0, 100, 0, 0, 0, 0);
 					showedFdList.add(data);
 
 					if (ldAdapter != null) ldAdapter.refreshList(showedFdList);
@@ -384,22 +373,17 @@ public class LeaderboardLayout {
 						int id = Integer.parseInt(element.getAttribute("id"));
 						int rank = Integer.parseInt(element.getAttribute("rank"));
 
-						String name =
-								element.getElementsByTagName("name").item(0).getTextContent();
-						int exp =
-								Integer.parseInt(element.getElementsByTagName("exp").item(0).getTextContent());
-						int num =
-								Integer.parseInt(element.getElementsByTagName("number").item(0).getTextContent());
+						String name = element.getElementsByTagName("name").item(0).getTextContent();
+						int exp = Integer.parseInt(element.getElementsByTagName("exp").item(0).getTextContent());
+						int num = Integer.parseInt(element.getElementsByTagName("number").item(0).getTextContent());
 
 						int level = LevelSystem.getLevel(exp);
-						int progressMax =
-								LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level);
+						int progressMax = LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level);
 						int progressValue = exp - LevelSystem.getLevelStartExp(level);
 
 						last = element.getAttribute("last").equals("1");
 
-						LBAdapterData data =
-								new LBAdapterData(name, level, progressMax, progressValue, num, exp, id);
+						LBAdapterData data = new LBAdapterData(name, level, progressMax, progressValue, num, exp, id);
 
 						completeFdList.add(data);
 						completeFdList.set(rank - 1, data);
@@ -466,7 +450,9 @@ public class LeaderboardLayout {
 		 */
 		public boolean setThread(RefreshThread refreshThread) {
 
-			if (running) { return false; }
+			if (running) {
+				return false;
+			}
 
 			this.refreshThread = refreshThread;
 			setRunning(true);
@@ -488,14 +474,12 @@ public class LeaderboardLayout {
 
 			if (!running) {
 				if (!refreshThread.bhApp.netMananger.areThreadsRunning()) {
-					MenuItem progressBar =
-							refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+					MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
 					progressBar.setVisible(false);
 				}
 			}
 			else {
-				MenuItem progressBar =
-						refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+				MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
 				progressBar.setVisible(true);
 			}
 
@@ -512,13 +496,7 @@ public class LeaderboardLayout {
 		private int exp;
 		private int id;
 
-		public LBAdapterData(String name,
-				int level,
-				int progressMax,
-				int progressValue,
-				int devNum,
-				int exp,
-				int id) {
+		public LBAdapterData(String name, int level, int progressMax, int progressValue, int devNum, int exp, int id) {
 
 			this.name = name;
 			this.level = level;
@@ -613,9 +591,7 @@ public class LeaderboardLayout {
 		private ArrayList<LBAdapterData> dataList;
 		private ArrayList<LBAdapterData> originalDataList;
 
-		public LeaderboardAdapter(Context context,
-				int textViewResourceId,
-				ArrayList<LBAdapterData> newLbData) {
+		public LeaderboardAdapter(Context context, int textViewResourceId, ArrayList<LBAdapterData> newLbData) {
 
 			super(context, textViewResourceId, showedFdList);
 
@@ -625,14 +601,11 @@ public class LeaderboardLayout {
 		}
 
 		@Override
-		public View getView(int position,
-							View convertView,
-							ViewGroup parent) {
+		public View getView(int position, View convertView, ViewGroup parent) {
 
 			View rowView = convertView;
 			if (rowView == null) {
-				LayoutInflater inflater =
-						(LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				rowView = inflater.inflate(R.layout.act_page_leaderboard_row, parent, false);
 
 				LeaderboardLayout.ViewHolder viewHolder = new ViewHolder();
@@ -664,7 +637,8 @@ public class LeaderboardLayout {
 				holder.levelPrg.setMax(user.getProgressMax());
 				holder.levelPrg.setProgress(user.getProgressValue());
 				holder.devices.setText(new DecimalFormat(",###").format(user.getDevNum()) + " Devices");
-				holder.exp.setText(new DecimalFormat(",###").format(user.getExp()) + " " + getContext().getString(R.string.str_foundDevices_exp_abbreviation));
+				holder.exp.setText(new DecimalFormat(",###").format(user.getExp()) + " "
+						+ getContext().getString(R.string.str_foundDevices_exp_abbreviation));
 
 				int rankNow = position + 1;
 				Integer rankBefore = changeList.get(user.getId());
@@ -694,11 +668,11 @@ public class LeaderboardLayout {
 		}
 
 		public void refreshList(ArrayList<LBAdapterData> data) {
-			
+
 			clear();
 			addAll(data);
 			notifyDataSetChanged();
-			
+
 		}
 
 	}
