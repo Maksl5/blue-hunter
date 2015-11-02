@@ -4,6 +4,19 @@ import java.io.FileNotFoundException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.custom_ui.AdjustedEditText;
+import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.NetworkThread;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,21 +32,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.ErrorHandler;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.AdjustedEditText;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
-import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.net.NetworkThread;
-import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
-import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import android.widget.Toast;
 
 /**
  * @author Maksl5

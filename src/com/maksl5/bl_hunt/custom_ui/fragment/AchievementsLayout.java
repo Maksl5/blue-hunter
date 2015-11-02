@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.SimpleAdapter.ViewBinder;
-
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.storage.Achievement;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
+
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.SimpleAdapter.ViewBinder;
+import android.widget.TextView;
 
 /**
  * @author Maksl5[Markus Bensing]

@@ -19,12 +19,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.os.AsyncTask;
-import android.view.MenuItem;
-
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
+
+import android.os.AsyncTask;
+import android.view.MenuItem;
 
 /**
  * 

@@ -19,6 +19,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.NetworkThread;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
+
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -44,17 +55,6 @@ import android.view.MenuItem;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.ErrorHandler;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
-import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.net.NetworkThread;
-import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -116,7 +116,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		bhApp.currentActivity = this;
 
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 	}
 
 	@Override

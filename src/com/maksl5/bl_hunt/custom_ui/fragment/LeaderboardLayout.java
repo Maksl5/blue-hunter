@@ -23,6 +23,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.view.ViewPager;
@@ -35,12 +41,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.LevelSystem;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
 
 /**
  * @author Maksl5

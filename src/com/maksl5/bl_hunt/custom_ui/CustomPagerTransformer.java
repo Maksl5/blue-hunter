@@ -4,8 +4,6 @@
  */
 package com.maksl5.bl_hunt.custom_ui;
 
-import com.maksl5.bl_hunt.R;
-
 import android.support.v4.view.ViewPager.PageTransformer;
 import android.view.View;
 

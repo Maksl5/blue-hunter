@@ -4,16 +4,8 @@
  */
 package com.maksl5.bl_hunt;
 
-
-
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
-
-import android.app.Activity;
-import android.app.Application;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
 
 import com.maksl5.bl_hunt.activity.ActionBarHandler;
 import com.maksl5.bl_hunt.activity.MainActivity;
@@ -23,7 +15,11 @@ import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
-
+import android.app.Activity;
+import android.app.Application;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -41,9 +37,9 @@ public class BlueHunter extends Application {
 
 	public MainActivity mainActivity;
 	public Activity currentActivity;
-	
+
 	private boolean isTablet = false;
-	
+
 	public static final boolean isPlayStore = false;
 	public static final boolean isSupport = false;
 
@@ -59,26 +55,25 @@ public class BlueHunter extends Application {
 		super.onCreate();
 
 		ACRA.init(this);
-		
-	    boolean xlarge = ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
-	    boolean large = ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
-	    isTablet = (xlarge || large);
-	    
-	    if(isPlayStore) {
-	    	PreferenceManager.setPref(this, "pref_checkUpdate", false);
-	    }
-	    
-	    if(isSupport) {
-	    	
-	    	
-	    	if(true)
-	    	{
-	    		
-	    	}
-	    	
-	    }
-	    	
-	    
+
+		boolean xlarge = ((getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
+		boolean large = ((getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
+		isTablet = (xlarge || large);
+
+		if (isPlayStore) {
+			PreferenceManager.setPref(this, "pref_checkUpdate", false);
+		}
+
+		if (isSupport) {
+
+			if (true) {
+
+			}
+
+		}
+
 	}
 
 	public int getVersionCode() {
@@ -103,9 +98,9 @@ public class BlueHunter extends Application {
 			return "";
 		}
 	}
-	
+
 	public boolean isTablet() {
-return isTablet;
+		return isTablet;
 	}
 
 }

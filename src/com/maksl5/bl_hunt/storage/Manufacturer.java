@@ -1,7 +1,5 @@
 package com.maksl5.bl_hunt.storage;
 
-import android.R.integer;
-
 public class Manufacturer {
 
 	private int id;

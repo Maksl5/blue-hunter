@@ -6,9 +6,9 @@ package com.maksl5.bl_hunt;
 
 
 
-import android.content.Context;
 import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.R;
+
+import android.content.Context;
 
 
 

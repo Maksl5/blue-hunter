@@ -5,6 +5,10 @@ package com.maksl5.bl_hunt.custom_ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
+import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,10 +19,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.OnHierarchyChangeListener;
 import android.widget.TableRow;
 import android.widget.TextView;
-
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity.CustomSectionFragment;
-import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 
 
 

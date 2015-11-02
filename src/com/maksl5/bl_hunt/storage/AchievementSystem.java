@@ -8,25 +8,19 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-
-import android.Manifest.permission;
-import android.R.integer;
-import android.content.Context;
-import android.graphics.Matrix;
-import android.util.Log;
-import android.util.SparseArray;
-import android.view.MenuItem;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
+
+import android.util.Log;
+import android.view.MenuItem;
 
 /**
  * @author Maksl5[Markus Bensing]

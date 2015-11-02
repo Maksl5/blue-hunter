@@ -7,44 +7,6 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.app.AlarmManager;
-import android.app.AlertDialog.Builder;
-import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
-import android.os.Build.VERSION;
-import android.os.Bundle;
-import android.os.Debug;
-import android.os.SystemClock;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.DiscoveryManager;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
@@ -69,6 +31,39 @@ import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+
+import android.app.AlarmManager;
+import android.app.AlertDialog.Builder;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Debug;
+import android.os.SystemClock;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity {
 
@@ -113,7 +108,7 @@ public class MainActivity extends FragmentActivity {
 
 		destroyed = false;
 
-		// Debug.startMethodTracing("blHunt_13");
+		// Debug.startMethodTracing("startTrace");
 
 		bhApp = (BlueHunter) getApplication();
 		bhApp.mainActivity = this;
@@ -203,7 +198,7 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
 		bhApp.currentActivity = this;
 
@@ -358,6 +353,8 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
+		Debug.startMethodTracing("startTrace");
+		
 		bhApp.currentActivity = this;
 
 		getMenuInflater().inflate(R.menu.act_main, menu);
@@ -403,7 +400,7 @@ public class MainActivity extends FragmentActivity {
 
 		updateNotification();
 
-		// Debug.stopMethodTracing();
+		Debug.stopMethodTracing();
 
 		upgrade();
 

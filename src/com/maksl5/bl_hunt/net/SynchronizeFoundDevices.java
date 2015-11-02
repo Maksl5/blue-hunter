@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.util.Log;
-import android.widget.Toast;
-
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
@@ -26,6 +23,9 @@ import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -413,7 +413,8 @@ public class SynchronizeFoundDevices implements
 					Log.d("SyncMode 2 [DOWN]", "Time per device: " + timePerDev
 							+ "ms");
 
-
+					PreferenceManager.setPref(blueHunter, "requireManuCheck", true);
+					
 					FoundDevicesLayout.refreshFoundDevicesList(blueHunter,
 							false);
 					AchievementsLayout.initializeAchievements(blueHunter);

@@ -14,6 +14,11 @@ import java.util.regex.Pattern;
 
 import org.acra.ACRA;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
+
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
@@ -29,11 +34,6 @@ import android.view.WindowManager.BadTokenException;
 import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.Toast;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.ErrorHandler;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 

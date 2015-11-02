@@ -15,6 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.FoundDevice;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
+import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -23,12 +29,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.custom_ui.FoundDevice;
-import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
-import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 
 public class DatabaseManager {
 

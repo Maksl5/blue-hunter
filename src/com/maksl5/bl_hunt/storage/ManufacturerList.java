@@ -3,11 +3,11 @@ package com.maksl5.bl_hunt.storage;
 import java.util.Arrays;
 import java.util.List;
 
+import com.maksl5.bl_hunt.R;
+
 import android.content.Context;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
-
-import com.maksl5.bl_hunt.R;
 
 public class ManufacturerList {
 
