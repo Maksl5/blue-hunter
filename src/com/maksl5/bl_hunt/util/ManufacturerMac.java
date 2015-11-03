@@ -1,4 +1,4 @@
-package com.maksl5.bl_hunt.storage;
+package com.maksl5.bl_hunt.util;
 
 public class ManufacturerMac {
 

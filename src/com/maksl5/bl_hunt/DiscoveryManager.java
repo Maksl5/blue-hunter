@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
-import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -19,7 +19,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Debug;
 import android.os.Vibrator;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
@@ -327,7 +329,7 @@ public class DiscoveryManager {
 
 		private CompoundButton discoveryButton;
 
-		private List<String> foundDevices;
+		private List<FoundDevice> foundDevices;
 		private List<BluetoothDevice> foundDevicesInCurDiscovery;
 		private List<FoundDevice> fDListCurDiscovery;
 		private int requestId = 0;
@@ -337,7 +339,7 @@ public class DiscoveryManager {
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-			foundDevices = new DatabaseManager(bhApp).getMacAddresses();
+			foundDevices = new DatabaseManager(bhApp).getAllDevices();
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 			fDListCurDiscovery = new ArrayList<FoundDevice>();
 
@@ -548,11 +550,15 @@ public class DiscoveryManager {
 			}
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
+				
+				
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
 
 				for (BluetoothDevice btDevice : foundDevicesInCurDiscovery) {
 					new DatabaseManager(bhApp).addNameToDevice(btDevice.getAddress(), btDevice.getName());
 				}
+				
+				bhApp.synchronizeFoundDevices.checkAndStart();
 
 				foundDevicesInCurDiscovery = null;
 				foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
@@ -560,7 +566,7 @@ public class DiscoveryManager {
 				fDListCurDiscovery = null;
 				fDListCurDiscovery = new ArrayList<FoundDevice>();
 
-				DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+				DeviceDiscoveryLayout.onlyCurListUpdate(bhApp.mainActivity);
 
 				if (discoveryButton.isChecked()) {
 					runDiscovery();
@@ -586,9 +592,15 @@ public class DiscoveryManager {
 		public void onDeviceFound(	BluetoothDevice btDevice,
 									short rssi) {
 
-			foundDevices = new DatabaseManager(bhApp).getMacAddresses();
+			//Debug.startMethodTracing("onDeviceFound");
+			
+			foundDevices = new DatabaseManager(bhApp).getAllDevices();
 
-			if (!foundDevices.contains(btDevice.getAddress())) {
+			//Compare Object
+			FoundDevice compare = new FoundDevice();
+			compare.setMac(btDevice.getAddress());
+			
+			if (!foundDevices.contains(compare)) {
 				foundDevicesInCurDiscovery.add(btDevice);
 
 				FoundDevice device = new FoundDevice();
@@ -608,6 +620,8 @@ public class DiscoveryManager {
 
 			}
 
+			//Debug.stopMethodTracing();
+						
 		}
 
 		public void attemptVibration() {

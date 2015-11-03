@@ -8,9 +8,9 @@ import java.util.List;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.storage.Achievement;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.util.Achievement;
 
 import android.view.View;
 import android.widget.CheckBox;
@@ -28,9 +28,6 @@ public class AchievementsLayout {
 
 		AchievementSystem.checkAchievements(bhApp, true);
 
-		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
-		int exp = LevelSystem.getUserExp(bhApp);
-		
 		ListView lv = (ListView) bhApp.mainActivity.findViewById(R.id.listView_ach);
 
 		int[] to = new int[] {

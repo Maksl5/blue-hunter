@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.util.Manufacturer;
+import com.maksl5.bl_hunt.util.ManufacturerMac;
 
 import android.content.Context;
 import android.util.SparseArray;
@@ -113,6 +115,29 @@ public class ManufacturerList {
 
 	}
 
+	public static Manufacturer getManufacturer(short a, short b, short c) {
+
+		if (!checkContext()) throwEx();
+
+		getManufacturers();
+
+		ManufacturerMac macToCheck = new ManufacturerMac(a, b, c);
+
+		for (Manufacturer manufacturer : manufacturerList) {
+			for (ManufacturerMac mac : manufacturer.getMacAddresses()) {
+				if (macToCheck.equals(mac)) {
+					return manufacturer;
+				}
+			}
+
+		}
+
+		String unknown = context.getString(R.string.str_foundDevices_manu_unkown);
+
+		return new Manufacturer(0, unknown, 4, new ManufacturerMac[] {});
+
+	}
+
 	public static List<Manufacturer> getManufacturers() {
 
 		if (manufacturerList == null) {
@@ -122,8 +147,7 @@ public class ManufacturerList {
 			String unknown = context.getString(R.string.str_foundDevices_manu_unkown);
 
 			manufacturerList = Arrays.asList(new Manufacturer[] {
-					new Manufacturer(0, unknown, 4, new ManufacturerMac[] {}),
-					new Manufacturer(1, "Apple", 10, new ManufacturerMac[] {
+					new Manufacturer(0, unknown, 4, new ManufacturerMac[] {}), new Manufacturer(1, "Apple", 10, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x00, (short) 0x19),
 							new ManufacturerMac((short) 0x00, (short) 0x00, (short) 0x40),
 							new ManufacturerMac((short) 0x00, (short) 0x03, (short) 0x93),
@@ -1558,8 +1582,8 @@ public class ManufacturerList {
 					new Manufacturer(16, "Google", 20, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x1A, (short) 0x11),
 							new ManufacturerMac((short) 0xF8, (short) 0x8F, (short) 0xCA) }),
-					new Manufacturer(17, "Toshiba", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x00,
-							(short) 0x39) }),
+					new Manufacturer(17, "Toshiba", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x00, (short) 0x39) }),
 					new Manufacturer(18, "HP", 30, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x01, (short) 0xE6),
 							new ManufacturerMac((short) 0x00, (short) 0x01, (short) 0xE7),
@@ -1657,8 +1681,8 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0x40, (short) 0xEC, (short) 0xF8),
 							new ManufacturerMac((short) 0x78, (short) 0x9F, (short) 0x87),
 							new ManufacturerMac((short) 0x88, (short) 0x4B, (short) 0x39) }),
-					new Manufacturer(22, "Qcom Bluetooth Module", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00,
-							(short) 0x0D, (short) 0xF0) }),
+					new Manufacturer(22, "Qcom Bluetooth Module", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x0D, (short) 0xF0) }),
 					new Manufacturer(23, "UGSI Bluetooth Module", 20, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x10, (short) 0xC6),
 							new ManufacturerMac((short) 0x00, (short) 0x16, (short) 0x41),
@@ -1915,10 +1939,10 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xF8, (short) 0x0D, (short) 0x43),
 							new ManufacturerMac((short) 0xF8, (short) 0x2F, (short) 0xA8),
 							new ManufacturerMac((short) 0xF8, (short) 0x66, (short) 0xD1) }),
-					new Manufacturer(27, "Temic SDS", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x0E,
-							(short) 0x9F) }),
-					new Manufacturer(28, "Atech Technology", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x19,
-							(short) 0x0E) }),
+					new Manufacturer(27, "Temic SDS", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x0E, (short) 0x9F) }),
+					new Manufacturer(28, "Atech Technology", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x19, (short) 0x0E) }),
 					new Manufacturer(29, "Garmin", 30, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x05, (short) 0x4F),
 							new ManufacturerMac((short) 0x10, (short) 0xC6, (short) 0xFC) }),
@@ -2446,8 +2470,8 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xF4, (short) 0xEA, (short) 0x67),
 							new ManufacturerMac((short) 0xF8, (short) 0x66, (short) 0xF2),
 							new ManufacturerMac((short) 0xFC, (short) 0xFB, (short) 0xFB) }),
-					new Manufacturer(31, "Infineon", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x03,
-							(short) 0x19) }),
+					new Manufacturer(31, "Infineon", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x03, (short) 0x19) }),
 					new Manufacturer(32, "Alps Electric", 30, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x02, (short) 0xC7),
 							new ManufacturerMac((short) 0x00, (short) 0x06, (short) 0xF5),
@@ -2473,23 +2497,23 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xE0, (short) 0x75, (short) 0x0A),
 							new ManufacturerMac((short) 0xE0, (short) 0xAE, (short) 0x5E),
 							new ManufacturerMac((short) 0xFC, (short) 0x62, (short) 0xB9) }),
-					new Manufacturer(33, "nFore", 40,
-							new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x17, (short) 0x53) }),
-					new Manufacturer(34, "LinTech", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x17,
-							(short) 0x91) }),
-					new Manufacturer(35, "Sena Technologies", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x01,
-							(short) 0x95) }),
-					new Manufacturer(36, "Initium", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x0B,
-							(short) 0x53) }),
-					new Manufacturer(37, "Kingjon", 30, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x13,
-							(short) 0xEF) }),
+					new Manufacturer(33, "nFore", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x17, (short) 0x53) }),
+					new Manufacturer(34, "LinTech", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x17, (short) 0x91) }),
+					new Manufacturer(35, "Sena Technologies", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x01, (short) 0x95) }),
+					new Manufacturer(36, "Initium", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x0B, (short) 0x53) }),
+					new Manufacturer(37, "Kingjon", 30, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x13, (short) 0xEF) }),
 					new Manufacturer(38, "Gigaset", 40, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x21, (short) 0x04),
 							new ManufacturerMac((short) 0x7C, (short) 0x2F, (short) 0x80) }),
-					new Manufacturer(39, "Metro Technologies", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x0C,
-							(short) 0xA7) }),
-					new Manufacturer(40, "BlueExpert", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x11,
-							(short) 0xB1) }),
+					new Manufacturer(39, "Metro Technologies", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x0C, (short) 0xA7) }),
+					new Manufacturer(40, "BlueExpert", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x11, (short) 0xB1) }),
 					new Manufacturer(41, "Mitac", 30, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x03, (short) 0x53),
 							new ManufacturerMac((short) 0x00, (short) 0x22, (short) 0x20),
@@ -2512,10 +2536,10 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xA8, (short) 0x54, (short) 0xB2),
 							new ManufacturerMac((short) 0xF0, (short) 0xDE, (short) 0xF1),
 							new ManufacturerMac((short) 0xF8, (short) 0x0F, (short) 0x41) }),
-					new Manufacturer(43, "Baron", 40,
-							new ManufacturerMac[] { new ManufacturerMac((short) 0xC8, (short) 0x29, (short) 0x2A) }),
-					new Manufacturer(44, "Sunitec", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x1D,
-							(short) 0xDF) }),
+					new Manufacturer(43, "Baron", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0xC8, (short) 0x29, (short) 0x2A) }),
+					new Manufacturer(44, "Sunitec", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x1D, (short) 0xDF) }),
 					new Manufacturer(45, "Murata", 30, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x0E, (short) 0x6D),
 							new ManufacturerMac((short) 0x00, (short) 0x13, (short) 0xE0),
@@ -2531,10 +2555,10 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0x5C, (short) 0xDA, (short) 0xD4),
 							new ManufacturerMac((short) 0x60, (short) 0x21, (short) 0xC0),
 							new ManufacturerMac((short) 0x88, (short) 0x30, (short) 0x8A) }),
-					new Manufacturer(46, "Transystem", 40, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x1C,
-							(short) 0x88) }),
-					new Manufacturer(47, "Novero", 40,
-							new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x23, (short) 0x3D) }),
+					new Manufacturer(46, "Transystem", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x1C, (short) 0x88) }),
+					new Manufacturer(47, "Novero", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x23, (short) 0x3D) }),
 					new Manufacturer(48, "Parrot", 40, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x12, (short) 0x1C),
 							new ManufacturerMac((short) 0x00, (short) 0x26, (short) 0x7E),
@@ -2544,8 +2568,8 @@ public class ManufacturerList {
 					new Manufacturer(49, "Ingenico", 40, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x03, (short) 0x81),
 							new ManufacturerMac((short) 0x54, (short) 0x7F, (short) 0x54) }),
-					new Manufacturer(50, "Bury", 40,
-							new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x16, (short) 0x73) }),
+					new Manufacturer(50, "Bury", 40, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x16, (short) 0x73) }),
 					new Manufacturer(51, "D-Link", 30, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x05, (short) 0x5D),
 							new ManufacturerMac((short) 0x00, (short) 0x0D, (short) 0x88),
@@ -2583,8 +2607,8 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xD8, (short) 0xFE, (short) 0xE3),
 							new ManufacturerMac((short) 0xF0, (short) 0x7D, (short) 0x68),
 							new ManufacturerMac((short) 0xFC, (short) 0x75, (short) 0x16) }),
-					new Manufacturer(52, "Mavin", 50,
-							new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x09, (short) 0xDD) }),
+					new Manufacturer(52, "Mavin", 50, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x09, (short) 0xDD) }),
 					new Manufacturer(53, "Pioneer", 40, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0xE0, (short) 0x36),
 							new ManufacturerMac((short) 0x74, (short) 0x5E, (short) 0x1C) }),
@@ -2606,8 +2630,8 @@ public class ManufacturerList {
 					new Manufacturer(55, "Funkwerk Dabendorf", 100, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x0D, (short) 0x62),
 							new ManufacturerMac((short) 0x08, (short) 0x38, (short) 0xA5) }),
-					new Manufacturer(56, "Nike", 100,
-							new ManufacturerMac[] { new ManufacturerMac((short) 0x9C, (short) 0xA1, (short) 0x34) }),
+					new Manufacturer(56, "Nike", 100, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x9C, (short) 0xA1, (short) 0x34) }),
 					new Manufacturer(57, "TCT Mobile", 30, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x0C, (short) 0xBD, (short) 0x51),
 							new ManufacturerMac((short) 0x1C, (short) 0xCB, (short) 0x99),
@@ -2672,8 +2696,8 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xDC, (short) 0xB4, (short) 0xC4),
 							new ManufacturerMac((short) 0xE4, (short) 0x98, (short) 0xD1),
 							new ManufacturerMac((short) 0xEC, (short) 0x59, (short) 0xE7) }),
-					new Manufacturer(59, "Huami Information Technology", 150, new ManufacturerMac[] { new ManufacturerMac((short) 0x88,
-							(short) 0x0F, (short) 0x10) }),
+					new Manufacturer(59, "Huami Information Technology", 150, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x88, (short) 0x0F, (short) 0x10) }),
 					new Manufacturer(60, "Xiaomi Communications", 30, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x9E, (short) 0xC8),
 							new ManufacturerMac((short) 0x0C, (short) 0x1D, (short) 0xAF),
@@ -2699,8 +2723,8 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xF4, (short) 0x8B, (short) 0x32),
 							new ManufacturerMac((short) 0xF8, (short) 0xA4, (short) 0x5F),
 							new ManufacturerMac((short) 0xFC, (short) 0x64, (short) 0xBA) }),
-					new Manufacturer(61, "Shenzhen G-link Digital Technology", 50, new ManufacturerMac[] { new ManufacturerMac(
-							(short) 0x00, (short) 0x1D, (short) 0x43) }),
+					new Manufacturer(61, "Shenzhen G-link Digital Technology", 50, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x1D, (short) 0x43) }),
 					new Manufacturer(62, "Ericsson", 25, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x01, (short) 0xEC),
 							new ManufacturerMac((short) 0x00, (short) 0x02, (short) 0x3B),
@@ -2723,23 +2747,23 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xB0, (short) 0x61, (short) 0xC7),
 							new ManufacturerMac((short) 0xC8, (short) 0x35, (short) 0xB8),
 							new ManufacturerMac((short) 0xD0, (short) 0xF0, (short) 0xDB) }),
-					new Manufacturer(63, "Hassnet", 100, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x08,
-							(short) 0xD6) }),
+					new Manufacturer(63, "Hassnet", 100, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x08, (short) 0xD6) }),
 					new Manufacturer(64, "Continental", 40, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x1E, (short) 0xAE),
 							new ManufacturerMac((short) 0x00, (short) 0x54, (short) 0xAF),
 							new ManufacturerMac((short) 0x40, (short) 0x82, (short) 0x56),
 							new ManufacturerMac((short) 0x9C, (short) 0x28, (short) 0xBF) }),
-					new Manufacturer(65, "T.SQWARE", 100, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x10,
-							(short) 0x16) }),
-					new Manufacturer(66, "Ezurio", 100, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x16,
-							(short) 0xA4) }),
-					new Manufacturer(67, "Doro", 100,
-							new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x1D, (short) 0x29) }),
-					new Manufacturer(68, "F1media", 100, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x19,
-							(short) 0x01) }),
-					new Manufacturer(69, "Billionton Systems", 100, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x10,
-							(short) 0x60) }),
+					new Manufacturer(65, "T.SQWARE", 100, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x10, (short) 0x16) }),
+					new Manufacturer(66, "Ezurio", 100, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x16, (short) 0xA4) }),
+					new Manufacturer(67, "Doro", 100, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x1D, (short) 0x29) }),
+					new Manufacturer(68, "F1media", 100, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x19, (short) 0x01) }),
+					new Manufacturer(69, "Billionton Systems", 100, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x10, (short) 0x60) }),
 					new Manufacturer(70, "AzureWave Technologies", 25, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x15, (short) 0xAF),
 							new ManufacturerMac((short) 0x00, (short) 0x22, (short) 0x43),
@@ -2770,8 +2794,8 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0xD0, (short) 0xE7, (short) 0x82),
 							new ManufacturerMac((short) 0xDC, (short) 0x85, (short) 0xDE),
 							new ManufacturerMac((short) 0xE0, (short) 0xB9, (short) 0xA5) }),
-					new Manufacturer(71, "ATO Technology", 100, new ManufacturerMac[] { new ManufacturerMac((short) 0x00, (short) 0x08,
-							(short) 0xE0) }),
+					new Manufacturer(71, "ATO Technology", 100, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0x00, (short) 0x08, (short) 0xE0) }),
 					new Manufacturer(72, "Harman/Becker Automotive Systems", 40, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x1C, (short) 0xD7),
 							new ManufacturerMac((short) 0x9C, (short) 0xDF, (short) 0x03),

@@ -16,8 +16,9 @@ import java.util.Set;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
+import com.maksl5.bl_hunt.util.Achievement;
+import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,6 +32,8 @@ public class AchievementSystem {
 	private static float boost = 0.0f;
 
 	public static HashMap<Integer, Boolean> achievementStates;
+
+	private static List<FoundDevice> allDevices;
 
 	public static List<Achievement> achievements = Arrays.asList(new Achievement[] {
 			new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
@@ -122,23 +125,21 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
-
 					int max = 0;
 
 					// 5 Apple in row
 
-					for (int i = 4; i < devices.size(); i++) {
+					for (int i = 4; i < allDevices.size(); i++) {
 
-						if (devices.get(i - 4).getManufacturer() == 1) {
+						if (allDevices.get(i - 4).getManufacturer() == 1) {
 							max = (max < 1) ? 1 : max;
-							if (devices.get(i - 3).getManufacturer() == 1) {
+							if (allDevices.get(i - 3).getManufacturer() == 1) {
 								max = (max < 2) ? 2 : max;
-								if (devices.get(i - 2).getManufacturer() == 1) {
+								if (allDevices.get(i - 2).getManufacturer() == 1) {
 									max = (max < 3) ? 3 : max;
-									if (devices.get(i - 1).getManufacturer() == 1) {
+									if (allDevices.get(i - 1).getManufacturer() == 1) {
 										max = (max < 4) ? 4 : max;
-										if (devices.get(i).getManufacturer() == 1) {
+										if (allDevices.get(i).getManufacturer() == 1) {
 											max = (max < 5) ? 5 : max;
 											return true;
 										}
@@ -174,17 +175,14 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
-							DatabaseHelper.COLUMN_TIME + " DESC");
-
 					// 15D in 2min
 
-					for (int i = 14; i < devices.size(); i++) {
+					for (int i = 14; i < allDevices.size(); i++) {
 
-						long firstTime = devices.get(i - 14).getTime();
-						long secondTime = devices.get(i).getTime();
+						long firstTime = allDevices.get(i - 14).getTime();
+						long secondTime = allDevices.get(i).getTime();
 
-						if ((firstTime - secondTime) <= 120000) {
+						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 120000) {
 
 							return true;
 						}
@@ -200,17 +198,14 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
-							DatabaseHelper.COLUMN_TIME + " DESC");
-
 					// 100D in 15min
 
-					for (int i = 99; i < devices.size(); i++) {
+					for (int i = 99; i < allDevices.size(); i++) {
 
-						long firstTime = devices.get(i - 99).getTime();
-						long secondTime = devices.get(i).getTime();
+						long firstTime = allDevices.get(i - 99).getTime();
+						long secondTime = allDevices.get(i).getTime();
 
-						if ((firstTime - secondTime) <= 900000) {
+						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 900000) {
 
 							return true;
 						}
@@ -226,17 +221,14 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
-							DatabaseHelper.COLUMN_TIME + " DESC");
-
 					// 20D in 15sec
 
-					for (int i = 19; i < devices.size(); i++) {
+					for (int i = 19; i < allDevices.size(); i++) {
 
-						long firstTime = devices.get(i - 19).getTime();
-						long secondTime = devices.get(i).getTime();
+						long firstTime = allDevices.get(i - 19).getTime();
+						long secondTime = allDevices.get(i).getTime();
 
-						if ((firstTime - secondTime) <= 15000) {
+						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 15000) {
 
 							return true;
 						}
@@ -284,21 +276,19 @@ public class AchievementSystem {
 
 			new Achievement(8, R.string.str_achieve_8_title, R.string.str_achieve_8_description) {
 
-				@SuppressWarnings({ "deprecation" })
+				@SuppressWarnings({
+						"deprecation" })
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
-							DatabaseHelper.COLUMN_TIME + " DESC");
-
 					// 15D between 10:00 - 10:30pm
 
-					for (int i = 14; i < devices.size(); i++) {
+					for (int i = 14; i < allDevices.size(); i++) {
 
-						long firstTime = devices.get(i - 14).getTime();
-						long secondTime = devices.get(i).getTime();
+						long firstTime = allDevices.get(i - 14).getTime();
+						long secondTime = allDevices.get(i).getTime();
 
-						if ((firstTime - secondTime) <= 1800000) {
+						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 1800000) {
 
 							Date recentDate = new Date(firstTime);
 							Date firstDate = new Date(secondTime);
@@ -324,17 +314,14 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
-							DatabaseHelper.COLUMN_TIME + " DESC");
-
 					// 65D between 5:00 - 7:00am
 
-					for (int i = 64; i < devices.size(); i++) {
+					for (int i = 64; i < allDevices.size(); i++) {
 
-						long firstTime = devices.get(i - 64).getTime();
-						long secondTime = devices.get(i).getTime();
+						long firstTime = allDevices.get(i - 64).getTime();
+						long secondTime = allDevices.get(i).getTime();
 
-						if ((firstTime - secondTime) <= 7200000) {
+						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 7200000) {
 
 							Date recentDate = new Date(firstTime);
 							Date firstDate = new Date(secondTime);
@@ -360,18 +347,15 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
-							DatabaseHelper.COLUMN_TIME + " DESC");
-
 					// 1D to full hour
 
-					for (int i = 0; i < devices.size(); i++) {
+					for (int i = 0; i < allDevices.size(); i++) {
 
-						long time = devices.get(i).getTime();
+						long time = allDevices.get(i).getTime();
 
 						Date date = new Date(time);
 
-						if (date.getMinutes() == 0) {
+						if (time != 0 && date.getMinutes() == 0) {
 
 							return true;
 
@@ -389,18 +373,16 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
-							DatabaseHelper.COLUMN_TIME + " DESC");
-
 					// 1D 11th Nov 11:11am
 
-					for (int i = 0; i < devices.size(); i++) {
+					for (int i = 0; i < allDevices.size(); i++) {
 
-						long time = devices.get(i).getTime();
+						long time = allDevices.get(i).getTime();
 
 						Date date = new Date(time);
 
-						if (date.getDate() == 11 && date.getMonth() == 11 && date.getHours() == 11 && date.getMinutes() == 11) {
+						if (time != 0 && date.getDate() == 11 && date.getMonth() == 11 && date.getHours() == 11
+								&& date.getMinutes() == 11) {
 
 							return true;
 
@@ -418,15 +400,13 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
-
 					// In row: 1 Apple -> 1 BlackBerry -> 1 Samsung
 
-					for (int i = 2; i < devices.size(); i++) {
+					for (int i = 2; i < allDevices.size(); i++) {
 
-						if (devices.get(i - 2).getManufacturer() == 3) {
-							if (devices.get(i - 1).getManufacturer() == 10) {
-								if (devices.get(i).getManufacturer() == 1) {
+						if (allDevices.get(i - 2).getManufacturer() == 3) {
+							if (allDevices.get(i - 1).getManufacturer() == 10) {
+								if (allDevices.get(i).getManufacturer() == 1) {
 									return true;
 								}
 
@@ -447,16 +427,14 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
-
 					// In row: Acer -> Bury -> Cisco -> D-Link
 
-					for (int i = 3; i < devices.size(); i++) {
+					for (int i = 3; i < allDevices.size(); i++) {
 
-						if (devices.get(i - 3).getManufacturer() == 51) {
-							if (devices.get(i - 2).getManufacturer() == 30) {
-								if (devices.get(i - 1).getManufacturer() == 50) {
-									if (devices.get(i).getManufacturer() == 11) {
+						if (allDevices.get(i - 3).getManufacturer() == 51) {
+							if (allDevices.get(i - 2).getManufacturer() == 30) {
+								if (allDevices.get(i - 1).getManufacturer() == 50) {
+									if (allDevices.get(i).getManufacturer() == 11) {
 										return true;
 									}
 								}
@@ -478,15 +456,12 @@ public class AchievementSystem {
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<FoundDevice> devices = new DatabaseManager(bhApp).getDevices(DatabaseHelper.COLUMN_TIME + " != 0",
-							DatabaseHelper.COLUMN_TIME + " DESC");
-
 					long first = System.nanoTime();
 
 					long end;
 					int max = 0;
 
-					int deviceListSize = devices.size();
+					int deviceListSize = allDevices.size();
 
 					long recentTime;
 					int exp24;
@@ -495,21 +470,21 @@ public class AchievementSystem {
 
 					for (int i = 0; i < deviceListSize; i++) {
 
-						recentTime = devices.get(i).getTime();
+						recentTime = allDevices.get(i).getTime();
 
 						exp24 = 0;
 
 						for (int j = i + 1; j < deviceListSize; j++) {
 
-							earlyTime = devices.get(j).getTime();
+							earlyTime = allDevices.get(j).getTime();
 
-							if ((recentTime - earlyTime) < 86400000) {
+							if (recentTime != 0 && earlyTime != 0 && (recentTime - earlyTime) < 86400000) {
 
-								bonus = devices.get(j).getBoost();
+								bonus = allDevices.get(j).getBoost();
 
 								if (bonus == -1f) bonus = 0.0f;
 
-								exp24 += ManufacturerList.getExp(devices.get(j).getManufacturer()) * (1 + bonus);
+								exp24 += ManufacturerList.getExp(allDevices.get(j).getManufacturer()) * (1 + bonus);
 							}
 							else {
 								break;
@@ -533,9 +508,10 @@ public class AchievementSystem {
 					setNewProgressString("" + max + " / 200");
 
 					end = System.nanoTime();
-					float msPerDev = (end - first) / (float) devices.size();
+					float msPerDev = (end - first) / (float) allDevices.size();
 					Log.d("Exp Achievement Time:", "" + msPerDev / (float) 1000 + "µs/device");
-					Log.d("Exp Achievement Time:", "Total time: " + ((end - first) / (float) 1000000) + "ms | Total dev: " + devices.size());
+					Log.d("Exp Achievement Time:",
+							"Total time: " + ((end - first) / (float) 1000000) + "ms | Total dev: " + allDevices.size());
 
 					return false;
 				}
@@ -549,12 +525,14 @@ public class AchievementSystem {
 		achievementStates = new HashMap<Integer, Boolean>();
 
 		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
-		int exp = LevelSystem.getUserExp(bhApp);
+		int exp = LevelSystem.getCachedUserExp(bhApp);
+
+		allDevices = new DatabaseManager(bhApp).getAllDevices();
 
 		for (Achievement achievement : achievements) {
 
-			boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "").equals(
-					bhApp.authentification.getAchieveHash(achievement.getId()));
+			boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "")
+					.equals(bhApp.authentification.getAchieveHash(achievement.getId()));
 
 			if (!completeCheck) {
 				if (alreadyAccomplished) {
@@ -599,13 +577,15 @@ public class AchievementSystem {
 		List<Integer> ids = Arrays.asList(id);
 
 		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
-		int exp = LevelSystem.getUserExp(bhApp);
+		int exp = LevelSystem.getCachedUserExp(bhApp);
+		
+		allDevices = new DatabaseManager(bhApp).getAllDevices();
 
 		for (Achievement achievement : achievements) {
 			if (!ids.contains(achievement.getId())) {
 
-				boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "").equals(
-						bhApp.authentification.getAchieveHash(achievement.getId()));
+				boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "")
+						.equals(bhApp.authentification.getAchieveHash(achievement.getId()));
 
 				if (!completeCheck) {
 					if (alreadyAccomplished) {
@@ -662,7 +642,7 @@ public class AchievementSystem {
 	public static List<HashMap<String, String>> getBoostList(BlueHunter bhApp) {
 		List<HashMap<String, String>> boostList = new ArrayList<HashMap<String, String>>();
 
-		int level = LevelSystem.getLevel(LevelSystem.getUserExp(bhApp));
+		int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 		float levelBoost = getLevelBoost(bhApp);
 
 		NumberFormat percentage = NumberFormat.getPercentInstance();
@@ -718,7 +698,7 @@ public class AchievementSystem {
 	private static float getLevelBoost(BlueHunter bhApp) {
 
 		float levelBoost = 0f;
-		int curLevel = LevelSystem.getLevel(LevelSystem.getUserExp(bhApp));
+		int curLevel = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
 		for (int level = 0; level <= curLevel; level++) {
 			levelBoost += (float) level / (float) 100;

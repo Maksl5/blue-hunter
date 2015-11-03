@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout.FDAdapterData;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
@@ -29,6 +30,7 @@ import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -47,6 +49,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.util.Log;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.view.LayoutInflater;
@@ -348,8 +351,8 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 					@Override
 					public boolean onPreferenceClick(Preference preference) {
 
-						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
-								.parse("https://github.com/Maksl5/blue-hunter/raw/master/bin/Blue%20Hunter.apk"));
+						Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+								Uri.parse("https://github.com/Maksl5/blue-hunter/raw/master/bin/Blue%20Hunter.apk"));
 						startActivity(browserIntent);
 
 						return true;
@@ -383,6 +386,51 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 					return true;
 				}
 			});
+
+			// Test Adding 10000 devices
+			
+			
+			
+//			Preference infoPref = findPreference("pref_version");
+//			infoPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+//
+//				@Override
+//				public boolean onPreferenceClick(Preference preference) {
+//
+//					int number = 1;
+//
+//					ArrayList<FoundDevice> foundDevices = new ArrayList<FoundDevice>();
+//
+//					for (int a = 0x00; a < 0xFF; a++) {
+//						for (int b = 0x00; b < 0xFF; b++) {
+//							for (int c = 0x00; c < 0xFF; c++) {
+//
+//								FoundDevice fd = new FoundDevice();
+//								fd.setMac(String.format("%02X:%02X:%02X:00:00:00", a, b, c));
+//								fd.setName("" + number);
+//								fd.setTime(System.currentTimeMillis() - (number * 100000));
+//								fd.setRssi((short) 0);
+//								fd.setBoost(0f);
+//
+//								foundDevices.add(fd);
+//
+//								Log.d("Number", "" + number);
+//
+//								number++;
+//
+//								if (number >= 10000) break;
+//
+//							}
+//							if (number >= 10000) break;
+//						}
+//						if (number >= 10000) break;
+//					}
+//
+//					new DatabaseManager(bhApp).newSyncedDatabase(foundDevices);
+//
+//					return true;
+//				}
+//			});
 
 		}
 
@@ -583,8 +631,8 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 				}
 			});
 
-			android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(
-					new OnSharedPreferenceChangeListener() {
+			android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity())
+					.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
 
 						@Override
 						public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -812,7 +860,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 			if (remoteFile.startsWith("https")) https = true;
 
 			try {
-				
+
 				HashMap<String, String> postValues = new HashMap<String, String>();
 
 				for (int i = 2; i < params.length; i++) {
@@ -857,11 +905,11 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 					while ((line = br.readLine()) != null) {
 						stringBuilder.append(line + System.lineSeparator());
 					}
-					
+
 					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
 
 					result = stringBuilder.toString();
-					
+
 				}
 				else {
 

@@ -5,17 +5,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.crypto.ExemptionMechanism;
+
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
+import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.os.Debug;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +43,8 @@ public class DeviceDiscoveryLayout {
 
 	public static void updateIndicatorViews(MainActivity mainActivity) {
 
+		// Debug.startMethodTracing("updateIndicatorViews");
+
 		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
 		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
 		TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
@@ -47,8 +53,14 @@ public class DeviceDiscoveryLayout {
 
 		PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
+		long expTimeA = System.currentTimeMillis();
+		
 		int exp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
-		mainActivity.exp = exp;
+		
+		long expTimeB = System.currentTimeMillis();
+		
+		Log.d("getUserExp", "" + (expTimeB-expTimeA) + "ms");
+		
 		int level = LevelSystem.getLevel(exp);
 
 		DecimalFormat df = new DecimalFormat(",###");
@@ -70,33 +82,86 @@ public class DeviceDiscoveryLayout {
 		progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 
 		int deviceNum = new DatabaseManager(mainActivity.getBlueHunter()).getDeviceNum();
-		long firstTime = new DatabaseManager(mainActivity.getBlueHunter()).getDevice(DatabaseManager.DatabaseHelper.COLUMN_TIME + " != 0",
-				DatabaseManager.DatabaseHelper.COLUMN_TIME + " DESC").getTime();
+
+		List<FoundDevice> allDevices = new DatabaseManager(mainActivity.getBlueHunter()).getAllDevices();
+		int lastIndex = allDevices.size() - 1;
+
+		long firstTime = 0;
+
+		do {
+
+			if (lastIndex < 0) break;
+
+			firstTime = allDevices.get(lastIndex).getTime();
+
+			lastIndex--;
+		}
+		while (firstTime == 0);
 
 		long now = System.currentTimeMillis();
-		double devPerDay = (deviceNum / (double) (now - firstTime)) * 86400000;
-		double expPerDay = (exp / (double) (now - firstTime)) * 86400000;
+		float devPerDay = (deviceNum / (float) (now - firstTime)) * 86400000;
+		float expPerDay = (exp / (float) (now - firstTime)) * 86400000;
 
 		devicesTextView.setText(df.format(deviceNum));
 		devExpPerDayTxt.setText(String.format("%.2f / %.2f", devPerDay, expPerDay));
 
-		List<FoundDevice> devicesToday = new DatabaseManager(mainActivity.getBlueHunter()).getDevices(
-				DatabaseManager.DatabaseHelper.COLUMN_TIME + " < " + now + " AND " + DatabaseManager.DatabaseHelper.COLUMN_TIME + " > "
-						+ (now - 86400000), null);
-		int devicesTodayNum = devicesToday.size();
-
 		int expTodayNum = 0;
+		int devicesTodayNum = 0;
 
-		for (Iterator iterator = devicesToday.iterator(); iterator.hasNext();) {
-			FoundDevice deviceIt = (FoundDevice) iterator.next();
-			int manufacturer = deviceIt.getManufacturer();
+		for (FoundDevice foundDevice : allDevices) {
 
-			float bonus = deviceIt.getBoost();
+			if (foundDevice.getTime() > (now - 86400000)) {
+				devicesTodayNum++;
+				int manufacturer = foundDevice.getManufacturer();
+				float bonus = foundDevice.getBoost();
 
-			expTodayNum += ManufacturerList.getExp(manufacturer) * (1 + bonus);
+				expTodayNum += ManufacturerList.getExp(manufacturer) * (1 + bonus);
+			}
+
 		}
 
 		devExpTodayTxt.setText(String.format("%d / %d", devicesTodayNum, expTodayNum));
+
+		curList = new ArrayList<FoundDevice>(mainActivity.getBlueHunter().disMan.getFDInCurDiscovery());
+
+		TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInCycle_value);
+		devInCurDisTxt.setText("" + curList.size());
+
+		if (dAdapter == null) {
+			dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, curList);
+
+			if (lv == null) lv = (ListView) mainActivity.findViewById(R.id.discoveryListView);
+
+			lv.setAdapter(dAdapter);
+		}
+
+		if (lv != null && mainActivity != null && mainActivity.getBlueHunter() != null && mainActivity.getBlueHunter().disMan != null
+				&& mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != -2) {
+
+			if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() == DiscoveryState.DISCOVERY_STATE_RUNNING
+					&& lv.getVisibility() != View.VISIBLE) {
+				startShowLV(mainActivity);
+			}
+			else if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_RUNNING
+					&& mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_FINISHED
+					&& lv.getVisibility() == View.VISIBLE) {
+				stopShowLV(mainActivity);
+			}
+		}
+
+		if (dAdapter.values.equals(curList)) {
+			dAdapter.notifyDataSetChanged();
+		}
+		else {
+			dAdapter.clear();
+			dAdapter.addAll(curList);
+		}
+
+		// Debug.stopMethodTracing();
+
+	}
+
+	public static void onlyCurListUpdate(MainActivity mainActivity) {
 
 		curList = new ArrayList<FoundDevice>(mainActivity.getBlueHunter().disMan.getFDInCurDiscovery());
 
@@ -271,7 +336,7 @@ public class DeviceDiscoveryLayout {
 
 			FoundDevice device = values.get(position);
 
-			String mac = device.getMacAddress();
+			String mac = device.getMacAddressString();
 			int manufacturer = device.getManufacturer();
 
 			int exp = ManufacturerList.getExp(manufacturer);

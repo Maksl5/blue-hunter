@@ -2,13 +2,13 @@
  *  FoundDevice.java in com.maksl5.bl_hunt.custom_ui
  *  © Markus 2014
  */
-package com.maksl5.bl_hunt.custom_ui;
+package com.maksl5.bl_hunt.util;
 
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 
 public class FoundDevice {
 
-	private String macAddress;
+	private MacAddress macAddress;
 	private String name;
 	private short rssi = 1;
 	private long time = -1;
@@ -20,6 +20,12 @@ public class FoundDevice {
 	}
 
 	public void setMac(String dMac) {
+
+		macAddress = new MacAddress(dMac);
+
+	}
+	
+	public void setMac(MacAddress dMac) {
 
 		macAddress = dMac;
 
@@ -39,8 +45,7 @@ public class FoundDevice {
 
 	public void setRssi(String dRssi) {
 
-		if (dRssi != null)
-			rssi = Short.valueOf(dRssi);
+		if (dRssi != null) rssi = Short.valueOf(dRssi);
 
 	}
 
@@ -52,8 +57,7 @@ public class FoundDevice {
 
 	public void setTime(String dTime) {
 
-		if (dTime != null)
-			time = Long.valueOf(dTime);
+		if (dTime != null) time = Long.valueOf(dTime);
 
 	}
 
@@ -78,13 +82,19 @@ public class FoundDevice {
 			else
 				bonus = Float.valueOf(dBonus);
 
-		} else {
+		}
+		else {
 			bonus = 0f;
 		}
 
 	}
 
-	public String getMacAddress() {
+	public String getMacAddressString() {
+
+		return macAddress.getMacString();
+	}
+	
+	public MacAddress getMacAddress() {
 
 		return macAddress;
 	}
@@ -107,7 +117,7 @@ public class FoundDevice {
 	public int getManufacturer() {
 
 		if (manufacturer == -1) {
-			manufacturer = ManufacturerList.getManufacturer(macAddress).getId();
+			manufacturer = ManufacturerList.getManufacturer(macAddress.getA(), macAddress.getB(), macAddress.getC()).getId();
 		}
 		return manufacturer;
 	}
@@ -119,18 +129,23 @@ public class FoundDevice {
 
 	public int checkNull() {
 
-		if (macAddress == null || macAddress.equals(""))
-			return 0;
-		if (name == null || name.equals(""))
-			return -1;
-		if (rssi == 0)
-			return 0;
-		if (time == 0)
-			return 0;
-		if (manufacturer == -1)
-			return -2;
+		if (macAddress == null) return 0;
+		if (name == null || name.equals("")) return -1;
+		if (rssi == 0) return 0;
+		if (time == 0) return 0;
+		if (manufacturer == -1) return -2;
 
 		return 1;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof FoundDevice)) return false;
+
+		if (((FoundDevice) o).macAddress.equals(macAddress))
+			return true;
+		else
+			return false;
 	}
 
 }

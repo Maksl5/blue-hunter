@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
-import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
@@ -23,6 +22,7 @@ import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -54,12 +54,12 @@ public class SynchronizeFoundDevices implements
 
 	}
 
-	public void addNewChange(int mode, FoundDevice device) {
+	public void addNewChange(int mode, FoundDevice device, boolean makeSync) {
 
 		if (device == null || device.getMacAddress() == null)
 			return;
 
-		String macString = device.getMacAddress();
+		String macString = device.getMacAddressString();
 		String nameString = (device.getName() == null) ? "" : device.getName();
 		String rssiString = ""
 				+ ((device.getRssi() == 1) ? "" : device.getRssi());
@@ -96,17 +96,27 @@ public class SynchronizeFoundDevices implements
 			break;
 		}
 
-		int syncInterval = PreferenceManager.getPref(blueHunter,
-				"pref_syncInterval", 5);
-		if (changesToSync.size() >= syncInterval) {
-			start();
+		if (makeSync) {
+			checkAndStart();
 		}
 
 	}
 
+	public void checkAndStart() {
+		
+		int syncInterval = PreferenceManager.getPref(blueHunter,
+				"pref_syncInterval", 5);
+		if (PreferenceManager.getPref(blueHunter, "pref_syncingActivated",
+				false) && changesToSync.size() >= syncInterval) {
+			start();
+		}
+		
+		
+	}
+	
 	public void start() {
 
-		exp = LevelSystem.getUserExp(blueHunter);
+		exp = LevelSystem.getCachedUserExp(blueHunter);
 		deviceNum = new DatabaseManager(blueHunter).getDeviceNum();
 
 		Log.d("exp", String.valueOf(exp));
@@ -142,7 +152,7 @@ public class SynchronizeFoundDevices implements
 		if (mode == 0)
 			return;
 
-		exp = LevelSystem.getUserExp(blueHunter);
+		exp = LevelSystem.getCachedUserExp(blueHunter);
 		deviceNum = new DatabaseManager(blueHunter).getDeviceNum();
 
 		long lastModified = new DatabaseManager(blueHunter)
@@ -213,7 +223,7 @@ public class SynchronizeFoundDevices implements
 			String rulesString = "";
 
 			for (FoundDevice device : devices) {
-				String macString = device.getMacAddress();
+				String macString = device.getMacAddressString();
 				String nameString = (device.getName() == null) ? "" : device
 						.getName();
 				String rssiString = ""

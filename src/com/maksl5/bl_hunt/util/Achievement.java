@@ -2,13 +2,14 @@
  *  Achievement.java in com.maksl5.bl_hunt.storage
  *  © Maksl5[Markus Bensing] 2013
  */
-package com.maksl5.bl_hunt.storage;
+package com.maksl5.bl_hunt.util;
 
 import java.util.HashMap;
 import java.util.List;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 import android.content.Context;
 import android.widget.Toast;

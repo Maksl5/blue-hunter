@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,6 +58,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -93,8 +95,6 @@ public class MainActivity extends FragmentActivity {
 	public TextView userInfoTextView;
 
 	public boolean passSet = false;
-
-	public int exp = 0;
 
 	public static boolean destroyed = true;
 
@@ -169,9 +169,7 @@ public class MainActivity extends FragmentActivity {
 		Builder builder = new Builder(this);
 		builder.setTitle("Information");
 
-		builder.setMessage(Html.fromHtml("Attention:<br><br>"
-				+ "This version ("
-				+ bhApp.getVersionName()
+		builder.setMessage(Html.fromHtml("Attention:<br><br>" + "This version (" + bhApp.getVersionName()
 				+ ") of BlueHunter is not stable, as it is still in Alpha phase. If you find bugs, crashes, etc. I would appreciate if you go to this <a href=\"http://bluehunter.maks-dev.com/issues\">Issues Tracker</a> and make a quick entry/task. That's it.<br>Thank you very much!"));
 
 		builder.setNeutralButton("Ok", new OnClickListener() {
@@ -353,8 +351,6 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		Debug.startMethodTracing("startTrace");
-		
 		bhApp.currentActivity = this;
 
 		getMenuInflater().inflate(R.menu.act_main, menu);
@@ -380,8 +376,9 @@ public class MainActivity extends FragmentActivity {
 		bhApp.authentification.checkUpdate();
 
 		NetworkThread serialSubmit = new NetworkThread(bhApp);
-		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s="
-				+ Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
+		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK),
+				"s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(),
+				"h=" + bhApp.authentification.getSerialNumberHash());
 
 		new DatabaseManager(bhApp).close();
 
@@ -391,16 +388,50 @@ public class MainActivity extends FragmentActivity {
 		NetworkThread getUserInfo = new NetworkThread(bhApp);
 		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
+		// Debug.startMethodTracing("startTrace");
+
+		long startTime = System.currentTimeMillis();
+
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
+
+		long fdTime = System.currentTimeMillis();
+
 		DeviceDiscoveryLayout.updateIndicatorViews(this);
+
+		long devDisTime = System.currentTimeMillis();
+
 		ProfileLayout.initializeView(this);
+
+		long profTime = System.currentTimeMillis();
+
 		LeaderboardLayout.changeList = new DatabaseManager(bhApp).getLeaderboardChanges();
 		LeaderboardLayout.refreshLeaderboard(bhApp);
+
+		long ldTime = System.currentTimeMillis();
+
 		AchievementsLayout.initializeAchievements(bhApp);
+
+		long achieveTime = System.currentTimeMillis();
+
+		long fdDelta = fdTime - startTime;
+		long devDisDelta = devDisTime - fdTime;
+		long profDelta = profTime - devDisTime;
+		long ldDelta = ldTime - profTime;
+		long achieveDelta = achieveTime - ldTime;
+
+		int devices = new DatabaseManager(bhApp).getDeviceNum();
+
+		Log.d("Start Time", "Found Devices Layout: " + fdDelta + "ms");
+		Log.d("Start Time", "Device Discovery Layout: " + devDisDelta + "ms");
+		Log.d("Start Time", "Profile Layout: " + profDelta + "ms");
+		Log.d("Start Time", "Leaderboard Layout: " + ldDelta + "ms");
+		Log.d("Start Time", "Achievements Layout: " + achieveDelta + "ms");
+
+		Log.d("Start Time", "Overall: " + (achieveTime - startTime) + "ms @ " + devices + "devices");
 
 		updateNotification();
 
-		Debug.stopMethodTracing();
+		// Debug.stopMethodTracing();
 
 		upgrade();
 
@@ -599,17 +630,17 @@ public class MainActivity extends FragmentActivity {
 
 		if (PreferenceManager.getPref(this, "pref_showNotification", true)) {
 
-			int level = LevelSystem.getLevel(exp);
+			int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
 			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp
-						- LevelSystem.getLevelStartExp(level), false);
+				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
+						LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
 
 			DecimalFormat df = new DecimalFormat(",###");
 
-			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
-					getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)),
-					getString(R.string.str_foundDevices_exp_abbreviation)));
+			stateNotificationBuilder.setContentText(
+					String.format("%s %d" + (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
+							df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
@@ -625,17 +656,17 @@ public class MainActivity extends FragmentActivity {
 
 		if (show) {
 
-			int level = LevelSystem.getLevel(exp);
+			int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
 			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level), exp
-						- LevelSystem.getLevelStartExp(level), false);
+				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
+						LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
 
 			DecimalFormat df = new DecimalFormat(",###");
 
-			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
-					getString(R.string.str_foundDevices_level), level, df.format(exp), df.format(LevelSystem.getLevelEndExp(level)),
-					getString(R.string.str_foundDevices_exp_abbreviation)));
+			stateNotificationBuilder.setContentText(
+					String.format("%s %d" + (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
+							df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());

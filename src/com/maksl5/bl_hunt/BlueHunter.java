@@ -54,7 +54,7 @@ public class BlueHunter extends Application {
 		// TODO Auto-generated method stub
 		super.onCreate();
 
-		ACRA.init(this);
+		//ACRA.init(this);
 
 		boolean xlarge = ((getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);

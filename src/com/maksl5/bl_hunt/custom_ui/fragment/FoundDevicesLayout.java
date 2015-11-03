@@ -1,24 +1,34 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Stack;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.FoundDevice;
+import com.maksl5.bl_hunt.util.MacAddress;
 
+import android.R.integer;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Debug;
 import android.support.v4.view.ViewPager;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -381,28 +391,30 @@ public class FoundDevicesLayout {
 		@Override
 		protected ArrayList<FDAdapterData> doInBackground(Void... params) {
 
+			// Debug.startMethodTracing("FDThread");
+			long backTimeA = System.currentTimeMillis();
+
 			List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
 			ArrayList<FDAdapterData> listViewList = new ArrayList<FDAdapterData>();
 
 			String expString = bhApp.getString(R.string.str_foundDevices_exp_abbreviation);
-			DateFormat dateFormat = DateFormat.getDateTimeInstance();
+
+			DateTimeFormatter dateTimeFormat = DateTimeFormat.mediumDateTime();
 
 			FDAdapterData adapterData;
 
 			boolean needManuCheck = PreferenceManager.getPref(bhApp, "requireManuCheck", false);
 
-			for (int i = 0; i < devices.size(); i++) {
+			for (FoundDevice device : devices) {
 
-				FoundDevice device = devices.get(i);
-
-				String deviceMac = device.getMacAddress();
+				MacAddress deviceMac = device.getMacAddress();
 				int manufacturer = device.getManufacturer();
 				Long time = device.getTime();
 				float bonusExpMultiplier = device.getBoost();
 				short rssi = device.getRssi();
 
 				if (needManuCheck && manufacturer == 0) {
-					manufacturer = ManufacturerList.getManufacturer(deviceMac).getId();
+					manufacturer = ManufacturerList.getManufacturer(deviceMac.getA(), deviceMac.getB(), deviceMac.getC()).getId();
 					if (manufacturer != 0) {
 						new DatabaseManager(bhApp).addManufacturerToDevice(deviceMac, manufacturer);
 					}
@@ -424,10 +436,10 @@ public class FoundDevicesLayout {
 				}
 
 				// exp calc
-				int bonusExp = (int) Math.floor(ManufacturerList.getExp(manufacturer) * bonusExpMultiplier);
+				int bonusExp = (int) (ManufacturerList.getExp(manufacturer) * bonusExpMultiplier);
 
-				String completeExpString = (bonusExp == 0) ? "+" + ManufacturerList.getExp(manufacturer) + " " + expString : "+"
-						+ ManufacturerList.getExp(manufacturer) + " + " + bonusExp + " " + expString;
+				String completeExpString = (bonusExp == 0) ? "+" + ManufacturerList.getExp(manufacturer) + " " + expString
+						: "+" + ManufacturerList.getExp(manufacturer) + " + " + bonusExp + " " + expString;
 
 				// RSSI calculation
 				int rssiRes = 0;
@@ -451,15 +463,20 @@ public class FoundDevicesLayout {
 				if (rssi >= -41) rssiRes = R.drawable.rssi_5;
 
 				adapterData = new FDAdapterData(deviceMac, device.getName(), rssiRes, manufacturer, completeExpString,
-						dateFormat.format(new Date(time)));
+						new DateTime(time).toString(dateTimeFormat));
 
 				listViewList.add(adapterData);
 
-				publishProgress(listViewList);
+				// publishProgress(listViewList);
 
 			}
 
 			if (needManuCheck) PreferenceManager.setPref(bhApp, "requireManuCheck", false);
+
+			// Debug.stopMethodTracing();
+			long backTimeB = System.currentTimeMillis();
+
+			Log.d("FD Layout Background Thread", "" + (backTimeB - backTimeA) + "ms");
 
 			return listViewList;
 
@@ -478,6 +495,8 @@ public class FoundDevicesLayout {
 		@Override
 		protected void onPostExecute(ArrayList<FDAdapterData> result) {
 
+			long postA = System.currentTimeMillis();
+
 			if (!completeFdList.equals(result)) {
 				completeFdList = new ArrayList<FDAdapterData>(result);
 				showedFdList = new ArrayList<FDAdapterData>(result);
@@ -490,9 +509,15 @@ public class FoundDevicesLayout {
 
 			listView.setSelectionFromTop(scrollIndex, scrollTop);
 
+			bhApp.synchronizeFoundDevices.checkAndStart();
+
 			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
 			threadManager.finished(this);
+
+			long postB = System.currentTimeMillis();
+
+			Log.d("FD Layout BG Thread PostExecute", "" + (postB - postA) + "ms");
 
 		}
 
@@ -508,10 +533,12 @@ public class FoundDevicesLayout {
 
 			// fdAdapter.refill(showedFdList);
 
-			if (values[0].get(0).getManufacturer() == -100)
-				new DatabaseManager(bhApp).addBoostToDevices(values[0].get(0).getMacAddress(), 0f);
-
-			listView.setSelectionFromTop(scrollIndex, scrollTop);
+			// if (values[0].get(0).getManufacturer() == -100)
+			// new
+			// DatabaseManager(bhApp).addBoostToDevices(values[0].get(0).getMacAddress(),
+			// 0f);
+			//
+			// listView.setSelectionFromTop(scrollIndex, scrollTop);
 
 		}
 
@@ -558,9 +585,10 @@ public class FoundDevicesLayout {
 
 	public class FDAdapterData {
 
-		public FDAdapterData(String macAddress, String name, int rssiRes, int manufacturer, String expString, String timeFormatted) {
+		public FDAdapterData(MacAddress macAddress, String name, int rssiRes, int manufacturer, String expString, String timeFormatted) {
 
 			this.macAddress = macAddress;
+
 			this.name = name;
 			this.rssiRes = rssiRes;
 			this.manufacturer = manufacturer;
@@ -576,7 +604,8 @@ public class FoundDevicesLayout {
 			// TODO Auto-generated constructor stub
 		}
 
-		private String macAddress;
+		private MacAddress macAddress;
+
 		private String name;
 		private int rssiRes;
 		private int manufacturer;
@@ -585,12 +614,13 @@ public class FoundDevicesLayout {
 
 		public String getMacAddress() {
 
-			return macAddress;
+			return macAddress.getMacString();
 		}
 
-		public void setMacAddress(String macAddress) {
+		public void setMacAddress(MacAddress macAddress) {
 
 			this.macAddress = macAddress;
+
 		}
 
 		public String getName() {
@@ -646,7 +676,24 @@ public class FoundDevicesLayout {
 		@Override
 		public boolean equals(Object o) {
 
-			return macAddress.equals(((FDAdapterData) o).macAddress);
+			if (!(o instanceof FDAdapterData)) return false;
+
+			FDAdapterData fData = (FDAdapterData) o;
+
+			boolean equalMac = macAddress.equals(fData.macAddress);
+
+			if (!equalMac) return false;
+
+			if (name == null && fData.name == null) {
+				return true;
+			}
+			else if (name == null) {
+				return false;
+			}
+			else {
+				return name.equals(fData.name);
+			}
+
 		}
 
 	}

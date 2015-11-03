@@ -7,15 +7,16 @@ package com.maksl5.bl_hunt;
 import java.util.HashMap;
 import java.util.List;
 
-import com.maksl5.bl_hunt.custom_ui.FoundDevice;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
+import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.util.AndroidException;
 import android.widget.SimpleAdapter;
 
 /**
@@ -24,27 +25,36 @@ import android.widget.SimpleAdapter;
  */
 public class LevelSystem {
 
+	private static int cachedExp = -1;
+
 	public static int getUserExp(BlueHunter bhApp) {
 
 		int exp = 0;
 
-		List<FoundDevice> foundDevices = new DatabaseManager(bhApp)
-				.getAllDevices();
+		List<FoundDevice> foundDevices = new DatabaseManager(bhApp).getAllDevices();
 
 		for (FoundDevice foundDevice : foundDevices) {
 
 			int manufacturerId = foundDevice.getManufacturer();
 			float bonus = foundDevice.getBoost();
 
-			if (bonus == -1f)
-				bonus = 0f;
+			if (bonus == -1f) bonus = 0f;
 
-			exp += Math.floor(ManufacturerList.getExp(manufacturerId)
-					* (1 + bonus));
+			exp += Math.floor(ManufacturerList.getExp(manufacturerId) * (1 + bonus));
 
 		}
 
+		cachedExp = exp;
+
 		return exp;
+
+	}
+
+	public static int getCachedUserExp(BlueHunter bhApp) {
+		if (cachedExp == -1) {
+			getUserExp(bhApp);
+		}
+		return cachedExp;
 
 	}
 
@@ -52,8 +62,7 @@ public class LevelSystem {
 
 		int exp = 0;
 
-		List<FoundDevice> foundDevices = new DatabaseManager(bhApp)
-				.getAllDevices();
+		List<FoundDevice> foundDevices = new DatabaseManager(bhApp).getAllDevices();
 
 		for (FoundDevice foundDevice : foundDevices) {
 
@@ -75,7 +84,7 @@ public class LevelSystem {
 
 		while (compareExp < exp) {
 			compareExp = compareExp * 2 + compareExp;
-			level += 1;
+			level++;
 		}
 
 		return level;
@@ -83,8 +92,7 @@ public class LevelSystem {
 
 	public static int getLevelStartExp(int level) {
 
-		if (level == 1)
-			return 0;
+		if (level == 1) return 0;
 
 		int exp = 50;
 
@@ -108,14 +116,14 @@ public class LevelSystem {
 
 	public static AlertDialog getBoostCompositionDialog(BlueHunter bhApp) {
 
-		int[] to = new int[] { R.id.descriptionTxt, R.id.boostTxt };
-		String[] from = new String[] { "description", "boost" };
+		int[] to = new int[] {
+				R.id.descriptionTxt, R.id.boostTxt };
+		String[] from = new String[] {
+				"description", "boost" };
 
-		List<HashMap<String, String>> adapterList = AchievementSystem
-				.getBoostList(bhApp);
+		List<HashMap<String, String>> adapterList = AchievementSystem.getBoostList(bhApp);
 
-		SimpleAdapter boostAdapater = new SimpleAdapter(bhApp, adapterList,
-				R.layout.dlg_boost_composite_row, from, to);
+		SimpleAdapter boostAdapater = new SimpleAdapter(bhApp, adapterList, R.layout.dlg_boost_composite_row, from, to);
 
 		AlertDialog.Builder builder = new Builder(bhApp.mainActivity);
 		builder.setTitle(R.string.str_boostComposition_title);
