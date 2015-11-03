@@ -11,7 +11,7 @@ import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.util.FoundDevice;
-
+import com.maksl5.bl_hunt.R;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
