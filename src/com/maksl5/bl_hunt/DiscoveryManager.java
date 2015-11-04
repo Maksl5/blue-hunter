@@ -12,6 +12,7 @@ import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 import com.maksl5.bl_hunt.util.FoundDevice;
+import com.maksl5.bl_hunt.util.MacAddress;
 import com.maksl5.bl_hunt.R;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -555,7 +556,7 @@ public class DiscoveryManager {
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
 
 				for (BluetoothDevice btDevice : foundDevicesInCurDiscovery) {
-					new DatabaseManager(bhApp).addNameToDevice(btDevice.getAddress(), btDevice.getName());
+					new DatabaseManager(bhApp).addNameToDevice(new MacAddress(btDevice.getAddress()), btDevice.getName());
 				}
 				
 				bhApp.synchronizeFoundDevices.checkAndStart();

@@ -3,7 +3,7 @@ package com.maksl5.bl_hunt.util;
 public class MacAddress {
 
 	private short a, b, c, d, e, f;
-	
+
 	private String macAdress;
 
 	public MacAddress(short a, short b, short c, short d, short e, short f) {
@@ -49,7 +49,7 @@ public class MacAddress {
 	}
 
 	public String getMacString() {
-		if(macAdress == null || macAdress.length() == 0) {
+		if (macAdress == null || macAdress.length() == 0) {
 			macAdress = String.format("%02X:%02X:%02X:%02X:%02X:%02X", a, b, c, d, e, f);
 		}
 		return macAdress;

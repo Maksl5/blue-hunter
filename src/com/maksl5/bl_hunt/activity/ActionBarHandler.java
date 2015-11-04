@@ -27,6 +27,7 @@ import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.ProfileLayout;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.MacAddress;
 
 /**
  * The {@link ActionBarHandler} class handles all communication and events that
@@ -129,7 +130,7 @@ public class ActionBarHandler implements
 					switch (item.getItemId()) {
 					case R.id.menu_context_remove:
 
-						String macAddress = FoundDevicesLayout.getSelectedMac();
+						MacAddress macAddress = FoundDevicesLayout.getSelectedMac();
 						if (macAddress == null) {
 							Toast.makeText(bhApp, "Error removing device.",
 									Toast.LENGTH_LONG).show();

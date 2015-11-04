@@ -8,6 +8,8 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.joda.time.DateTime;
+
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.DiscoveryManager;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
@@ -361,6 +363,8 @@ public class MainActivity extends FragmentActivity {
 		if (disStateTextView == null) disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
 		// Setting up DiscoveryManager
 
+		long disTimeA = System.currentTimeMillis();
+
 		if (!bhApp.disMan.startDiscoveryManager()) {
 			if (!bhApp.disMan.supplyTextView(disStateTextView)) {
 
@@ -370,6 +374,10 @@ public class MainActivity extends FragmentActivity {
 				bhApp.disMan.startDiscoveryManager();
 			}
 		}
+
+		long disTimeB = System.currentTimeMillis();
+
+		Log.d("Init Time", "Discovery Manager: " + (disTimeB - disTimeA) + "ms");
 
 		// Network Stuff
 
@@ -421,14 +429,14 @@ public class MainActivity extends FragmentActivity {
 
 		int devices = new DatabaseManager(bhApp).getDeviceNum();
 
-		Log.d("Start Time", "Found Devices Layout: " + fdDelta + "ms");
-		Log.d("Start Time", "Device Discovery Layout: " + devDisDelta + "ms");
-		Log.d("Start Time", "Profile Layout: " + profDelta + "ms");
-		Log.d("Start Time", "Leaderboard Layout: " + ldDelta + "ms");
-		Log.d("Start Time", "Achievements Layout: " + achieveDelta + "ms");
+		Log.d("Init Time", "Found Devices Layout: " + fdDelta + "ms");
+		Log.d("Init Time", "Device Discovery Layout: " + devDisDelta + "ms");
+		Log.d("Init Time", "Profile Layout: " + profDelta + "ms");
+		Log.d("Init Time", "Leaderboard Layout: " + ldDelta + "ms");
+		Log.d("Init Time", "Achievements Layout: " + achieveDelta + "ms");
 
-		Log.d("Start Time", "Overall: " + (achieveTime - startTime) + "ms @ " + devices + "devices");
-
+		Log.d("Init Time", "Overall: " + ((achieveTime - startTime) + (disTimeB - disTimeA)) + "ms @ " + devices + "devices");
+		
 		updateNotification();
 
 		// Debug.stopMethodTracing();
@@ -638,9 +646,9 @@ public class MainActivity extends FragmentActivity {
 
 			DecimalFormat df = new DecimalFormat(",###");
 
-			stateNotificationBuilder.setContentText(
-					String.format("%s %d" + (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
-							df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
+					getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
+					df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
@@ -664,9 +672,9 @@ public class MainActivity extends FragmentActivity {
 
 			DecimalFormat df = new DecimalFormat(",###");
 
-			stateNotificationBuilder.setContentText(
-					String.format("%s %d" + (char) 9 + "%s / %s %s", getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
-							df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
+					getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
+					df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());

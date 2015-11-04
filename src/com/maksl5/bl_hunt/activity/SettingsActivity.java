@@ -31,6 +31,7 @@ import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 import com.maksl5.bl_hunt.util.FoundDevice;
+import com.maksl5.bl_hunt.util.MacAddress;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -388,42 +389,44 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 			});
 
 			// Test Adding 10000 devices
-			
-			
-			
+
 //			Preference infoPref = findPreference("pref_version");
 //			infoPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 //
 //				@Override
 //				public boolean onPreferenceClick(Preference preference) {
 //
-//					int number = 1;
+//					int number = 0;
 //
 //					ArrayList<FoundDevice> foundDevices = new ArrayList<FoundDevice>();
 //
-//					for (int a = 0x00; a < 0xFF; a++) {
-//						for (int b = 0x00; b < 0xFF; b++) {
-//							for (int c = 0x00; c < 0xFF; c++) {
+//					for (short a = 0x00; a < 0xFF; a++) {
+//
+//						if (number >= 30000) break;
+//
+//						for (short b = 0x00; b < 0xFF; b++) {
+//
+//							if (number >= 30000) break;
+//
+//							for (short c = 0x00; c < 0xFF; c++) {
+//
+//								if (number >= 30000) break;
 //
 //								FoundDevice fd = new FoundDevice();
-//								fd.setMac(String.format("%02X:%02X:%02X:00:00:00", a, b, c));
+//								fd.setMac(new MacAddress(a, b, c, (short) 0, (short) 0, (short) 0));
 //								fd.setName("" + number);
-//								fd.setTime(System.currentTimeMillis() - (number * 100000));
+//								fd.setTime(System.currentTimeMillis() - (number * 10000));
 //								fd.setRssi((short) 0);
 //								fd.setBoost(0f);
 //
 //								foundDevices.add(fd);
 //
-//								Log.d("Number", "" + number);
+//								Log.d("Debug Devices Calc.", "" + number);
 //
 //								number++;
 //
-//								if (number >= 10000) break;
-//
 //							}
-//							if (number >= 10000) break;
 //						}
-//						if (number >= 10000) break;
 //					}
 //
 //					new DatabaseManager(bhApp).newSyncedDatabase(foundDevices);

@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.joda.time.DateTime;
+
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
@@ -276,8 +278,6 @@ public class AchievementSystem {
 
 			new Achievement(8, R.string.str_achieve_8_title, R.string.str_achieve_8_description) {
 
-				@SuppressWarnings({
-						"deprecation" })
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
@@ -290,12 +290,17 @@ public class AchievementSystem {
 
 						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 1800000) {
 
-							Date recentDate = new Date(firstTime);
-							Date firstDate = new Date(secondTime);
+							DateTime recentDate = new DateTime(firstTime);
+							DateTime firstDate = new DateTime(secondTime);
 
-							if (recentDate.getHours() == 22 && firstDate.getHours() == 22) {
-								if (recentDate.getMinutes() >= 0 && recentDate.getMinutes() < 30) {
-									if (firstDate.getMinutes() >= 0 && firstDate.getMinutes() < 30) {
+							int recHour = recentDate.getHourOfDay();
+							int firstHour = firstDate.getHourOfDay();
+							int recMinute = recentDate.getMinuteOfHour();
+							int firstMinute = firstDate.getMinuteOfHour();
+							
+							if (recHour == 22 && firstHour == 22) {
+								if (recMinute >= 0 && recMinute < 30) {
+									if (firstMinute >= 0 && firstMinute < 30) {
 										return true;
 									}
 								}
@@ -323,11 +328,14 @@ public class AchievementSystem {
 
 						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 7200000) {
 
-							Date recentDate = new Date(firstTime);
-							Date firstDate = new Date(secondTime);
+							DateTime recentDate = new DateTime(firstTime);
+							DateTime firstDate = new DateTime(secondTime);
+							
+							int firstHour = firstDate.getHourOfDay();
+							int recHour = recentDate.getHourOfDay();
 
-							if (firstDate.getHours() >= 5 && firstDate.getHours() < 7) {
-								if (recentDate.getHours() >= 5 && recentDate.getHours() < 7) {
+							if (firstHour >= 5 && firstHour < 7) {
+								if (recHour >= 5 && recHour < 7) {
 
 									return true;
 
@@ -353,9 +361,9 @@ public class AchievementSystem {
 
 						long time = allDevices.get(i).getTime();
 
-						Date date = new Date(time);
+						DateTime date = new DateTime(time);
 
-						if (time != 0 && date.getMinutes() == 0) {
+						if (time != 0 && date.getMinuteOfHour() == 0) {
 
 							return true;
 
@@ -379,10 +387,10 @@ public class AchievementSystem {
 
 						long time = allDevices.get(i).getTime();
 
-						Date date = new Date(time);
+						DateTime date = new DateTime(time);
 
-						if (time != 0 && date.getDate() == 11 && date.getMonth() == 11 && date.getHours() == 11
-								&& date.getMinutes() == 11) {
+						if (time != 0 && date.getDayOfMonth() == 11 && date.getMonthOfYear() == 11 && date.getHourOfDay() == 11
+								&& date.getMinuteOfHour() == 11) {
 
 							return true;
 

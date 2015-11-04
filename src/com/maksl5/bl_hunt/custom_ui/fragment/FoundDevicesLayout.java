@@ -290,11 +290,11 @@ public class FoundDevicesLayout {
 	/**
 	 * @return
 	 */
-	public static String getSelectedMac() {
+	public static MacAddress getSelectedMac() {
 
 		if (selectedItem == -1) return null;
 
-		return showedFdList.get(selectedItem).getMacAddress();
+		return showedFdList.get(selectedItem).macAddress;
 
 	}
 
