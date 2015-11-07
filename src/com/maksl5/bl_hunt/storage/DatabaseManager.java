@@ -128,7 +128,9 @@ public class DatabaseManager {
 		sqLiteStatement.bindLong(6, device.getMacAddress().getF());
 
 		sqLiteStatement.bindLong(7, device.getManufacturer());
-		sqLiteStatement.bindString(8, device.getName());
+
+		if (device.getName() != null) sqLiteStatement.bindString(8, device.getName());
+
 		sqLiteStatement.bindLong(9, device.getRssi());
 		sqLiteStatement.bindLong(10, device.getTime());
 		sqLiteStatement.bindDouble(11, device.getBoost());
@@ -213,11 +215,11 @@ public class DatabaseManager {
 		// @formatter:off
 		
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, 
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND" +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_F + " = ?"
 															, 
 																	new String[] { 	"" + macAddress.getA(),
@@ -264,11 +266,11 @@ public class DatabaseManager {
 		// @formatter:off
 		
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, 
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND" +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_F + " = ?"
 															, 
 																	new String[] { 	"" + macAddress.getA(),
@@ -309,11 +311,11 @@ public class DatabaseManager {
 		// @formatter:off
 		
 		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, 
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND" +
-																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND" +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND " +
+																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_F + " = ?"
 															, 
 																	new String[] { 	"" + macAddress.getA(),
@@ -354,11 +356,11 @@ public class DatabaseManager {
 		// @formatter:off
 		
 		int result = db.delete(DatabaseHelper.FOUND_DEVICES_TABLE	, 
-																			DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND" +
-																			DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND" +
-																			DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND" +
-																			DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND" +
-																			DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND" +
+																			DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND " +
+																			DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND " +
+																			DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND " +
+																			DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND " +
+																			DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND " +
 																			DatabaseHelper.COLUMN_MAC_ADDRESS_F + " = ?"
 																	, 
 																			new String[] { 	"" + macAddress.getA(),
