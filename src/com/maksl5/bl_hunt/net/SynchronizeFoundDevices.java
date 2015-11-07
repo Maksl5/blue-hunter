@@ -434,13 +434,6 @@ public class SynchronizeFoundDevices implements
 							+ "ms");
 
 					PreferenceManager.setPref(blueHunter, "requireManuCheck", true);
-					
-					FoundDevicesLayout.refreshFoundDevicesList(blueHunter,
-							false);
-					AchievementsLayout.initializeAchievements(blueHunter);
-					
-					DeviceDiscoveryLayout
-					.updateIndicatorViews(blueHunter.mainActivity);
 
 					resultMsg = "Successfully synced down database.";
 				} else if (syncMode == 3) {
