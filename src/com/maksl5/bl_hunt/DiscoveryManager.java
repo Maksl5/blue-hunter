@@ -340,7 +340,6 @@ public class DiscoveryManager {
 			disState = state;
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-			foundDevices = new DatabaseManager(bhApp).getAllDevices();
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 			fDListCurDiscovery = new ArrayList<FoundDevice>();
 
@@ -595,7 +594,14 @@ public class DiscoveryManager {
 
 			//Debug.startMethodTracing("onDeviceFound");
 			
-			foundDevices = new DatabaseManager(bhApp).getAllDevices();
+			foundDevices = DatabaseManager.getCachedList();
+
+			if (foundDevices == null) {
+
+				new DatabaseManager(bhApp).loadAllDevices(true);
+				return;
+
+			}
 
 			//Compare Object
 			FoundDevice compare = new FoundDevice();

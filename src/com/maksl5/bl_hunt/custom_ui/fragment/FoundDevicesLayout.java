@@ -145,8 +145,6 @@ public class FoundDevicesLayout {
 
 		RefreshThread refreshThread = new FoundDevicesLayout().new RefreshThread(bhApp, threadManager);
 		if (refreshThread.canRun()) {
-			boolean needManuCheck = PreferenceManager.getPref(bhApp, "requireManuCheck", false);
-			if (needManuCheck) Toast.makeText(bhApp, "Require Manufacturer Check...", Toast.LENGTH_SHORT).show();
 			refreshThread.execute();
 		}
 		else {
@@ -312,10 +310,14 @@ public class FoundDevicesLayout {
 		private int scrollIndex;
 		private int scrollTop;
 
+		boolean needManuCheck = false;
+
 		private RefreshThread(BlueHunter app, ThreadManager threadManager) {
 
 			super();
 			this.bhApp = app;
+
+			this.needManuCheck = PreferenceManager.getPref(bhApp, "requireManuCheck", false);
 
 			if (bhApp.mainActivity.mViewPager == null) {
 				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
@@ -394,7 +396,15 @@ public class FoundDevicesLayout {
 			// Debug.startMethodTracing("FDThread");
 			long backTimeA = System.currentTimeMillis();
 
-			List<FoundDevice> devices = new DatabaseManager(bhApp).getAllDevices();
+			List<FoundDevice> allDevices = DatabaseManager.getCachedList();
+
+			if (allDevices == null) {
+
+				new DatabaseManager(bhApp).loadAllDevices(true);
+				return completeFdList;
+
+			}
+
 			ArrayList<FDAdapterData> listViewList = new ArrayList<FDAdapterData>();
 
 			String expString = bhApp.getString(R.string.str_foundDevices_exp_abbreviation);
@@ -403,9 +413,7 @@ public class FoundDevicesLayout {
 
 			FDAdapterData adapterData;
 
-			boolean needManuCheck = PreferenceManager.getPref(bhApp, "requireManuCheck", false);
-
-			for (FoundDevice device : devices) {
+			for (FoundDevice device : allDevices) {
 
 				MacAddress deviceMac = device.getMacAddress();
 				int manufacturer = device.getManufacturer();
@@ -471,8 +479,6 @@ public class FoundDevicesLayout {
 
 			}
 
-			if (needManuCheck) PreferenceManager.setPref(bhApp, "requireManuCheck", false);
-
 			// Debug.stopMethodTracing();
 			long backTimeB = System.currentTimeMillis();
 
@@ -511,7 +517,10 @@ public class FoundDevicesLayout {
 
 			bhApp.synchronizeFoundDevices.checkAndStart();
 
-			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+			if (needManuCheck) {
+				DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+				PreferenceManager.setPref(bhApp, "requireManuCheck", false);
+			}
 
 			threadManager.finished(this);
 
@@ -549,7 +558,7 @@ public class FoundDevicesLayout {
 		 */
 		@Override
 		protected void onPreExecute() {
-
+			if (needManuCheck) Toast.makeText(bhApp, "Require Manufacturer Check...", Toast.LENGTH_SHORT).show();
 		}
 	}
 

@@ -217,12 +217,18 @@ public class SynchronizeFoundDevices implements
 					false) && !forceSync)
 				return;
 
-			List<FoundDevice> devices = new DatabaseManager(blueHunter)
-					.getAllDevices();
+			List<FoundDevice> allDevices = DatabaseManager.getCachedList();
+
+			if (allDevices == null) {
+
+				new DatabaseManager(blueHunter).loadAllDevices(true);
+				return;
+
+			}
 
 			String rulesString = "";
 
-			for (FoundDevice device : devices) {
+			for (FoundDevice device : allDevices) {
 				String macString = device.getMacAddressString();
 				String nameString = (device.getName() == null) ? "" : device
 						.getName();

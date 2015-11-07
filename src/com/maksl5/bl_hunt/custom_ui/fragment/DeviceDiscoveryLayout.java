@@ -19,6 +19,7 @@ import com.maksl5.bl_hunt.util.FoundDevice;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Debug;
+import android.provider.ContactsContract.Contacts.Data;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +46,16 @@ public class DeviceDiscoveryLayout {
 
 		// Debug.startMethodTracing("updateIndicatorViews");
 
+		List<FoundDevice> allDevices = DatabaseManager.getCachedList();
+
+		if (allDevices == null) {
+
+			new DatabaseManager(mainActivity.getBlueHunter()).loadAllDevices(true);
+			return;
+
+		}
+		
+		
 		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
 		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
 		TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
@@ -54,13 +65,17 @@ public class DeviceDiscoveryLayout {
 		PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
 		long expTimeA = System.currentTimeMillis();
+
+		//Debug.startMethodTracing("getUserExp");
 		
 		int exp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
 		
+		//Debug.stopMethodTracing();
+
 		long expTimeB = System.currentTimeMillis();
-		
-		Log.d("getUserExp", "" + (expTimeB-expTimeA) + "ms");
-		
+
+		Log.d("getUserExp", "" + (expTimeB - expTimeA) + "ms");
+
 		int level = LevelSystem.getLevel(exp);
 
 		DecimalFormat df = new DecimalFormat(",###");
@@ -80,10 +95,9 @@ public class DeviceDiscoveryLayout {
 
 		progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
 		progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
+		
+		int deviceNum = allDevices.size();
 
-		int deviceNum = new DatabaseManager(mainActivity.getBlueHunter()).getDeviceNum();
-
-		List<FoundDevice> allDevices = new DatabaseManager(mainActivity.getBlueHunter()).getAllDevices();
 		int lastIndex = allDevices.size() - 1;
 
 		long firstTime = 0;
@@ -158,6 +172,67 @@ public class DeviceDiscoveryLayout {
 		}
 
 		// Debug.stopMethodTracing();
+
+	}
+
+	public static void updateDuringDBLoading(MainActivity mainActivity, boolean setOthersToLoading) {
+
+		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
+		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
+		TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
+
+		PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
+
+		List<FoundDevice> foundDevices = DatabaseManager.getProgressList();
+
+		if (foundDevices != null) {
+
+			int exp = LevelSystem.getUserExp(mainActivity.getBlueHunter(), foundDevices);
+			int level = LevelSystem.getLevel(exp);
+
+			DecimalFormat df = new DecimalFormat(",###");
+
+			String format1 = df.format(exp);
+			String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+			String format3 = df.format(LevelSystem.getLevelEndExp(level));
+			String format4 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+
+			if (format1 == null) format1 = "";
+			if (format2 == null) format2 = "";
+			if (format3 == null) format3 = "";
+			if (format4 == null) format4 = "";
+
+			expTextView.setText(String.format("%s %s / %s %s", format1, format2, format3, format4));
+			lvlTextView.setText(String.format("%d", level));
+
+			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
+			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
+
+			int deviceNum = foundDevices.size();
+
+			devicesTextView.setText(df.format(deviceNum));
+
+		}
+		else {
+
+			expTextView.setText("Loading...");
+			lvlTextView.setText("Loading...");
+			devicesTextView.setText("Loading...");
+
+		}
+
+		if (setOthersToLoading) {
+
+			TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInCycle_value);
+			TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
+			TextView devExpTodayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpToday);
+
+			String loadingString = mainActivity.getString(R.string.str_discovery_loading);
+
+			devInCurDisTxt.setText(loadingString);
+			devExpPerDayTxt.setText(loadingString);
+			devExpTodayTxt.setText(loadingString);
+		}
 
 	}
 

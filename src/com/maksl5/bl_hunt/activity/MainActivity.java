@@ -3,6 +3,7 @@ package com.maksl5.bl_hunt.activity;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -34,6 +35,7 @@ import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog.Builder;
@@ -398,45 +400,22 @@ public class MainActivity extends FragmentActivity {
 
 		// Debug.startMethodTracing("startTrace");
 
-		long startTime = System.currentTimeMillis();
-
-		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
-
-		long fdTime = System.currentTimeMillis();
-
-		DeviceDiscoveryLayout.updateIndicatorViews(this);
-
-		long devDisTime = System.currentTimeMillis();
-
-		ProfileLayout.initializeView(this);
-
-		long profTime = System.currentTimeMillis();
+		DeviceDiscoveryLayout.updateDuringDBLoading(this, true);
 
 		LeaderboardLayout.changeList = new DatabaseManager(bhApp).getLeaderboardChanges();
 		LeaderboardLayout.refreshLeaderboard(bhApp);
 
-		long ldTime = System.currentTimeMillis();
+		ProfileLayout.initializeView(this);
 
-		AchievementsLayout.initializeAchievements(bhApp);
+		if (DatabaseManager.getCachedList() == null) {
+			new DatabaseManager(bhApp).loadAllDevices(true);
+		}
+		else {
+			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+			FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
+			AchievementsLayout.initializeAchievements(bhApp);
+		}
 
-		long achieveTime = System.currentTimeMillis();
-
-		long fdDelta = fdTime - startTime;
-		long devDisDelta = devDisTime - fdTime;
-		long profDelta = profTime - devDisTime;
-		long ldDelta = ldTime - profTime;
-		long achieveDelta = achieveTime - ldTime;
-
-		int devices = new DatabaseManager(bhApp).getDeviceNum();
-
-		Log.d("Init Time", "Found Devices Layout: " + fdDelta + "ms");
-		Log.d("Init Time", "Device Discovery Layout: " + devDisDelta + "ms");
-		Log.d("Init Time", "Profile Layout: " + profDelta + "ms");
-		Log.d("Init Time", "Leaderboard Layout: " + ldDelta + "ms");
-		Log.d("Init Time", "Achievements Layout: " + achieveDelta + "ms");
-
-		Log.d("Init Time", "Overall: " + ((achieveTime - startTime) + (disTimeB - disTimeA)) + "ms @ " + devices + "devices");
-		
 		updateNotification();
 
 		// Debug.stopMethodTracing();

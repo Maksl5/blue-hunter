@@ -983,4 +983,9 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		}
 	}
+
+	@Override
+	protected boolean isValidFragment(String fragmentName) {
+		return true;
+	}
 }

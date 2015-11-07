@@ -1,5 +1,6 @@
 package com.maksl5.bl_hunt.storage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import com.maksl5.bl_hunt.util.Manufacturer;
 import com.maksl5.bl_hunt.util.ManufacturerMac;
 
 import android.content.Context;
+import android.text.StaticLayout;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 
@@ -19,6 +21,8 @@ public class ManufacturerList {
 	private static SparseArray<String> nameCacheArray = new SparseArray<String>();
 
 	private static Context context;
+
+	private static boolean needAddingUnknown = true;
 
 	public static void setContext(Context context) {
 		ManufacturerList.context = context;
@@ -41,7 +45,10 @@ public class ManufacturerList {
 		if (exp == -1) {
 
 			getManufacturers();
-			for (Manufacturer manufacturer : manufacturerList) {
+
+			int size = manufacturerList.size();
+			for (int i = 0; i < size; i++) {
+				Manufacturer manufacturer = manufacturerList.get(i);
 				if (manufacturerId == manufacturer.getId()) {
 					exp = manufacturer.getExp();
 
@@ -2807,8 +2814,18 @@ public class ManufacturerList {
 							new ManufacturerMac((short) 0x84, (short) 0xD6, (short) 0xD0),
 							new ManufacturerMac((short) 0xA0, (short) 0x02, (short) 0xDC),
 							new ManufacturerMac((short) 0xF0, (short) 0x27, (short) 0x2D) }) });
+
+			for (int i = 0; i < manufacturerList.size(); i++) {
+				Manufacturer manu = manufacturerList.get(i);
+				expCacheArray.append(manu.getId(), manu.getExp());
+			}
+
 		}
 		return manufacturerList;
+	}
+
+	static {
+
 	}
 
 }

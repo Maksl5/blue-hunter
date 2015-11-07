@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +18,16 @@ import java.util.Set;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.util.FoundDevice;
 import com.maksl5.bl_hunt.util.MacAddress;
 
+import android.R.bool;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -30,6 +36,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Debug;
 import android.util.Log;
 import android.widget.Toast;
@@ -41,7 +48,10 @@ public class DatabaseManager {
 	private DatabaseHelper dbHelper;
 	private SQLiteDatabase db;
 
+	private static ArrayList<FoundDevice> temporaryAsyncList;
 	private static ArrayList<FoundDevice> cachedList;
+
+	private static LoadAllDevicesThread loadAllDevicesTask;
 
 	public static final int INDEX_MAC_ADDRESS = 1;
 	public static final int INDEX_NAME = 2;
@@ -51,6 +61,7 @@ public class DatabaseManager {
 	public static final int INDEX_BONUS = 6;
 
 	/**
+	 * @throws InterruptedException
 	 * 
 	 */
 	public DatabaseManager(BlueHunter app) {
@@ -88,12 +99,12 @@ public class DatabaseManager {
 
 			if (cachedList != null) {
 				cachedList.add(0, device);
+				close();
 			}
 			else {
-				getCachedList();
+				loadAllDevices(true);
 			}
 
-			close();
 			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, device, false);
 
 			updateModifiedTime(System.currentTimeMillis());
@@ -134,95 +145,45 @@ public class DatabaseManager {
 
 	}
 
-	public synchronized List<FoundDevice> getAllDevices() {
+	public synchronized void loadAllDevices(boolean closeAfter) {
 
 		if (cachedList == null || cachedList.size() == 0) {
 
-			// Debug.startMethodTracing("getAllDevices");
+			Log.d("loadAllDevices", "running = " + ((loadAllDevicesTask != null) ? loadAllDevicesTask.running : "false"));
 
-			long startTime = System.currentTimeMillis();
+			if (loadAllDevicesTask == null || !loadAllDevicesTask.running) {
 
-			cachedList = new ArrayList<FoundDevice>();
-
-			Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null,
-					DatabaseHelper.COLUMN_TIME + " DESC");
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				FoundDevice device = new FoundDevice();
-
-				short a = cursor.getShort(1);
-				short b = cursor.getShort(2);
-				short c = cursor.getShort(3);
-				short d = cursor.getShort(4);
-				short e = cursor.getShort(5);
-				short f = cursor.getShort(6);
-
-				MacAddress macAddress = new MacAddress(a, b, c, d, e, f);
-
-				device.setMac(macAddress);
-				device.setName(cursor.getString(7));
-				device.setRssi(cursor.getShort(8));
-				device.setTime(cursor.getLong(9));
-				device.setManu(cursor.getInt(10));
-				device.setBoost(cursor.getFloat(11));
-
-				cachedList.add(device);
-				cursor.moveToNext();
-
+				loadAllDevicesTask = new LoadAllDevicesThread();
+				loadAllDevicesTask.execute(closeAfter);
 			}
-
-			cursor.close();
-
-			long endTime = System.currentTimeMillis();
-			Log.d("getAllDevices [DB]", "" + (endTime - startTime) + "ms @ " + cachedList.size() + "devices");
-
-			// Debug.stopMethodTracing();
 
 		}
 
-		close();
+		// check ob schon läuft nicht vergessen.
 
-		return cachedList;
+		// closeAfter nicht vergessen!
+
 	}
 
-	private synchronized ArrayList<FoundDevice> getCachedList() {
+	public static synchronized ArrayList<FoundDevice> getCachedList() {
 
-		if (cachedList == null || cachedList.size() == 0) {
-
-			cachedList = new ArrayList<FoundDevice>();
-
-			Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null,
-					DatabaseHelper.COLUMN_TIME + " DESC");
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				FoundDevice device = new FoundDevice();
-
-				short a = cursor.getShort(1);
-				short b = cursor.getShort(2);
-				short c = cursor.getShort(3);
-				short d = cursor.getShort(4);
-				short e = cursor.getShort(5);
-				short f = cursor.getShort(6);
-
-				MacAddress macAddress = new MacAddress(a, b, c, d, e, f);
-
-				device.setMac(macAddress);
-				device.setName(cursor.getString(7));
-				device.setRssi(cursor.getShort(8));
-				device.setTime(cursor.getLong(9));
-				device.setManu(cursor.getInt(10));
-				device.setBoost(cursor.getFloat(11));
-
-				cachedList.add(device);
-				cursor.moveToNext();
-
-			}
-
-			cursor.close();
-
+		if (cachedList != null) {
+			return cachedList;
+		}
+		else {
+			return null;
 		}
 
-		return cachedList;
+	}
+
+	public static synchronized ArrayList<FoundDevice> getProgressList() {
+
+		if (temporaryAsyncList != null) {
+			return temporaryAsyncList;
+		}
+		else {
+			return null;
+		}
 
 	}
 
@@ -233,8 +194,9 @@ public class DatabaseManager {
 
 	public synchronized int getDeviceNum(String where) {
 
-		if (where == null) {
-			return getAllDevices().size();
+		if (where == null && cachedList != null) {
+			close();
+			return cachedList.size();
 		}
 
 		int num = (int) DatabaseUtils.queryNumEntries(db, DatabaseHelper.FOUND_DEVICES_TABLE, where);
@@ -280,15 +242,16 @@ public class DatabaseManager {
 			foundDevice.setName(name);
 
 			cachedList.set(index, foundDevice);
+			close();
 		}
 		else {
-			getCachedList();
+			loadAllDevices(true);
 		}
 
 		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change, false);
 
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
-		close();
+
 		updateModifiedTime(System.currentTimeMillis());
 
 	}
@@ -329,12 +292,12 @@ public class DatabaseManager {
 			foundDevice.setManu(manufacturer);;
 
 			cachedList.set(index, foundDevice);
+			close();
 		}
 		else {
-			getCachedList();
+			loadAllDevices(true);
 		}
 
-		close();
 		updateModifiedTime(System.currentTimeMillis());
 	}
 
@@ -375,14 +338,14 @@ public class DatabaseManager {
 			foundDevice.setBoost(bonus);
 
 			cachedList.set(index, foundDevice);
+			close();
 		}
 		else {
-			getCachedList();
+			loadAllDevices(true);
 		}
 
 		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change, false);
 
-		close();
 		updateModifiedTime(System.currentTimeMillis());
 	}
 
@@ -415,12 +378,12 @@ public class DatabaseManager {
 			int index = cachedList.indexOf(removeDevice);
 
 			cachedList.remove(index);
+			close();
 		}
 		else {
-			getCachedList();
+			loadAllDevices(true);
 		}
 
-		close();
 		updateModifiedTime(System.currentTimeMillis());
 
 		if (result == 0) return false;
@@ -460,7 +423,7 @@ public class DatabaseManager {
 			number++;
 
 		}
-		
+
 		db.setTransactionSuccessful();
 		db.endTransaction();
 
@@ -469,10 +432,9 @@ public class DatabaseManager {
 		Log.d("newSyncedDatabase TIME", "" + (syncB - syncA) + "ms");
 
 		cachedList = null;
-		getCachedList();
+		loadAllDevices(true);
 
 		updateModifiedTime(System.currentTimeMillis());
-		close();
 	}
 
 	public boolean addChange(String changeToSync) {
@@ -535,8 +497,6 @@ public class DatabaseManager {
 
 	public int rebuildDatabase() {
 
-		List<FoundDevice> allDevices = getAllDevices();
-
 		dbHelper = new DatabaseHelper(bhApp, version);
 		db = dbHelper.getWritableDatabase();
 
@@ -554,6 +514,10 @@ public class DatabaseManager {
 
 		try {
 
+			if (cachedList == null) {
+				throw new Exception("cachedList is null.");
+			}
+
 			if (bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME)) {
 
 				dbHelper = new DatabaseHelper(bhApp, version);
@@ -561,7 +525,7 @@ public class DatabaseManager {
 
 				List<Integer> failureRows = new ArrayList<Integer>();
 
-				for (FoundDevice device : allDevices) {
+				for (FoundDevice device : cachedList) {
 
 					ContentValues values = new ContentValues();
 
@@ -579,7 +543,7 @@ public class DatabaseManager {
 					values.put(DatabaseHelper.COLUMN_BONUS, device.getBoost());
 
 					if (db.insert(DatabaseHelper.FOUND_DEVICES_TABLE, null, values) == -1) {
-						failureRows.add(allDevices.indexOf(device));
+						failureRows.add(cachedList.indexOf(device));
 					}
 				}
 
@@ -921,7 +885,7 @@ public class DatabaseManager {
 					addNewDeviceForIterate(sqLiteStatement, device);
 
 				}
-				
+
 				db.setTransactionSuccessful();
 				db.endTransaction();
 
@@ -961,4 +925,125 @@ public class DatabaseManager {
 		}
 
 	}
+
+	public class LoadAllDevicesThread extends AsyncTask<Boolean, ArrayList<FoundDevice>, ArrayList<FoundDevice>> {
+
+		boolean closeDBAfterFinish = true;
+		boolean running = false;
+
+		@Override
+		protected ArrayList<FoundDevice> doInBackground(Boolean... params) {
+
+			closeDBAfterFinish = params[0];
+
+			int count = 0;
+
+			// Doing some init
+
+			ManufacturerList.getManufacturers();
+
+			temporaryAsyncList = new ArrayList<FoundDevice>();
+
+			long startTime = System.currentTimeMillis();
+
+			db.beginTransaction();
+
+			Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null,
+					DatabaseHelper.COLUMN_TIME + " DESC");
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				FoundDevice device = new FoundDevice();
+
+				short a = cursor.getShort(1);
+				short b = cursor.getShort(2);
+				short c = cursor.getShort(3);
+				short d = cursor.getShort(4);
+				short e = cursor.getShort(5);
+				short f = cursor.getShort(6);
+
+				MacAddress macAddress = new MacAddress(a, b, c, d, e, f);
+
+				device.setMac(macAddress);
+				device.setName(cursor.getString(7));
+				device.setRssi(cursor.getShort(8));
+				device.setTime(cursor.getLong(9));
+				device.setManu(cursor.getInt(10));
+				device.setBoost(cursor.getFloat(11));
+
+				temporaryAsyncList.add(device);
+				cursor.moveToNext();
+
+				count++;
+
+				if (count >= 2500) {
+
+					publishProgress(temporaryAsyncList);
+					count = 0;
+
+				}
+
+			}
+
+			cursor.close();
+
+			db.setTransactionSuccessful();
+			db.endTransaction();
+
+			if (closeDBAfterFinish) {
+				close();
+			}
+
+			long endTime = System.currentTimeMillis();
+			Log.d("LoadAllDevicesThread", "doBackground() took " + (endTime - startTime) + "ms @ " + temporaryAsyncList.size() + "devices");
+
+			return temporaryAsyncList;
+		}
+
+		@Override
+		protected void onPreExecute() {
+
+			Toast.makeText(bhApp, "Loading found devices from database...", Toast.LENGTH_SHORT).show();
+
+			bhApp.actionBarHandler.setDiscoverySwitchEnabled(false);
+
+			running = true;
+
+		}
+
+		@Override
+		protected void onProgressUpdate(ArrayList<FoundDevice>... values) {
+
+			// Allways use temporaryAsyncList here!!!
+
+			Log.d("LoadAllDevicesThread", "onProgressUpdate() is called @ " + temporaryAsyncList.size() + " devices.");
+
+			DeviceDiscoveryLayout.updateDuringDBLoading(bhApp.mainActivity, true);
+
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<FoundDevice> result) {
+
+			Log.d("LoadAllDevicesThread", "onPostExecute() is called.");
+
+			running = false;
+
+			cachedList = new ArrayList<FoundDevice>(result);
+			temporaryAsyncList = null;
+
+			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+			FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
+			AchievementsLayout.initializeAchievements(bhApp);
+
+			if (bhApp.synchronizeFoundDevices.needForceOverrideUp) {
+				bhApp.synchronizeFoundDevices.startSyncing(3, true);
+			}
+
+			bhApp.actionBarHandler.setDiscoverySwitchEnabled(true);
+
+			bhApp.mainActivity.updateNotification();
+		}
+
+	}
+
 }

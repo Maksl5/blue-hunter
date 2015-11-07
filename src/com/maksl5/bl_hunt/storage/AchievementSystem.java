@@ -297,7 +297,7 @@ public class AchievementSystem {
 							int firstHour = firstDate.getHourOfDay();
 							int recMinute = recentDate.getMinuteOfHour();
 							int firstMinute = firstDate.getMinuteOfHour();
-							
+
 							if (recHour == 22 && firstHour == 22) {
 								if (recMinute >= 0 && recMinute < 30) {
 									if (firstMinute >= 0 && firstMinute < 30) {
@@ -330,7 +330,7 @@ public class AchievementSystem {
 
 							DateTime recentDate = new DateTime(firstTime);
 							DateTime firstDate = new DateTime(secondTime);
-							
+
 							int firstHour = firstDate.getHourOfDay();
 							int recHour = recentDate.getHourOfDay();
 
@@ -535,7 +535,14 @@ public class AchievementSystem {
 		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
 		int exp = LevelSystem.getCachedUserExp(bhApp);
 
-		allDevices = new DatabaseManager(bhApp).getAllDevices();
+		allDevices = DatabaseManager.getCachedList();
+
+		if (allDevices == null) {
+			
+			new DatabaseManager(bhApp).loadAllDevices(true);
+			return;
+
+		}
 
 		for (Achievement achievement : achievements) {
 
@@ -586,8 +593,15 @@ public class AchievementSystem {
 
 		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
 		int exp = LevelSystem.getCachedUserExp(bhApp);
-		
-		allDevices = new DatabaseManager(bhApp).getAllDevices();
+
+		allDevices = DatabaseManager.getCachedList();
+
+		if (allDevices == null) {
+			
+			new DatabaseManager(bhApp).loadAllDevices(true);
+			return;
+
+		}
 
 		for (Achievement achievement : achievements) {
 			if (!ids.contains(achievement.getId())) {

@@ -39,8 +39,7 @@ import com.maksl5.bl_hunt.util.MacAddress;
  * will throw a NullMenuException.
  */
 
-public class ActionBarHandler implements
-		OnQueryTextListener, OnActionExpandListener {
+public class ActionBarHandler implements OnQueryTextListener, OnActionExpandListener {
 
 	private BlueHunter bhApp;
 	public ActionBar actBar;
@@ -78,17 +77,13 @@ public class ActionBarHandler implements
 
 		checkMenuNull();
 
-		final ViewPager viewPager = (ViewPager) bhApp.mainActivity
-				.findViewById(R.id.pager);
-
+		final ViewPager viewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 
 		disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
 		disSwitch.setPadding(5, 0, 5, 0);
 
-		progressBar = new ProgressBar(bhApp, null,
-				android.R.attr.progressBarStyleSmall);
-		getMenuItem(R.id.menu_progress).setVisible(false).setActionView(
-				progressBar);
+		progressBar = new ProgressBar(bhApp, null, android.R.attr.progressBarStyleSmall);
+		getMenuItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
 
 		progressBar.setPadding(5, 0, 5, 0);
 
@@ -96,6 +91,8 @@ public class ActionBarHandler implements
 		srchView.setOnQueryTextListener(this);
 
 		getMenuItem(R.id.menu_search).setOnActionExpandListener(this);
+
+		getMenuItem(R.id.menu_boostIndicator).setTitleCondensed(bhApp.getString(R.string.str_discovery_loading));
 
 		changePage(FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
 
@@ -132,24 +129,19 @@ public class ActionBarHandler implements
 
 						MacAddress macAddress = FoundDevicesLayout.getSelectedMac();
 						if (macAddress == null) {
-							Toast.makeText(bhApp, "Error removing device.",
-									Toast.LENGTH_LONG).show();
+							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
 							mode.finish();
 						}
 
-						if (!new DatabaseManager(bhApp)
-								.deleteDevice(macAddress)) {
-							Toast.makeText(bhApp, "Error removing device.",
-									Toast.LENGTH_LONG).show();
-						} else {
+						if (!new DatabaseManager(bhApp).deleteDevice(macAddress)) {
+							Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
+						}
+						else {
 							FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
-							DeviceDiscoveryLayout
-									.updateIndicatorViews(bhApp.mainActivity);
+							DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
 							bhApp.mainActivity.updateNotification();
-							Toast.makeText(bhApp,
-									"Successfully removed device.",
-									Toast.LENGTH_LONG).show();
+							Toast.makeText(bhApp, "Successfully removed device.", Toast.LENGTH_LONG).show();
 						}
 						mode.finish();
 						return true;
@@ -226,12 +218,8 @@ public class ActionBarHandler implements
 				onQueryTextChange("");
 				menu.findItem(R.id.menu_search).collapseActionView();
 
-				if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated",
-						false))
-					RandomToast
-							.create(bhApp,
-									bhApp.getString(R.string.str_tip_leaderboard),
-									0.25).show();
+				if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated", false))
+					RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_leaderboard), 0.25).show();
 
 				break;
 			case FragmentLayoutManager.PAGE_FOUND_DEVICES:
@@ -268,13 +256,12 @@ public class ActionBarHandler implements
 				break;
 			case FragmentLayoutManager.PAGE_PROFILE:
 				if (ProfileLayout.userName.startsWith("Player")) {
-					RandomToast.create(bhApp,
-							bhApp.getString(R.string.str_tip_changeName), 0.25)
-							.show();
+					RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_changeName), 0.25).show();
 				}
 				break;
 			}
-		} catch (NullPointerException e) {
+		}
+		catch (NullPointerException e) {
 			return false;
 		}
 		return true;
@@ -319,7 +306,6 @@ public class ActionBarHandler implements
 		return menu.findItem(resourceId);
 	}
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -330,11 +316,9 @@ public class ActionBarHandler implements
 	@Override
 	public boolean onQueryTextChange(String newText) {
 
-		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES)
-			FoundDevicesLayout.filterFoundDevices(newText, bhApp);
+		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES) FoundDevicesLayout.filterFoundDevices(newText, bhApp);
 
-		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD)
-			LeaderboardLayout.filterLeaderboard(newText, bhApp);
+		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) LeaderboardLayout.filterLeaderboard(newText, bhApp);
 
 		return false;
 	}
@@ -394,9 +378,8 @@ public class ActionBarHandler implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * android.view.MenuItem.OnActionExpandListener#onMenuItemActionExpand(android
-	 * .view.MenuItem)
+	 * @see android.view.MenuItem.OnActionExpandListener#onMenuItemActionExpand(
+	 * android .view.MenuItem)
 	 */
 	@Override
 	public boolean onMenuItemActionExpand(MenuItem item) {
@@ -408,8 +391,20 @@ public class ActionBarHandler implements
 		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) {
 			menu.findItem(R.id.menu_refresh).setVisible(false);
 		}
-		
+
 		return true;
+	}
+
+	public void setDiscoverySwitchEnabled(boolean enabled) {
+		if (disSwitch != null) {
+			disSwitch.setEnabled(enabled);
+		}
+		else {
+			disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
+			disSwitch.setPadding(5, 0, 5, 0);
+			disSwitch.setEnabled(enabled);
+		}
+
 	}
 
 }

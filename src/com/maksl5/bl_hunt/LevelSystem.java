@@ -4,6 +4,7 @@
  */
 package com.maksl5.bl_hunt;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,9 +32,42 @@ public class LevelSystem {
 
 		int exp = 0;
 
-		List<FoundDevice> foundDevices = new DatabaseManager(bhApp).getAllDevices();
+		List<FoundDevice> allDevices = DatabaseManager.getCachedList();
 
-		for (FoundDevice foundDevice : foundDevices) {
+		if (allDevices == null) {
+
+			new DatabaseManager(bhApp).loadAllDevices(true);
+			return (cachedExp != -1) ? cachedExp : 0;
+
+		}
+
+		int size = allDevices.size();
+
+		for (int i = 0; i < size; i++) {
+			FoundDevice foundDevice = allDevices.get(i);
+
+			int manufacturerId = foundDevice.getManufacturer();
+			float bonus = foundDevice.getBoost();
+
+			if (bonus == -1f) bonus = 0f;
+
+			exp += (int) (ManufacturerList.getExp(manufacturerId) * (1 + bonus));
+
+		}
+
+		cachedExp = exp;
+
+		return exp;
+
+	}
+
+	public static int getUserExp(BlueHunter bhApp, List<FoundDevice> listToUse) {
+
+		int exp = 0;
+
+		List<FoundDevice> tempList = new ArrayList<FoundDevice>(listToUse);
+
+		for (FoundDevice foundDevice : tempList) {
 
 			int manufacturerId = foundDevice.getManufacturer();
 			float bonus = foundDevice.getBoost();
@@ -43,6 +77,8 @@ public class LevelSystem {
 			exp += Math.floor(ManufacturerList.getExp(manufacturerId) * (1 + bonus));
 
 		}
+
+		tempList = null;
 
 		cachedExp = exp;
 
@@ -62,9 +98,16 @@ public class LevelSystem {
 
 		int exp = 0;
 
-		List<FoundDevice> foundDevices = new DatabaseManager(bhApp).getAllDevices();
+		List<FoundDevice> allDevices = DatabaseManager.getCachedList();
 
-		for (FoundDevice foundDevice : foundDevices) {
+		if (allDevices == null) {
+
+			new DatabaseManager(bhApp).loadAllDevices(true);
+			return exp;
+
+		}
+
+		for (FoundDevice foundDevice : allDevices) {
 
 			int manufacturer = foundDevice.getManufacturer();
 
