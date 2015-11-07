@@ -180,7 +180,7 @@ public class SynchronizeFoundDevices implements
 
 			NetworkThread applySync = new NetworkThread(blueHunter);
 
-			backupList = changesToSync;
+			backupList = new ArrayList<String>(changesToSync);
 			changesToSync.clear();
 			new DatabaseManager(blueHunter).resetChanges();
 
@@ -257,6 +257,10 @@ public class SynchronizeFoundDevices implements
 						rulesString.lastIndexOf(';'));
 			}
 
+			backupList = new ArrayList<String>(changesToSync);
+			changesToSync.clear();
+			new DatabaseManager(blueHunter).resetChanges();
+			
 			NetworkThread applySync = new NetworkThread(blueHunter);
 			applySync
 					.execute(
@@ -344,7 +348,7 @@ public class SynchronizeFoundDevices implements
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
 
 				if (changesToSync.isEmpty()) {
-					changesToSync = backupList;
+					changesToSync = new ArrayList<String>(backupList);
 					new DatabaseManager(blueHunter).resetChanges();
 					new DatabaseManager(blueHunter).addChanges(changesToSync);
 				}
