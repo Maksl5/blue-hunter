@@ -29,10 +29,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager.BadTokenException;
 import android.webkit.WebView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -254,12 +257,18 @@ public class Authentification {
 
 						changeLogScrollView.setSmoothScrollingEnabled(true);
 
-						WebView changelogWebView = new WebView(bhApp.currentActivity);
 						int padding =
 								bhApp.getResources().getDimensionPixelSize(R.dimen.padding_small);
-						changelogWebView.setPadding(padding, padding, padding, padding);
-						changeLogScrollView.addView(changelogWebView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-						changelogWebView.loadDataWithBaseURL(null, resultString, "text/html", "UTF-8", null);
+						
+						TextView changelogTextView = new TextView(bhApp.currentActivity);
+						
+						changelogTextView.setPadding(padding, padding, padding, padding);
+						changeLogScrollView.addView(changelogTextView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+						
+						changelogTextView.setText(Html.fromHtml(resultString));
+						changelogTextView.setMovementMethod(LinkMovementMethod.getInstance());
+						changelogTextView.setClickable(true);
+						
 
 						changelogDialog.setView(changeLogScrollView, 0, 0, 0, 0);
 
