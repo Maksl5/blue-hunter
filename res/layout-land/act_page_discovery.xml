@@ -19,7 +19,7 @@
         android:padding="@dimen/padding_xsmall" >
 
         <TableRow
-            android:id="@+id/tableRow5"
+            android:id="@+id/DDtableRow5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -35,7 +35,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/tableRow1"
+            android:id="@+id/DDtableRow1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center" >
@@ -70,7 +70,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/tableRow2"
+            android:id="@+id/DDtableRow2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center" >
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content" >
 
             <TableRow
-                android:id="@+id/TableRow02"
+                android:id="@+id/DDTableRow02"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_large"
@@ -115,7 +115,7 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow4"
+                android:id="@+id/DDtableRow4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center" >
@@ -142,7 +142,7 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/TableRow01"
+                android:id="@+id/DDTableRow01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center" >
@@ -169,7 +169,7 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow3"
+                android:id="@+id/DDtableRow3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center" >

@@ -47,7 +47,7 @@ public class DatabaseManager {
 	private BlueHunter bhApp;
 	private DatabaseHelper dbHelper;
 	private SQLiteDatabase db;
-	
+
 	private static boolean locked;
 
 	private static ArrayList<FoundDevice> temporaryAsyncList;
@@ -662,6 +662,12 @@ public class DatabaseManager {
 		out.close();
 	}
 
+	public static void cancelAllTasks() {
+
+		if (loadAllDevicesTask != null) loadAllDevicesTask.cancel(true);
+
+	}
+
 	/**
 	 * @author Maksl5[Markus Bensing]
 	 * 
@@ -1020,8 +1026,8 @@ public class DatabaseManager {
 			// Allways use temporaryAsyncList here!!!
 
 			Log.d("LoadAllDevicesThread", "onProgressUpdate() is called @ " + temporaryAsyncList.size() + " devices.");
-
-			DeviceDiscoveryLayout.updateDuringDBLoading(bhApp.mainActivity, true);
+			
+			if (!isCancelled()) DeviceDiscoveryLayout.updateDuringDBLoading(bhApp.mainActivity, true);
 
 		}
 
@@ -1046,6 +1052,11 @@ public class DatabaseManager {
 			bhApp.actionBarHandler.setDiscoverySwitchEnabled(true);
 
 			bhApp.mainActivity.updateNotification();
+		}
+
+		@Override
+		protected void onCancelled() {
+			if (closeDBAfterFinish) close();
 		}
 
 	}

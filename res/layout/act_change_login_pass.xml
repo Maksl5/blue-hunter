@@ -8,7 +8,7 @@
     tools:context=".activity.ChangePasswordActivity" >
 
     <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/CLPtableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
@@ -31,14 +31,14 @@
         android:rowCount="4" >
 
         <TableRow
-            android:id="@+id/tableRow3"
+            android:id="@+id/CLPtableRow3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:gravity="bottom" >
 
             <TableRow
-                android:id="@+id/tableRow4"
+                android:id="@+id/CLPtableRow4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -54,7 +54,7 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow5"
+                android:id="@+id/CLPtableRow5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -73,7 +73,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/tableRow3"
+            android:layout_above="@+id/CLPtableRow3"
             android:layout_alignParentTop="true" >
 
             <EditText

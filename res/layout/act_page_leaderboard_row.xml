@@ -14,7 +14,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/LDRtableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -41,15 +41,15 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/tableRow3"
+        android:id="@+id/LDRtableRow3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tableRow1"
-        android:layout_below="@+id/tableRow1"
+        android:layout_alignLeft="@+id/LDRtableRow1"
+        android:layout_below="@+id/LDRtableRow1"
         android:gravity="center" >
 
         <TableRow
-            android:id="@+id/tableRow2"
+            android:id="@+id/LDRtableRow2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -94,7 +94,7 @@
             android:padding="@dimen/padding_xsmall" >
 
             <TableRow
-                android:id="@+id/TableRow01"
+                android:id="@+id/LDRTableRow01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
 
@@ -107,7 +107,7 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow4"
+                android:id="@+id/LDRtableRow4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
 
@@ -122,7 +122,7 @@
         </LinearLayout>
 
         <TableRow
-            android:id="@+id/tableRow5"
+            android:id="@+id/LDRtableRow5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

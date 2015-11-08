@@ -296,6 +296,10 @@ public class FoundDevicesLayout {
 
 	}
 
+	public static void cancelAllTasks() {
+		if (threadManager != null && threadManager.refreshThread != null) threadManager.refreshThread.cancel(true);
+	}
+
 	private class RefreshThread extends AsyncTask<Void, ArrayList<FDAdapterData>, ArrayList<FDAdapterData>> {
 
 		private BlueHunter bhApp;
@@ -593,6 +597,7 @@ public class FoundDevicesLayout {
 			}
 			return false;
 		}
+
 	}
 
 	public class FDAdapterData {
@@ -739,7 +744,7 @@ public class FoundDevicesLayout {
 				viewHolder.rssi = (ImageView) rowView.findViewById(R.id.rssiView);
 				viewHolder.time = (TextView) rowView.findViewById(R.id.timeTxtView);
 				viewHolder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
-				viewHolder.nameTableRow = (TableRow) rowView.findViewById(R.id.tableRow1);
+				viewHolder.nameTableRow = (TableRow) rowView.findViewById(R.id.FDRtableRow1);
 
 				rowView.setTag(viewHolder);
 			}

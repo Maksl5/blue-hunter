@@ -8,7 +8,7 @@
     android:padding="@dimen/padding_medium" >
 
     <TableRow
-        android:id="@+id/tableRow4"
+        android:id="@+id/DDCtableRow4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center" >
@@ -20,7 +20,7 @@
             android:padding="@dimen/padding_small" >
 
             <TableRow
-                android:id="@+id/tableRow"
+                android:id="@+id/DDCtableRow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true" >
@@ -35,11 +35,11 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow2"
+                android:id="@+id/DDCtableRow2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/tableRow" >
+                android:layout_below="@id/DDCtableRow" >
 
                 <TextView
                     android:id="@+id/manufacturerTxtView"
@@ -63,7 +63,7 @@
             android:padding="@dimen/padding_small" >
 
             <TableRow
-                android:id="@+id/TableRow01"
+                android:id="@+id/DDCTableRow01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -81,13 +81,13 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow3"
+                android:id="@+id/DDCtableRow3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/TableRow01"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/DDCTableRow01"
                 android:gravity="center"
-                android:paddingLeft="@dimen/padding_small"
-                android:layout_centerVertical="true">
+                android:paddingLeft="@dimen/padding_small" >
 
                 <TextView
                     android:id="@+id/expTxtView"

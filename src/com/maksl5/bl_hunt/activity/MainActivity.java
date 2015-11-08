@@ -19,6 +19,9 @@ import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer;
+import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer.ParallaxTransformInformation;
+import com.maksl5.bl_hunt.custom_ui.RotationPageTransformer;
 import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
@@ -32,6 +35,7 @@ import com.maksl5.bl_hunt.net.CheckUpdateService;
 import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.NetworkThread;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
+import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
@@ -47,6 +51,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -60,6 +65,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.view.ViewPager.PageTransformer;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -100,8 +106,6 @@ public class MainActivity extends FragmentActivity {
 
 	public boolean passSet = false;
 
-	public static boolean destroyed = true;
-
 	public int oldVersion = 0;
 	public int newVersion = 0;
 
@@ -110,15 +114,12 @@ public class MainActivity extends FragmentActivity {
 
 		super.onCreate(savedInstanceState);
 
-		destroyed = false;
-
 		// Debug.startMethodTracing("startTrace");
 
 		bhApp = (BlueHunter) getApplication();
 		bhApp.mainActivity = this;
 		bhApp.currentActivity = this;
 
-		destroyed = false;
 		setContentView(R.layout.act_main);
 
 		ManufacturerList.setContext(this);
@@ -141,7 +142,10 @@ public class MainActivity extends FragmentActivity {
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(5);
-		mViewPager.setPageTransformer(true, new CustomPagerTransformer());
+
+		PageTransformer parallaxPageTransformer = setupPageTransformer();
+
+		mViewPager.setPageTransformer(true, parallaxPageTransformer);
 
 		registerListener();
 
@@ -190,6 +194,36 @@ public class MainActivity extends FragmentActivity {
 			((TextView) builder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
 
 		}
+
+	}
+
+	private PageTransformer setupPageTransformer() {
+		// ParallaxPageTransformer pageTransformer = new
+		// ParallaxPageTransformer();
+		//
+		// pageTransformer.addViewToParallax(new
+		// ParallaxTransformInformation(R.id.DDtableRow5, 1, -0.5f));
+		// pageTransformer.addViewToParallax(new
+		// ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
+		// pageTransformer.addViewToParallax(new
+		// ParallaxTransformInformation(R.id.lvlIndicator, 1, 1.5f));
+		// pageTransformer.addViewToParallax(new
+		// ParallaxTransformInformation(R.id.DDtableRow2, 1, -0.75f));
+		//
+		// pageTransformer.addViewToParallax(new
+		// ParallaxTransformInformation(R.id.txt_devices, 1, -1.56f));
+		// pageTransformer.addViewToParallax(new
+		// ParallaxTransformInformation(R.id.txt_devExpPerDay, 1, -1.57f));
+		// pageTransformer.addViewToParallax(new
+		// ParallaxTransformInformation(R.id.txt_devExpToday, 1, -1.55f));
+		// pageTransformer.addViewToParallax(new
+		// ParallaxTransformInformation(R.id.txt_discovery_devInCycle_value, 1,
+		// -1.58f));
+		//
+		//
+		// return pageTransformer;
+
+		return new RotationPageTransformer(160);
 
 	}
 
@@ -601,13 +635,22 @@ public class MainActivity extends FragmentActivity {
 			leaderboardChanges.put(leaderboardEntry.getId(), i + 1);
 
 		}
-
-		new DatabaseManager(bhApp).resetLeaderboardChanges();
-		new DatabaseManager(bhApp).setLeaderboardChanges(leaderboardChanges);
+		
+		try {
+			new DatabaseManager(bhApp).resetLeaderboardChanges();
+			new DatabaseManager(bhApp).setLeaderboardChanges(leaderboardChanges);
+		}
+		catch (SQLiteDatabaseLockedException e) {
+			Toast.makeText(bhApp, "Could not save Leaderboard changes.", Toast.LENGTH_SHORT).show();
+		}
 
 		bhApp.synchronizeFoundDevices.saveChanges();
 
-		destroyed = true;
+		bhApp.netMananger.cancelAllTasks();
+		DatabaseManager.cancelAllTasks();
+		FoundDevicesLayout.cancelAllTasks();
+		LeaderboardLayout.cancelAllTasks();
+		AchievementSystem.cancelAllTasks();
 
 		super.onDestroy();
 	}

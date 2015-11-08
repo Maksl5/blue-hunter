@@ -98,21 +98,20 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 
-				
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
 				StringBuilder stringBuilder = new StringBuilder();
-				
+
 				String line = "";
 				while ((line = br.readLine()) != null) {
 					stringBuilder.append(line + System.lineSeparator());
-					
+
 				}
 
 				stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
-				
+
 				result = stringBuilder.toString();
-				
+
 			}
 			else {
 
@@ -166,10 +165,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 	@Override
 	protected void onPreExecute() {
 
-		if (!MainActivity.destroyed) {
-			MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-			progressBar.setVisible(true);
-		}
+		MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+		if (!progressBar.isVisible()) progressBar.setVisible(true);
 
 	}
 

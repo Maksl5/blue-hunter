@@ -712,6 +712,11 @@ public class AchievementSystem {
 
 	}
 
+	public static void cancelAllTasks() {
+		if (checkerThread != null) checkerThread.cancel(true);
+
+	}
+
 	public class AchievementsCheckerThread extends AsyncTask<Boolean, Achievement, Integer> {
 
 		BlueHunter bhApp;
@@ -771,9 +776,10 @@ public class AchievementSystem {
 		protected void onProgressUpdate(Achievement... values) {
 
 			Achievement achievement = values[0];
-			
-			Toast.makeText(bhApp, bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Toast.LENGTH_LONG).show();
-			
+
+			Toast.makeText(bhApp, bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Toast.LENGTH_LONG)
+					.show();
+
 		}
 
 		@Override
@@ -811,7 +817,7 @@ public class AchievementSystem {
 					else {
 
 						if (achievement.check(bhApp, deviceNum, exp)) {
-							if(achievement.accomplish(bhApp, alreadyAccomplished)) {
+							if (achievement.accomplish(bhApp, alreadyAccomplished)) {
 								publishProgress(achievement);
 							}
 							temporaryStates.put(achievement.getId(), true);
@@ -824,7 +830,7 @@ public class AchievementSystem {
 				}
 				else {
 					if (achievement.check(bhApp, deviceNum, exp)) {
-						if(achievement.accomplish(bhApp, alreadyAccomplished)) {
+						if (achievement.accomplish(bhApp, alreadyAccomplished)) {
 							publishProgress(achievement);
 						}
 						temporaryStates.put(achievement.getId(), true);

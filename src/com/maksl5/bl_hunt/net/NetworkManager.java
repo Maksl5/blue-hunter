@@ -4,8 +4,6 @@
  */
 package com.maksl5.bl_hunt.net;
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +12,6 @@ import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
 
 import android.view.MenuItem;
-
-
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -56,10 +52,17 @@ public class NetworkManager {
 	private void checkList() {
 
 		if (curRunningThreads.size() == 0) {
-			if (!MainActivity.destroyed) {
-				MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-				progressBar.setVisible(false);
-			}
+
+			MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+			if (progressBar.isVisible()) progressBar.setVisible(false);
+
+		}
+
+	}
+
+	public void cancelAllTasks() {
+		for (NetworkThread networkThread : curRunningThreads) {
+			if (networkThread != null) networkThread.cancel(true);
 		}
 
 	}

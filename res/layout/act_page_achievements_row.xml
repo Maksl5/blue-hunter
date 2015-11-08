@@ -4,7 +4,7 @@
     android:layout_height="match_parent" >
 
     <TableRow
-        android:id="@+id/tableRow3"
+        android:id="@+id/ARtableRow3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/txtBoost"
@@ -21,10 +21,10 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/ARtableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/tableRow3"
+        android:layout_toRightOf="@id/ARtableRow3"
         android:paddingLeft="@dimen/padding_xsmall"
         android:paddingRight="@dimen/padding_xsmall"
         android:paddingTop="@dimen/padding_xsmall" >
@@ -40,11 +40,11 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/tableRow2"
+        android:id="@+id/ARtableRow2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tableRow1"
-        android:layout_toRightOf="@id/tableRow3"
+        android:layout_below="@id/ARtableRow1"
+        android:layout_toRightOf="@id/ARtableRow3"
         android:paddingBottom="@dimen/padding_xsmall"
         android:paddingLeft="@dimen/padding_xsmall"
         android:paddingRight="@dimen/padding_xsmall" >
@@ -62,7 +62,7 @@
         android:id="@+id/txtProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tableRow2"
+        android:layout_below="@id/ARtableRow2"
         android:layout_centerHorizontal="true"
         android:text="0 / 0"
         android:textColor="#808080"

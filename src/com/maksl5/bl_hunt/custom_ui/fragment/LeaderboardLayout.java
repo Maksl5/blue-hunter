@@ -192,6 +192,11 @@ public class LeaderboardLayout {
 
 	}
 
+	public static void cancelAllTasks() {
+		if (threadManager != null && threadManager.refreshThread != null) threadManager.refreshThread.cancel(true);
+
+	}
+
 	private class RefreshThread extends AsyncTask<Integer, Void, String> {
 
 		private BlueHunter bhApp;
@@ -291,7 +296,7 @@ public class LeaderboardLayout {
 					while ((line = br.readLine()) != null) {
 						stringBuilder.append(line + System.lineSeparator());
 					}
-					
+
 					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
 
 					result = stringBuilder.toString();

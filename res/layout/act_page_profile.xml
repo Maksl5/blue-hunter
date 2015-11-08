@@ -15,7 +15,7 @@
         android:src="@drawable/ic_launcher" />
 
     <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/PtableRow1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/contactBadge"
@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/contactBadge"
         android:layout_below="@+id/contactBadge"
-        android:layout_toLeftOf="@+id/tableRow1"
+        android:layout_toLeftOf="@+id/PtableRow1"
         android:visibility="gone" />
 
     <ProgressBar

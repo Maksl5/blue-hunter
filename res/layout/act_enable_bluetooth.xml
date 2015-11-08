@@ -8,7 +8,7 @@
     tools:context=".EnableBluetoothActivity" >
 
     <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/EBtableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
@@ -33,7 +33,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/tableRow4"
+            android:layout_above="@+id/EBtableRow4"
             android:layout_alignParentTop="true"
             android:gravity="center" >
 
@@ -50,7 +50,7 @@
         </RelativeLayout>
 
         <TableRow
-            android:id="@+id/tableRow3"
+            android:id="@+id/EBtableRow3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -58,7 +58,7 @@
             android:gravity="bottom" >
 
             <TableRow
-                android:id="@+id/tableRow5"
+                android:id="@+id/EBtableRow5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -82,10 +82,10 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/tableRow4"
+            android:id="@+id/EBtableRow4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/tableRow3"
+            android:layout_above="@+id/EBtableRow3"
             android:layout_weight="1"
             android:gravity="center" >
 

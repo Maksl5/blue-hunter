@@ -14,7 +14,7 @@
         android:visibility="gone" />
 
     <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/FDRtableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/selectCheckbox"
@@ -36,10 +36,10 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/tableRow4"
+        android:id="@+id/FDRtableRow4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tableRow1"
+        android:layout_below="@+id/FDRtableRow1"
         android:layout_toRightOf="@id/selectCheckbox"
         android:gravity="center" >
 
@@ -50,7 +50,7 @@
             android:padding="@dimen/padding_small" >
 
             <TableRow
-                android:id="@+id/tableRow"
+                android:id="@+id/FDRtableRow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true" >
@@ -65,11 +65,11 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow2"
+                android:id="@+id/FDRtableRow2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/tableRow" >
+                android:layout_below="@id/FDRtableRow" >
 
                 <TextView
                     android:id="@+id/manufacturerTxtView"
@@ -96,7 +96,7 @@
             android:padding="@dimen/padding_small" >
 
             <TableRow
-                android:id="@+id/TableRow01"
+                android:id="@+id/FDRTableRow01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -114,10 +114,10 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow3"
+                android:id="@+id/FDRtableRow3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/TableRow01"
+                android:layout_toRightOf="@id/FDRTableRow01"
                 android:gravity="center"
                 android:paddingLeft="@dimen/padding_small" >
 
@@ -132,11 +132,11 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow5"
+                android:id="@+id/FDRtableRow5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tableRow3"
-                android:layout_toRightOf="@id/TableRow01"
+                android:layout_below="@id/FDRtableRow3"
+                android:layout_toRightOf="@id/FDRTableRow01"
                 android:paddingLeft="@dimen/padding_small" >
 
                 <TextView
