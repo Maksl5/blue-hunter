@@ -191,6 +191,9 @@
     <string name="str_achieve_19_title">Sociality I</string>
     <string name="str_achieve_19_description">Find the device from another player of BlueHunter.</string>
     
+    <string name="str_achieve_20_title">Debug Helper</string>
+    <string name="str_achieve_20_description">You are seeing this Achievement, because you have helped me alot with debugging. Thank you for that. :-)</string>
+    
     <!-- Error strings -->
     
     

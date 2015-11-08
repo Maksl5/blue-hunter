@@ -43,31 +43,19 @@ public abstract class Achievement {
 
 	}
 
+	public Achievement(int id, boolean isHidden, int title, int description) {
+
+		this.id = id;
+		this.title = title;
+		this.descriptionString = description;
+		this.hasProgress = false;
+		this.isHidden = isHidden;
+
+	}
+
 	// Properties
 
-	/** The number of devices to complete this achievement. 0 for not needed. */
-	private int numDevices;
-
-	/** The experience needed to complete this achievement. 0 for not needed. */
-	private int numExp;
-
-	/** The level needed to complete this achievement. 0 for not needed. */
-	private int numLevel;
-
-	/**
-	 * The time interval in which this achievement has to be completed. 0 for no
-	 * time interval.
-	 */
-	private int timeInterval;
-
-	/** The list of manufacturers for which the achievement is only calculated. */
-	private List<String> manufacturerList;
-
-	/**
-	 * The preferences which must have a specific state to accomplish the
-	 * achievement.
-	 */
-	private HashMap<String, Boolean> preferencesList;
+	private boolean isHidden = false;
 
 	private int id;
 
@@ -80,12 +68,15 @@ public abstract class Achievement {
 	private boolean hasProgress;
 	private String progressString = "none";
 
-	public void accomplish(BlueHunter bhApp, boolean alreadyAccomplished) {
+	//Returns true if Toast should be showed.
+	public boolean accomplish(BlueHunter bhApp, boolean alreadyAccomplished) {
 
 		PreferenceManager.setPref(bhApp, "pref_achievement_" + id, bhApp.authentification.getAchieveHash(id));
 
 		if (!alreadyAccomplished)
-			Toast.makeText(bhApp, bhApp.getString(R.string.str_achievement_accomplish, getName(bhApp)), Toast.LENGTH_LONG).show();
+			return true;
+		
+		return false;
 	}
 
 	public void invalidate(BlueHunter bhApp) {
@@ -99,7 +90,6 @@ public abstract class Achievement {
 	 */
 	public Achievement setNumDevices(int numDevices) {
 
-		this.numDevices = numDevices;
 		return this;
 	}
 
@@ -109,7 +99,6 @@ public abstract class Achievement {
 	 */
 	public Achievement setNumExp(int numExp) {
 
-		this.numExp = numExp;
 		return this;
 	}
 
@@ -119,7 +108,6 @@ public abstract class Achievement {
 	 */
 	public Achievement setNumLevel(int numLevel) {
 
-		this.numLevel = numLevel;
 		return this;
 	}
 
@@ -129,7 +117,6 @@ public abstract class Achievement {
 	 */
 	public Achievement setTimeInterval(int timeInterval) {
 
-		this.timeInterval = timeInterval;
 		return this;
 	}
 
@@ -139,7 +126,6 @@ public abstract class Achievement {
 	 */
 	public Achievement setManufacturerList(List<String> manufacturerList) {
 
-		this.manufacturerList = manufacturerList;
 		return this;
 	}
 
@@ -149,7 +135,6 @@ public abstract class Achievement {
 	 */
 	public Achievement setPreferencesList(HashMap<String, Boolean> preferencesList) {
 
-		this.preferencesList = preferencesList;
 		return this;
 	}
 
@@ -183,6 +168,11 @@ public abstract class Achievement {
 		return hasProgress;
 	}
 
+	public boolean isHidden() {
+
+		return isHidden;
+	}
+
 	public String getProgressString() {
 		if (hasProgress)
 			return progressString;
@@ -190,7 +180,7 @@ public abstract class Achievement {
 			return "none";
 
 	}
-	
+
 	public void setNewProgressString(String progress) {
 		progressString = progress;
 	}

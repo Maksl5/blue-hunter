@@ -414,6 +414,7 @@ public class MainActivity extends FragmentActivity {
 			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 			FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 			AchievementsLayout.initializeAchievements(bhApp);
+			AchievementsLayout.updateBoostIndicator(bhApp);
 		}
 
 		updateNotification();

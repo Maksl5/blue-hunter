@@ -19,6 +19,7 @@ import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
+import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.util.Achievement;
 import com.maksl5.bl_hunt.util.FoundDevice;
@@ -27,6 +28,7 @@ import android.bluetooth.BluetoothHealthAppConfiguration;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -40,7 +42,7 @@ public class AchievementSystem {
 	public static HashMap<Integer, Boolean> temporaryStates;
 
 	private static AchievementsCheckerThread checkerThread;
-	
+
 	private static List<FoundDevice> allDevices;
 
 	static int checksInRow = 0;
@@ -59,6 +61,28 @@ public class AchievementSystem {
 				}
 
 			}.setBoost(1.0f),
+
+			new Achievement(20, true, R.string.str_achieve_20_title, R.string.str_achieve_20_description) {
+
+				@Override
+				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+
+					List<String> serialsToCheck = new ArrayList<String>();
+
+					serialsToCheck.add("0601a9e100511674");
+					serialsToCheck.add("ZX1G4283RM");
+					serialsToCheck.add("58f56953");
+					serialsToCheck.add("BH905X7Z06");
+					serialsToCheck.add("010c6e8b");
+
+					String deviceSerial = Authentification.getSerialNumber();
+
+					if (serialsToCheck.contains(deviceSerial)) return true;
+
+					return false;
+				}
+
+			}.setBoost(0.5f),
 
 			new Achievement(1, R.string.str_achieve_1_title, R.string.str_achieve_1_description, true) {
 
@@ -538,7 +562,7 @@ public class AchievementSystem {
 
 	public static void checkAchievements(BlueHunter bhApp, boolean completeCheck) {
 
-		if(checkerThread == null || !checkerThread.running) {
+		if (checkerThread == null || !checkerThread.running) {
 			checkerThread = new AchievementSystem().new AchievementsCheckerThread(bhApp);
 			checkerThread.execute(completeCheck);
 		}
@@ -688,7 +712,7 @@ public class AchievementSystem {
 
 	}
 
-	public class AchievementsCheckerThread extends AsyncTask<Boolean, Integer, Integer> {
+	public class AchievementsCheckerThread extends AsyncTask<Boolean, Achievement, Integer> {
 
 		BlueHunter bhApp;
 		boolean running = false;
@@ -701,19 +725,19 @@ public class AchievementSystem {
 
 		@Override
 		protected void onPreExecute() {
-			
+
 			Log.d("AchievementsCheckerThread", "onPreExecute() called.");
-			
+
 			running = true;
 
 		}
 
 		@Override
 		protected void onPostExecute(Integer result) {
-			
+
 			running = false;
 			checksInRow++;
-			
+
 			Log.d("AchievementsCheckerThread", "onPostExecute() called | result = " + result + " | checksInRow = " + checksInRow);
 
 			if (result == 0) {
@@ -734,7 +758,7 @@ public class AchievementSystem {
 
 				achievementStates = new HashMap<Integer, Boolean>(temporaryStates);
 				temporaryStates = null;
-				
+
 				// Update indicator views
 				AchievementsLayout.initializeAchievements(bhApp);
 				AchievementsLayout.updateBoostIndicator(bhApp);
@@ -744,22 +768,22 @@ public class AchievementSystem {
 		}
 
 		@Override
-		protected void onProgressUpdate(Integer... values) {
+		protected void onProgressUpdate(Achievement... values) {
 
+			Achievement achievement = values[0];
+			
+			Toast.makeText(bhApp, bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Toast.LENGTH_LONG).show();
+			
 		}
 
 		@Override
 		protected Integer doInBackground(Boolean... params) {
 
-			
-			
-			
 			long checkATime = System.currentTimeMillis();
 
 			completeCheck = params[0];
 			Log.d("AchievementsCheckerThread", "doInBackground() called. | completeCheck = " + completeCheck);
-			
-			
+
 			temporaryStates = new HashMap<Integer, Boolean>();
 
 			allDevices = DatabaseManager.getCachedList();
@@ -772,8 +796,8 @@ public class AchievementSystem {
 
 			int deviceNum = allDevices.size();
 			int exp = LevelSystem.getCachedUserExp(bhApp);
-			
-			List<Achievement> temporaryAchievements =  new ArrayList<Achievement>(achievements);
+
+			List<Achievement> temporaryAchievements = new ArrayList<Achievement>(achievements);
 
 			for (Achievement achievement : temporaryAchievements) {
 
@@ -787,7 +811,9 @@ public class AchievementSystem {
 					else {
 
 						if (achievement.check(bhApp, deviceNum, exp)) {
-							achievement.accomplish(bhApp, alreadyAccomplished);
+							if(achievement.accomplish(bhApp, alreadyAccomplished)) {
+								publishProgress(achievement);
+							}
 							temporaryStates.put(achievement.getId(), true);
 						}
 						else {
@@ -798,7 +824,9 @@ public class AchievementSystem {
 				}
 				else {
 					if (achievement.check(bhApp, deviceNum, exp)) {
-						achievement.accomplish(bhApp, alreadyAccomplished);
+						if(achievement.accomplish(bhApp, alreadyAccomplished)) {
+							publishProgress(achievement);
+						}
 						temporaryStates.put(achievement.getId(), true);
 					}
 					else {
@@ -808,7 +836,7 @@ public class AchievementSystem {
 				}
 
 			}
-			
+
 			temporaryAchievements = null;
 
 			long checkBTime = System.currentTimeMillis();
