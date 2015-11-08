@@ -1,7 +1,5 @@
 package com.maksl5.bl_hunt;
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +26,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
-
 /**
  * 
  * 
@@ -39,7 +35,8 @@ import android.widget.TextView;
  * {@code DiscoveryManager disMan = new DiscoveryManager(Activity);}
  * </p>
  * 
- * Supply the discovery state {@link TextView} with the {@link #supplyTextView(TextView)} method.
+ * Supply the discovery state {@link TextView} with the
+ * {@link #supplyTextView(TextView)} method.
  * 
  * @author Maksl5[Markus Bensing]
  */
@@ -57,7 +54,8 @@ public class DiscoveryManager {
 	}
 
 	/**
-	 * Starts the {@link DiscoveryManager}, constructing all its subclasses and initializing the BluetoothDiscovery.
+	 * Starts the {@link DiscoveryManager}, constructing all its subclasses and
+	 * initializing the BluetoothDiscovery.
 	 * 
 	 * @return <b>false</b> - if the given TextView is null.
 	 */
@@ -100,8 +98,7 @@ public class DiscoveryManager {
 
 	}
 
-	public boolean passEnableBTActivityResult(	int result,
-												int request) {
+	public boolean passEnableBTActivityResult(int result, int request) {
 
 		if (btHandler == null) return false;
 
@@ -151,17 +148,16 @@ public class DiscoveryManager {
 
 	public int getCurDiscoveryState() {
 
-		if (btHandler != null && btHandler.disState != null)
-			return btHandler.disState.getCurDiscoveryState();
+		if (btHandler != null && btHandler.disState != null) return btHandler.disState.getCurDiscoveryState();
 
 		return -2;
-		
+
 	}
 
 	/**
 	 * 
-	 * This class handles the discovery state of the device discovery. Construct with
-	 * {@code new DiscoveryState(TextView, Context);}
+	 * This class handles the discovery state of the device discovery. Construct
+	 * with {@code new DiscoveryState(TextView, Context);}
 	 * 
 	 * @author Maksl5[Markus Bensing]
 	 * 
@@ -185,13 +181,13 @@ public class DiscoveryManager {
 		/**
 		 * 
 		 * @param stateTextView
-		 *            The {@link TextView}, in which the discovery state should be shown.
+		 *            The {@link TextView}, in which the discovery state should
+		 *            be shown.
 		 * @param con
 		 *            The {@link Context} of the base package or activity.
 		 */
 
-		public DiscoveryState(TextView stateTextView,
-				Context con) {
+		public DiscoveryState(TextView stateTextView, Context con) {
 
 			this.stateTextView = stateTextView;
 			context = con;
@@ -204,8 +200,7 @@ public class DiscoveryManager {
 		 * @param context
 		 * @return
 		 */
-		public static String getDiscoveryState(	int state,
-												Context context) {
+		public static String getDiscoveryState(int state, Context context) {
 
 			switch (state) {
 			case DISCOVERY_STATE_RUNNING:
@@ -229,8 +224,7 @@ public class DiscoveryManager {
 			return "";
 		}
 
-		public static String getUnformatedDiscoveryState(	int state,
-															Context context) {
+		public static String getUnformatedDiscoveryState(int state, Context context) {
 
 			switch (state) {
 			case DISCOVERY_STATE_RUNNING:
@@ -305,8 +299,10 @@ public class DiscoveryManager {
 		 */
 		public boolean setDiscoveryState(int state) {
 
-			// if (state != (DISCOVERY_STATE_BT_OFF | DISCOVERY_STATE_ERROR | DISCOVERY_STATE_FINISHED |
-			// DISCOVERY_STATE_OFF | DISCOVERY_STATE_RUNNING | DISCOVERY_STATE_STOPPED | DISCOVERY_STATE_BT_ENABLING |
+			// if (state != (DISCOVERY_STATE_BT_OFF | DISCOVERY_STATE_ERROR |
+			// DISCOVERY_STATE_FINISHED |
+			// DISCOVERY_STATE_OFF | DISCOVERY_STATE_RUNNING |
+			// DISCOVERY_STATE_STOPPED | DISCOVERY_STATE_BT_ENABLING |
 			// DISCOVERY_STATE_BT_DISABLING))
 			// return false;
 
@@ -318,7 +314,8 @@ public class DiscoveryManager {
 	}
 
 	/**
-	 * Handles the native Bluetooth events and manages Bluetooth related user input.
+	 * Handles the native Bluetooth events and manages Bluetooth related user
+	 * input.
 	 * 
 	 * @author Maksl5[Markus Bensing]
 	 * 
@@ -343,19 +340,16 @@ public class DiscoveryManager {
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 			fDListCurDiscovery = new ArrayList<FoundDevice>();
 
-			discoveryButton =
-					(CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
+			discoveryButton = (CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
 
-			final ListView discoveryListView =
-					(ListView) bhApp.mainActivity.findViewById(R.id.discoveryListView);
+			final ListView discoveryListView = (ListView) bhApp.mainActivity.findViewById(R.id.discoveryListView);
 
 			requestBtEnable(false);
 
 			discoveryButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 				@Override
-				public void onCheckedChanged(	CompoundButton buttonView,
-												boolean isChecked) {
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
 					if (isChecked) {
 						if (isBluetoothEnabled()) {
@@ -453,8 +447,7 @@ public class DiscoveryManager {
 			}
 		}
 
-		private void enableBluetoothResult(	int result,
-											int request) {
+		private void enableBluetoothResult(int result, int request) {
 
 			switch (result) {
 			case EnableBluetoothActivity.BT_ENABLE_RESULT_ENABLE:
@@ -506,17 +499,17 @@ public class DiscoveryManager {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
+		 * @see
+		 * android.content.BroadcastReceiver#onReceive(android.content.Context,
+		 * android.content.Intent)
 		 */
 		@Override
-		public void onReceive(	Context context,
-								Intent intent) {
+		public void onReceive(Context context, Intent intent) {
 
 			String action = intent.getAction();
 
 			if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-				int newState =
-						intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
+				int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
 
 				switch (newState) {
 				case BluetoothAdapter.STATE_OFF:
@@ -544,20 +537,22 @@ public class DiscoveryManager {
 			else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
 
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING);
-				bhApp.mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING, bhApp));
+				bhApp.mainActivity.stateNotificationBuilder
+						.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING, bhApp));
 				bhApp.mainActivity.updateNotification();
 
 			}
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
-				
-				
 				disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_FINISHED);
+
+				boolean didFoundNewDevice = false;
 
 				for (BluetoothDevice btDevice : foundDevicesInCurDiscovery) {
 					new DatabaseManager(bhApp).addNameToDevice(new MacAddress(btDevice.getAddress()), btDevice.getName());
+					didFoundNewDevice = true;
 				}
-				
+
 				bhApp.synchronizeFoundDevices.checkAndStart();
 
 				foundDevicesInCurDiscovery = null;
@@ -568,20 +563,23 @@ public class DiscoveryManager {
 
 				DeviceDiscoveryLayout.onlyCurListUpdate(bhApp.mainActivity);
 
+				//Only check if we actually found a new device, otherwise it's just an useless check.
+				if (didFoundNewDevice) AchievementSystem.checkAchievements(bhApp, false);
+
 				if (discoveryButton.isChecked()) {
 					runDiscovery();
 				}
 				else {
 					disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED);
-					bhApp.mainActivity.stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, bhApp));
+					bhApp.mainActivity.stateNotificationBuilder
+							.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, bhApp));
 					bhApp.mainActivity.updateNotification();
 				}
 
 			}
 			else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 
-				BluetoothDevice tempDevice =
-						intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				BluetoothDevice tempDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				short RSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);
 				onDeviceFound(tempDevice, RSSI);
 
@@ -589,11 +587,10 @@ public class DiscoveryManager {
 
 		}
 
-		public void onDeviceFound(	BluetoothDevice btDevice,
-									short rssi) {
+		public void onDeviceFound(BluetoothDevice btDevice, short rssi) {
 
-			//Debug.startMethodTracing("onDeviceFound");
-			
+			// Debug.startMethodTracing("onDeviceFound");
+
 			foundDevices = DatabaseManager.getCachedList();
 
 			if (foundDevices == null) {
@@ -603,10 +600,10 @@ public class DiscoveryManager {
 
 			}
 
-			//Compare Object
+			// Compare Object
 			FoundDevice compare = new FoundDevice();
 			compare.setMac(btDevice.getAddress());
-			
+
 			if (!foundDevices.contains(compare)) {
 				foundDevicesInCurDiscovery.add(btDevice);
 
@@ -627,8 +624,8 @@ public class DiscoveryManager {
 
 			}
 
-			//Debug.stopMethodTracing();
-						
+			// Debug.stopMethodTracing();
+
 		}
 
 		public void attemptVibration() {

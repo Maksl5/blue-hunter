@@ -558,7 +558,10 @@ public class FoundDevicesLayout {
 		 */
 		@Override
 		protected void onPreExecute() {
-			if (needManuCheck) Toast.makeText(bhApp, "Require Manufacturer Check...", Toast.LENGTH_SHORT).show();
+			if (needManuCheck) {
+				Toast.makeText(bhApp, "Require Manufacturer Check...", Toast.LENGTH_SHORT).show();
+				Log.d("FD Layout Background Thread", "Require Manufacturer Check...");
+			}
 		}
 	}
 

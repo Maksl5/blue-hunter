@@ -18,10 +18,13 @@ import org.joda.time.DateTime;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.util.Achievement;
 import com.maksl5.bl_hunt.util.FoundDevice;
 
+import android.bluetooth.BluetoothHealthAppConfiguration;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -34,8 +37,13 @@ public class AchievementSystem {
 	private static float boost = 0.0f;
 
 	public static HashMap<Integer, Boolean> achievementStates;
+	public static HashMap<Integer, Boolean> temporaryStates;
 
+	private static AchievementsCheckerThread checkerThread;
+	
 	private static List<FoundDevice> allDevices;
+
+	static int checksInRow = 0;
 
 	public static List<Achievement> achievements = Arrays.asList(new Achievement[] {
 			new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
@@ -530,60 +538,10 @@ public class AchievementSystem {
 
 	public static void checkAchievements(BlueHunter bhApp, boolean completeCheck) {
 
-		achievementStates = new HashMap<Integer, Boolean>();
-
-		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
-		int exp = LevelSystem.getCachedUserExp(bhApp);
-
-		allDevices = DatabaseManager.getCachedList();
-
-		if (allDevices == null) {
-			
-			new DatabaseManager(bhApp).loadAllDevices(true);
-			return;
-
+		if(checkerThread == null || !checkerThread.running) {
+			checkerThread = new AchievementSystem().new AchievementsCheckerThread(bhApp);
+			checkerThread.execute(completeCheck);
 		}
-
-		for (Achievement achievement : achievements) {
-
-			boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "")
-					.equals(bhApp.authentification.getAchieveHash(achievement.getId()));
-
-			if (!completeCheck) {
-				if (alreadyAccomplished) {
-					achievementStates.put(achievement.getId(), true);
-				}
-				else {
-
-					if (achievement.check(bhApp, deviceNum, exp)) {
-						achievement.accomplish(bhApp, alreadyAccomplished);
-						achievementStates.put(achievement.getId(), true);
-					}
-					else {
-						achievement.invalidate(bhApp);
-						achievementStates.put(achievement.getId(), false);
-					}
-				}
-			}
-			else {
-				if (achievement.check(bhApp, deviceNum, exp)) {
-					achievement.accomplish(bhApp, alreadyAccomplished);
-					achievementStates.put(achievement.getId(), true);
-				}
-				else {
-					achievement.invalidate(bhApp);
-					achievementStates.put(achievement.getId(), false);
-				}
-			}
-
-		}
-
-		float boost = getBoost(bhApp);
-
-		NumberFormat pFormat = DecimalFormat.getPercentInstance();
-
-		MenuItem boostIndicator = bhApp.actionBarHandler.getMenuItem(R.id.menu_boostIndicator);
-		boostIndicator.setTitleCondensed(bhApp.getString(R.string.str_achievement_totalBoost, pFormat.format(boost)));
 
 	}
 
@@ -597,7 +555,7 @@ public class AchievementSystem {
 		allDevices = DatabaseManager.getCachedList();
 
 		if (allDevices == null) {
-			
+
 			new DatabaseManager(bhApp).loadAllDevices(true);
 			return;
 
@@ -729,4 +687,137 @@ public class AchievementSystem {
 		return levelBoost;
 
 	}
+
+	public class AchievementsCheckerThread extends AsyncTask<Boolean, Integer, Integer> {
+
+		BlueHunter bhApp;
+		boolean running = false;
+
+		boolean completeCheck = false;
+
+		public AchievementsCheckerThread(BlueHunter bhApp) {
+			this.bhApp = bhApp;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+			Log.d("AchievementsCheckerThread", "onPreExecute() called.");
+			
+			running = true;
+
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			
+			running = false;
+			checksInRow++;
+			
+			Log.d("AchievementsCheckerThread", "onPostExecute() called | result = " + result + " | checksInRow = " + checksInRow);
+
+			if (result == 0) {
+				// allDevices was null
+				if (checksInRow < 4) {
+					// check if this thread was run under 4 times in a row
+
+					checkAchievements(bhApp, completeCheck);
+
+				}
+				else {
+					checksInRow = 0;
+				}
+
+			}
+			else if (result == 1) {
+				checksInRow = 0;
+
+				achievementStates = new HashMap<Integer, Boolean>(temporaryStates);
+				temporaryStates = null;
+				
+				// Update indicator views
+				AchievementsLayout.initializeAchievements(bhApp);
+				AchievementsLayout.updateBoostIndicator(bhApp);
+
+			}
+
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+
+		}
+
+		@Override
+		protected Integer doInBackground(Boolean... params) {
+
+			
+			
+			
+			long checkATime = System.currentTimeMillis();
+
+			completeCheck = params[0];
+			Log.d("AchievementsCheckerThread", "doInBackground() called. | completeCheck = " + completeCheck);
+			
+			
+			temporaryStates = new HashMap<Integer, Boolean>();
+
+			allDevices = DatabaseManager.getCachedList();
+
+			if (allDevices == null) {
+
+				new DatabaseManager(bhApp).loadAllDevices(true);
+				return 0;
+			}
+
+			int deviceNum = allDevices.size();
+			int exp = LevelSystem.getCachedUserExp(bhApp);
+			
+			List<Achievement> temporaryAchievements =  new ArrayList<Achievement>(achievements);
+
+			for (Achievement achievement : temporaryAchievements) {
+
+				boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "")
+						.equals(bhApp.authentification.getAchieveHash(achievement.getId()));
+
+				if (!completeCheck) {
+					if (alreadyAccomplished) {
+						temporaryStates.put(achievement.getId(), true);
+					}
+					else {
+
+						if (achievement.check(bhApp, deviceNum, exp)) {
+							achievement.accomplish(bhApp, alreadyAccomplished);
+							temporaryStates.put(achievement.getId(), true);
+						}
+						else {
+							achievement.invalidate(bhApp);
+							temporaryStates.put(achievement.getId(), false);
+						}
+					}
+				}
+				else {
+					if (achievement.check(bhApp, deviceNum, exp)) {
+						achievement.accomplish(bhApp, alreadyAccomplished);
+						temporaryStates.put(achievement.getId(), true);
+					}
+					else {
+						achievement.invalidate(bhApp);
+						temporaryStates.put(achievement.getId(), false);
+					}
+				}
+
+			}
+			
+			temporaryAchievements = null;
+
+			long checkBTime = System.currentTimeMillis();
+
+			Log.d("checkAchievements()", "" + (checkBTime - checkATime) + "ms");
+
+			return 1;
+		}
+
+	}
+
 }

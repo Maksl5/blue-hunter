@@ -47,6 +47,8 @@ public class DatabaseManager {
 	private BlueHunter bhApp;
 	private DatabaseHelper dbHelper;
 	private SQLiteDatabase db;
+	
+	private static boolean locked;
 
 	private static ArrayList<FoundDevice> temporaryAsyncList;
 	private static ArrayList<FoundDevice> cachedList;
@@ -1035,7 +1037,7 @@ public class DatabaseManager {
 
 			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 			FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
-			AchievementsLayout.initializeAchievements(bhApp);
+			AchievementSystem.checkAchievements(bhApp, true);
 
 			if (bhApp.synchronizeFoundDevices.needForceOverrideUp) {
 				bhApp.synchronizeFoundDevices.startSyncing(3, true);
