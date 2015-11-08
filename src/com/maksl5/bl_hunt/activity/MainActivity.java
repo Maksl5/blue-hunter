@@ -170,22 +170,26 @@ public class MainActivity extends FragmentActivity {
 
 		}
 
-		Builder builder = new Builder(this);
-		builder.setTitle("Information");
+		if (PreferenceManager.getPref(this, "pref_showAttentionDialog", true)) {
 
-		builder.setMessage(Html.fromHtml("Attention:<br><br>" + "This version (" + bhApp.getVersionName()
-				+ ") of BlueHunter is not stable, as it is still in Alpha phase. If you find bugs, crashes, etc. I would appreciate if you go to this <a href=\"http://bluehunter.maks-dev.com/issues\">Issues Tracker</a> and make a quick entry/task. That's it.<br>Thank you very much!"));
+			Builder builder = new Builder(this);
+			builder.setTitle("Information");
 
-		builder.setNeutralButton("Ok", new OnClickListener() {
+			builder.setMessage(Html.fromHtml("Attention:<br><br>" + "This version (" + bhApp.getVersionName()
+					+ ") of BlueHunter is not stable, as it is still in Alpha phase. If you find bugs, crashes, etc. I would appreciate if you go to this <a href=\"http://bluehunter.maks-dev.com/issues\">Issues Tracker</a> and make a quick entry/task. That's it.<br>Thank you very much!"));
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
+			builder.setNeutralButton("Ok", new OnClickListener() {
 
-			}
-		});
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
 
-		((TextView) builder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+				}
+			});
+
+			((TextView) builder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+
+		}
 
 	}
 

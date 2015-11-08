@@ -11,9 +11,30 @@
         android:key="pref_showNotification"
         android:summary="@string/str_Preferences_showNotification_sum"
         android:title="@string/str_Preferences_showNotification_title" />
-    <CheckBoxPreference android:key="pref_enableBackground" android:summary="@string/str_Preferences_enableBackground_sum" android:title="@string/str_Preferences_enableBackground_title" android:defaultValue="true"/>
-    <CheckBoxPreference android:key="pref_disBtExit" android:summary="@string/str_Preferences_disableBtExit_sum" android:title="@string/str_Preferences_disableBtExit_title" android:defaultValue="false"/><CheckBoxPreference android:key="pref_disBtSrchOff" android:summary="@string/str_Preferences_disableBtSrchOff_sum" android:defaultValue="false" android:title="@string/str_Preferences_disableBtSrchOff_title"/><Preference android:title="@string/str_Preferences_deleteRemember_title" android:summary="@string/str_Preferences_deleteRemember_sum" android:key="pref_deleteRemember"/>
-    
-    
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_enableBackground"
+        android:summary="@string/str_Preferences_enableBackground_sum"
+        android:title="@string/str_Preferences_enableBackground_title" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="pref_disBtExit"
+        android:summary="@string/str_Preferences_disableBtExit_sum"
+        android:title="@string/str_Preferences_disableBtExit_title" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="pref_disBtSrchOff"
+        android:summary="@string/str_Preferences_disableBtSrchOff_sum"
+        android:title="@string/str_Preferences_disableBtSrchOff_title" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_showAttentionDialog"
+        android:summary="@string/str_Preferences_showAttentionDialog_sum"
+        android:title="@string/str_Preferences_showAttentionDialog_title" />
+
+    <Preference
+        android:key="pref_deleteRemember"
+        android:summary="@string/str_Preferences_deleteRemember_sum"
+        android:title="@string/str_Preferences_deleteRemember_title" />
 
 </PreferenceScreen>
