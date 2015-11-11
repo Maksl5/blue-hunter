@@ -96,6 +96,8 @@
     <string name="str_Preferences_openIssueTracker_sum">Report bugs, crashes and feature requests here.\nThank you!</string>
     <string name="str_Preferences_showAttentionDialog_title">Show Attention Dialog</string>
     <string name="str_Preferences_showAttentionDialog_sum">Show the attention dialog at app start.</string>
+    <string name="str_Preferences_runDiscoveryAfterStart_title">Run discovery after start</string>
+    <string name="str_Preferences_runDiscoveryAfterStart_sum">Run discovery everytime the app has opened.</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>

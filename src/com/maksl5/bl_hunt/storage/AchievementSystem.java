@@ -28,6 +28,7 @@ import android.bluetooth.BluetoothHealthAppConfiguration;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 /**
@@ -767,6 +768,11 @@ public class AchievementSystem {
 				// Update indicator views
 				AchievementsLayout.initializeAchievements(bhApp);
 				AchievementsLayout.updateBoostIndicator(bhApp);
+
+				if (bhApp.mainActivity.justStarted && PreferenceManager.getPref(bhApp, "pref_runDiscoveryAfterStart", false)) {
+					((CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch)).setChecked(true);
+					bhApp.mainActivity.justStarted = false;
+				}
 
 			}
 

@@ -3014,7 +3014,9 @@ public class ManufacturerList {
 					new Manufacturer(78, "Vestel Komunikasyon Sanayi ve Ticaret", 100, new ManufacturerMac[] {
 							new ManufacturerMac((short) 0x00, (short) 0x09, (short) 0xDF) }),
 					new Manufacturer(79, "Shen Zhen Shi Xin Zhong Xin Technology", 50, new ManufacturerMac[] {
-							new ManufacturerMac((short) 0xFC, (short) 0x58, (short) 0xFA) })
+							new ManufacturerMac((short) 0xFC, (short) 0x58, (short) 0xFA) }),
+					new Manufacturer(80, "Private", 10, new ManufacturerMac[] {
+							new ManufacturerMac((short) 0xF0, (short) 0x4F, (short) 0x7C) })
 
 			});
 

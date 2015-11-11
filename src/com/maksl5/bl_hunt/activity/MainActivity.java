@@ -74,6 +74,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,6 +109,8 @@ public class MainActivity extends FragmentActivity {
 
 	public int oldVersion = 0;
 	public int newVersion = 0;
+	
+	public boolean justStarted = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -453,6 +456,14 @@ public class MainActivity extends FragmentActivity {
 			FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 			AchievementsLayout.initializeAchievements(bhApp);
 			AchievementsLayout.updateBoostIndicator(bhApp);
+
+			if (PreferenceManager.getPref(this, "pref_runDiscoveryAfterStart", false)) {
+				((CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch)).setChecked(true);
+			}
+
+			
+			justStarted = false;
+			
 		}
 
 		updateNotification();
@@ -635,7 +646,7 @@ public class MainActivity extends FragmentActivity {
 			leaderboardChanges.put(leaderboardEntry.getId(), i + 1);
 
 		}
-		
+
 		try {
 			new DatabaseManager(bhApp).resetLeaderboardChanges();
 			new DatabaseManager(bhApp).setLeaderboardChanges(leaderboardChanges);
