@@ -28,6 +28,7 @@ import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout.LBAdapterData;
 import com.maksl5.bl_hunt.custom_ui.fragment.ProfileLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.StatisticsFragment;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
@@ -109,7 +110,7 @@ public class MainActivity extends FragmentActivity {
 
 	public int oldVersion = 0;
 	public int newVersion = 0;
-	
+
 	public boolean justStarted = true;
 
 	@Override
@@ -447,6 +448,7 @@ public class MainActivity extends FragmentActivity {
 		LeaderboardLayout.refreshLeaderboard(bhApp);
 
 		ProfileLayout.initializeView(this);
+		StatisticsFragment.initializeStatisticsView(this);
 
 		if (DatabaseManager.getCachedList() == null) {
 			new DatabaseManager(bhApp).loadAllDevices(true);
@@ -461,9 +463,8 @@ public class MainActivity extends FragmentActivity {
 				((CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch)).setChecked(true);
 			}
 
-			
 			justStarted = false;
-			
+
 		}
 
 		updateNotification();
@@ -553,7 +554,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public int getCount() {
 
-			return 5;
+			return 6;
 		}
 
 		@Override
@@ -570,6 +571,8 @@ public class MainActivity extends FragmentActivity {
 				return getString(R.string.str_pageTitle_achievements).toUpperCase();
 			case FragmentLayoutManager.PAGE_PROFILE:
 				return getString(R.string.str_pageTitle_profile).toUpperCase();
+			case FragmentLayoutManager.PAGE_STATISTICS:
+				return getString(R.string.str_pageTitle_statistics).toUpperCase();
 			}
 			return null;
 		}
@@ -770,6 +773,7 @@ public class MainActivity extends FragmentActivity {
 
 		DeviceDiscoveryLayout.updateIndicatorViews(this);
 		ProfileLayout.initializeView(this);
+		StatisticsFragment.initializeStatisticsView(this);
 		AchievementsLayout.initializeAchievements(bhApp);
 
 		LeaderboardLayout.refreshLeaderboard(bhApp, true);

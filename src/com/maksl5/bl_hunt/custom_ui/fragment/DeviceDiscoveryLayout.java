@@ -415,7 +415,7 @@ public class DeviceDiscoveryLayout {
 
 			int exp = ManufacturerList.getExp(manufacturer);
 
-			int bonusExp = (int) Math.floor(ManufacturerList.getExp(manufacturer) * device.getBoost());
+			int bonusExp = (int) (ManufacturerList.getExp(manufacturer) * device.getBoost());
 
 			exp = bonusExp + exp;
 
@@ -461,7 +461,6 @@ public class DeviceDiscoveryLayout {
 
 			vHolder.macAddress.setText(mac);
 			vHolder.manufacturer.setText(ManufacturerList.getName(manufacturer));
-			vHolder.exp.setText("+" + exp + " " + expString);
 			vHolder.rssi.setImageResource(rssiRes);
 
 			return rowView;
