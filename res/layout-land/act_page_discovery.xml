@@ -175,18 +175,18 @@
                 android:gravity="center" >
 
                 <TextView
-                    android:id="@+id/txt_discovery_devInCycle_txt"
+                    android:id="@+id/txt_discovery_devInSession_txt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/padding_xsmall"
-                    android:text="@string/str_discovery_devInCycle"
+                    android:text="@string/str_discovery_devInSession"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/text_holo_light_blue"
                     android:textSize="@dimen/foundDevices_manufacturer_text"
                     android:textStyle="italic" />
 
                 <TextView
-                    android:id="@+id/txt_discovery_devInCycle_value"
+                    android:id="@+id/txt_discovery_devInSession_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"

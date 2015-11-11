@@ -47,6 +47,8 @@ public class DiscoveryManager {
 	private TextView stateTextView;
 	private BluetoothDiscoveryHandler btHandler;
 
+	public int newDevicesInCurDiscoverySession = 0;
+
 	public DiscoveryManager(BlueHunter application) {
 
 		bhApp = application;
@@ -140,9 +142,9 @@ public class DiscoveryManager {
 		btHandler.stopDiscovery();
 	}
 
-	public List<FoundDevice> getFDInCurDiscovery() {
+	public List<FoundDevice> getFDInCurDiscoverySession() {
 
-		return btHandler.fDListCurDiscovery;
+		return btHandler.fDListCurDiscoverySession;
 
 	}
 
@@ -329,7 +331,7 @@ public class DiscoveryManager {
 
 		private List<FoundDevice> foundDevices;
 		private List<BluetoothDevice> foundDevicesInCurDiscovery;
-		private List<FoundDevice> fDListCurDiscovery;
+		private List<FoundDevice> fDListCurDiscoverySession;
 		private int requestId = 0;
 
 		private BluetoothDiscoveryHandler(DiscoveryState state) {
@@ -338,7 +340,7 @@ public class DiscoveryManager {
 			btAdapter = BluetoothAdapter.getDefaultAdapter();
 
 			foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
-			fDListCurDiscovery = new ArrayList<FoundDevice>();
+			fDListCurDiscoverySession = new ArrayList<FoundDevice>();
 
 			discoveryButton = (CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
 
@@ -353,7 +355,13 @@ public class DiscoveryManager {
 
 					if (isChecked) {
 						if (isBluetoothEnabled()) {
+
+							fDListCurDiscoverySession = null;
+							fDListCurDiscoverySession = new ArrayList<FoundDevice>();
+							newDevicesInCurDiscoverySession = 0;
+
 							DeviceDiscoveryLayout.startShowLV(bhApp.mainActivity);
+
 							runDiscovery();
 						}
 						else {
@@ -364,6 +372,11 @@ public class DiscoveryManager {
 						if (isBluetoothEnabled()) {
 
 							stopDiscovery();
+
+							fDListCurDiscoverySession = null;
+							fDListCurDiscoverySession = new ArrayList<FoundDevice>();
+							newDevicesInCurDiscoverySession = 0;
+
 							DeviceDiscoveryLayout.stopShowLV(bhApp.mainActivity);
 
 							if (PreferenceManager.getPref(bhApp, "pref_disBtSrchOff", false)) {
@@ -558,12 +571,10 @@ public class DiscoveryManager {
 				foundDevicesInCurDiscovery = null;
 				foundDevicesInCurDiscovery = new ArrayList<BluetoothDevice>();
 
-				fDListCurDiscovery = null;
-				fDListCurDiscovery = new ArrayList<FoundDevice>();
-
 				DeviceDiscoveryLayout.onlyCurListUpdate(bhApp.mainActivity);
 
-				//Only check if we actually found a new device, otherwise it's just an useless check.
+				// Only check if we actually found a new device, otherwise it's
+				// just an useless check.
 				if (didFoundNewDevice) AchievementSystem.checkAchievements(bhApp, false);
 
 				if (discoveryButton.isChecked()) {
@@ -602,7 +613,7 @@ public class DiscoveryManager {
 
 			// Compare Object
 			FoundDevice compare = new FoundDevice();
-			compare.setMac(btDevice.getAddress());
+			compare.setMac(btDevice.getAddress().toUpperCase());
 
 			if (!foundDevices.contains(compare)) {
 				foundDevicesInCurDiscovery.add(btDevice);
@@ -613,14 +624,44 @@ public class DiscoveryManager {
 				device.setTime(System.currentTimeMillis());
 				device.setBoost(AchievementSystem.getBoost(bhApp));
 
-				fDListCurDiscovery.add(device);
+				fDListCurDiscoverySession.add(0, device);
+				newDevicesInCurDiscoverySession++;
+
 				attemptVibration();
 				new DatabaseManager(bhApp).addNewDevice(device);
 
 				FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 				DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+				
 
 				bhApp.mainActivity.updateNotification();
+
+			}
+			else {
+
+				FoundDevice oldDevice = foundDevices.get(foundDevices.indexOf(compare));
+				FoundDevice deviceForDiscoveryList = new FoundDevice();
+
+				if (fDListCurDiscoverySession.contains(compare)) {
+
+					deviceForDiscoveryList = fDListCurDiscoverySession.get(fDListCurDiscoverySession.indexOf(compare));
+					
+					fDListCurDiscoverySession.remove(deviceForDiscoveryList);
+					fDListCurDiscoverySession.add(0, deviceForDiscoveryList);
+
+				}
+				else {
+
+					deviceForDiscoveryList.setMac(oldDevice.getMacAddress());
+					deviceForDiscoveryList.setRssi(oldDevice.getRssi());
+					deviceForDiscoveryList.setTime(System.currentTimeMillis());
+					deviceForDiscoveryList.setBoost(oldDevice.getBoost());
+					deviceForDiscoveryList.setOld(true);
+
+					fDListCurDiscoverySession.add(0, deviceForDiscoveryList);
+				}
+
+				DeviceDiscoveryLayout.onlyCurListUpdate(bhApp.mainActivity);
 
 			}
 

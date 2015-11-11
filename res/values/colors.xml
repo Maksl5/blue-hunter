@@ -2,5 +2,6 @@
 <resources>
 
     <color name="text_holo_light_blue">#ff33b5e5</color>
+    <color name="text_discovery_state_old">#ff777777</color>
 
 </resources>

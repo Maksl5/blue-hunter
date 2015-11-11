@@ -7,10 +7,13 @@ import java.util.List;
 
 import javax.crypto.ExemptionMechanism;
 
+import org.w3c.dom.Text;
+
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
@@ -18,13 +21,17 @@ import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Debug;
 import android.provider.ContactsContract.Contacts.Data;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -54,8 +61,7 @@ public class DeviceDiscoveryLayout {
 			return;
 
 		}
-		
-		
+
 		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
 		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
 		TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
@@ -66,11 +72,11 @@ public class DeviceDiscoveryLayout {
 
 		long expTimeA = System.currentTimeMillis();
 
-		//Debug.startMethodTracing("getUserExp");
-		
+		// Debug.startMethodTracing("getUserExp");
+
 		int exp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
-		
-		//Debug.stopMethodTracing();
+
+		// Debug.stopMethodTracing();
 
 		long expTimeB = System.currentTimeMillis();
 
@@ -95,7 +101,7 @@ public class DeviceDiscoveryLayout {
 
 		progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
 		progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
-		
+
 		int deviceNum = allDevices.size();
 
 		int lastIndex = allDevices.size() - 1;
@@ -136,10 +142,19 @@ public class DeviceDiscoveryLayout {
 
 		devExpTodayTxt.setText(String.format("%d / %d", devicesTodayNum, expTodayNum));
 
-		curList = new ArrayList<FoundDevice>(mainActivity.getBlueHunter().disMan.getFDInCurDiscovery());
+		onlyCurListUpdate(mainActivity);
 
-		TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInCycle_value);
-		devInCurDisTxt.setText("" + curList.size());
+		// Debug.stopMethodTracing();
+
+	}
+
+	public static void onlyCurListUpdate(MainActivity mainActivity) {
+
+		curList = new ArrayList<FoundDevice>(mainActivity.getBlueHunter().disMan.getFDInCurDiscoverySession());
+		int curNewDevices = mainActivity.getBlueHunter().disMan.newDevicesInCurDiscoverySession;
+
+		TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
+		devInCurDisTxt.setText(String.format("%d / %d", curNewDevices, curList.size() - curNewDevices));
 
 		if (dAdapter == null) {
 			dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, curList);
@@ -170,8 +185,6 @@ public class DeviceDiscoveryLayout {
 			dAdapter.clear();
 			dAdapter.addAll(curList);
 		}
-
-		// Debug.stopMethodTracing();
 
 	}
 
@@ -223,7 +236,7 @@ public class DeviceDiscoveryLayout {
 
 		if (setOthersToLoading) {
 
-			TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInCycle_value);
+			TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
 			TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
 			TextView devExpTodayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpToday);
 
@@ -236,46 +249,7 @@ public class DeviceDiscoveryLayout {
 
 	}
 
-	public static void onlyCurListUpdate(MainActivity mainActivity) {
-
-		curList = new ArrayList<FoundDevice>(mainActivity.getBlueHunter().disMan.getFDInCurDiscovery());
-
-		TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInCycle_value);
-		devInCurDisTxt.setText("" + curList.size());
-
-		if (dAdapter == null) {
-			dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, curList);
-
-			if (lv == null) lv = (ListView) mainActivity.findViewById(R.id.discoveryListView);
-
-			lv.setAdapter(dAdapter);
-		}
-
-		if (lv != null && mainActivity != null && mainActivity.getBlueHunter() != null && mainActivity.getBlueHunter().disMan != null
-				&& mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != -2) {
-
-			if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() == DiscoveryState.DISCOVERY_STATE_RUNNING
-					&& lv.getVisibility() != View.VISIBLE) {
-				startShowLV(mainActivity);
-			}
-			else if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_RUNNING
-					&& mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_FINISHED
-					&& lv.getVisibility() == View.VISIBLE) {
-				stopShowLV(mainActivity);
-			}
-		}
-
-		if (dAdapter.values.equals(curList)) {
-			dAdapter.notifyDataSetChanged();
-		}
-		else {
-			dAdapter.clear();
-			dAdapter.addAll(curList);
-		}
-
-	}
-
-	public static void startShowLV(MainActivity main) {
+	public static void startShowLV(final MainActivity main) {
 
 		// AlphaAnimation animation = new AlphaAnimation(1f, 0f);
 		// animation.setDuration(1000);
@@ -328,6 +302,30 @@ public class DeviceDiscoveryLayout {
 			lv.startAnimation(animation2);
 
 		}
+
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+				FoundDevice device = main.getBlueHunter().disMan.getFDInCurDiscoverySession().get(position);
+
+				List<FoundDevice> fDevices = DatabaseManager.getCachedList();
+
+				if (fDevices != null) {
+
+					int newPosition = fDevices.indexOf(device);
+
+					main.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_FOUND_DEVICES, true);
+					ListView listView = (ListView) main.findViewById(R.id.listView2);
+
+					listView.setSelection(newPosition);
+
+				}
+
+			}
+		});
+
 	}
 
 	public static void stopShowLV(MainActivity main) {
@@ -402,6 +400,7 @@ public class DeviceDiscoveryLayout {
 				holder.manufacturer = (TextView) rowView.findViewById(R.id.manufacturerTxtView);
 				holder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
 				holder.rssi = (ImageView) rowView.findViewById(R.id.rssiView);
+				holder.state = (TextView) rowView.findViewById(R.id.DDCStateTxtView);
 
 				rowView.setTag(holder);
 
@@ -443,6 +442,23 @@ public class DeviceDiscoveryLayout {
 
 			String expString = context.getString(R.string.str_foundDevices_exp_abbreviation);
 
+			if (device.isOld()) {
+				vHolder.state.setText(R.string.str_discovery_state_old);
+				vHolder.state.setTypeface(null, Typeface.NORMAL);
+				vHolder.state.setTextColor(ContextCompat.getColor(context, R.color.text_discovery_state_old));
+				((View) vHolder.state.getParent()).setAlpha(0.75f);
+
+				vHolder.exp.setText("=" + exp + " " + expString);
+			}
+			else {
+				vHolder.state.setText(R.string.str_discovery_state_new);
+				vHolder.state.setTypeface(null, Typeface.BOLD);
+				vHolder.state.setTextColor(ContextCompat.getColor(context, R.color.text_holo_light_blue));
+				((View) vHolder.state.getParent()).setAlpha(1f);
+
+				vHolder.exp.setText("+" + exp + " " + expString);
+			}
+
 			vHolder.macAddress.setText(mac);
 			vHolder.manufacturer.setText(ManufacturerList.getName(manufacturer));
 			vHolder.exp.setText("+" + exp + " " + expString);
@@ -459,6 +475,7 @@ public class DeviceDiscoveryLayout {
 		TextView manufacturer;
 		TextView exp;
 		ImageView rssi;
+		TextView state;
 
 	}
 

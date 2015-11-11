@@ -13,6 +13,18 @@
         android:layout_height="wrap_content"
         android:gravity="center" >
 
+        <TextView
+            android:id="@+id/DDCStateTxtView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/padding_xsmall"
+            android:gravity="center"
+            android:text="@string/str_discovery_state_old"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/text_discovery_state_old"
+            android:typeface="sans" />
+
         <RelativeLayout
             android:id="@+id/relativeLayout1"
             android:layout_width="wrap_content"
@@ -45,6 +57,9 @@
                     android:id="@+id/manufacturerTxtView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxEms="6"
+                    android:maxLines="2"
                     android:paddingLeft="@dimen/padding_small"
                     android:text="Apple"
                     android:textAppearance="?android:attr/textAppearanceSmall"
@@ -99,6 +114,7 @@
 
             </TableRow>
         </RelativeLayout>
+
     </TableRow>
 
 </RelativeLayout>

@@ -14,6 +14,7 @@ public class FoundDevice {
 	private long time = -1;
 	private int manufacturer = -1;
 	private float bonus = -1f;
+	private boolean isOld = false;
 
 	public FoundDevice() {
 
@@ -24,7 +25,7 @@ public class FoundDevice {
 		macAddress = new MacAddress(dMac);
 
 	}
-	
+
 	public void setMac(MacAddress dMac) {
 
 		macAddress = dMac;
@@ -93,7 +94,7 @@ public class FoundDevice {
 
 		return macAddress.getMacString();
 	}
-	
+
 	public MacAddress getMacAddress() {
 
 		return macAddress;
@@ -125,6 +126,14 @@ public class FoundDevice {
 	public float getBoost() {
 
 		return bonus;
+	}
+
+	public void setOld(boolean old) {
+		this.isOld = old;
+	}
+
+	public boolean isOld() {
+		return isOld;
 	}
 
 	public int checkNull() {

@@ -12,6 +12,7 @@
         android:fastScrollEnabled="true"
         android:scrollingCache="true"
         android:smoothScrollbar="true" >
+
     </ListView>
 
 </LinearLayout>
