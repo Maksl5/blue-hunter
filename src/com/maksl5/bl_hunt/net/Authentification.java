@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.ViewGroup.LayoutParams;
@@ -93,8 +94,40 @@ public class Authentification {
 			serial = "NULL";
 		}
 
-		if (serial == null || serial.equals("")) serial = "NULL";
+		if (serial == null || serial.equals("") || serial.equals("NULL")) {
+			
+			try {
+				Class<?> sysPropClass = Class.forName("android.os.SystemProperties");
+				Method get = sysPropClass.getMethod("get", String.class);
+				serial = (String) get.invoke(sysPropClass, "sys.serialnumber");
+			}
+			catch (Exception ignored) {
+				serial = "NULL";
+			}
+			
+			if (serial == null || serial.equals("") || serial.equals("NULL")) {
+				
+				try {
+					Class<?> sysPropClass = Class.forName("android.os.SystemProperties");
+					Method get = sysPropClass.getMethod("get", String.class);
+					serial = (String) get.invoke(sysPropClass, "ril.serialnumber");
+				}
+				catch (Exception ignored) {
+					serial = "NULL";
+				}
+				
+				if (serial == null || serial.equals("") || serial.equals("NULL")) {
+					serial = Build.SERIAL;
+				}
+				
+			}
+			
+		}
 
+		if (serial == null || serial.equals("")) {
+			serial = "NULL";
+		}
+		
 		return serial;
 	}
 
