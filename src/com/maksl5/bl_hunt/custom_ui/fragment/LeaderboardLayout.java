@@ -26,11 +26,15 @@ import org.xml.sax.InputSource;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout.FDAdapterData;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.provider.ContactsContract.Contacts.Data;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -116,7 +120,7 @@ public class LeaderboardLayout {
 		if (refreshThread.canRun()) {
 			showedFdList.clear();
 			bhApp.actionBarHandler.getMenuItem(R.id.menu_search).collapseActionView();
-			refreshThread.execute(1, 5);
+			refreshThread.execute(1, 5, 0);
 		}
 
 	}
@@ -214,6 +218,8 @@ public class LeaderboardLayout {
 		private int startIndex;
 		private int length;
 
+		private boolean isUserInLD = false;
+
 		private RefreshThread(BlueHunter app, ThreadManager threadManager) {
 
 			super();
@@ -270,6 +276,8 @@ public class LeaderboardLayout {
 
 			startIndex = params[0];
 			length = params[1];
+
+			isUserInLD = (params[2] == 1) ? true : false;
 
 			try {
 
@@ -368,6 +376,8 @@ public class LeaderboardLayout {
 
 				boolean last = false;
 
+				int uid = bhApp.loginManager.getUid();
+
 				for (int i = 0; i < nodes.getLength(); i++) {
 
 					Node node = nodes.item(i);
@@ -390,6 +400,8 @@ public class LeaderboardLayout {
 
 						LBAdapterData data = new LBAdapterData(name, level, progressMax, progressValue, num, exp, id);
 
+						if (uid == id) isUserInLD = true;
+
 						completeFdList.add(data);
 						completeFdList.set(rank - 1, data);
 						showedFdList = completeFdList;
@@ -401,6 +413,48 @@ public class LeaderboardLayout {
 				threadManager.finished(this);
 
 				if (last) {
+
+					int currentExp = LevelSystem.getCachedUserExp(bhApp);
+
+					if (uid != -1 && isUserInLD) {
+
+						int exp = -1;
+
+						for (int i = 0; i < completeFdList.size(); i++) {
+
+							LBAdapterData data = completeFdList.get(i);
+
+							if (currentExp >= data.getExp() && (i - 1) >= 0) {
+
+								if (completeFdList.get(i - 1).getId() == uid && (i - 2) >= 0) {
+									if (completeFdList.get(i - 2).getId() != uid) {
+										exp = completeFdList.get(i - 2).getExp();
+										break;
+									}
+								}
+								else {
+									exp = completeFdList.get(i - 1).getExp();
+									break;
+								}
+							}
+
+						}
+
+						if (currentExp < completeFdList.get(completeFdList.size() - 1).getExp()) {
+
+							exp = completeFdList.get(completeFdList.size() - 1).getExp();
+						}
+
+						DeviceDiscoveryLayout.expToUpdate = exp;
+						DeviceDiscoveryLayout.updateNextRankIndicator(bhApp.mainActivity, exp);
+
+					}
+					else {
+
+						DeviceDiscoveryLayout.updateNextRankIndicator(bhApp.mainActivity, -1);
+
+					}
+
 					showedFdList = completeFdList;
 					ldAdapter.notifyDataSetChanged();
 
@@ -409,14 +463,14 @@ public class LeaderboardLayout {
 				else {
 
 					ldAdapter.notifyDataSetChanged();
-					new RefreshThread(bhApp, threadManager).execute(startIndex + length, length);
+					new RefreshThread(bhApp, threadManager).execute(startIndex + length, length, (isUserInLD) ? 1 : 0);
 
 				}
 
 			}
 			catch (NullPointerException e) {
 				if (bhApp != null && threadManager != null) {
-					new RefreshThread(bhApp, threadManager).execute(startIndex, length);
+					new RefreshThread(bhApp, threadManager).execute(startIndex, length, (isUserInLD) ? 1 : 0);
 				}
 
 			}
@@ -440,7 +494,7 @@ public class LeaderboardLayout {
 		 */
 		@Override
 		protected void onPreExecute() {
-
+			isUserInLD = false;
 		}
 	}
 

@@ -4,8 +4,6 @@
  */
 package com.maksl5.bl_hunt.net;
 
-
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +37,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-
 /**
  * @author Maksl5[Markus Bensing]
  * 
@@ -50,10 +46,8 @@ public class Authentification {
 	private AuthentificationSecure secure;
 	private Context context;
 	protected BlueHunter bhApp;
-	private volatile ArrayList<OnNetworkResultAvailableListener> listenerList =
-			new ArrayList<Authentification.OnNetworkResultAvailableListener>();
-	private ArrayList<OnLoginChangeListener> loginChangeListeners =
-			new ArrayList<Authentification.OnLoginChangeListener>();
+	private volatile ArrayList<OnNetworkResultAvailableListener> listenerList = new ArrayList<Authentification.OnNetworkResultAvailableListener>();
+	private ArrayList<OnLoginChangeListener> loginChangeListeners = new ArrayList<Authentification.OnLoginChangeListener>();
 
 	public static final int NETRESULT_ID_SERIAL_CHECK = 1;
 	public static final int NETRESULT_ID_CHECK_UPDATE = 2;
@@ -95,7 +89,7 @@ public class Authentification {
 		}
 
 		if (serial == null || serial.equals("") || serial.equals("NULL")) {
-			
+
 			try {
 				Class<?> sysPropClass = Class.forName("android.os.SystemProperties");
 				Method get = sysPropClass.getMethod("get", String.class);
@@ -104,9 +98,9 @@ public class Authentification {
 			catch (Exception ignored) {
 				serial = "NULL";
 			}
-			
+
 			if (serial == null || serial.equals("") || serial.equals("NULL")) {
-				
+
 				try {
 					Class<?> sysPropClass = Class.forName("android.os.SystemProperties");
 					Method get = sysPropClass.getMethod("get", String.class);
@@ -115,19 +109,19 @@ public class Authentification {
 				catch (Exception ignored) {
 					serial = "NULL";
 				}
-				
+
 				if (serial == null || serial.equals("") || serial.equals("NULL")) {
 					serial = Build.SERIAL;
 				}
-				
+
 			}
-			
+
 		}
 
 		if (serial == null || serial.equals("")) {
 			serial = "NULL";
 		}
-		
+
 		return serial;
 	}
 
@@ -194,8 +188,7 @@ public class Authentification {
 			setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
 				@Override
-				public boolean onResult(int requestId,
-										String resultString) {
+				public boolean onResult(int requestId, String resultString) {
 
 					if (requestId == NETRESULT_ID_CHECK_UPDATE) {
 						try {
@@ -206,7 +199,9 @@ public class Authentification {
 							int verCode = Integer.parseInt(matcher.group(1));
 
 							if (verCode > bhApp.getVersionCode()) {
-								Toast.makeText(bhApp, bhApp.getString(R.string.str_auth_newUpdateAvailable, bhApp.getVersionCode(), verCode), Toast.LENGTH_LONG).show();
+								Toast.makeText(bhApp,
+										bhApp.getString(R.string.str_auth_newUpdateAvailable, bhApp.getVersionCode(), verCode),
+										Toast.LENGTH_LONG).show();
 								newUpdateAvailable = true;
 							}
 						}
@@ -244,19 +239,16 @@ public class Authentification {
 	}
 
 	/**
- * 
- */
-	public void showChangelog(	int oldVersion,
-								int newVersion,
-								int limit) {
+	* 
+	*/
+	public void showChangelog(int oldVersion, int newVersion, int limit) {
 
 		NetworkThread getChangelog = new NetworkThread(bhApp);
 
 		setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
 			@Override
-			public boolean onResult(int requestId,
-									String resultString) {
+			public boolean onResult(int requestId, String resultString) {
 
 				if (requestId == Authentification.NETRESULT_ID_UPDATED) {
 
@@ -277,8 +269,7 @@ public class Authentification {
 						builder.setNeutralButton(R.string.str_auth_changelog_ok, new OnClickListener() {
 
 							@Override
-							public void onClick(DialogInterface dialog,
-												int which) {
+							public void onClick(DialogInterface dialog, int which) {
 
 								dialog.dismiss();
 
@@ -290,18 +281,17 @@ public class Authentification {
 
 						changeLogScrollView.setSmoothScrollingEnabled(true);
 
-						int padding =
-								bhApp.getResources().getDimensionPixelSize(R.dimen.padding_small);
-						
+						int padding = bhApp.getResources().getDimensionPixelSize(R.dimen.padding_small);
+
 						TextView changelogTextView = new TextView(bhApp.currentActivity);
-						
+
 						changelogTextView.setPadding(padding, padding, padding, padding);
-						changeLogScrollView.addView(changelogTextView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-						
+						changeLogScrollView.addView(changelogTextView,
+								new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
 						changelogTextView.setText(Html.fromHtml(resultString));
 						changelogTextView.setMovementMethod(LinkMovementMethod.getInstance());
 						changelogTextView.setClickable(true);
-						
 
 						changelogDialog.setView(changeLogScrollView, 0, 0, 0, 0);
 
@@ -327,15 +317,18 @@ public class Authentification {
 				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED));
 			}
 			else {
-				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old=" + oldVersion, "new=" + newVersion);
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED),
+						"old=" + oldVersion, "new=" + newVersion);
 			}
 		}
 		else {
 			if (oldVersion == 0 | newVersion == 0) {
-				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "l=" + limit);
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED),
+						"l=" + limit);
 			}
 			else {
-				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED), "old=" + oldVersion, "new=" + newVersion, "l=" + limit);
+				getChangelog.execute(AuthentificationSecure.SERVER_UPDATED, String.valueOf(Authentification.NETRESULT_ID_UPDATED),
+						"old=" + oldVersion, "new=" + newVersion, "l=" + limit);
 			}
 
 		}
@@ -351,11 +344,10 @@ public class Authentification {
 		 *            The requestId, that identifies the request.
 		 * @param resultString
 		 *            The String, that is returned.
-		 * @return True, if you want to remove the listener from listening to the results available. False, if not
-		 *         removing.
+		 * @return True, if you want to remove the listener from listening to
+		 *         the results available. False, if not removing.
 		 */
-		public abstract boolean onResult(	int requestId,
-											String resultString);
+		public abstract boolean onResult(int requestId, String resultString);
 	}
 
 	public synchronized void setOnNetworkResultAvailableListener(OnNetworkResultAvailableListener listener) {
@@ -369,11 +361,9 @@ public class Authentification {
 	/**
 	 * @return the onNetworkResultAvailableListener
 	 */
-	public synchronized void fireOnNetworkResultAvailable(	int requestId,
-															String resultString) {
+	public synchronized void fireOnNetworkResultAvailable(int requestId, String resultString) {
 
-		List<OnNetworkResultAvailableListener> iterateList =
-				new ArrayList<Authentification.OnNetworkResultAvailableListener>(listenerList);
+		List<OnNetworkResultAvailableListener> iterateList = new ArrayList<Authentification.OnNetworkResultAvailableListener>(listenerList);
 
 		for (OnNetworkResultAvailableListener onNetworkResultAvailableListener : iterateList) {
 			if (onNetworkResultAvailableListener.onResult(requestId, resultString)) {
@@ -401,6 +391,8 @@ public class Authentification {
 		private String loginToken;
 		private String serialNumber;
 
+		private int uid;
+
 		private boolean loggedIn = false;
 
 		public LoginManager(String serialNumber) {
@@ -409,20 +401,18 @@ public class Authentification {
 
 		}
 
-		public LoginManager(String serialNumber,
-				String loginToken) {
+		public LoginManager(String serialNumber, String loginToken) {
 
 			this(serialNumber, null, loginToken);
 
 		}
 
-		public LoginManager(String serialNumber,
-				String password,
-				String loginToken) {
+		public LoginManager(String serialNumber, String password, String loginToken) {
 
 			this.password = password;
 			this.serialNumber = serialNumber;
 			this.loginToken = loginToken;
+			this.uid = -1;
 
 			registerInternetReceiver();
 
@@ -462,10 +452,14 @@ public class Authentification {
 				NetworkThread login = new NetworkThread(bhApp);
 
 				if (password == null) {
-					login.execute(AuthentificationSecure.SERVER_LOGIN, String.valueOf(NETRESULT_ID_LOGIN), "h=" + Authentification.this.getLoginHash(resultFromPreLogin), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "t=" + resultFromPreLogin);
+					login.execute(AuthentificationSecure.SERVER_LOGIN, String.valueOf(NETRESULT_ID_LOGIN),
+							"h=" + Authentification.this.getLoginHash(resultFromPreLogin), "s=" + Authentification.getSerialNumber(),
+							"v=" + bhApp.getVersionCode(), "t=" + resultFromPreLogin);
 				}
 				else {
-					login.execute(AuthentificationSecure.SERVER_LOGIN, String.valueOf(NETRESULT_ID_LOGIN), "h=" + Authentification.this.getLoginHash(resultFromPreLogin), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "t=" + resultFromPreLogin, "p=" + password);
+					login.execute(AuthentificationSecure.SERVER_LOGIN, String.valueOf(NETRESULT_ID_LOGIN),
+							"h=" + Authentification.this.getLoginHash(resultFromPreLogin), "s=" + Authentification.getSerialNumber(),
+							"v=" + bhApp.getVersionCode(), "t=" + resultFromPreLogin, "p=" + password);
 				}
 			}
 		}
@@ -473,7 +467,9 @@ public class Authentification {
 		private void preLogin() {
 
 			NetworkThread preLogin = new NetworkThread(bhApp);
-			preLogin.execute(AuthentificationSecure.SERVER_PRE_LOGIN, String.valueOf(Authentification.NETRESULT_ID_PRE_LOGIN), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + Authentification.this.getSerialNumberHash());
+			preLogin.execute(AuthentificationSecure.SERVER_PRE_LOGIN, String.valueOf(Authentification.NETRESULT_ID_PRE_LOGIN),
+					"s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(),
+					"h=" + Authentification.this.getSerialNumberHash());
 
 		}
 
@@ -486,10 +482,12 @@ public class Authentification {
 				NetworkThread checkLogin = new NetworkThread(bhApp);
 
 				if (password == null) {
-					checkLogin.execute(AuthentificationSecure.SERVER_CHECK_LOGIN, String.valueOf(Authentification.NETRESULT_ID_CHECK_LOGIN), "s=" + getSerialNumber(), "lt=" + loginToken);
+					checkLogin.execute(AuthentificationSecure.SERVER_CHECK_LOGIN, String.valueOf(Authentification.NETRESULT_ID_CHECK_LOGIN),
+							"s=" + getSerialNumber(), "lt=" + loginToken);
 				}
 				else {
-					checkLogin.execute(AuthentificationSecure.SERVER_CHECK_LOGIN, String.valueOf(Authentification.NETRESULT_ID_CHECK_LOGIN), "s=" + getSerialNumber(), "lt=" + loginToken, "p=" + password);
+					checkLogin.execute(AuthentificationSecure.SERVER_CHECK_LOGIN, String.valueOf(Authentification.NETRESULT_ID_CHECK_LOGIN),
+							"s=" + getSerialNumber(), "lt=" + loginToken, "p=" + password);
 				}
 			}
 			else {
@@ -512,14 +510,23 @@ public class Authentification {
 
 		}
 
+		public int getUid() {
+			return uid;
+		}
+
+		public void setUid(int uid) {
+			this.uid = uid;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener#onResult(int, java.lang.String)
+		 * @see
+		 * com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener#
+		 * onResult(int, java.lang.String)
 		 */
 		@Override
-		public boolean onResult(int requestId,
-								String resultString) {
+		public boolean onResult(int requestId, String resultString) {
 
 			switch (requestId) {
 			case NETRESULT_ID_PRE_LOGIN:
@@ -560,8 +567,7 @@ public class Authentification {
 
 				Toast.makeText(getContext(), resultString, Toast.LENGTH_LONG).show();
 
-				Pattern loginTokenPattern =
-						Pattern.compile("<token>(s_[0-9a-f]{14}\\.[0-9]{8})</token><passExists>([0-1])</passExists>");
+				Pattern loginTokenPattern = Pattern.compile("<token>(s_[0-9a-f]{14}\\.[0-9]{8})</token><passExists>([0-1])</passExists>");
 				Matcher loginTokenMatcher = loginTokenPattern.matcher(resultString);
 				if (loginTokenMatcher.find()) {
 					String tokenString = loginTokenMatcher.group(1);
@@ -575,8 +581,10 @@ public class Authentification {
 					setLoginState(true);
 
 					if (!passExists) {
-						Toast.makeText(bhApp, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess), bhApp.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
-						Toast.makeText(bhApp, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess), bhApp.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
+						Toast.makeText(bhApp, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess),
+								bhApp.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
+						Toast.makeText(bhApp, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess),
+								bhApp.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
 					}
 					else {
 						Toast.makeText(bhApp, bhApp.getString(R.string.str_auth_loginSuccess), Toast.LENGTH_LONG).show();
@@ -612,8 +620,7 @@ public class Authentification {
 					return true;
 				}
 
-				Pattern checkLoginPattern =
-						Pattern.compile("<loggedIn>([0-1])</loggedIn><passExists>([0-1])</passExists>");
+				Pattern checkLoginPattern = Pattern.compile("<loggedIn>([0-1])</loggedIn><passExists>([0-1])</passExists>");
 				Matcher checkLoginMatcher = checkLoginPattern.matcher(resultString);
 				if (checkLoginMatcher.find()) {
 
@@ -643,11 +650,12 @@ public class Authentification {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
+		 * @see
+		 * android.content.BroadcastReceiver#onReceive(android.content.Context,
+		 * android.content.Intent)
 		 */
 		@Override
-		public void onReceive(	Context context,
-								Intent intent) {
+		public void onReceive(Context context, Intent intent) {
 
 			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 				boolean beforeCheck = isInternetAvailable();
@@ -656,7 +664,9 @@ public class Authentification {
 
 				if (beforeCheck == false && afterCheck == true) {
 					NetworkThread serialSubmit = new NetworkThread(bhApp);
-					serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
+					serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL,
+							String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(),
+							"v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
 				}
 				else if (beforeCheck == true && afterCheck == false) {
 					setLoginState(false);
@@ -673,8 +683,7 @@ public class Authentification {
 
 	public synchronized void setOnLoginChangeListener(OnLoginChangeListener onLoginChangeListener) {
 
-		if (!loginChangeListeners.contains(onLoginChangeListener))
-			loginChangeListeners.add(onLoginChangeListener);
+		if (!loginChangeListeners.contains(onLoginChangeListener)) loginChangeListeners.add(onLoginChangeListener);
 	}
 
 	public synchronized void fireLoginChange(boolean loggedIn) {
@@ -692,8 +701,7 @@ public class Authentification {
 
 	private void checkInternetConnection() {
 
-		ConnectivityManager connectivityManager =
-				(ConnectivityManager) bhApp.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager connectivityManager = (ConnectivityManager) bhApp.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
 		if (networkInfo == null) {

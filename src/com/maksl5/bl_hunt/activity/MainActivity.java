@@ -20,6 +20,7 @@ import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer;
+import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer.ParallaxTransformInformation;
 import com.maksl5.bl_hunt.custom_ui.RotationPageTransformer;
 import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
@@ -75,6 +76,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -316,7 +319,7 @@ public class MainActivity extends FragmentActivity {
 						break;
 					}
 
-					Pattern xmlPattern = Pattern.compile("<done name=\"(.+)\" />");
+					Pattern xmlPattern = Pattern.compile("<done name=\"(.+)\" uid=\"(\\d+)\" />");
 					Matcher xmlMatcher = xmlPattern.matcher(resultString);
 
 					if (xmlMatcher.find()) {
@@ -325,6 +328,9 @@ public class MainActivity extends FragmentActivity {
 
 						try {
 							nameString = URLDecoder.decode(xmlMatcher.group(1), "UTF-8");
+							int uid = Integer.parseInt(xmlMatcher.group(2));
+
+							bhApp.loginManager.setUid(uid);
 						}
 						catch (UnsupportedEncodingException e) {
 							// TODO Auto-generated catch block
@@ -776,6 +782,24 @@ public class MainActivity extends FragmentActivity {
 		ProfileLayout.initializeView(this);
 		StatisticsFragment.initializeStatisticsView(this);
 		AchievementsLayout.initializeAchievements(bhApp);
+
+		final PatternProgressBar progressBar = (PatternProgressBar) findViewById(R.id.progressBar1);
+		final int oldHeight = progressBar.getHeight();
+		final int oldWidth = progressBar.getWidth();
+
+		ViewTreeObserver observer = progressBar.getViewTreeObserver();
+		observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+
+			@Override
+			public void onGlobalLayout() {
+				if (progressBar.getHeight() != oldHeight && progressBar.getWidth() != oldWidth) {
+					progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+					DeviceDiscoveryLayout.updateNextRankIndicator(MainActivity.this, DeviceDiscoveryLayout.expToUpdate);
+
+				}
+			}
+		});
 
 		LeaderboardLayout.refreshLeaderboard(bhApp, true);
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);

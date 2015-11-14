@@ -38,11 +38,12 @@
     
     <string name="str_discovery_devices">Devices:</string>
     <string name="str_discovery_devExpPerDay">Devices / Exp per day:</string>
-    <string name="str_discovery_devExpToday">Devices / Exp last 24 hours:</string>
-    <string name="str_discovery_devInSession">New / Old devices in discovery session:</string>
+    <string name="str_discovery_devExpToday">Devices / Exp last 24\nhours:</string>
+    <string name="str_discovery_devInSession">New / Old devices in\ndiscovery session:</string>
     <string name="str_discovery_loading">Loading...</string>
     <string name="str_discovery_state_old">OLD</string>
     <string name="str_discovery_state_new">NEW</string>
+    <string name="str_discovery_nextRank">Next Rank</string>
     
     <string name="str_enableBT_title">Enable Bluetooth ?</string>
     <string name="str_enableBT_text">This game requires Bluetooth to be enabled in order to run the device discovery and hunting Bluetooth devices. Do you want to enable Bluetooth and allow this application to use Bluetooth for the device discovery ?</string>

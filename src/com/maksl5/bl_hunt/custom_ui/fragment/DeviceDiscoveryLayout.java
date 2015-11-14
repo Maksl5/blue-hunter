@@ -21,7 +21,9 @@ import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Debug;
 import android.provider.ContactsContract.Contacts.Data;
 import android.support.v4.content.ContextCompat;
@@ -35,8 +37,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 /**
@@ -46,6 +51,8 @@ public class DeviceDiscoveryLayout {
 
 	public static DiscoveryAdapter dAdapter;
 	public static ListView lv;
+
+	public static int expToUpdate = 0;
 
 	private static ArrayList<FoundDevice> curList;
 
@@ -143,6 +150,11 @@ public class DeviceDiscoveryLayout {
 		devExpTodayTxt.setText(String.format("%d / %d", devicesTodayNum, expTodayNum));
 
 		onlyCurListUpdate(mainActivity);
+
+		if (exp > expToUpdate) {
+			expToUpdate = 0;
+			LeaderboardLayout.refreshLeaderboard(mainActivity.getBlueHunter());
+		}
 
 		// Debug.stopMethodTracing();
 
@@ -246,6 +258,75 @@ public class DeviceDiscoveryLayout {
 			devExpPerDayTxt.setText(loadingString);
 			devExpTodayTxt.setText(loadingString);
 		}
+
+	}
+
+	public static void updateNextRankIndicator(MainActivity mainActivity, int exp) {
+
+		TextView nextRankIndicator = (TextView) mainActivity.findViewById(R.id.nextRankIndicator);
+
+		if (exp == -1) {
+
+			nextRankIndicator.setVisibility(TextView.GONE);
+
+		}
+		else {
+
+			PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
+			RelativeLayout parent = (RelativeLayout) progressBar.getParent();
+
+			int userExp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
+			int level = LevelSystem.getLevel(userExp);
+
+			int levelStart = LevelSystem.getLevelStartExp(level);
+			int levelEnd = LevelSystem.getLevelEndExp(level);
+
+			progressBar.setMax(levelEnd - levelStart);
+			progressBar.setProgress(userExp - levelStart);
+
+			// define window range
+			int left = parent.getLeft();
+
+			int width = progressBar.getWidth();
+
+			float percOfProgressbar = (float) (exp - levelStart) / (float) (levelEnd - levelStart);
+
+			if (percOfProgressbar < 0) {
+				percOfProgressbar = 0f;
+			}
+			if (percOfProgressbar > 1) {
+				percOfProgressbar = 1f;
+			}
+
+			int xPlacedOverProgressbar = (int) (left + (width / (float) 2) * (percOfProgressbar - 0.5f));
+
+			int indicatorCenter = nextRankIndicator.getWidth() / 2;
+			int calculatedLeftForIndicator = xPlacedOverProgressbar - indicatorCenter;
+
+			// new method
+
+			int calculatedCenterOffset = (int) ((width / (float) 2) * ((percOfProgressbar - 0.5) * 2));
+
+			TableRow tableRow = (TableRow) nextRankIndicator.getParent();
+
+			nextRankIndicator.setVisibility(View.VISIBLE);
+
+			DecimalFormat df = new DecimalFormat(",###");
+
+			String format1 = df.format(exp);
+			String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+
+			nextRankIndicator
+					.setText(String.format("%s%n%s %s", mainActivity.getString(R.string.str_discovery_nextRank), format1, format2));
+
+			TableLayout.LayoutParams params = (android.widget.TableLayout.LayoutParams) tableRow.getLayoutParams();
+			params.setMargins(calculatedCenterOffset, params.topMargin, params.rightMargin, params.bottomMargin);
+			tableRow.setLayoutParams(params);
+			tableRow.requestLayout();
+
+		}
+		
+		updateIndicatorViews(mainActivity);
 
 	}
 
