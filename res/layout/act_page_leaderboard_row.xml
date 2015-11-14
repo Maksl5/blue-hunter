@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:padding="@dimen/padding_medium" >
-
-    <TextView
-        android:id="@+id/rankTxtView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="1."
-        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TableRow
         android:id="@+id/LDRtableRow1"
@@ -37,7 +28,6 @@
             android:textColor="@color/text_holo_light_blue"
             android:textSize="@dimen/foundDevices_name_text"
             android:textStyle="italic|bold" />
-
     </TableRow>
 
     <TableRow
@@ -82,9 +72,7 @@
                     android:textColor="#bb000000"
                     android:textSize="@dimen/levelIndicator_text"
                     android:textStyle="bold" />
-
             </RelativeLayout>
-
         </TableRow>
 
         <LinearLayout
@@ -104,6 +92,30 @@
                     android:layout_height="wrap_content"
                     android:text="1 Exp"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <TableRow
+                    android:id="@+id/LDRchangeEXPTableRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/padding_xsmall"
+                    android:gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/changeEXPImgView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_change_up_s" />
+
+                    <TextView
+                        android:id="@+id/changeEXPTxtView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="1"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                </TableRow>
+
             </TableRow>
 
             <TableRow
@@ -117,28 +129,70 @@
                     android:layout_height="wrap_content"
                     android:text="1 Dev"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
-            </TableRow>
 
+                <TableRow
+                    android:id="@+id/LDRchangeDEVTableRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/padding_xsmall"
+                    android:gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/changeDEVImgView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_change_up_s" />
+
+                    <TextView
+                        android:id="@+id/changeDEVTxtView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="1"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                </TableRow>
+
+            </TableRow>
         </LinearLayout>
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/rankTxtView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="1."
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TableRow
             android:id="@+id/LDRtableRow5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:gravity="center" >
 
             <ImageView
-                android:id="@+id/changeImgView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
-
-            <TextView
-                android:id="@+id/changeTxtView"
+                android:id="@+id/changeRankImgView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:src="@drawable/ic_change_up" />
+
+            <TextView
+                android:id="@+id/changeRankTxtView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="1"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </TableRow>

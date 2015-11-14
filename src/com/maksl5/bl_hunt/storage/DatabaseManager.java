@@ -588,13 +588,18 @@ public class DatabaseManager {
 
 	// LEADERBOARD CHANGE
 
-	public void setLeaderboardChanges(HashMap<Integer, Integer> changes) {
+	public void setLeaderboardChanges(HashMap<Integer, Integer[]> changes) {
 
 		Set<Integer> keySet = changes.keySet();
 		for (Integer uid : keySet) {
 			ContentValues values = new ContentValues();
-			values.put(DatabaseHelper.COLUMN_UID, uid);
-			values.put(DatabaseHelper.COLUMN_RANK, changes.get(uid));
+			values.put(DatabaseHelper.COLUMN_LD_UID, uid);
+
+			Integer[] changeValues = changes.get(uid);
+
+			values.put(DatabaseHelper.COLUMN_LD_RANK, changeValues[0]);
+			values.put(DatabaseHelper.COLUMN_LD_EXP, changeValues[1]);
+			values.put(DatabaseHelper.COLUMN_LD_DEV, changeValues[2]);
 
 			db.insert(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, values);
 		}
@@ -611,14 +616,15 @@ public class DatabaseManager {
 		close();
 	}
 
-	public HashMap<Integer, Integer> getLeaderboardChanges() {
+	public HashMap<Integer, Integer[]> getLeaderboardChanges() {
 
-		HashMap<Integer, Integer> changes = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer[]> changes = new HashMap<Integer, Integer[]>();
 
 		Cursor cursor = db.query(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, null, null, null, null, null);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			changes.put(cursor.getInt(0), cursor.getInt(1));
+			changes.put(cursor.getInt(0), new Integer[] {
+					cursor.getInt(1), cursor.getInt(2), cursor.getInt(3) });
 			cursor.moveToNext();
 		}
 
@@ -696,8 +702,12 @@ public class DatabaseManager {
 
 		public final static String COLUMN_CHANGE = "change";
 
-		public final static String COLUMN_UID = "uid";
-		public final static String COLUMN_RANK = "rank";
+		// Leaderboard changes Columns
+
+		public final static String COLUMN_LD_UID = "uid";
+		public final static String COLUMN_LD_RANK = "rank";
+		public final static String COLUMN_LD_EXP = "changeExp";
+		public final static String COLUMN_LD_DEV = "changeDev";
 
 		private BlueHunter bhApplication;
 		private int version;
@@ -722,8 +732,12 @@ public class DatabaseManager {
 		public final static String CHANGES_SYNC_CREATE = "Create Table " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, "
 				+ COLUMN_CHANGE + " Text Not Null);";
 
-		public final static String LEADERBOARD_CHANGES_CREATE = "Create Table " + LEADERBOARD_CHANGES_TABLE + " (uid Integer Not Null, "
-				+ COLUMN_RANK + " Integer Not Null);";
+		public final static String LEADERBOARD_CHANGES_CREATE = 
+				"Create Table " + LEADERBOARD_CHANGES_TABLE +
+				" (" + COLUMN_LD_UID + " Integer Not Null, " + 
+				COLUMN_LD_RANK + " Integer Not Null, " +
+				COLUMN_LD_EXP + " Integer Not Null, " +
+				COLUMN_LD_DEV + " Integer Not Null);";
 		
 		// @formatter:on
 
@@ -901,6 +915,12 @@ public class DatabaseManager {
 
 			}
 
+			if (oldVersion < 1843) {
+
+				db.execSQL("Drop Table If Exists " + LEADERBOARD_CHANGES_TABLE + ";");
+				db.execSQL(LEADERBOARD_CHANGES_CREATE);
+
+			}
 			bhApp.authentification.showChangelog(oldVersion, newVersion, 0);
 
 		}
@@ -925,8 +945,9 @@ public class DatabaseManager {
 			final String CHANGES_SYNC_CREATE_IF_NOT_EXISTS = "Create Table If Not Exists " + CHANGES_SYNC_TABLE
 					+ " (_id Integer Primary Key Autoincrement, " + COLUMN_CHANGE + " Text Not Null);";
 
-			final String LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS = "Create Table If Not Exists " + LEADERBOARD_CHANGES_TABLE
-					+ " (uid Integer Not Null, " + COLUMN_RANK + " Integer Not Null);";
+			final String LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS = "Create Table If Not Exists " + LEADERBOARD_CHANGES_TABLE + " ("
+					+ COLUMN_LD_UID + " Integer Not Null, " + COLUMN_LD_RANK + " Integer Not Null, " + COLUMN_LD_EXP + " Integer Not Null, "
+					+ COLUMN_LD_DEV + " Integer Not Null);";
 
 			db.execSQL(FOUND_DEVICES_CREATE_IF_NOT_EXISTS);
 			db.execSQL(CHANGES_SYNC_CREATE_IF_NOT_EXISTS);
@@ -1026,7 +1047,7 @@ public class DatabaseManager {
 			// Allways use temporaryAsyncList here!!!
 
 			Log.d("LoadAllDevicesThread", "onProgressUpdate() is called @ " + temporaryAsyncList.size() + " devices.");
-			
+
 			if (!isCancelled()) DeviceDiscoveryLayout.updateDuringDBLoading(bhApp.mainActivity, true);
 
 		}

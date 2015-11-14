@@ -641,12 +641,13 @@ public class MainActivity extends FragmentActivity {
 		bhApp.disMan.unregisterReceiver();
 		bhApp.disMan.stopDiscoveryManager();
 
-		HashMap<Integer, Integer> leaderboardChanges = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer[]> leaderboardChanges = new HashMap<Integer, Integer[]>();
 
 		for (int i = 0; i < LeaderboardLayout.completeFdList.size(); i++) {
 			LBAdapterData leaderboardEntry = LeaderboardLayout.completeFdList.get(i);
 
-			leaderboardChanges.put(leaderboardEntry.getId(), i + 1);
+			leaderboardChanges.put(leaderboardEntry.getId(), new Integer[] {
+					i + 1, leaderboardEntry.getExp(), leaderboardEntry.getDevNum() });
 
 		}
 

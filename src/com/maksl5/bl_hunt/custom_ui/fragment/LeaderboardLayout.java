@@ -60,7 +60,7 @@ public class LeaderboardLayout {
 
 	private static ThreadManager threadManager = null;
 
-	public static HashMap<Integer, Integer> changeList = new HashMap<Integer, Integer>();
+	public static HashMap<Integer, Integer[]> changeList = new HashMap<Integer, Integer[]>();
 
 	public static void refreshLeaderboard(final BlueHunter bhApp) {
 
@@ -621,8 +621,15 @@ public class LeaderboardLayout {
 				viewHolder.levelPrg = (ProgressBar) rowView.findViewById(R.id.levelPrgBar);
 				viewHolder.devices = (TextView) rowView.findViewById(R.id.devTxtView);
 				viewHolder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
-				viewHolder.changeImg = (ImageView) rowView.findViewById(R.id.changeImgView);
-				viewHolder.changeTxt = (TextView) rowView.findViewById(R.id.changeTxtView);
+
+				viewHolder.changeRankImg = (ImageView) rowView.findViewById(R.id.changeRankImgView);
+				viewHolder.changeRankTxt = (TextView) rowView.findViewById(R.id.changeRankTxtView);
+
+				viewHolder.changeEXPImg = (ImageView) rowView.findViewById(R.id.changeEXPImgView);
+				viewHolder.changeEXPTxt = (TextView) rowView.findViewById(R.id.changeEXPTxtView);
+
+				viewHolder.changeDEVImg = (ImageView) rowView.findViewById(R.id.changeDEVImgView);
+				viewHolder.changeDEVTxt = (TextView) rowView.findViewById(R.id.changeDEVTxtView);
 
 				rowView.setTag(viewHolder);
 			}
@@ -646,26 +653,87 @@ public class LeaderboardLayout {
 						+ getContext().getString(R.string.str_foundDevices_exp_abbreviation));
 
 				int rankNow = position + 1;
-				Integer rankBefore = changeList.get(user.getId());
+				int expNow = user.getExp();
+				int devNow = user.getDevNum();
 
-				if (rankBefore == null) rankBefore = position + 1;
+				Integer[] changes = changeList.get(user.getId());
 
-				holder.changeTxt.setText("" + Math.abs(rankBefore - rankNow));
+				Integer rankBefore, expBefore, devBefore;
+
+				if (changes == null) {
+
+					rankBefore = rankNow;
+					expBefore = expNow;
+					devBefore = devNow;
+
+				}
+				else {
+
+					rankBefore = changes[0];
+					expBefore = changes[1];
+					devBefore = changes[2];
+
+				}
+
+				if (rankBefore == null) rankBefore = rankNow;
+				if (expBefore == null) expBefore = expNow;
+				if (devBefore == null) expBefore = devNow;
+
+				// change in rank
+				holder.changeRankTxt.setText("" + Math.abs(rankBefore - rankNow));
 
 				if ((rankBefore - rankNow) > 0) {
 
-					holder.changeImg.setImageResource(R.drawable.ic_change_up);
+					holder.changeRankImg.setImageResource(R.drawable.ic_change_up);
 
 				}
 				else if ((rankBefore - rankNow) < 0) {
 
-					holder.changeImg.setImageResource(R.drawable.ic_change_down);
+					holder.changeRankImg.setImageResource(R.drawable.ic_change_down);
 
 				}
 				else if ((rankBefore - rankNow) == 0) {
 
-					holder.changeImg.setImageResource(0);
-					holder.changeTxt.setText("");
+					holder.changeRankImg.setImageResource(android.R.color.transparent);
+					holder.changeRankTxt.setText("");
+				}
+
+				// change in exp
+				holder.changeEXPTxt.setText("" + Math.abs(expBefore - expNow));
+
+				if ((expBefore - expNow) > 0) {
+
+					holder.changeEXPImg.setImageResource(R.drawable.ic_change_down_s);
+
+				}
+				else if ((expBefore - expNow) < 0) {
+
+					holder.changeEXPImg.setImageResource(R.drawable.ic_change_up_s);
+
+				}
+				else if ((expBefore - expNow) == 0) {
+
+					holder.changeEXPImg.setImageResource(android.R.color.transparent);
+					holder.changeEXPTxt.setText("");
+				}
+
+				// change in dev
+				holder.changeDEVTxt.setText("" + Math.abs(devBefore - devNow));
+
+				if ((devBefore - devNow) > 0) {
+
+					holder.changeDEVImg.setImageResource(R.drawable.ic_change_down_s);
+
+				}
+				else if ((devBefore - devNow) < 0) {
+
+					holder.changeDEVImg.setImageResource(R.drawable.ic_change_up_s);
+
+				}
+				else if ((devBefore - devNow) == 0) {
+
+					holder.changeDEVImg.setImageResource(android.R.color.transparent);
+					holder.changeDEVTxt.setText("");
 				}
 
 			}
@@ -690,8 +758,15 @@ public class LeaderboardLayout {
 		ProgressBar levelPrg;
 		TextView devices;
 		TextView exp;
-		ImageView changeImg;
-		TextView changeTxt;
+
+		ImageView changeRankImg;
+		TextView changeRankTxt;
+
+		ImageView changeEXPImg;
+		TextView changeEXPTxt;
+
+		ImageView changeDEVImg;
+		TextView changeDEVTxt;
 	}
 
 }
