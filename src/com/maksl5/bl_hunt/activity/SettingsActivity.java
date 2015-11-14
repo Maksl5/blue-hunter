@@ -311,12 +311,12 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 			addPreferencesFromResource(R.xml.info_preference);
 
-			if (!Authentification.newUpdateAvailable || bhApp.isPlayStore) {
+			if (!Authentification.newUpdateAvailable || BlueHunter.isPlayStore) {
 				Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
 				PreferenceScreen infoScreen = getPreferenceScreen();
 				infoScreen.removePreference(newUpdatePref);
 
-				if (bhApp.isPlayStore) {
+				if (BlueHunter.isPlayStore) {
 
 					Preference checkPref = findPreference("pref_checkUpdate");
 					checkPref.setEnabled(false);
@@ -434,9 +434,13 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 		private void initializeStaticPrefs() {
 
 			Preference infoPref = findPreference("pref_version");
+			Preference serialPref = findPreference("pref_serialNumber");
+			Preference userIDPref = findPreference("pref_userID");
 
 			try {
 				infoPref.setSummary(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
+				userIDPref.setSummary("" + bhApp.loginManager.getUid());
+				serialPref.setSummary(Authentification.getSerialNumber());
 			}
 			catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block

@@ -3,7 +3,11 @@
 
     <Preference
         android:key="pref_version"
-        android:title="@string/str_Preferences_version_title" />
+        android:title="@string/str_Preferences_version_title" /><Preference
+        android:key="pref_serialNumber"
+        android:title="@string/str_Preferences_serialNumber_title" /><Preference
+        android:key="pref_userID"
+        android:title="@string/str_Preferences_userID_title" />
     <Preference
         android:key="pref_issuetracker"
         android:title="@string/str_Preferences_openIssueTracker_title" android:summary="@string/str_Preferences_openIssueTracker_sum"/>

@@ -100,6 +100,8 @@
     <string name="str_Preferences_showAttentionDialog_sum">Show the attention dialog at app start.</string>
     <string name="str_Preferences_runDiscoveryAfterStart_title">Run discovery after start</string>
     <string name="str_Preferences_runDiscoveryAfterStart_sum">Run discovery everytime the app has opened.</string>
+    <string name="str_Preferences_serialNumber_title">Serial Number</string>
+    <string name="str_Preferences_userID_title">User ID</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>
