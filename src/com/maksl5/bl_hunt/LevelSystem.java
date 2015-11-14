@@ -126,7 +126,7 @@ public class LevelSystem {
 		int compareExp = 50;
 
 		while (compareExp < exp) {
-			compareExp = compareExp * 2 + compareExp;
+			compareExp = compareExp + level * level * 50;
 			level++;
 		}
 
@@ -140,7 +140,7 @@ public class LevelSystem {
 		int exp = 50;
 
 		for (int i = 1; i < level - 1; i++) {
-			exp = exp * 2 + exp;
+			exp = exp + i * i * 50;
 		}
 
 		return exp;
@@ -151,7 +151,7 @@ public class LevelSystem {
 		int exp = 50;
 
 		for (int i = 1; i < level; i++) {
-			exp = exp * 2 + exp;
+			exp = exp + i * i * 50;
 		}
 
 		return exp;

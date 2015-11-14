@@ -705,9 +705,11 @@ public class AchievementSystem {
 		float levelBoost = 0f;
 		int curLevel = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
-		for (int level = 0; level <= curLevel; level++) {
-			levelBoost += (float) level / (float) 100;
-		}
+		// for (int level = 0; level <= curLevel; level++) {
+		// levelBoost += (float) level / (float) 100;
+		// }
+
+		levelBoost = (float) curLevel / (float) 100;
 
 		return levelBoost;
 
