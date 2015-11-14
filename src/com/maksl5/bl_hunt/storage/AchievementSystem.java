@@ -315,6 +315,11 @@ public class AchievementSystem {
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
 					// 15D between 10:00 - 10:30pm
+					
+					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+							.equals(bhApp.authentification.getAchieveHash(getId()));
+
+					if (alreadyAccomplished) return true;
 
 					for (int i = 14; i < allDevices.size(); i++) {
 
@@ -353,6 +358,11 @@ public class AchievementSystem {
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
 					// 65D between 5:00 - 7:00am
+					
+					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+							.equals(bhApp.authentification.getAchieveHash(getId()));
+
+					if (alreadyAccomplished) return true;
 
 					for (int i = 64; i < allDevices.size(); i++) {
 
@@ -389,6 +399,11 @@ public class AchievementSystem {
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
 					// 1D to full hour
+					
+					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+							.equals(bhApp.authentification.getAchieveHash(getId()));
+
+					if (alreadyAccomplished) return true;
 
 					for (int i = 0; i < allDevices.size(); i++) {
 
@@ -415,6 +430,11 @@ public class AchievementSystem {
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
 					// 1D 11th Nov 11:11am
+
+					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+							.equals(bhApp.authentification.getAchieveHash(getId()));
+
+					if (alreadyAccomplished) return true;
 
 					for (int i = 0; i < allDevices.size(); i++) {
 
