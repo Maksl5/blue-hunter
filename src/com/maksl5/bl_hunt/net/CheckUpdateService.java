@@ -133,6 +133,8 @@ public class CheckUpdateService extends Service {
 			Pattern pattern = Pattern.compile("android:versionCode=\"(\\d+)\"");
 			Matcher matcher = pattern.matcher(result);
 
+			Log.d("CheckUpdateService", result);
+			
 			int verCode;
 			int oldVerCode;
 			boolean newUpdateAvailable = false;
