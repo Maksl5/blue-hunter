@@ -151,10 +151,12 @@ public class DeviceDiscoveryLayout {
 
 		onlyCurListUpdate(mainActivity);
 
-		if (exp > expToUpdate) {
+		if (exp > expToUpdate && expToUpdate != 0) {
 			expToUpdate = 0;
 			LeaderboardLayout.refreshLeaderboard(mainActivity.getBlueHunter());
 		}
+
+		updateNextRankIndicator(mainActivity, (expToUpdate == 0) ? -1 : expToUpdate);
 
 		// Debug.stopMethodTracing();
 
@@ -325,8 +327,6 @@ public class DeviceDiscoveryLayout {
 			tableRow.requestLayout();
 
 		}
-		
-		updateIndicatorViews(mainActivity);
 
 	}
 

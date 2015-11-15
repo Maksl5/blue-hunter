@@ -141,6 +141,7 @@
     
     
     <string name="str_statistics_manufacturerCount_title">Manufacturer Count</string>
+    <string name="str_statistics_general_title">General</string>
     
     <!-- Achievements -->
     <string name="str_achievement_accomplish">Congratulations! You have accomplished the achievement "%s".</string>

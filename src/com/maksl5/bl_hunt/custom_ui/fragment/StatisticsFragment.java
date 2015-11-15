@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
@@ -28,12 +29,16 @@ import android.widget.SimpleAdapter;
 
 public class StatisticsFragment {
 
+	private final static String DIALOG_ENTRY_NAME = "name";
+	private final static String DIALOG_ENTRY_COUNT = "count";
+
 	public static void initializeStatisticsView(final MainActivity mainActivity) {
 
 		ListView listView = (ListView) mainActivity.findViewById(R.id.SlistView);
 
 		ArrayList<String> categories = new ArrayList<String>();
 
+		categories.add(mainActivity.getString(R.string.str_statistics_general_title));
 		categories.add(mainActivity.getString(R.string.str_statistics_manufacturerCount_title));
 
 		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mainActivity, android.R.layout.simple_list_item_1, categories);
@@ -47,6 +52,10 @@ public class StatisticsFragment {
 				switch (position) {
 				case 0:
 
+					general(mainActivity);
+					break;
+				case 1:
+
 					manufacturerCount(mainActivity);
 					break;
 
@@ -56,6 +65,25 @@ public class StatisticsFragment {
 
 			}
 		});
+
+	}
+
+	private static void general(MainActivity mainActivity) {
+
+		int userExp = LevelSystem.getCachedUserExp(mainActivity.getBlueHunter());
+		int deviceNum = DatabaseManager.getCachedList().size();
+
+		List<HashMap<String, String>> dialogMappings = new ArrayList<HashMap<String, String>>();
+
+		float averageExpPerDevice = userExp / (float) deviceNum;
+
+		HashMap<String, String> hashMap = new HashMap<String, String>();
+		hashMap.put(DIALOG_ENTRY_NAME, "Average Exp / Device");
+		hashMap.put(DIALOG_ENTRY_COUNT, String.format("%.2f", averageExpPerDevice));
+		
+		dialogMappings.add(hashMap);
+		
+		showDialog(mainActivity, dialogMappings, R.string.str_statistics_general_title);
 
 	}
 
@@ -90,7 +118,7 @@ public class StatisticsFragment {
 			TreeMap<Integer, Integer> sortedMap = new TreeMap<Integer, Integer>(valueComparator);
 			sortedMap.putAll(manuCountMappings);
 
-			Iterator iterator = sortedMap.keySet().iterator();
+			Iterator<Integer> iterator = sortedMap.keySet().iterator();
 
 			List<HashMap<String, String>> dialogMappings = new ArrayList<HashMap<String, String>>();
 
@@ -102,36 +130,42 @@ public class StatisticsFragment {
 
 				HashMap<String, String> fromToHashMap = new HashMap<String, String>();
 
-				fromToHashMap.put("name", name);
-				fromToHashMap.put("count", "" + manuCountMappings.get(manufacturerID));
+				fromToHashMap.put(DIALOG_ENTRY_NAME, name);
+				fromToHashMap.put(DIALOG_ENTRY_COUNT, "" + manuCountMappings.get(manufacturerID));
 
 				dialogMappings.add(fromToHashMap);
 
 			}
 
-			int[] to = new int[] {
-					R.id.descriptionTxt, R.id.boostTxt };
-			String[] from = new String[] {
-					"name", "count" };
-
-			SimpleAdapter boostAdapater = new SimpleAdapter(mainActivity, dialogMappings, R.layout.dlg_boost_composite_row, from, to);
-
-			AlertDialog.Builder builder = new Builder(mainActivity);
-			builder.setTitle(R.string.str_statistics_manufacturerCount_title);
-
-			builder.setAdapter(boostAdapater, null);
-			builder.setNeutralButton("Ok", new OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
-
-				}
-			});
-
-			builder.create().show();
+			showDialog(mainActivity, dialogMappings, R.string.str_statistics_manufacturerCount_title);
 
 		}
+	}
+
+	private static void showDialog(MainActivity mainActivity, List<HashMap<String, String>> dialogMappings, int titleResource) {
+
+		int[] to = new int[] {
+				R.id.descriptionTxt, R.id.boostTxt };
+		String[] from = new String[] {
+				DIALOG_ENTRY_NAME, DIALOG_ENTRY_COUNT };
+
+		SimpleAdapter boostAdapater = new SimpleAdapter(mainActivity, dialogMappings, R.layout.dlg_boost_composite_row, from, to);
+
+		AlertDialog.Builder builder = new Builder(mainActivity);
+		builder.setTitle(titleResource);
+
+		builder.setAdapter(boostAdapater, null);
+		builder.setNeutralButton("Ok", new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+
+			}
+		});
+
+		builder.create().show();
+
 	}
 
 	class ValueComparator implements Comparator<Integer> {
