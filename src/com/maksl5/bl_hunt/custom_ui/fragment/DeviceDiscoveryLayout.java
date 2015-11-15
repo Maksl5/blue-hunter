@@ -267,6 +267,8 @@ public class DeviceDiscoveryLayout {
 
 		TextView nextRankIndicator = (TextView) mainActivity.findViewById(R.id.nextRankIndicator);
 
+		int oldVisible = nextRankIndicator.getVisibility();
+		
 		if (exp == -1) {
 
 			nextRankIndicator.setVisibility(TextView.GONE);
@@ -327,6 +329,10 @@ public class DeviceDiscoveryLayout {
 			tableRow.requestLayout();
 
 		}
+		
+		int newVisible = nextRankIndicator.getVisibility();
+		
+		if(oldVisible != newVisible) updateIndicatorViews(mainActivity);
 
 	}
 
