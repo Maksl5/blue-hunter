@@ -341,7 +341,7 @@ public class DeviceDiscoveryLayout {
 				@Override
 				public void onClick(View v) {
 
-					LeaderboardLayout.scrollToNextRank(mainActivity);
+					LeaderboardLayout.scrollToPosition(mainActivity, LeaderboardLayout.userRank - 2);
 
 				}
 			});

@@ -39,6 +39,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -198,7 +199,7 @@ public class LeaderboardLayout {
 
 	}
 
-	public static void scrollToNextRank(MainActivity mainActivity) {
+	public static void scrollToPosition(MainActivity mainActivity, int index) {
 
 		if (completeFdList != null && completeFdList.size() != 0) {
 
@@ -212,15 +213,7 @@ public class LeaderboardLayout {
 
 			if (listView != null) {
 
-				listView.smoothScrollToPositionFromTop(userRank - 2, 0, 1000); // -2
-																				// because
-																				// of
-																				// index
-																				// offset
-																				// (index
-																				// 0
-																				// =rank
-																				// 1)
+				listView.smoothScrollToPositionFromTop(index, 0, 1000);
 
 			}
 
@@ -435,6 +428,122 @@ public class LeaderboardLayout {
 						if (uid == id) {
 							isUserInLD = true;
 							userRank = rank;
+
+							View container = bhApp.mainActivity.findViewById(R.id.thisUserRL);
+
+							container.setOnClickListener(new OnClickListener() {
+
+								@Override
+								public void onClick(View v) {
+									scrollToPosition(bhApp.mainActivity, userRank - 1);
+								}
+							});
+
+							TextView rankView = (TextView) container.findViewById(R.id.rankTxtView);
+							TextView nameView = (TextView) container.findViewById(R.id.nameTxtView);
+							TextView levelView = (TextView) container.findViewById(R.id.levelTxtView);
+							ProgressBar levelPrgView = (ProgressBar) container.findViewById(R.id.levelPrgBar);
+							TextView devicesView = (TextView) container.findViewById(R.id.devTxtView);
+							TextView expView = (TextView) container.findViewById(R.id.expTxtView);
+
+							ImageView changeRankImgView = (ImageView) container.findViewById(R.id.changeRankImgView);
+							TextView changeRankTxtView = (TextView) container.findViewById(R.id.changeRankTxtView);
+
+							ImageView changeEXPImgView = (ImageView) container.findViewById(R.id.changeEXPImgView);
+							TextView changeEXPTxtView = (TextView) container.findViewById(R.id.changeEXPTxtView);
+
+							ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
+							TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
+
+							rankView.setText("" + rank + ".");
+							nameView.setText(name);
+							nameView.setTag(id);
+							levelView.setText("" + level);
+							levelPrgView.setMax(progressMax);
+							levelPrgView.setProgress(progressValue);
+							devicesView.setText(new DecimalFormat(",###").format(num) + " Devices");
+							expView.setText(new DecimalFormat(",###").format(exp) + " "
+									+ bhApp.getString(R.string.str_foundDevices_exp_abbreviation));
+
+							Integer[] changes = changeList.get(id);
+
+							Integer rankBefore, expBefore, devBefore;
+
+							if (changes == null) {
+
+								rankBefore = rank;
+								expBefore = exp;
+								devBefore = num;
+
+							}
+							else {
+
+								rankBefore = changes[0];
+								expBefore = changes[1];
+								devBefore = changes[2];
+
+							}
+
+							if (rankBefore == null) rankBefore = rank;
+							if (expBefore == null) expBefore = exp;
+							if (devBefore == null) expBefore = num;
+
+							changeRankTxtView.setText("" + Math.abs(rankBefore - rank));
+
+							if ((rankBefore - rank) > 0) {
+
+								changeRankImgView.setImageResource(R.drawable.ic_change_up);
+
+							}
+							else if ((rankBefore - rank) < 0) {
+
+								changeRankImgView.setImageResource(R.drawable.ic_change_down);
+
+							}
+							else if ((rankBefore - rank) == 0) {
+
+								changeRankImgView.setImageResource(android.R.color.transparent);
+								changeRankTxtView.setText("");
+							}
+
+							// change in exp
+							changeEXPTxtView.setText("" + Math.abs(expBefore - exp));
+
+							if ((expBefore - exp) > 0) {
+
+								changeEXPImgView.setImageResource(R.drawable.ic_change_down_s);
+
+							}
+							else if ((expBefore - exp) < 0) {
+
+								changeEXPImgView.setImageResource(R.drawable.ic_change_up_s);
+
+							}
+							else if ((expBefore - exp) == 0) {
+
+								changeEXPImgView.setImageResource(android.R.color.transparent);
+								changeEXPTxtView.setText("");
+							}
+
+							// change in dev
+							changeDEVTxtView.setText("" + Math.abs(devBefore - num));
+
+							if ((devBefore - num) > 0) {
+
+								changeDEVImgView.setImageResource(R.drawable.ic_change_down_s);
+
+							}
+							else if ((devBefore - num) < 0) {
+
+								changeDEVImgView.setImageResource(R.drawable.ic_change_up_s);
+
+							}
+							else if ((devBefore - num) == 0) {
+
+								changeDEVImgView.setImageResource(android.R.color.transparent);
+								changeDEVTxtView.setText("");
+							}
+
 						}
 
 						completeFdList.add(data);
