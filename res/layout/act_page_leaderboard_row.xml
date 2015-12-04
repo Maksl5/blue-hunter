@@ -161,6 +161,7 @@
         android:id="@+id/tableRow1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/LDRtableRow1"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:gravity="center" >
@@ -168,7 +169,7 @@
         <TextView
             android:id="@+id/rankTxtView"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="1."
