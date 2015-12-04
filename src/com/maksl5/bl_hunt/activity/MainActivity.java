@@ -115,6 +115,7 @@ public class MainActivity extends FragmentActivity {
 	public int newVersion = 0;
 
 	public boolean justStarted = true;
+	public boolean destroyed = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -640,6 +641,8 @@ public class MainActivity extends FragmentActivity {
 			bhApp.disMan.disableBluetooth();
 
 		}
+		
+		destroyed = true;
 
 		notificationManager.cancel(1);
 		bhApp.loginManager.unregisterInternetReceiver();

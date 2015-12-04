@@ -76,6 +76,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 	PrefNetManager netManager;
 
 	List<Header> headers;
+	private boolean isDestroyed = false;
 
 	/*
 	 * (non-Javadoc)
@@ -284,6 +285,8 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		if (netManager != null) netManager.cancelAllTasks();
 
+		isDestroyed = true;
+		
 		super.onDestroy();
 	}
 
@@ -971,7 +974,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 		@Override
 		protected void onPreExecute() {
 
-			if (!preferenceActivity.isDestroyed()) {
+			if (!preferenceActivity.isDestroyed) {
 				MenuItem progressBar = preferenceActivity.menu.findItem(R.id.menu_progress);
 				progressBar.setVisible(true);
 			}

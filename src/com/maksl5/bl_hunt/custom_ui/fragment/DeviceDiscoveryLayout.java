@@ -30,6 +30,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
@@ -164,11 +165,18 @@ public class DeviceDiscoveryLayout {
 
 	public static void onlyCurListUpdate(MainActivity mainActivity) {
 
+		if (mainActivity == null || mainActivity.destroyed) return;
+
 		curList = new ArrayList<FoundDevice>(mainActivity.getBlueHunter().disMan.getFDInCurDiscoverySession());
 		int curNewDevices = mainActivity.getBlueHunter().disMan.newDevicesInCurDiscoverySession;
 
 		TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
-		devInCurDisTxt.setText(String.format("%d / %d", curNewDevices, curList.size() - curNewDevices));
+
+		if (devInCurDisTxt != null) {
+
+			devInCurDisTxt.setText(String.format("%d / %d", curNewDevices, curList.size() - curNewDevices));
+
+		}
 
 		if (dAdapter == null) {
 			dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, curList);
@@ -263,12 +271,12 @@ public class DeviceDiscoveryLayout {
 
 	}
 
-	public static void updateNextRankIndicator(MainActivity mainActivity, int exp) {
+	public static void updateNextRankIndicator(final MainActivity mainActivity, int exp) {
 
 		TextView nextRankIndicator = (TextView) mainActivity.findViewById(R.id.nextRankIndicator);
 
 		int oldVisible = nextRankIndicator.getVisibility();
-		
+
 		if (exp == -1) {
 
 			nextRankIndicator.setVisibility(TextView.GONE);
@@ -328,11 +336,21 @@ public class DeviceDiscoveryLayout {
 			tableRow.setLayoutParams(params);
 			tableRow.requestLayout();
 
+			nextRankIndicator.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+
+					LeaderboardLayout.scrollToNextRank(mainActivity);
+
+				}
+			});
+
 		}
-		
+
 		int newVisible = nextRankIndicator.getVisibility();
-		
-		if(oldVisible != newVisible) updateIndicatorViews(mainActivity);
+
+		if (oldVisible != newVisible) updateIndicatorViews(mainActivity);
 
 	}
 
@@ -352,6 +370,10 @@ public class DeviceDiscoveryLayout {
 		// animation.setDuration(1000);
 		// discoveryInfo.startAnimation(animation);
 		// lv.startAnimation(animation);
+
+		if (lv == null) lv = (ListView) main.findViewById(R.id.discoveryListView);
+
+		if (lv == null) return;
 
 		int orientation = main.getResources().getConfiguration().orientation;
 
@@ -406,7 +428,7 @@ public class DeviceDiscoveryLayout {
 					main.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_FOUND_DEVICES, true);
 					ListView listView = (ListView) main.findViewById(R.id.listView2);
 
-					listView.setSelection(newPosition);
+					listView.smoothScrollToPositionFromTop(newPosition, 0, 1000);
 
 				}
 
@@ -416,6 +438,10 @@ public class DeviceDiscoveryLayout {
 	}
 
 	public static void stopShowLV(MainActivity main) {
+
+		if (lv == null) lv = (ListView) main.findViewById(R.id.discoveryListView);
+
+		if (lv == null) return;
 
 		int orientation = main.getResources().getConfiguration().orientation;
 

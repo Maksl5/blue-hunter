@@ -66,6 +66,8 @@ public class LeaderboardLayout {
 
 	public static HashMap<Integer, Integer[]> changeList = new HashMap<Integer, Integer[]>();
 
+	public static int userRank = -1;
+
 	public static void refreshLeaderboard(final BlueHunter bhApp) {
 
 		refreshLeaderboard(bhApp, false);
@@ -191,6 +193,36 @@ public class LeaderboardLayout {
 
 			showedFdList = newValues;
 			lbAdapter.refreshList(showedFdList);
+
+		}
+
+	}
+
+	public static void scrollToNextRank(MainActivity mainActivity) {
+
+		if (completeFdList != null && completeFdList.size() != 0) {
+
+			if (mainActivity.mViewPager == null) {
+				mainActivity.mViewPager = (ViewPager) mainActivity.findViewById(R.id.pager);
+			}
+
+			mainActivity.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_LEADERBOARD, true);
+
+			ListView listView = (ListView) mainActivity.mViewPager.findViewById(R.id.listView1);
+
+			if (listView != null) {
+
+				listView.smoothScrollToPositionFromTop(userRank - 2, 0, 1000); // -2
+																				// because
+																				// of
+																				// index
+																				// offset
+																				// (index
+																				// 0
+																				// =rank
+																				// 1)
+
+			}
 
 		}
 
@@ -400,7 +432,10 @@ public class LeaderboardLayout {
 
 						LBAdapterData data = new LBAdapterData(name, level, progressMax, progressValue, num, exp, id);
 
-						if (uid == id) isUserInLD = true;
+						if (uid == id) {
+							isUserInLD = true;
+							userRank = rank;
+						}
 
 						completeFdList.add(data);
 						completeFdList.set(rank - 1, data);

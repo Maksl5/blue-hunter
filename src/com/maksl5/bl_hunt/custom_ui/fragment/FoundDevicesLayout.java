@@ -26,6 +26,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Debug;
+import android.provider.ContactsContract.Contacts.Data;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -400,14 +401,14 @@ public class FoundDevicesLayout {
 			// Debug.startMethodTracing("FDThread");
 			long backTimeA = System.currentTimeMillis();
 
-			List<FoundDevice> allDevices = DatabaseManager.getCachedList();
-
-			if (allDevices == null) {
+			if (DatabaseManager.getCachedList() == null) {
 
 				new DatabaseManager(bhApp).loadAllDevices(true);
 				return completeFdList;
 
 			}
+
+			List<FoundDevice> allDevices = new ArrayList<FoundDevice>(DatabaseManager.getCachedList());
 
 			ArrayList<FDAdapterData> listViewList = new ArrayList<FDAdapterData>();
 
