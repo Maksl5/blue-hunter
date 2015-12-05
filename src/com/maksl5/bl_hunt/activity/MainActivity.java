@@ -153,7 +153,7 @@ public class MainActivity extends FragmentActivity {
 
 		PageTransformer parallaxPageTransformer = setupPageTransformer();
 
-		mViewPager.setPageTransformer(true, parallaxPageTransformer);
+		mViewPager.setPageTransformer(true, new CustomPagerTransformer());
 
 		registerListener();
 
@@ -206,32 +206,32 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private PageTransformer setupPageTransformer() {
-		// ParallaxPageTransformer pageTransformer = new
-		// ParallaxPageTransformer();
-		//
-		// pageTransformer.addViewToParallax(new
-		// ParallaxTransformInformation(R.id.DDtableRow5, 1, -0.5f));
-		// pageTransformer.addViewToParallax(new
-		// ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
-		// pageTransformer.addViewToParallax(new
-		// ParallaxTransformInformation(R.id.lvlIndicator, 1, 1.5f));
-		// pageTransformer.addViewToParallax(new
-		// ParallaxTransformInformation(R.id.DDtableRow2, 1, -0.75f));
-		//
-		// pageTransformer.addViewToParallax(new
-		// ParallaxTransformInformation(R.id.txt_devices, 1, -1.56f));
-		// pageTransformer.addViewToParallax(new
-		// ParallaxTransformInformation(R.id.txt_devExpPerDay, 1, -1.57f));
-		// pageTransformer.addViewToParallax(new
-		// ParallaxTransformInformation(R.id.txt_devExpToday, 1, -1.55f));
-		// pageTransformer.addViewToParallax(new
-		// ParallaxTransformInformation(R.id.txt_discovery_devInCycle_value, 1,
-		// -1.58f));
-		//
-		//
-		// return pageTransformer;
+		 ParallaxPageTransformer pageTransformer = new
+		 ParallaxPageTransformer();
+		
+		 pageTransformer.addViewToParallax(new
+		 ParallaxTransformInformation(R.id.DDtableRow5, 1, -0.5f));
+		 pageTransformer.addViewToParallax(new
+		 ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
+		 pageTransformer.addViewToParallax(new
+		 ParallaxTransformInformation(R.id.lvlIndicator, 1, 1.5f));
+		 pageTransformer.addViewToParallax(new
+		 ParallaxTransformInformation(R.id.DDtableRow2, 1, -0.75f));
+		
+		 pageTransformer.addViewToParallax(new
+		 ParallaxTransformInformation(R.id.txt_devices, 1, -1.56f));
+		 pageTransformer.addViewToParallax(new
+		 ParallaxTransformInformation(R.id.txt_devExpPerDay, 1, -1.57f));
+		 pageTransformer.addViewToParallax(new
+		 ParallaxTransformInformation(R.id.txt_devExpToday, 1, -1.55f));
+		 pageTransformer.addViewToParallax(new
+		 ParallaxTransformInformation(R.id.txt_discovery_devInSession_value, 1,
+		 -1.58f));
+		
+		
+		 return pageTransformer;
 
-		return new RotationPageTransformer(160);
+		//return new RotationPageTransformer(160);
 
 	}
 
