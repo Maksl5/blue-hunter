@@ -107,7 +107,7 @@ public class DatabaseManager {
 				loadAllDevices(true);
 			}
 
-			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_ADD, device, false);
+			bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.CHANGE_ADD, device, false);
 
 			updateModifiedTime(System.currentTimeMillis());
 			return true;
@@ -252,7 +252,7 @@ public class DatabaseManager {
 			loadAllDevices(true);
 		}
 
-		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change, false);
+		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.CHANGE_EDIT, change, false);
 
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 
@@ -348,7 +348,7 @@ public class DatabaseManager {
 			loadAllDevices(true);
 		}
 
-		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_CHANGE, change, false);
+		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.CHANGE_EDIT, change, false);
 
 		updateModifiedTime(System.currentTimeMillis());
 	}
@@ -392,7 +392,7 @@ public class DatabaseManager {
 
 		if (result == 0) return false;
 
-		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.MODE_REMOVE, removeDevice, true);
+		bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.CHANGE_REMOVE, removeDevice, true);
 
 		return true;
 	}
@@ -1067,7 +1067,7 @@ public class DatabaseManager {
 			AchievementSystem.checkAchievements(bhApp, true);
 
 			if (bhApp.synchronizeFoundDevices.needForceOverrideUp) {
-				bhApp.synchronizeFoundDevices.startSyncing(3, true);
+				bhApp.synchronizeFoundDevices.startSyncing(SynchronizeFoundDevices.MODE_INIT, true);
 			}
 
 			bhApp.actionBarHandler.setDiscoverySwitchEnabled(true);

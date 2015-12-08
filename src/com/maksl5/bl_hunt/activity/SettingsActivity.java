@@ -28,6 +28,7 @@ import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.net.NetworkThread;
+import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 import com.maksl5.bl_hunt.util.FoundDevice;
@@ -705,7 +706,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 
-					bhApp.synchronizeFoundDevices.startSyncing(3, true);
+					bhApp.synchronizeFoundDevices.startSyncing(SynchronizeFoundDevices.MODE_INIT, true);
 
 					return true;
 				}
@@ -716,7 +717,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 
-					bhApp.synchronizeFoundDevices.startSyncing(2, true);
+					bhApp.synchronizeFoundDevices.startSyncing(SynchronizeFoundDevices.MODE_DOWN, true);
 
 					return true;
 				}

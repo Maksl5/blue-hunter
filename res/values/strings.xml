@@ -208,6 +208,9 @@
     <string name="str_achieve_20_title">Debug Helper</string>
     <string name="str_achieve_20_description">You are seeing this Achievement, because you have helped me alot with debugging. Thank you for that. :-)</string>
     
+    <string name="str_achieve_21_title">Palindrome Expert</string>
+    <string name="str_achieve_21_description">Find one device at a time, which consists of a palindrome. E.g.: 03:30 or 15:51. Note, 24 hours format is used here!</string>
+    
     <!-- Error strings -->
     
     
@@ -253,6 +256,7 @@
     <string name="str_Error_Login_100_8">Password is wrong.</string>
     <string name="str_Error_Login_100_9">Unexpected number of rows in DB query result.</string>
     <string name="str_Error_Login_100_10">Request timeout.</string>
+    <string name="str_Error_Login_1012">Failed to delete rows in DB.</string>
     
     <string name="str_Error_checkLogin">Error %d while checking login.</string>
     <string name="str_Error_checkLogin_100_1_2">Uncomplete parameters.</string>

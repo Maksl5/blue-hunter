@@ -250,6 +250,8 @@ public class ErrorHandler {
 				break;
 			case 1010:
 				errorMsg += String.format(" (%s)", con.getString(R.string.str_Error_Login_100_10));
+			case 1012:
+				errorMsg += String.format(" (%s)", con.getString(R.string.str_Error_Login_1012));
 				break;
 
 			}

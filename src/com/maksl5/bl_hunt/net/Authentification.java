@@ -90,30 +90,8 @@ public class Authentification {
 
 		if (serial == null || serial.equals("") || serial.equals("NULL")) {
 
-			try {
-				Class<?> sysPropClass = Class.forName("android.os.SystemProperties");
-				Method get = sysPropClass.getMethod("get", String.class);
-				serial = (String) get.invoke(sysPropClass, "sys.serialnumber");
-			}
-			catch (Exception ignored) {
-				serial = "NULL";
-			}
-
 			if (serial == null || serial.equals("") || serial.equals("NULL")) {
-
-				try {
-					Class<?> sysPropClass = Class.forName("android.os.SystemProperties");
-					Method get = sysPropClass.getMethod("get", String.class);
-					serial = (String) get.invoke(sysPropClass, "ril.serialnumber");
-				}
-				catch (Exception ignored) {
-					serial = "NULL";
-				}
-
-				if (serial == null || serial.equals("") || serial.equals("NULL")) {
-					serial = Build.SERIAL;
-				}
-
+				serial = Build.SERIAL;
 			}
 
 		}

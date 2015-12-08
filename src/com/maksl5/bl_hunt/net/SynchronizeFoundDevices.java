@@ -31,8 +31,7 @@ import android.widget.Toast;
  * @author Maksl5[Markus Bensing]
  * 
  */
-public class SynchronizeFoundDevices implements
-		OnNetworkResultAvailableListener, OnLoginChangeListener {
+public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener, OnLoginChangeListener {
 
 	private static int exp = 0;
 	private static int deviceNum = 0;
@@ -43,9 +42,13 @@ public class SynchronizeFoundDevices implements
 
 	public boolean needForceOverrideUp = false;
 
-	public static final int MODE_ADD = 1;
-	public static final int MODE_REMOVE = -1;
-	public static final int MODE_CHANGE = 2;
+	public static final int CHANGE_ADD = 1;
+	public static final int CHANGE_REMOVE = -1;
+	public static final int CHANGE_EDIT = 2;
+
+	public static final int MODE_UP = 1;
+	public static final int MODE_DOWN = 2;
+	public static final int MODE_INIT = 3;
 
 	public SynchronizeFoundDevices(BlueHunter blHunt) {
 
@@ -56,38 +59,34 @@ public class SynchronizeFoundDevices implements
 
 	public void addNewChange(int mode, FoundDevice device, boolean makeSync) {
 
-		if (device == null || device.getMacAddress() == null)
-			return;
+		if (device == null || device.getMacAddress() == null) return;
 
 		String macString = device.getMacAddressString();
 		String nameString = (device.getName() == null) ? "" : device.getName();
-		String rssiString = ""
-				+ ((device.getRssi() == 1) ? "" : device.getRssi());
-		String timeString = ""
-				+ ((device.getTime() == -1) ? "" : device.getTime());
-		String bonusString = ""
-				+ ((device.getBoost() == -1f) ? "" : device.getBoost());
+		String rssiString = "" + ((device.getRssi() == 1) ? "" : device.getRssi());
+		String timeString = "" + ((device.getTime() == -1) ? "" : device.getTime());
+		String bonusString = "" + ((device.getBoost() == -1f) ? "" : device.getBoost());
 
 		String rulesString = "";
 		try {
-			rulesString = String.format("[(%s),(%s),(%s),(%s),(%s)]",
-					macString, URLEncoder.encode(nameString, "UTF-8"),
-					rssiString, timeString, bonusString);
-		} catch (UnsupportedEncodingException e) {
+			rulesString = String.format("[(%s),(%s),(%s),(%s),(%s)]", macString, URLEncoder.encode(nameString, "UTF-8"), rssiString,
+					timeString, bonusString);
+		}
+		catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		switch (mode) {
-		case MODE_ADD:
+		case CHANGE_ADD:
 			changesToSync.add("[+]" + rulesString);
 			new DatabaseManager(blueHunter).addChange("[+]" + rulesString);
 			break;
-		case MODE_REMOVE:
+		case CHANGE_REMOVE:
 			changesToSync.add("[-]" + rulesString);
 			new DatabaseManager(blueHunter).addChange("[-]" + rulesString);
 			break;
-		case MODE_CHANGE:
+		case CHANGE_EDIT:
 			changesToSync.add("[+-]" + rulesString);
 			new DatabaseManager(blueHunter).addChange("[+-]" + rulesString);
 			break;
@@ -103,17 +102,14 @@ public class SynchronizeFoundDevices implements
 	}
 
 	public void checkAndStart() {
-		
-		int syncInterval = PreferenceManager.getPref(blueHunter,
-				"pref_syncInterval", 5);
-		if (PreferenceManager.getPref(blueHunter, "pref_syncingActivated",
-				false) && changesToSync.size() >= syncInterval) {
+
+		int syncInterval = PreferenceManager.getPref(blueHunter, "pref_syncInterval", 5);
+		if (PreferenceManager.getPref(blueHunter, "pref_syncingActivated", false) && changesToSync.size() >= syncInterval) {
 			start();
 		}
-		
-		
+
 	}
-	
+
 	public void start() {
 
 		exp = LevelSystem.getCachedUserExp(blueHunter);
@@ -122,26 +118,16 @@ public class SynchronizeFoundDevices implements
 		Log.d("exp", String.valueOf(exp));
 		Log.d("deviceNum", String.valueOf(deviceNum));
 
-		if (PreferenceManager.getPref(blueHunter, "pref_syncingActivated",
-				false)) {
+		if (PreferenceManager.getPref(blueHunter, "pref_syncingActivated", false)) {
 
-			blueHunter.authentification
-					.setOnNetworkResultAvailableListener(this);
+			blueHunter.authentification.setOnNetworkResultAvailableListener(this);
 
-			long lastModified = new DatabaseManager(blueHunter)
-					.getLastModifiedTime();
+			long lastModified = new DatabaseManager(blueHunter).getLastModifiedTime();
 
 			NetworkThread checkSync = new NetworkThread(blueHunter);
-			checkSync
-					.execute(
-							AuthentificationSecure.SERVER_SYNC_FD_CHECK,
-							String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_CHECK),
-							"lt="
-									+ blueHunter.authentification
-											.getStoredLoginToken(), "s="
-									+ Authentification.getSerialNumber(),
-							"p=" + blueHunter.authentification.getStoredPass(),
-							"e=" + exp, "n=" + deviceNum, "t=" + lastModified);
+			checkSync.execute(AuthentificationSecure.SERVER_SYNC_FD_CHECK, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_CHECK),
+					"lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(),
+					"p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified);
 
 		}
 
@@ -149,22 +135,18 @@ public class SynchronizeFoundDevices implements
 
 	public void startSyncing(int mode, boolean forceSync) {
 
-		if (mode == 0)
-			return;
+		if (mode == 0) return;
 
 		exp = LevelSystem.getCachedUserExp(blueHunter);
 		deviceNum = new DatabaseManager(blueHunter).getDeviceNum();
 
-		long lastModified = new DatabaseManager(blueHunter)
-				.getLastModifiedTime();
+		long lastModified = new DatabaseManager(blueHunter).getLastModifiedTime();
 
 		blueHunter.authentification.setOnNetworkResultAvailableListener(this);
 
-		if (mode == 1 && (changesToSync.size() != 0 || forceSync)) {
+		if (mode == MODE_UP && (changesToSync.size() != 0 || forceSync)) {
 
-			if (!PreferenceManager.getPref(blueHunter, "pref_syncingActivated",
-					false) && !forceSync)
-				return;
+			if (!PreferenceManager.getPref(blueHunter, "pref_syncingActivated", false) && !forceSync) return;
 
 			StringBuilder builder = new StringBuilder();
 			for (String change : changesToSync) {
@@ -184,38 +166,24 @@ public class SynchronizeFoundDevices implements
 			changesToSync.clear();
 			new DatabaseManager(blueHunter).resetChanges();
 
-			applySync
-					.execute(
-							AuthentificationSecure.SERVER_SYNC_FD_APPLY,
-							String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY),
-							"lt="
-									+ blueHunter.authentification
-											.getStoredLoginToken(), "s="
-									+ Authentification.getSerialNumber(),
-							"p=" + blueHunter.authentification.getStoredPass(),
-							"e=" + exp, "n=" + deviceNum, "t=" + lastModified,
-							"r=" + rules, "m=" + mode);
+			applySync.execute(AuthentificationSecure.SERVER_SYNC_FD_APPLY, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY),
+					"lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(),
+					"p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified, "r=" + rules,
+					"m=" + mode);
 
-		} else if (mode == 2) {
+		}
+		else if (mode == MODE_DOWN) {
 
 			NetworkThread applySync = new NetworkThread(blueHunter);
-			applySync
-					.execute(
-							AuthentificationSecure.SERVER_SYNC_FD_APPLY,
-							String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY),
-							"lt="
-									+ blueHunter.authentification
-											.getStoredLoginToken(), "s="
-									+ Authentification.getSerialNumber(),
-							"p=" + blueHunter.authentification.getStoredPass(),
-							"e=" + exp, "n=" + deviceNum, "t=" + lastModified,
-							"r=[not-required]", "m=" + mode);
+			applySync.execute(AuthentificationSecure.SERVER_SYNC_FD_APPLY, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY),
+					"lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(),
+					"p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified,
+					"r=[not-required]", "m=" + mode);
 
-		} else if (mode == 3) {
+		}
+		else if (mode == MODE_INIT) {
 
-			if (!PreferenceManager.getPref(blueHunter, "pref_syncingActivated",
-					false) && !forceSync)
-				return;
+			if (!PreferenceManager.getPref(blueHunter, "pref_syncingActivated", false) && !forceSync) return;
 
 			List<FoundDevice> allDevices = DatabaseManager.getCachedList();
 
@@ -230,20 +198,16 @@ public class SynchronizeFoundDevices implements
 
 			for (FoundDevice device : allDevices) {
 				String macString = device.getMacAddressString();
-				String nameString = (device.getName() == null) ? "" : device
-						.getName();
-				String rssiString = ""
-						+ ((device.getRssi() == 1) ? "" : device.getRssi());
-				String timeString = ""
-						+ ((device.getTime() == -1) ? "" : device.getTime());
-				String bonusString = ""
-						+ ((device.getBoost() == -1f) ? "" : device.getBoost());
+				String nameString = (device.getName() == null) ? "" : device.getName();
+				String rssiString = "" + ((device.getRssi() == 1) ? "" : device.getRssi());
+				String timeString = "" + ((device.getTime() == -1) ? "" : device.getTime());
+				String bonusString = "" + ((device.getBoost() == -1f) ? "" : device.getBoost());
 
 				try {
-					rulesString += String.format("[(%s),(%s),(%s),(%s),(%s)]",
-							macString, URLEncoder.encode(nameString, "UTF-8"),
+					rulesString += String.format("[(%s),(%s),(%s),(%s),(%s)]", macString, URLEncoder.encode(nameString, "UTF-8"),
 							rssiString, timeString, bonusString);
-				} catch (UnsupportedEncodingException e) {
+				}
+				catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -253,26 +217,18 @@ public class SynchronizeFoundDevices implements
 
 			if (!(rulesString.length() == 0 || rulesString.lastIndexOf(';') == -1)) {
 
-				rulesString = rulesString.substring(0,
-						rulesString.lastIndexOf(';'));
+				rulesString = rulesString.substring(0, rulesString.lastIndexOf(';'));
 			}
 
 			backupList = new ArrayList<String>(changesToSync);
 			changesToSync.clear();
 			new DatabaseManager(blueHunter).resetChanges();
-			
+
 			NetworkThread applySync = new NetworkThread(blueHunter);
-			applySync
-					.execute(
-							AuthentificationSecure.SERVER_SYNC_FD_APPLY,
-							String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY),
-							"lt="
-									+ blueHunter.authentification
-											.getStoredLoginToken(), "s="
-									+ Authentification.getSerialNumber(),
-							"p=" + blueHunter.authentification.getStoredPass(),
-							"e=" + exp, "n=" + deviceNum, "t=" + lastModified,
-							"r=" + rulesString, "m=" + mode);
+			applySync.execute(AuthentificationSecure.SERVER_SYNC_FD_APPLY, String.valueOf(Authentification.NETRESULT_ID_SYNC_FD_APPLY),
+					"lt=" + blueHunter.authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(),
+					"p=" + blueHunter.authentification.getStoredPass(), "e=" + exp, "n=" + deviceNum, "t=" + lastModified,
+					"r=" + rulesString, "m=" + mode);
 
 		}
 
@@ -297,16 +253,14 @@ public class SynchronizeFoundDevices implements
 			if (matcher.find()) {
 				int error = Integer.parseInt(matcher.group(1));
 
-				String errorMsg = ErrorHandler.getErrorString(blueHunter,
-						requestId, error);
+				String errorMsg = ErrorHandler.getErrorString(blueHunter, requestId, error);
 
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
 
 				return false;
 			}
 
-			Pattern checkSyncPattern = Pattern
-					.compile("<needsSync>([0-3])</needsSync>");
+			Pattern checkSyncPattern = Pattern.compile("<needsSync>([0-3])</needsSync>");
 			Matcher checkSyncMatcher = checkSyncPattern.matcher(resultString);
 
 			if (checkSyncMatcher.find()) {
@@ -314,23 +268,32 @@ public class SynchronizeFoundDevices implements
 
 				String tempMsg = "";
 
-				if (needsSync == 1) {
+				if (needsSync == MODE_UP) {
 					tempMsg = "Needs sync [UP].";
-				} else if (needsSync == 2) {
+				}
+				else if (needsSync == MODE_DOWN) {
 					tempMsg = "Needs sync [DOWN].";
-				} else if (needsSync == 3) {
+				}
+				else if (needsSync == MODE_INIT) {
 					tempMsg = "Needs init [UP].";
-				} else if (needsSync == 0) {
+				}
+				else if (needsSync == 0) {
 					tempMsg = "Doesn't need sync.";
 				}
 
 				Toast.makeText(blueHunter, tempMsg, Toast.LENGTH_LONG).show();
 
-				if (needsSync == 1 && changesToSync.isEmpty()) {
-					startSyncing(needsSync, true);
-				} else {
-					startSyncing(needsSync, false);
+				if (needsSync == MODE_UP && changesToSync.isEmpty()) {
+					startSyncing(MODE_UP, true);
 				}
+				else {
+					startSyncing(MODE_UP, false);
+				}
+
+				if (needsSync == MODE_DOWN) {
+					startSyncing(MODE_DOWN, false);
+				}
+
 			}
 			return false;
 
@@ -342,8 +305,7 @@ public class SynchronizeFoundDevices implements
 			if (errorMatcher.find()) {
 				int error = Integer.parseInt(errorMatcher.group(1));
 
-				String errorMsg = ErrorHandler.getErrorString(blueHunter,
-						requestId, error);
+				String errorMsg = ErrorHandler.getErrorString(blueHunter, requestId, error);
 
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
 
@@ -355,8 +317,7 @@ public class SynchronizeFoundDevices implements
 				return false;
 			}
 
-			Pattern applySyncPattern = Pattern
-					.compile("<done mode=\"([1-3])\" />");
+			Pattern applySyncPattern = Pattern.compile("<done mode=\"([1-3])\" />");
 			Matcher applySyncMatcher = applySyncPattern.matcher(resultString);
 
 			if (applySyncMatcher.find()) {
@@ -364,24 +325,24 @@ public class SynchronizeFoundDevices implements
 
 				String resultMsg = "";
 
-				if (syncMode == 1) {
+				if (syncMode == MODE_UP) {
 					resultMsg = "Successfully synced up.";
-				} else if (syncMode == 2) {
+				}
+				else if (syncMode == MODE_DOWN) {
 
 					long startTime = System.currentTimeMillis();
 
 					// Debug.startMethodTracing();
 
-					resultString = resultString.replace("<done mode=\"2\" />",
-							"");
+					resultString = resultString.replace("<done mode=\"2\" />", "");
 
 					Log.d("SyncMode 2 [DOWN]", resultString);
 
 					List<FoundDevice> devices = new ArrayList<FoundDevice>();
 					String[] deviceStrings = resultString.split(";");
 
-					Pattern parsePattern = Pattern
-							.compile("\\[\\(((?:[0-9a-fA-F][0-9a-fA-F]:){5}(?:[0-9a-fA-F][0-9a-fA-F]){1})\\),\\((.*?)\\),\\(((?:[-]?\\d*)?)\\),\\((\\d*?)\\),\\(((?:\\d+[.])?\\d+)\\)\\]");
+					Pattern parsePattern = Pattern.compile(
+							"\\[\\(((?:[0-9a-fA-F][0-9a-fA-F]:){5}(?:[0-9a-fA-F][0-9a-fA-F]){1})\\),\\((.*?)\\),\\(((?:[-]?\\d*)?)\\),\\((\\d*?)\\),\\(((?:\\d+[.])?\\d+)\\)\\]");
 					for (String string : deviceStrings) {
 						Matcher parseMatcher = parsePattern.matcher(string);
 						if (parseMatcher.find()) {
@@ -390,11 +351,12 @@ public class SynchronizeFoundDevices implements
 							String nameString = parseMatcher.group(2);
 							if (nameString == null || nameString.equals("")) {
 								nameString = null;
-							} else {
+							}
+							else {
 								try {
-									nameString = URLDecoder.decode(nameString,
-											"UTF-8");
-								} catch (UnsupportedEncodingException e) {
+									nameString = URLDecoder.decode(nameString, "UTF-8");
+								}
+								catch (UnsupportedEncodingException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -430,13 +392,13 @@ public class SynchronizeFoundDevices implements
 					float timePerDev = (float) (diff / (float) num);
 
 					Log.d("SyncMode 2 [DOWN]", "Time: " + diff + "ms");
-					Log.d("SyncMode 2 [DOWN]", "Time per device: " + timePerDev
-							+ "ms");
+					Log.d("SyncMode 2 [DOWN]", "Time per device: " + timePerDev + "ms");
 
 					PreferenceManager.setPref(blueHunter, "requireManuCheck", true);
 
 					resultMsg = "Successfully synced down database.";
-				} else if (syncMode == 3) {
+				}
+				else if (syncMode == MODE_INIT) {
 					resultMsg = "Successfully initiated database syncing.";
 				}
 
@@ -462,8 +424,9 @@ public class SynchronizeFoundDevices implements
 		if (loggedIn) {
 			if (!needForceOverrideUp) {
 				start();
-			} else {
-				startSyncing(3, true);
+			}
+			else {
+				startSyncing(MODE_INIT, true);
 			}
 		}
 

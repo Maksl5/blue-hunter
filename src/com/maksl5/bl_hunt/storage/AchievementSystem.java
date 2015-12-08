@@ -315,7 +315,7 @@ public class AchievementSystem {
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
 					// 15D between 10:00 - 10:30pm
-					
+
 					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
 							.equals(bhApp.authentification.getAchieveHash(getId()));
 
@@ -358,7 +358,7 @@ public class AchievementSystem {
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
 					// 65D between 5:00 - 7:00am
-					
+
 					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
 							.equals(bhApp.authentification.getAchieveHash(getId()));
 
@@ -399,7 +399,7 @@ public class AchievementSystem {
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
 					// 1D to full hour
-					
+
 					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
 							.equals(bhApp.authentification.getAchieveHash(getId()));
 
@@ -577,7 +577,64 @@ public class AchievementSystem {
 					return false;
 				}
 
-			}.setBoost(0.03f)
+			}.setBoost(0.03f),
+
+			new Achievement(21, R.string.str_achieve_21_title, R.string.str_achieve_21_description) {
+
+				@Override
+				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+
+					// Palindrome
+
+					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+							.equals(bhApp.authentification.getAchieveHash(getId()));
+
+					//if (alreadyAccomplished) return true;
+
+					long startTime = System.currentTimeMillis();
+
+					int i = 0;
+
+					for (i = 0; i < allDevices.size(); i++) {
+
+						long time = allDevices.get(i).getTime();
+
+						DateTime date = new DateTime(time);
+
+						int hour = date.getHourOfDay();
+						int minute = date.getMinuteOfHour();
+
+						int rotatedHour = 0;
+
+						// rotating hour
+						if (hour < 10) {
+							rotatedHour = hour * 10;
+						}
+						else {
+
+							int digit1 = (int) (hour / (float) 10);
+							int digit2 = hour - digit1 * 10;
+
+							rotatedHour = digit1 + digit2 * 10;
+						}
+
+						if (rotatedHour == minute) {
+							long endTime = System.currentTimeMillis();
+							Log.d("Achievement 21 time",
+									(endTime - startTime) + "ms | " + ((endTime - startTime) / (float) (i + 1)) + "ms/device");
+							return true;
+						}
+
+					}
+
+					long endTime = System.currentTimeMillis();
+
+					Log.d("Achievement 21 time", (endTime - startTime) + "ms | " + ((endTime - startTime) / (float) (i + 1)) + "ms/device");
+
+					return false;
+				}
+
+			}.setBoost(0.20f)
 
 	});
 
