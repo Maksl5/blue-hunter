@@ -378,9 +378,12 @@ public class DatabaseManager {
 		FoundDevice removeDevice = new FoundDevice();
 		removeDevice.setMac(macAddress);
 
+		
 		if (cachedList != null) {
 			int index = cachedList.indexOf(removeDevice);
-
+			
+			removeDevice = cachedList.get(index);
+			
 			cachedList.remove(index);
 			close();
 		}
