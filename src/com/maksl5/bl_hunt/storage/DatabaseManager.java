@@ -378,12 +378,11 @@ public class DatabaseManager {
 		FoundDevice removeDevice = new FoundDevice();
 		removeDevice.setMac(macAddress);
 
-		
 		if (cachedList != null) {
 			int index = cachedList.indexOf(removeDevice);
-			
+
 			removeDevice = cachedList.get(index);
-			
+
 			cachedList.remove(index);
 			close();
 		}
@@ -637,6 +636,53 @@ public class DatabaseManager {
 		return changes;
 	}
 
+	// WEEKLY LEADERBOARD CHANGE
+
+	public void setWeeklyLeaderboardChanges(HashMap<Integer, Integer[]> changes) {
+
+		Set<Integer> keySet = changes.keySet();
+		for (Integer uid : keySet) {
+			ContentValues values = new ContentValues();
+			values.put(DatabaseHelper.COLUMN_LD_UID, uid);
+
+			Integer[] changeValues = changes.get(uid);
+
+			values.put(DatabaseHelper.COLUMN_LD_RANK, changeValues[0]);
+			values.put(DatabaseHelper.COLUMN_LD_DEV, changeValues[1]);
+
+			db.insert(DatabaseHelper.WEEKLY_LEADERBOARD_CHANGES_TABLE, null, values);
+		}
+
+		close();
+
+	}
+
+	public void resetWeeklyLeaderboardChanges() {
+
+		db.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.WEEKLY_LEADERBOARD_CHANGES_TABLE);
+		db.execSQL(DatabaseHelper.WEEKLY_LEADERBOARD_CHANGES_CREATE);
+
+		close();
+	}
+
+	public HashMap<Integer, Integer[]> getWeeklyLeaderboardChanges() {
+
+		HashMap<Integer, Integer[]> changes = new HashMap<Integer, Integer[]>();
+
+		Cursor cursor = db.query(DatabaseHelper.WEEKLY_LEADERBOARD_CHANGES_TABLE, null, null, null, null, null, null);
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			changes.put(cursor.getInt(0), new Integer[] {
+					cursor.getInt(1), cursor.getInt(2) });
+			cursor.moveToNext();
+		}
+
+		cursor.close();
+		close();
+
+		return changes;
+	}
+
 	public long getLastModifiedTime() {
 
 		long time = PreferenceManager.getPref(bhApp, "dbLastModified", (long) 0);
@@ -687,6 +733,7 @@ public class DatabaseManager {
 		public final static String FOUND_DEVICES_TABLE = "foundDevices";
 		public final static String CHANGES_SYNC_TABLE = "changesSync";
 		public final static String LEADERBOARD_CHANGES_TABLE = "ldChanges";
+		public final static String WEEKLY_LEADERBOARD_CHANGES_TABLE = "weeklyLdChanges";
 
 		public final static String COLUMN_MAC_ADDRESS = "macAddress";
 
@@ -740,6 +787,12 @@ public class DatabaseManager {
 				" (" + COLUMN_LD_UID + " Integer Not Null, " + 
 				COLUMN_LD_RANK + " Integer Not Null, " +
 				COLUMN_LD_EXP + " Integer Not Null, " +
+				COLUMN_LD_DEV + " Integer Not Null);";
+		
+		public final static String WEEKLY_LEADERBOARD_CHANGES_CREATE = 
+				"Create Table " + WEEKLY_LEADERBOARD_CHANGES_TABLE +
+				" (" + COLUMN_LD_UID + " Integer Not Null, " + 
+				COLUMN_LD_RANK + " Integer Not Null, " +
 				COLUMN_LD_DEV + " Integer Not Null);";
 		
 		// @formatter:on
@@ -952,9 +1005,14 @@ public class DatabaseManager {
 					+ COLUMN_LD_UID + " Integer Not Null, " + COLUMN_LD_RANK + " Integer Not Null, " + COLUMN_LD_EXP + " Integer Not Null, "
 					+ COLUMN_LD_DEV + " Integer Not Null);";
 
+			final String WEEKLY_LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS = "Create Table If Not Exists " + WEEKLY_LEADERBOARD_CHANGES_TABLE
+					+ " (" + COLUMN_LD_UID + " Integer Not Null, " + COLUMN_LD_RANK + " Integer Not Null, " + COLUMN_LD_DEV
+					+ " Integer Not Null);";
+
 			db.execSQL(FOUND_DEVICES_CREATE_IF_NOT_EXISTS);
 			db.execSQL(CHANGES_SYNC_CREATE_IF_NOT_EXISTS);
 			db.execSQL(LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS);
+			db.execSQL(WEEKLY_LEADERBOARD_CHANGES_CREATE_IF_NOT_EXISTS);
 
 		}
 

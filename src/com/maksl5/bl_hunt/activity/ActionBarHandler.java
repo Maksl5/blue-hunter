@@ -25,6 +25,7 @@ import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.ProfileLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.WeeklyLeaderboardLayout;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 import com.maksl5.bl_hunt.util.MacAddress;
@@ -200,6 +201,9 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 					menu.findItem(R.id.menu_switch).setVisible(true);
 				}
 
+				onQueryTextChange("");
+				menu.findItem(R.id.menu_search).collapseActionView();
+				
 				break;
 			case FragmentLayoutManager.PAGE_LEADERBOARD:
 				menu.findItem(R.id.menu_search).setVisible(true);
@@ -318,7 +322,16 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 
 		if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES) FoundDevicesLayout.filterFoundDevices(newText, bhApp);
 
-		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) LeaderboardLayout.filterLeaderboard(newText, bhApp);
+		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) {
+
+			if (LeaderboardLayout.currentSelectedTab == 1) {
+				LeaderboardLayout.filterLeaderboard(newText, bhApp);
+			}
+			else {
+				WeeklyLeaderboardLayout.filterLeaderboard(newText, bhApp);
+			}
+
+		}
 
 		return false;
 	}

@@ -30,6 +30,7 @@ import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout.LBAdapterData;
 import com.maksl5.bl_hunt.custom_ui.fragment.ProfileLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.StatisticsFragment;
+import com.maksl5.bl_hunt.custom_ui.fragment.WeeklyLeaderboardLayout;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
@@ -206,32 +207,21 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private PageTransformer setupPageTransformer() {
-		 ParallaxPageTransformer pageTransformer = new
-		 ParallaxPageTransformer();
-		
-		 pageTransformer.addViewToParallax(new
-		 ParallaxTransformInformation(R.id.DDtableRow5, 1, -0.5f));
-		 pageTransformer.addViewToParallax(new
-		 ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
-		 pageTransformer.addViewToParallax(new
-		 ParallaxTransformInformation(R.id.lvlIndicator, 1, 1.5f));
-		 pageTransformer.addViewToParallax(new
-		 ParallaxTransformInformation(R.id.DDtableRow2, 1, -0.75f));
-		
-		 pageTransformer.addViewToParallax(new
-		 ParallaxTransformInformation(R.id.txt_devices, 1, -1.56f));
-		 pageTransformer.addViewToParallax(new
-		 ParallaxTransformInformation(R.id.txt_devExpPerDay, 1, -1.57f));
-		 pageTransformer.addViewToParallax(new
-		 ParallaxTransformInformation(R.id.txt_devExpToday, 1, -1.55f));
-		 pageTransformer.addViewToParallax(new
-		 ParallaxTransformInformation(R.id.txt_discovery_devInSession_value, 1,
-		 -1.58f));
-		
-		
-		 return pageTransformer;
+		ParallaxPageTransformer pageTransformer = new ParallaxPageTransformer();
 
-		//return new RotationPageTransformer(160);
+		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow5, 1, -0.5f));
+		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
+		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.lvlIndicator, 1, 1.5f));
+		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow2, 1, -0.75f));
+
+		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devices, 1, -1.56f));
+		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devExpPerDay, 1, -1.57f));
+		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devExpToday, 1, -1.55f));
+		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_discovery_devInSession_value, 1, -1.58f));
+
+		return pageTransformer;
+
+		// return new RotationPageTransformer(160);
 
 	}
 
@@ -451,7 +441,9 @@ public class MainActivity extends FragmentActivity {
 
 		DeviceDiscoveryLayout.updateDuringDBLoading(this, true);
 
+		LeaderboardLayout.initTabs(bhApp);
 		LeaderboardLayout.changeList = new DatabaseManager(bhApp).getLeaderboardChanges();
+		WeeklyLeaderboardLayout.changeList = new DatabaseManager(bhApp).getWeeklyLeaderboardChanges();
 		LeaderboardLayout.refreshLeaderboard(bhApp);
 
 		ProfileLayout.initializeView(this);
@@ -641,7 +633,7 @@ public class MainActivity extends FragmentActivity {
 			bhApp.disMan.disableBluetooth();
 
 		}
-		
+
 		destroyed = true;
 
 		notificationManager.cancel(1);
@@ -649,6 +641,8 @@ public class MainActivity extends FragmentActivity {
 
 		bhApp.disMan.unregisterReceiver();
 		bhApp.disMan.stopDiscoveryManager();
+
+		// GLOBAL
 
 		HashMap<Integer, Integer[]> leaderboardChanges = new HashMap<Integer, Integer[]>();
 
@@ -660,9 +654,25 @@ public class MainActivity extends FragmentActivity {
 
 		}
 
+		// WEEKLY
+
+		HashMap<Integer, Integer[]> weeklyLeaderboardChanges = new HashMap<Integer, Integer[]>();
+
+		for (int i = 0; i < WeeklyLeaderboardLayout.completeLbList.size(); i++) {
+			com.maksl5.bl_hunt.custom_ui.fragment.WeeklyLeaderboardLayout.LBAdapterData weeklyLeaderboardEntry = WeeklyLeaderboardLayout.completeLbList
+					.get(i);
+
+			weeklyLeaderboardChanges.put(weeklyLeaderboardEntry.getId(), new Integer[] {
+					i + 1, weeklyLeaderboardEntry.getDevNum() });
+
+		}
+
 		try {
 			new DatabaseManager(bhApp).resetLeaderboardChanges();
 			new DatabaseManager(bhApp).setLeaderboardChanges(leaderboardChanges);
+
+			new DatabaseManager(bhApp).resetWeeklyLeaderboardChanges();
+			new DatabaseManager(bhApp).setWeeklyLeaderboardChanges(weeklyLeaderboardChanges);
 		}
 		catch (SQLiteDatabaseLockedException e) {
 			Toast.makeText(bhApp, "Could not save Leaderboard changes.", Toast.LENGTH_SHORT).show();
@@ -804,6 +814,7 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 
+		LeaderboardLayout.initTabs(bhApp);
 		LeaderboardLayout.refreshLeaderboard(bhApp, true);
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 
