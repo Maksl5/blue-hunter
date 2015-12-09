@@ -455,15 +455,16 @@ public class LeaderboardLayout {
 							ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
 							TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
 
+							DecimalFormat decimalFormat = new DecimalFormat(",###");
+
 							rankView.setText("" + rank + ".");
 							nameView.setText(name);
 							nameView.setTag(id);
 							levelView.setText("" + level);
 							levelPrgView.setMax(progressMax);
 							levelPrgView.setProgress(progressValue);
-							devicesView.setText(new DecimalFormat(",###").format(num) + " Devices");
-							expView.setText(new DecimalFormat(",###").format(exp) + " "
-									+ bhApp.getString(R.string.str_foundDevices_exp_abbreviation));
+							devicesView.setText(decimalFormat.format(num) + " Devices");
+							expView.setText(decimalFormat.format(exp) + " " + bhApp.getString(R.string.str_foundDevices_exp_abbreviation));
 
 							Integer[] changes = changeList.get(id);
 
@@ -507,7 +508,7 @@ public class LeaderboardLayout {
 							}
 
 							// change in exp
-							changeEXPTxtView.setText("" + Math.abs(expBefore - exp));
+							changeEXPTxtView.setText("" + decimalFormat.format(Math.abs(expBefore - exp)));
 
 							if ((expBefore - exp) > 0) {
 
@@ -526,7 +527,7 @@ public class LeaderboardLayout {
 							}
 
 							// change in dev
-							changeDEVTxtView.setText("" + Math.abs(devBefore - num));
+							changeDEVTxtView.setText("" + decimalFormat.format(Math.abs(devBefore - num)));
 
 							if ((devBefore - num) > 0) {
 
@@ -840,15 +841,17 @@ public class LeaderboardLayout {
 
 				String nameString = user.getName();
 
+				DecimalFormat decimalFormat = new DecimalFormat(",###");
+
 				holder.rank.setText("" + (completeFdList.indexOf(user) + 1) + ".");
 				holder.name.setText(nameString);
 				holder.name.setTag(user.getId());
 				holder.level.setText("" + user.getLevel());
 				holder.levelPrg.setMax(user.getProgressMax());
 				holder.levelPrg.setProgress(user.getProgressValue());
-				holder.devices.setText(new DecimalFormat(",###").format(user.getDevNum()) + " Devices");
-				holder.exp.setText(new DecimalFormat(",###").format(user.getExp()) + " "
-						+ getContext().getString(R.string.str_foundDevices_exp_abbreviation));
+				holder.devices.setText(decimalFormat.format(user.getDevNum()) + " Devices");
+				holder.exp.setText(
+						decimalFormat.format(user.getExp()) + " " + getContext().getString(R.string.str_foundDevices_exp_abbreviation));
 
 				int rankNow = position + 1;
 				int expNow = user.getExp();
@@ -897,7 +900,7 @@ public class LeaderboardLayout {
 				}
 
 				// change in exp
-				holder.changeEXPTxt.setText("" + Math.abs(expBefore - expNow));
+				holder.changeEXPTxt.setText("" + decimalFormat.format(Math.abs(expBefore - expNow)));
 
 				if ((expBefore - expNow) > 0) {
 
@@ -916,7 +919,7 @@ public class LeaderboardLayout {
 				}
 
 				// change in dev
-				holder.changeDEVTxt.setText("" + Math.abs(devBefore - devNow));
+				holder.changeDEVTxt.setText("" + decimalFormat.format(Math.abs(devBefore - devNow)));
 
 				if ((devBefore - devNow) > 0) {
 
