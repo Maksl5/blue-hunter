@@ -60,8 +60,8 @@ public class LeaderboardLayout {
 	public static final int ARRAY_INDEX_EXP = 5;
 	public static final int ARRAY_INDEX_ID = 6;
 
-	private volatile static ArrayList<LBAdapterData> showedFdList = new ArrayList<LBAdapterData>();
-	public volatile static ArrayList<LBAdapterData> completeFdList = new ArrayList<LBAdapterData>();
+	private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<LBAdapterData>();
+	public volatile static ArrayList<LBAdapterData> completeLbList = new ArrayList<LBAdapterData>();
 
 	private static ThreadManager threadManager = null;
 
@@ -106,7 +106,7 @@ public class LeaderboardLayout {
 			ldAdapter = (LeaderboardAdapter) listView.getAdapter();
 			if (ldAdapter == null || ldAdapter.isEmpty()) {
 				ldAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
-						showedFdList);
+						showedLbList);
 				listView.setAdapter(ldAdapter);
 			}
 
@@ -121,7 +121,7 @@ public class LeaderboardLayout {
 
 		RefreshThread refreshThread = new LeaderboardLayout().new RefreshThread(bhApp, threadManager);
 		if (refreshThread.canRun()) {
-			showedFdList.clear();
+			showedLbList.clear();
 			bhApp.actionBarHandler.getMenuItem(R.id.menu_search).collapseActionView();
 			refreshThread.execute(1, 5, 0);
 		}
@@ -160,21 +160,21 @@ public class LeaderboardLayout {
 		LeaderboardAdapter lbAdapter = (LeaderboardAdapter) lv.getAdapter();
 
 		if (lbAdapter == null || lbAdapter.isEmpty()) {
-			lbAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
+			lbAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedLbList);
 			lv.setAdapter(lbAdapter);
 		}
 
 		text = text.toLowerCase();
 
 		if (text.length() == 0) {
-			if (!showedFdList.equals(completeFdList)) {
-				showedFdList = new ArrayList<LBAdapterData>(completeFdList);
-				lbAdapter.refreshList(showedFdList);
+			if (!showedLbList.equals(completeLbList)) {
+				showedLbList = new ArrayList<LBAdapterData>(completeLbList);
+				lbAdapter.refreshList(showedLbList);
 			}
 		}
 		else {
 
-			ArrayList<LBAdapterData> filterList = new ArrayList<LBAdapterData>(completeFdList);
+			ArrayList<LBAdapterData> filterList = new ArrayList<LBAdapterData>(completeLbList);
 
 			final int count = filterList.size();
 			final ArrayList<LBAdapterData> newValues = new ArrayList<LBAdapterData>();
@@ -192,8 +192,8 @@ public class LeaderboardLayout {
 
 			}
 
-			showedFdList = newValues;
-			lbAdapter.refreshList(showedFdList);
+			showedLbList = newValues;
+			lbAdapter.refreshList(showedLbList);
 
 		}
 
@@ -201,7 +201,7 @@ public class LeaderboardLayout {
 
 	public static void scrollToPosition(MainActivity mainActivity, int index) {
 
-		if (completeFdList != null && completeFdList.size() != 0) {
+		if (completeLbList != null && completeLbList.size() != 0) {
 
 			if (mainActivity.mViewPager == null) {
 				mainActivity.mViewPager = (ViewPager) mainActivity.findViewById(R.id.pager);
@@ -279,7 +279,7 @@ public class LeaderboardLayout {
 
 			this.ldAdapter = (LeaderboardAdapter) listView.getAdapter();
 			if (this.ldAdapter == null || this.ldAdapter.isEmpty()) {
-				this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedFdList);
+				this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedLbList);
 				this.listView.setAdapter(ldAdapter);
 			}
 
@@ -373,9 +373,9 @@ public class LeaderboardLayout {
 					int errorCode = Integer.parseInt(matcher.group(1));
 
 					LBAdapterData data = new LBAdapterData("Error " + errorCode, 0, 100, 0, 0, 0, 0);
-					showedFdList.add(data);
+					showedLbList.add(data);
 
-					if (ldAdapter != null) ldAdapter.refreshList(showedFdList);
+					if (ldAdapter != null) ldAdapter.refreshList(showedLbList);
 
 					listView.setSelectionFromTop(scrollIndex, scrollTop);
 
@@ -547,9 +547,9 @@ public class LeaderboardLayout {
 
 						}
 
-						completeFdList.add(data);
-						completeFdList.set(rank - 1, data);
-						showedFdList = completeFdList;
+						completeLbList.add(data);
+						completeLbList.set(rank - 1, data);
+						showedLbList = completeLbList;
 
 					}
 
@@ -565,29 +565,29 @@ public class LeaderboardLayout {
 
 						int exp = -1;
 
-						for (int i = 0; i < completeFdList.size(); i++) {
+						for (int i = 0; i < completeLbList.size(); i++) {
 
-							LBAdapterData data = completeFdList.get(i);
+							LBAdapterData data = completeLbList.get(i);
 
 							if (currentExp >= data.getExp() && (i - 1) >= 0) {
 
-								if (completeFdList.get(i - 1).getId() == uid && (i - 2) >= 0) {
-									if (completeFdList.get(i - 2).getId() != uid) {
-										exp = completeFdList.get(i - 2).getExp();
+								if (completeLbList.get(i - 1).getId() == uid && (i - 2) >= 0) {
+									if (completeLbList.get(i - 2).getId() != uid) {
+										exp = completeLbList.get(i - 2).getExp();
 										break;
 									}
 								}
 								else {
-									exp = completeFdList.get(i - 1).getExp();
+									exp = completeLbList.get(i - 1).getExp();
 									break;
 								}
 							}
 
 						}
 
-						if (currentExp < completeFdList.get(completeFdList.size() - 1).getExp()) {
+						if (currentExp < completeLbList.get(completeLbList.size() - 1).getExp()) {
 
-							exp = completeFdList.get(completeFdList.size() - 1).getExp();
+							exp = completeLbList.get(completeLbList.size() - 1).getExp();
 						}
 
 						DeviceDiscoveryLayout.expToUpdate = exp;
@@ -600,7 +600,7 @@ public class LeaderboardLayout {
 
 					}
 
-					showedFdList = completeFdList;
+					showedLbList = completeLbList;
 					ldAdapter.notifyDataSetChanged();
 
 					listView.setSelectionFromTop(scrollIndex, scrollTop);
@@ -797,7 +797,7 @@ public class LeaderboardLayout {
 
 		public LeaderboardAdapter(Context context, int textViewResourceId, ArrayList<LBAdapterData> newLbData) {
 
-			super(context, textViewResourceId, showedFdList);
+			super(context, textViewResourceId, showedLbList);
 
 			dataList = newLbData;
 			originalDataList = newLbData;
@@ -843,7 +843,7 @@ public class LeaderboardLayout {
 
 				DecimalFormat decimalFormat = new DecimalFormat(",###");
 
-				holder.rank.setText("" + (completeFdList.indexOf(user) + 1) + ".");
+				holder.rank.setText("" + (completeLbList.indexOf(user) + 1) + ".");
 				holder.name.setText(nameString);
 				holder.name.setTag(user.getId());
 				holder.level.setText("" + user.getLevel());

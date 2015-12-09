@@ -652,8 +652,8 @@ public class MainActivity extends FragmentActivity {
 
 		HashMap<Integer, Integer[]> leaderboardChanges = new HashMap<Integer, Integer[]>();
 
-		for (int i = 0; i < LeaderboardLayout.completeFdList.size(); i++) {
-			LBAdapterData leaderboardEntry = LeaderboardLayout.completeFdList.get(i);
+		for (int i = 0; i < LeaderboardLayout.completeLbList.size(); i++) {
+			LBAdapterData leaderboardEntry = LeaderboardLayout.completeLbList.get(i);
 
 			leaderboardChanges.put(leaderboardEntry.getId(), new Integer[] {
 					i + 1, leaderboardEntry.getExp(), leaderboardEntry.getDevNum() });

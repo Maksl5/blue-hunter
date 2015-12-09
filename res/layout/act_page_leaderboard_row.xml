@@ -2,14 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_medium" >
+    android:padding="@dimen/padding_small" >
 
     <TableRow
         android:id="@+id/LDRtableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="@dimen/padding_xsmall" >
+        android:gravity="center" >
 
         <QuickContactBadge
             android:id="@+id/picture"
@@ -43,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="@dimen/padding_xsmall" >
+            android:paddingRight="@dimen/padding_xsmall" >
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -79,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/padding_xsmall" >
+            android:paddingLeft="@dimen/padding_xsmall" >
 
             <TableRow
                 android:id="@+id/LDRTableRow01"
@@ -172,7 +171,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="1."
+            android:text="3."
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TableRow
