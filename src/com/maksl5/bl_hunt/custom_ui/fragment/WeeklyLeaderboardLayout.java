@@ -75,6 +75,8 @@ public class WeeklyLeaderboardLayout {
 	public static HashMap<Integer, Integer[]> changeList = new HashMap<Integer, Integer[]>();
 
 	public static int userRank = -1;
+	public static long timeOffset = 0;
+	public static TextView timerTextView = null;
 
 	public static void refreshLeaderboard(final BlueHunter bhApp) {
 
@@ -118,9 +120,9 @@ public class WeeklyLeaderboardLayout {
 			}
 
 			ldAdapter.notifyDataSetChanged();
-			
+
 			refreshUserRow(bhApp.mainActivity);
-			
+
 			return;
 
 		}
@@ -233,17 +235,15 @@ public class WeeklyLeaderboardLayout {
 		if (threadManager != null && threadManager.refreshThread != null) threadManager.refreshThread.cancel(true);
 
 	}
-	
+
 	public static void refreshUserRow(final MainActivity mainActivity) {
-		
-		
+
 		LBAdapterData userData = completeLbList.get(userRank - 1);
 
 		String name = userData.getName();
 		int id = userData.getId();
 		int num = userData.getDevNum();
-		
-		
+
 		View container = mainActivity.findViewById(R.id.weeklyLdUserRL);
 
 		container.setOnClickListener(new OnClickListener() {
@@ -329,8 +329,6 @@ public class WeeklyLeaderboardLayout {
 			changeDEVTxtView.setText("");
 		}
 
-		
-		
 	}
 
 	private class RefreshThread extends AsyncTask<Integer, Void, String> {
@@ -507,6 +505,7 @@ public class WeeklyLeaderboardLayout {
 				Element rootElement = document.getDocumentElement();
 
 				long nextCycleTStamp = Long.parseLong(rootElement.getAttribute("until"));
+				timeOffset = System.currentTimeMillis() - Long.parseLong(rootElement.getAttribute("now"));
 
 				List<Integer> bonusIds = new ArrayList<Integer>(3);
 
@@ -576,7 +575,7 @@ public class WeeklyLeaderboardLayout {
 					if (isUserInLD) {
 						View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
 						container.setVisibility(View.VISIBLE);
-						
+
 						refreshUserRow(bhApp.mainActivity);
 					}
 
@@ -786,7 +785,8 @@ public class WeeklyLeaderboardLayout {
 				}
 				else if (rankNow == 3) {
 					rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xcd, 0x7f, 0x32)));
-				}else {
+				}
+				else {
 					rowView.setBackground(null);
 				}
 

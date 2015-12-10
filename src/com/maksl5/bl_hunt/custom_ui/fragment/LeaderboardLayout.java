@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.joda.time.Seconds;
+import org.joda.time.field.MillisDurationField;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -94,8 +96,10 @@ public class LeaderboardLayout {
 
 		tabHost.addTab(globalTab);
 		tabHost.addTab(weeklyTab);
-		
+
 		tabHost.setCurrentTab(currentSelectedTab);
+
+		WeeklyLeaderboardLayout.timerTextView = (TextView) pager.findViewById(R.id.weeklyTimerTxt);
 
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
 
@@ -107,9 +111,68 @@ public class LeaderboardLayout {
 
 				if (tabId.equals("global")) {
 					currentSelectedTab = 0;
+
 				}
 				else {
 					currentSelectedTab = 1;
+
+					Thread updateTimerThread = new Thread() {
+
+						@Override
+						public void run() {
+
+							final long nextCycleTimestamp = PreferenceManager.getPref(bhApp, "cachedNextCycle", 0L);
+
+							while (WeeklyLeaderboardLayout.timerTextView != null && currentSelectedTab == 1 && nextCycleTimestamp != 0) {
+
+								bhApp.mainActivity.runOnUiThread(new Runnable() {
+
+									@Override
+									public void run() {
+
+										if (WeeklyLeaderboardLayout.timeOffset != 0) {
+											long restTime = nextCycleTimestamp
+													- (System.currentTimeMillis() - WeeklyLeaderboardLayout.timeOffset);
+
+											int days = (int) (restTime / (float) 86400000);
+											int hours = (int) (restTime / (float) 3600000) - days * 24;
+											int minutes = (int) (restTime / (float) 60000) - days * 24 * 60 - hours * 60;
+											int seconds = (int) (restTime / (float) 1000) - days * 24 * 60 * 60 - hours * 60 * 60
+													- minutes * 60;
+
+											String timerString = "";
+
+											if (nextCycleTimestamp == 1450051200000L) {
+												timerString = String.format("Initial Start in %dd %dh %dmin and %dsec.", days, hours,
+														minutes, seconds);
+
+											}
+											else {
+												timerString = String.format("Cycle ends in %dd %dh %dmin and %dsec.", days, hours, minutes,
+														seconds);
+											}
+
+											WeeklyLeaderboardLayout.timerTextView.setText(timerString);
+										}
+
+									}
+								});
+
+								try {
+									Thread.sleep(200);
+								}
+								catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+
+							}
+						}
+
+					};
+
+					updateTimerThread.start();
+
 				}
 
 			}
@@ -160,11 +223,11 @@ public class LeaderboardLayout {
 			}
 
 			ldAdapter.notifyDataSetChanged();
-			
+
 			refreshUserRow(bhApp.mainActivity);
-			
+
 			WeeklyLeaderboardLayout.refreshLeaderboard(bhApp, orientationChanged);
-			
+
 			return;
 
 		}
