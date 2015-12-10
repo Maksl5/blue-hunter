@@ -133,6 +133,11 @@ public class LeaderboardLayout {
 										if (WeeklyLeaderboardLayout.timeOffset != 0) {
 											long restTime = nextCycleTimestamp
 													- (System.currentTimeMillis() - WeeklyLeaderboardLayout.timeOffset);
+											
+											if(restTime < 0) {
+												refreshLeaderboard(bhApp);
+												return;
+											}
 
 											int days = (int) (restTime / (float) 86400000);
 											int hours = (int) (restTime / (float) 3600000) - days * 24;
@@ -143,12 +148,12 @@ public class LeaderboardLayout {
 											String timerString = "";
 
 											if (nextCycleTimestamp == 1450051200000L) {
-												timerString = String.format("Initial Start in %dd %dh %dmin and %dsec.", days, hours,
+												timerString = String.format("Initial Start in %dd %dh %dmin and %dsec", days, hours,
 														minutes, seconds);
 
 											}
 											else {
-												timerString = String.format("Cycle ends in %dd %dh %dmin and %dsec.", days, hours, minutes,
+												timerString = bhApp.getString(R.string.str_leaderboard_weeklyTimer, days, hours, minutes,
 														seconds);
 											}
 
@@ -183,7 +188,6 @@ public class LeaderboardLayout {
 	public static void refreshLeaderboard(final BlueHunter bhApp) {
 
 		refreshLeaderboard(bhApp, false);
-		WeeklyLeaderboardLayout.refreshLeaderboard(bhApp);
 	}
 
 	public static void refreshLeaderboard(final BlueHunter bhApp, boolean orientationChanged) {

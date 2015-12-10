@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,20 +25,18 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout.FDAdapterData;
-import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout.LBAdapterData;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
-import android.provider.ContactsContract.Contacts.Data;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -47,10 +46,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TabHost;
-import android.widget.TabHost.TabContentFactory;
-import android.widget.TabHost.TabSpec;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -77,6 +72,8 @@ public class WeeklyLeaderboardLayout {
 	public static int userRank = -1;
 	public static long timeOffset = 0;
 	public static TextView timerTextView = null;
+
+	public static int weeklyPlace = 0;
 
 	public static void refreshLeaderboard(final BlueHunter bhApp) {
 
@@ -472,6 +469,8 @@ public class WeeklyLeaderboardLayout {
 
 			try {
 
+				weeklyPlace = 0;
+
 				Pattern pattern = Pattern.compile("Error=(\\d+)");
 				Matcher matcher = pattern.matcher(result);
 				if (matcher.find()) {
@@ -519,25 +518,7 @@ public class WeeklyLeaderboardLayout {
 
 				int uid = bhApp.loginManager.getUid();
 
-				long cachedNextCycleTS = PreferenceManager.getPref(bhApp, "cachedNextCycle", 0L);
-
-				// store new cycleTS as cache
-				PreferenceManager.setPref(bhApp, "cachedNextCycle", nextCycleTStamp);
-
-				if (bonusIds.contains(uid)) {
-
-					int place = bonusIds.indexOf(uid) + 1;
-
-					if (cachedNextCycleTS != nextCycleTStamp) {
-
-						// show congrats dialog...
-
-					}
-
-					// add bonus...
-
-				}
-
+				
 				for (int i = 0; i < nodes.getLength(); i++) {
 
 					Node node = nodes.item(i);
@@ -578,6 +559,60 @@ public class WeeklyLeaderboardLayout {
 
 						refreshUserRow(bhApp.mainActivity);
 					}
+					
+					
+					long cachedNextCycleTS = PreferenceManager.getPref(bhApp, "cachedNextCycle", 0L);
+
+					// store new cycleTS as cache
+					PreferenceManager.setPref(bhApp, "cachedNextCycle", nextCycleTStamp);
+
+					if (bonusIds.contains(uid)) {
+
+						weeklyPlace = bonusIds.indexOf(uid) + 1;
+
+						if (cachedNextCycleTS != nextCycleTStamp) {
+
+							Builder builder = new Builder(bhApp.mainActivity);
+							builder.setTitle("Congratulations!");
+
+							float boost = 0f;
+
+							switch (weeklyPlace) {
+							case 1:
+								boost = 1f;
+								break;
+							case 2:
+								boost = 0.5f;
+								break;
+							case 3:
+								boost = 0.25f;
+								break;
+							}
+
+							NumberFormat percentage = NumberFormat.getPercentInstance();
+							String boostString = percentage.format(boost);
+
+							builder.setMessage(
+									"You managed to get place " + weeklyPlace + " in the last weekly leaderboard!!! You will gain an extra "
+											+ boostString + " boost as reward until the current cycle did end. Congratulations!!!");
+
+							builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.dismiss();
+
+								}
+							});
+							
+							builder.show();
+
+						}
+
+					}
+
+					AchievementsLayout.updateBoostIndicator(bhApp);
+					
 
 					showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
 					ldAdapter.refreshList(showedLbList);

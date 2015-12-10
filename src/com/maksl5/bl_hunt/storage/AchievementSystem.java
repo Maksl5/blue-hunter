@@ -19,6 +19,7 @@ import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.WeeklyLeaderboardLayout;
 import com.maksl5.bl_hunt.net.Authentification;
 import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.util.Achievement;
@@ -589,7 +590,7 @@ public class AchievementSystem {
 					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
 							.equals(bhApp.authentification.getAchieveHash(getId()));
 
-					//if (alreadyAccomplished) return true;
+					// if (alreadyAccomplished) return true;
 
 					long startTime = System.currentTimeMillis();
 
@@ -717,6 +718,20 @@ public class AchievementSystem {
 			}
 		}
 
+		// weekly boost addition
+
+		switch (WeeklyLeaderboardLayout.weeklyPlace) {
+		case 1:
+			bonus += 1f;
+			break;
+		case 2:
+			bonus += 0.5f;
+			break;
+		case 3:
+			bonus += 0.25f;
+			break;
+		}
+
 		return bonus;
 
 	}
@@ -741,6 +756,36 @@ public class AchievementSystem {
 		emptyHashMap.put("boost", "");
 
 		boostList.add(emptyHashMap);
+
+		if (WeeklyLeaderboardLayout.weeklyPlace != 0) {
+
+			HashMap<String, String> weeklyBoostHash = new HashMap<String, String>();
+
+			float weeklyBoost = 0f;
+
+			switch (WeeklyLeaderboardLayout.weeklyPlace) {
+			case 1:
+				weeklyBoost = 1f;
+
+				break;
+			case 2:
+				weeklyBoost = 0.5f;
+
+				break;
+			case 3:
+				weeklyBoost = 0.25f;
+
+				break;
+			}
+
+			weeklyBoostHash.put("description",
+					bhApp.getString(R.string.str_boostComposition_weeklyBoost, WeeklyLeaderboardLayout.weeklyPlace));
+			weeklyBoostHash.put("boost", "+" + percentage.format(weeklyBoost));
+			
+			boostList.add(weeklyBoostHash);
+			boostList.add(emptyHashMap);
+
+		}
 
 		Set<Integer> ids = achievementStates.keySet();
 
