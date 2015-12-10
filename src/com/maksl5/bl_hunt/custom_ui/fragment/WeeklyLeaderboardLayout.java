@@ -29,6 +29,7 @@ import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout.FDAdapterData;
+import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout.LBAdapterData;
 import com.maksl5.bl_hunt.net.AuthentificationSecure;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
@@ -117,6 +118,9 @@ public class WeeklyLeaderboardLayout {
 			}
 
 			ldAdapter.notifyDataSetChanged();
+			
+			refreshUserRow(bhApp.mainActivity);
+			
 			return;
 
 		}
@@ -228,6 +232,105 @@ public class WeeklyLeaderboardLayout {
 	public static void cancelAllTasks() {
 		if (threadManager != null && threadManager.refreshThread != null) threadManager.refreshThread.cancel(true);
 
+	}
+	
+	public static void refreshUserRow(final MainActivity mainActivity) {
+		
+		
+		LBAdapterData userData = completeLbList.get(userRank - 1);
+
+		String name = userData.getName();
+		int id = userData.getId();
+		int num = userData.getDevNum();
+		
+		
+		View container = mainActivity.findViewById(R.id.weeklyLdUserRL);
+
+		container.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				scrollToPosition(mainActivity, userRank - 1);
+			}
+		});
+
+		TextView rankView = (TextView) container.findViewById(R.id.rankTxtView);
+		TextView nameView = (TextView) container.findViewById(R.id.nameTxtView);
+		TextView devicesView = (TextView) container.findViewById(R.id.devTxtView);
+
+		ImageView changeRankImgView = (ImageView) container.findViewById(R.id.changeRankImgView);
+		TextView changeRankTxtView = (TextView) container.findViewById(R.id.changeRankTxtView);
+
+		ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
+		TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
+
+		DecimalFormat decimalFormat = new DecimalFormat(",###");
+
+		rankView.setText("" + userRank + ".");
+		nameView.setText(name);
+		nameView.setTag(id);
+
+		devicesView.setText(decimalFormat.format(num) + " Devices");
+
+		Integer[] changes = changeList.get(id);
+
+		Integer rankBefore, devBefore;
+
+		if (changes == null) {
+
+			rankBefore = userRank;
+			devBefore = num;
+
+		}
+		else {
+
+			rankBefore = changes[0];
+			devBefore = changes[1];
+
+		}
+
+		if (rankBefore == null) rankBefore = userRank;
+		if (devBefore == null) devBefore = num;
+
+		changeRankTxtView.setText("" + Math.abs(rankBefore - userRank));
+
+		if ((rankBefore - userRank) > 0) {
+
+			changeRankImgView.setImageResource(R.drawable.ic_change_up);
+
+		}
+		else if ((rankBefore - userRank) < 0) {
+
+			changeRankImgView.setImageResource(R.drawable.ic_change_down);
+
+		}
+		else if ((rankBefore - userRank) == 0) {
+
+			changeRankImgView.setImageResource(android.R.color.transparent);
+			changeRankTxtView.setText("");
+		}
+
+		// change in dev
+		changeDEVTxtView.setText("" + decimalFormat.format(Math.abs(devBefore - num)));
+
+		if ((devBefore - num) > 0) {
+
+			changeDEVImgView.setImageResource(R.drawable.ic_change_down_s);
+
+		}
+		else if ((devBefore - num) < 0) {
+
+			changeDEVImgView.setImageResource(R.drawable.ic_change_up_s);
+
+		}
+		else if ((devBefore - num) == 0) {
+
+			changeDEVImgView.setImageResource(android.R.color.transparent);
+			changeDEVTxtView.setText("");
+		}
+
+		
+		
 	}
 
 	private class RefreshThread extends AsyncTask<Integer, Void, String> {
@@ -456,92 +559,6 @@ public class WeeklyLeaderboardLayout {
 						if (uid == id) {
 							isUserInLD = true;
 							userRank = rank;
-
-							View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
-
-							container.setOnClickListener(new OnClickListener() {
-
-								@Override
-								public void onClick(View v) {
-									scrollToPosition(bhApp.mainActivity, userRank - 1);
-								}
-							});
-
-							TextView rankView = (TextView) container.findViewById(R.id.rankTxtView);
-							TextView nameView = (TextView) container.findViewById(R.id.nameTxtView);
-							TextView devicesView = (TextView) container.findViewById(R.id.devTxtView);
-
-							ImageView changeRankImgView = (ImageView) container.findViewById(R.id.changeRankImgView);
-							TextView changeRankTxtView = (TextView) container.findViewById(R.id.changeRankTxtView);
-
-							ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
-							TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
-
-							DecimalFormat decimalFormat = new DecimalFormat(",###");
-
-							rankView.setText("" + rank + ".");
-							nameView.setText(name);
-							nameView.setTag(id);
-
-							devicesView.setText(decimalFormat.format(num) + " Devices");
-
-							Integer[] changes = changeList.get(id);
-
-							Integer rankBefore, devBefore;
-
-							if (changes == null) {
-
-								rankBefore = rank;
-								devBefore = num;
-
-							}
-							else {
-
-								rankBefore = changes[0];
-								devBefore = changes[1];
-
-							}
-
-							if (rankBefore == null) rankBefore = rank;
-							if (devBefore == null) devBefore = num;
-
-							changeRankTxtView.setText("" + Math.abs(rankBefore - rank));
-
-							if ((rankBefore - rank) > 0) {
-
-								changeRankImgView.setImageResource(R.drawable.ic_change_up);
-
-							}
-							else if ((rankBefore - rank) < 0) {
-
-								changeRankImgView.setImageResource(R.drawable.ic_change_down);
-
-							}
-							else if ((rankBefore - rank) == 0) {
-
-								changeRankImgView.setImageResource(android.R.color.transparent);
-								changeRankTxtView.setText("");
-							}
-
-							// change in dev
-							changeDEVTxtView.setText("" + decimalFormat.format(Math.abs(devBefore - num)));
-
-							if ((devBefore - num) > 0) {
-
-								changeDEVImgView.setImageResource(R.drawable.ic_change_down_s);
-
-							}
-							else if ((devBefore - num) < 0) {
-
-								changeDEVImgView.setImageResource(R.drawable.ic_change_up_s);
-
-							}
-							else if ((devBefore - num) == 0) {
-
-								changeDEVImgView.setImageResource(android.R.color.transparent);
-								changeDEVTxtView.setText("");
-							}
-
 						}
 
 						completeLbList.add(data);
@@ -559,6 +576,8 @@ public class WeeklyLeaderboardLayout {
 					if (isUserInLD) {
 						View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
 						container.setVisibility(View.VISIBLE);
+						
+						refreshUserRow(bhApp.mainActivity);
 					}
 
 					showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
@@ -767,6 +786,8 @@ public class WeeklyLeaderboardLayout {
 				}
 				else if (rankNow == 3) {
 					rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xcd, 0x7f, 0x32)));
+				}else {
+					rowView.setBackground(null);
 				}
 
 				holder.rank.setText("" + rankNow + ".");

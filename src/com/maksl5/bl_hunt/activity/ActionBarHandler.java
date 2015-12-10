@@ -324,7 +324,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 
 		if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) {
 
-			if (LeaderboardLayout.currentSelectedTab == 1) {
+			if (LeaderboardLayout.currentSelectedTab == 0) {
 				LeaderboardLayout.filterLeaderboard(newText, bhApp);
 			}
 			else {

@@ -72,10 +72,8 @@ public class LeaderboardLayout {
 	public static HashMap<Integer, Integer[]> changeList = new HashMap<Integer, Integer[]>();
 
 	public static int userRank = -1;
-	
-	
-	public static int currentSelectedTab = 1;
-	
+
+	public static int currentSelectedTab = 0;
 
 	public static void initTabs(final BlueHunter bhApp) {
 
@@ -84,9 +82,8 @@ public class LeaderboardLayout {
 		}
 
 		ViewPager pager = bhApp.mainActivity.mViewPager;
-		View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
 
-		TabHost tabHost = (TabHost) pageView.findViewById(android.R.id.tabhost);
+		TabHost tabHost = (TabHost) pager.findViewById(android.R.id.tabhost);
 
 		tabHost.setup();
 
@@ -98,20 +95,23 @@ public class LeaderboardLayout {
 		tabHost.addTab(globalTab);
 		tabHost.addTab(weeklyTab);
 		
+		tabHost.setCurrentTab(currentSelectedTab);
+
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
-			
+
 			@Override
 			public void onTabChanged(String tabId) {
-				
+
 				bhApp.actionBarHandler.onQueryTextChange("");
 				bhApp.actionBarHandler.getMenuItem(R.id.menu_search).collapseActionView();
-				
-				if(tabId.equals("global")) {
-					currentSelectedTab = 1;
-				}else {
-					currentSelectedTab = 2;
+
+				if (tabId.equals("global")) {
+					currentSelectedTab = 0;
 				}
-				
+				else {
+					currentSelectedTab = 1;
+				}
+
 			}
 		});
 
@@ -160,6 +160,11 @@ public class LeaderboardLayout {
 			}
 
 			ldAdapter.notifyDataSetChanged();
+			
+			refreshUserRow(bhApp.mainActivity);
+			
+			WeeklyLeaderboardLayout.refreshLeaderboard(bhApp, orientationChanged);
+			
 			return;
 
 		}
@@ -260,7 +265,7 @@ public class LeaderboardLayout {
 			}
 
 			mainActivity.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_LEADERBOARD, true);
-			
+
 			View pageView = mainActivity.mViewPager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
 
 			TabHost tabHost = (TabHost) pageView.findViewById(android.R.id.tabhost);
@@ -280,6 +285,136 @@ public class LeaderboardLayout {
 
 	public static void cancelAllTasks() {
 		if (threadManager != null && threadManager.refreshThread != null) threadManager.refreshThread.cancel(true);
+
+	}
+
+	public static void refreshUserRow(final MainActivity mainActivity) {
+
+		LBAdapterData userData = completeLbList.get(userRank - 1);
+
+		String name = userData.getName();
+		int id = userData.getId();
+		int level = userData.getLevel();
+		int progressMax = userData.getProgressMax();
+		int progressValue = userData.getProgressValue();
+		int exp = userData.getExp();
+		int num = userData.getDevNum();
+
+		View container = mainActivity.findViewById(R.id.globalLdUserRL);
+
+		container.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				scrollToPosition(mainActivity, userRank - 1);
+			}
+		});
+
+		TextView rankView = (TextView) container.findViewById(R.id.rankTxtView);
+		TextView nameView = (TextView) container.findViewById(R.id.nameTxtView);
+		TextView levelView = (TextView) container.findViewById(R.id.levelTxtView);
+		ProgressBar levelPrgView = (ProgressBar) container.findViewById(R.id.levelPrgBar);
+		TextView devicesView = (TextView) container.findViewById(R.id.devTxtView);
+		TextView expView = (TextView) container.findViewById(R.id.expTxtView);
+
+		ImageView changeRankImgView = (ImageView) container.findViewById(R.id.changeRankImgView);
+		TextView changeRankTxtView = (TextView) container.findViewById(R.id.changeRankTxtView);
+
+		ImageView changeEXPImgView = (ImageView) container.findViewById(R.id.changeEXPImgView);
+		TextView changeEXPTxtView = (TextView) container.findViewById(R.id.changeEXPTxtView);
+
+		ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
+		TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
+
+		DecimalFormat decimalFormat = new DecimalFormat(",###");
+
+		rankView.setText("" + userRank + ".");
+		nameView.setText(name);
+		nameView.setTag(id);
+		levelView.setText("" + level);
+		levelPrgView.setMax(progressMax);
+		levelPrgView.setProgress(progressValue);
+		devicesView.setText(decimalFormat.format(num) + " Devices");
+		expView.setText(decimalFormat.format(exp) + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+
+		Integer[] changes = changeList.get(id);
+
+		Integer rankBefore, expBefore, devBefore;
+
+		if (changes == null) {
+
+			rankBefore = userRank;
+			expBefore = exp;
+			devBefore = num;
+
+		}
+		else {
+
+			rankBefore = changes[0];
+			expBefore = changes[1];
+			devBefore = changes[2];
+
+		}
+
+		if (rankBefore == null) rankBefore = userRank;
+		if (expBefore == null) expBefore = exp;
+		if (devBefore == null) devBefore = num;
+
+		changeRankTxtView.setText("" + Math.abs(rankBefore - userRank));
+
+		if ((rankBefore - userRank) > 0) {
+
+			changeRankImgView.setImageResource(R.drawable.ic_change_up);
+
+		}
+		else if ((rankBefore - userRank) < 0) {
+
+			changeRankImgView.setImageResource(R.drawable.ic_change_down);
+
+		}
+		else if ((rankBefore - userRank) == 0) {
+
+			changeRankImgView.setImageResource(android.R.color.transparent);
+			changeRankTxtView.setText("");
+		}
+
+		// change in exp
+		changeEXPTxtView.setText("" + decimalFormat.format(Math.abs(expBefore - exp)));
+
+		if ((expBefore - exp) > 0) {
+
+			changeEXPImgView.setImageResource(R.drawable.ic_change_down_s);
+
+		}
+		else if ((expBefore - exp) < 0) {
+
+			changeEXPImgView.setImageResource(R.drawable.ic_change_up_s);
+
+		}
+		else if ((expBefore - exp) == 0) {
+
+			changeEXPImgView.setImageResource(android.R.color.transparent);
+			changeEXPTxtView.setText("");
+		}
+
+		// change in dev
+		changeDEVTxtView.setText("" + decimalFormat.format(Math.abs(devBefore - num)));
+
+		if ((devBefore - num) > 0) {
+
+			changeDEVImgView.setImageResource(R.drawable.ic_change_down_s);
+
+		}
+		else if ((devBefore - num) < 0) {
+
+			changeDEVImgView.setImageResource(R.drawable.ic_change_up_s);
+
+		}
+		else if ((devBefore - num) == 0) {
+
+			changeDEVImgView.setImageResource(android.R.color.transparent);
+			changeDEVTxtView.setText("");
+		}
 
 	}
 
@@ -485,123 +620,6 @@ public class LeaderboardLayout {
 						if (uid == id) {
 							isUserInLD = true;
 							userRank = rank;
-
-							View container = bhApp.mainActivity.findViewById(R.id.globalLdUserRL);
-
-							container.setOnClickListener(new OnClickListener() {
-
-								@Override
-								public void onClick(View v) {
-									scrollToPosition(bhApp.mainActivity, userRank - 1);
-								}
-							});
-
-							TextView rankView = (TextView) container.findViewById(R.id.rankTxtView);
-							TextView nameView = (TextView) container.findViewById(R.id.nameTxtView);
-							TextView levelView = (TextView) container.findViewById(R.id.levelTxtView);
-							ProgressBar levelPrgView = (ProgressBar) container.findViewById(R.id.levelPrgBar);
-							TextView devicesView = (TextView) container.findViewById(R.id.devTxtView);
-							TextView expView = (TextView) container.findViewById(R.id.expTxtView);
-
-							ImageView changeRankImgView = (ImageView) container.findViewById(R.id.changeRankImgView);
-							TextView changeRankTxtView = (TextView) container.findViewById(R.id.changeRankTxtView);
-
-							ImageView changeEXPImgView = (ImageView) container.findViewById(R.id.changeEXPImgView);
-							TextView changeEXPTxtView = (TextView) container.findViewById(R.id.changeEXPTxtView);
-
-							ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
-							TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
-
-							DecimalFormat decimalFormat = new DecimalFormat(",###");
-
-							rankView.setText("" + rank + ".");
-							nameView.setText(name);
-							nameView.setTag(id);
-							levelView.setText("" + level);
-							levelPrgView.setMax(progressMax);
-							levelPrgView.setProgress(progressValue);
-							devicesView.setText(decimalFormat.format(num) + " Devices");
-							expView.setText(decimalFormat.format(exp) + " " + bhApp.getString(R.string.str_foundDevices_exp_abbreviation));
-
-							Integer[] changes = changeList.get(id);
-
-							Integer rankBefore, expBefore, devBefore;
-
-							if (changes == null) {
-
-								rankBefore = rank;
-								expBefore = exp;
-								devBefore = num;
-
-							}
-							else {
-
-								rankBefore = changes[0];
-								expBefore = changes[1];
-								devBefore = changes[2];
-
-							}
-
-							if (rankBefore == null) rankBefore = rank;
-							if (expBefore == null) expBefore = exp;
-							if (devBefore == null) devBefore = num;
-
-							changeRankTxtView.setText("" + Math.abs(rankBefore - rank));
-
-							if ((rankBefore - rank) > 0) {
-
-								changeRankImgView.setImageResource(R.drawable.ic_change_up);
-
-							}
-							else if ((rankBefore - rank) < 0) {
-
-								changeRankImgView.setImageResource(R.drawable.ic_change_down);
-
-							}
-							else if ((rankBefore - rank) == 0) {
-
-								changeRankImgView.setImageResource(android.R.color.transparent);
-								changeRankTxtView.setText("");
-							}
-
-							// change in exp
-							changeEXPTxtView.setText("" + decimalFormat.format(Math.abs(expBefore - exp)));
-
-							if ((expBefore - exp) > 0) {
-
-								changeEXPImgView.setImageResource(R.drawable.ic_change_down_s);
-
-							}
-							else if ((expBefore - exp) < 0) {
-
-								changeEXPImgView.setImageResource(R.drawable.ic_change_up_s);
-
-							}
-							else if ((expBefore - exp) == 0) {
-
-								changeEXPImgView.setImageResource(android.R.color.transparent);
-								changeEXPTxtView.setText("");
-							}
-
-							// change in dev
-							changeDEVTxtView.setText("" + decimalFormat.format(Math.abs(devBefore - num)));
-
-							if ((devBefore - num) > 0) {
-
-								changeDEVImgView.setImageResource(R.drawable.ic_change_down_s);
-
-							}
-							else if ((devBefore - num) < 0) {
-
-								changeDEVImgView.setImageResource(R.drawable.ic_change_up_s);
-
-							}
-							else if ((devBefore - num) == 0) {
-
-								changeDEVImgView.setImageResource(android.R.color.transparent);
-								changeDEVTxtView.setText("");
-							}
-
 						}
 
 						completeLbList.add(data);
@@ -660,6 +678,9 @@ public class LeaderboardLayout {
 					if (isUserInLD) {
 						View container = bhApp.mainActivity.findViewById(R.id.globalLdUserRL);
 						container.setVisibility(View.VISIBLE);
+
+						refreshUserRow(bhApp.mainActivity);
+
 					}
 
 					showedLbList = new ArrayList<LeaderboardLayout.LBAdapterData>(completeLbList);
