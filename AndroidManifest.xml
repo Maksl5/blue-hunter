@@ -1,6 +1,6 @@
 <manifest package="com.maksl5.bl_hunt"
-    android:versionCode="2053"
-    android:versionName="pre-beta_0.4.0.2053_151213-1706" xmlns:android="http://schemas.android.com/apk/res/android">
+    android:versionCode="2054"
+    android:versionName="pre-beta_0.4.0.2054_151213-1714" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -34,7 +34,7 @@
             android:name="com.maksl5.bl_hunt.activity.MainActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenLayout|screenSize"
-            android:screenOrientation="user" >
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
