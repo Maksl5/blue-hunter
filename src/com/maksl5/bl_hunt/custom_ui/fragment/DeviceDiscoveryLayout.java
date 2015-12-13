@@ -2,30 +2,20 @@ package com.maksl5.bl_hunt.custom_ui.fragment;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.crypto.ExemptionMechanism;
-
-import org.w3c.dom.Text;
 
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.util.FoundDevice;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.Debug;
-import android.provider.ContactsContract.Contacts.Data;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,8 +28,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -76,7 +66,7 @@ public class DeviceDiscoveryLayout {
 		TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
 		TextView devExpTodayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpToday);
 
-		PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
+		ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
 		long expTimeA = System.currentTimeMillis();
 
@@ -216,7 +206,7 @@ public class DeviceDiscoveryLayout {
 		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
 		TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
 
-		PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
+		ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
 		List<FoundDevice> foundDevices = DatabaseManager.getProgressList();
 
@@ -284,7 +274,7 @@ public class DeviceDiscoveryLayout {
 		}
 		else {
 
-			PatternProgressBar progressBar = (PatternProgressBar) mainActivity.findViewById(R.id.progressBar1);
+			ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
 			RelativeLayout parent = (RelativeLayout) progressBar.getParent();
 
 			int userExp = LevelSystem.getUserExp(mainActivity.getBlueHunter());

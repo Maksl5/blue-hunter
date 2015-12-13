@@ -24,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,15 +47,12 @@ public class ProfileLayout {
 
 	public static void initializeView(final MainActivity mainActivity) {
 
-		View parentContainer = mainActivity.mViewPager.getChildAt(FragmentLayoutManager.PAGE_PROFILE + 1);
+		View parentContainer = mainActivity.findViewById(R.id.profileContainer);
 
-		final TextView nameTextView =
-				(TextView) parentContainer.findViewById(R.id.nameTextView);
-		final AdjustedEditText nameEditText =
-				(AdjustedEditText) parentContainer.findViewById(R.id.nameEditText);
+		final TextView nameTextView = (TextView) parentContainer.findViewById(R.id.nameTextView);
+		final AdjustedEditText nameEditText = (AdjustedEditText) parentContainer.findViewById(R.id.nameEditText);
 
-		final QuickContactBadge contactImage =
-				(QuickContactBadge) parentContainer.findViewById(R.id.contactBadge);
+		final QuickContactBadge contactImage = (QuickContactBadge) parentContainer.findViewById(R.id.contactBadge);
 
 		// Listener
 		nameTextView.setOnLongClickListener(new OnLongClickListener() {
@@ -72,8 +70,7 @@ public class ProfileLayout {
 					nameEditText.setVisibility(EditText.VISIBLE);
 					nameEditText.animate().setDuration(500).alpha(1f);
 
-					InputMethodManager imm =
-							(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+					InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 				}
 				return true;
@@ -83,14 +80,12 @@ public class ProfileLayout {
 		OnEditorActionListener onEditorActionListener = new OnEditorActionListener() {
 
 			@Override
-			public boolean onEditorAction(	TextView v,
-											int actionId,
-											KeyEvent event) {
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-				InputMethodManager imm =
-						(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+				InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-				if (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && nameEditText.isShown()) {
+				if (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+						&& nameEditText.isShown()) {
 
 					imm.hideSoftInputFromWindow(nameEditText.getWindowToken(), 0);
 
@@ -119,8 +114,7 @@ public class ProfileLayout {
 				mainActivity.getBlueHunter().authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
 					@Override
-					public boolean onResult(int requestId,
-											String resultString) {
+					public boolean onResult(int requestId, String resultString) {
 
 						if (requestId == Authentification.NETRESULT_ID_APPLY_NAME) {
 
@@ -129,8 +123,7 @@ public class ProfileLayout {
 
 							if (matcher.find()) {
 								int error = Integer.parseInt(matcher.group(1));
-								String errorMsg =
-										ErrorHandler.getErrorString(mainActivity, requestId, error);
+								String errorMsg = ErrorHandler.getErrorString(mainActivity, requestId, error);
 
 								setName(mainActivity.getBlueHunter(), backUpName, true);
 
@@ -139,8 +132,7 @@ public class ProfileLayout {
 							else if (resultString.equals("<done />")) {
 								setName(mainActivity.getBlueHunter(), userName, true);
 							}
-							if (mainActivity.getBlueHunter().loginManager.getLoginState())
-								isEditable = true;
+							if (mainActivity.getBlueHunter().loginManager.getLoginState()) isEditable = true;
 						}
 
 						return true;
@@ -148,7 +140,10 @@ public class ProfileLayout {
 				});
 
 				NetworkThread applyName = new NetworkThread(mainActivity.getBlueHunter());
-				applyName.execute(AuthentificationSecure.SERVER_APPLY_NAME, String.valueOf(Authentification.NETRESULT_ID_APPLY_NAME), "lt=" + mainActivity.getBlueHunter().authentification.getStoredLoginToken(), "s=" + Authentification.getSerialNumber(), "p=" + mainActivity.getBlueHunter().authentification.getStoredPass(), "n=" + userName);
+				applyName.execute(AuthentificationSecure.SERVER_APPLY_NAME, String.valueOf(Authentification.NETRESULT_ID_APPLY_NAME),
+						"lt=" + mainActivity.getBlueHunter().authentification.getStoredLoginToken(),
+						"s=" + Authentification.getSerialNumber(), "p=" + mainActivity.getBlueHunter().authentification.getStoredPass(),
+						"n=" + userName);
 
 			}
 		};
@@ -160,8 +155,7 @@ public class ProfileLayout {
 			@Override
 			public void onBackKeyClicked() {
 
-				InputMethodManager imm =
-						(InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+				InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
 				if (nameEditText.isShown() && imm.isActive(nameEditText)) {
 
@@ -184,7 +178,7 @@ public class ProfileLayout {
 
 				if (loggedIn) {
 					nameTextView.setText(userName);
-					nameTextView.setTextColor(mainActivity.getResources().getColor(R.color.text_holo_light_blue));
+					nameTextView.setTextColor(ContextCompat.getColor(mainActivity, R.color.text_holo_light_blue));
 					isEditable = true;
 
 					contactImage.setEnabled(true);
@@ -218,18 +212,18 @@ public class ProfileLayout {
 			}
 		});
 
+		setName(mainActivity.getBlueHunter(), userName, true);
+
 	}
 
 	/**
 	 * @param nameString
 	 */
-	public static void setName(	BlueHunter blueHunter,
-								String nameString,
-								boolean forceSet) {
+	public static void setName(BlueHunter blueHunter, String nameString, boolean forceSet) {
 
 		userName = nameString;
 
-		View parentContainer = blueHunter.mainActivity.mViewPager.getChildAt(FragmentLayoutManager.PAGE_PROFILE + 1);
+		View parentContainer = blueHunter.mainActivity.findViewById(R.id.profileContainer);
 
 		TextView nameTextView;
 
@@ -244,7 +238,7 @@ public class ProfileLayout {
 
 		if (blueHunter.loginManager.getLoginState()) {
 			nameTextView.setText(userName);
-			nameTextView.setTextColor(blueHunter.getResources().getColor(R.color.text_holo_light_blue));
+			nameTextView.setTextColor(ContextCompat.getColor(blueHunter, R.color.text_holo_light_blue));
 			isEditable = true;
 		}
 		else {
@@ -255,8 +249,7 @@ public class ProfileLayout {
 
 	}
 
-	public static void passPickedImage(	MainActivity mainActivity,
-										Intent intent) {
+	public static void passPickedImage(MainActivity mainActivity, Intent intent) {
 
 		BitmapFactory.Options o = new BitmapFactory.Options();
 		o.inJustDecodeBounds = true;
@@ -286,12 +279,11 @@ public class ProfileLayout {
 		o2.inDither = true;
 
 		try {
-			Bitmap scaledUserImage =
-					BitmapFactory.decodeStream(mainActivity.getContentResolver().openInputStream(intent.getData()), null, o2);
+			Bitmap scaledUserImage = BitmapFactory.decodeStream(mainActivity.getContentResolver().openInputStream(intent.getData()), null,
+					o2);
 
 			View parentContainer = mainActivity.mViewPager.getChildAt(FragmentLayoutManager.PAGE_PROFILE + 1);
-			QuickContactBadge contactBadge =
-					(QuickContactBadge) parentContainer.findViewById(R.id.contactBadge);
+			QuickContactBadge contactBadge = (QuickContactBadge) parentContainer.findViewById(R.id.contactBadge);
 
 			contactBadge.setImageBitmap(scaledUserImage);
 

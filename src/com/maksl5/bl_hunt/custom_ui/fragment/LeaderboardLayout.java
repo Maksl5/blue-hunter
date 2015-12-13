@@ -333,7 +333,7 @@ public class LeaderboardLayout {
 
 			mainActivity.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_LEADERBOARD, true);
 
-			View pageView = mainActivity.mViewPager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
+			View pageView = mainActivity.findViewById(R.id.ldRootContainer);
 
 			TabHost tabHost = (TabHost) pageView.findViewById(android.R.id.tabhost);
 			tabHost.setCurrentTab(0);

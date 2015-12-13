@@ -3,13 +3,9 @@ package com.maksl5.bl_hunt.activity;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.joda.time.DateTime;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.DiscoveryManager;
@@ -20,9 +16,7 @@ import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer;
-import com.maksl5.bl_hunt.custom_ui.PatternProgressBar;
 import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer.ParallaxTransformInformation;
-import com.maksl5.bl_hunt.custom_ui.RotationPageTransformer;
 import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
@@ -42,8 +36,6 @@ import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
-import com.maksl5.bl_hunt.util.FoundDevice;
-
 import android.app.AlarmManager;
 import android.app.AlertDialog.Builder;
 import android.app.Notification;
@@ -60,7 +52,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -80,6 +71,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -150,7 +142,7 @@ public class MainActivity extends FragmentActivity {
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
-		mViewPager.setOffscreenPageLimit(5);
+		mViewPager.setOffscreenPageLimit(7);
 
 		PageTransformer parallaxPageTransformer = setupPageTransformer();
 
@@ -259,7 +251,7 @@ public class MainActivity extends FragmentActivity {
 
 	private void registerListener() {
 
-		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+		mViewPager.addOnPageChangeListener(new OnPageChangeListener() {
 
 			@Override
 			public void onPageSelected(int position) {
@@ -796,18 +788,25 @@ public class MainActivity extends FragmentActivity {
 		StatisticsFragment.initializeStatisticsView(this);
 		AchievementsLayout.initializeAchievements(bhApp);
 
-		final PatternProgressBar progressBar = (PatternProgressBar) findViewById(R.id.progressBar1);
+		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		final int oldHeight = progressBar.getHeight();
 		final int oldWidth = progressBar.getWidth();
+		
+		Log.d("onConfigurationChanged", "oldHeight=" + oldHeight);
+		Log.d("onConfigurationChanged", "oldWidth=" + oldWidth);
 
 		ViewTreeObserver observer = progressBar.getViewTreeObserver();
 		observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
 			@Override
 			public void onGlobalLayout() {
+				
+				Log.d("onGlobalLayout", "height=" + progressBar.getHeight());
+				Log.d("onGlobalLayout", "width=" + progressBar.getWidth());
+				
 				if (progressBar.getHeight() != oldHeight && progressBar.getWidth() != oldWidth) {
 					progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
+					
 					DeviceDiscoveryLayout.updateNextRankIndicator(MainActivity.this, DeviceDiscoveryLayout.expToUpdate);
 
 				}
