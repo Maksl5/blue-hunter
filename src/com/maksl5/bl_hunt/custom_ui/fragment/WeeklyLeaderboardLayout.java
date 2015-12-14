@@ -518,7 +518,6 @@ public class WeeklyLeaderboardLayout {
 
 				int uid = bhApp.loginManager.getUid();
 
-				
 				for (int i = 0; i < nodes.getLength(); i++) {
 
 					Node node = nodes.item(i);
@@ -551,7 +550,7 @@ public class WeeklyLeaderboardLayout {
 
 				threadManager.finished(this);
 
-				if (last) {
+				if (last || (startIndex == 1 && nodes.getLength() == 0)) {
 
 					if (isUserInLD) {
 						View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
@@ -559,8 +558,7 @@ public class WeeklyLeaderboardLayout {
 
 						refreshUserRow(bhApp.mainActivity);
 					}
-					
-					
+
 					long cachedNextCycleTS = PreferenceManager.getPref(bhApp, "cachedNextCycle", 0L);
 
 					// store new cycleTS as cache
@@ -604,7 +602,7 @@ public class WeeklyLeaderboardLayout {
 
 								}
 							});
-							
+
 							builder.show();
 
 						}
@@ -612,7 +610,6 @@ public class WeeklyLeaderboardLayout {
 					}
 
 					AchievementsLayout.updateBoostIndicator(bhApp);
-					
 
 					showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
 					ldAdapter.refreshList(showedLbList);
