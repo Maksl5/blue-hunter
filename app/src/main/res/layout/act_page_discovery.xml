@@ -1,29 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/discoveryLLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:animateLayoutChanges="false"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    tools:context=".activity.MainActivity">
 
     <TableLayout
         android:id="@+id/discoveryInfoTable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_gravity="center"
-        android:layout_weight="0"
         android:animateLayoutChanges="false"
         android:gravity="center"
-        android:padding="@dimen/padding_xsmall" >
+        android:padding="@dimen/padding_xsmall"
+        android:layout_above="@+id/view">
 
         <TableRow
             android:id="@+id/DDtableRow5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="@dimen/padding_medium" >
+            android:padding="@dimen/padding_medium">
 
             <TextView
                 android:id="@+id/txt_discoveryState"
@@ -40,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-9dp"
-            android:gravity="center" >
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/nextRankIndicator"
@@ -61,12 +68,12 @@
             android:id="@+id/DDtableRow1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center" >
+            android:gravity="center">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <com.maksl5.bl_hunt.custom_ui.PatternProgressBar
                     android:id="@+id/progressBar1"
@@ -96,7 +103,7 @@
             android:id="@+id/DDtableRow2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center" >
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/expIndicator"
@@ -108,14 +115,14 @@
 
         <TableLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <TableRow
                 android:id="@+id/DDTableRow02"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_large"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/txtName"
@@ -141,7 +148,7 @@
                 android:id="@+id/DDtableRow4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/boostTxt"
@@ -168,7 +175,7 @@
                 android:id="@+id/DDTableRow01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/textView3"
@@ -195,7 +202,7 @@
                 android:id="@+id/DDtableRow3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/txt_discovery_devInSession_txt"
@@ -223,15 +230,29 @@
 
     </TableLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/view" />
+
     <ListView
         android:id="@+id/discoveryListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
         android:animateLayoutChanges="true"
         android:background="#77aaaaaa"
-        android:visibility="gone" >
+        android:fastScrollEnabled="true"
+        android:scrollingCache="true"
+        android:visibility="gone"
+        tools:listitem="@layout/act_page_discovery_row"
+        android:layout_below="@+id/view">
 
     </ListView>
 
-</LinearLayout>
+</RelativeLayout>

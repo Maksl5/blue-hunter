@@ -163,7 +163,7 @@ public class DatabaseManager {
 
 		}
 
-		// check ob schon l‰uft nicht vergessen.
+		// check ob schon l√§uft nicht vergessen.
 
 		// closeAfter nicht vergessen!
 

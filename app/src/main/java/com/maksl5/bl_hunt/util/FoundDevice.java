@@ -1,6 +1,6 @@
 /**
  *  FoundDevice.java in com.maksl5.bl_hunt.custom_ui
- *  © Markus 2014
+ *  Â© Markus 2014
  */
 package com.maksl5.bl_hunt.util;
 

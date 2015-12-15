@@ -27,7 +27,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -375,10 +374,10 @@ public class DeviceDiscoveryLayout {
 
 			discoveryInfo.startAnimation(animation2);
 
-			LinearLayout linearLayout = (LinearLayout) lv.getParent();
+			RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
 
 			lv.setVisibility(View.VISIBLE);
-			animation2 = new TranslateAnimation(0, 0, linearLayout.getHeight() - discoveryInfo.getHeight(), 0);
+			animation2 = new TranslateAnimation(0, 0, relativeLayout.getHeight() - discoveryInfo.getHeight(), 0);
 			animation2.setDuration(1000);
 
 			lv.startAnimation(animation2);
@@ -387,7 +386,7 @@ public class DeviceDiscoveryLayout {
 		else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
 			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
-			LinearLayout linearLayout = (LinearLayout) lv.getParent();
+			RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
 
 			TranslateAnimation animation2 = new TranslateAnimation(discoveryInfo.getLeft(), 0, 0, 0);
 			animation2.setDuration(1000);
@@ -395,7 +394,7 @@ public class DeviceDiscoveryLayout {
 			discoveryInfo.startAnimation(animation2);
 
 			lv.setVisibility(View.VISIBLE);
-			animation2 = new TranslateAnimation(linearLayout.getWidth() - discoveryInfo.getWidth(), 0, 0, 0);
+			animation2 = new TranslateAnimation(relativeLayout.getWidth() - discoveryInfo.getWidth(), 0, 0, 0);
 			animation2.setDuration(1000);
 
 			lv.startAnimation(animation2);
@@ -437,17 +436,17 @@ public class DeviceDiscoveryLayout {
 
 		if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 
-			LinearLayout linearLayout = (LinearLayout) lv.getParent();
+			RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
 			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
 
-			TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, linearLayout.getHeight() - discoveryInfo.getHeight());
+			TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, relativeLayout.getHeight() - discoveryInfo.getHeight());
 			animation2.setDuration(750);
 
 			lv.startAnimation(animation2);
 
 			lv.setVisibility(View.GONE);
 
-			float topOfDiscoveryInfo = linearLayout.getHeight() / (float) 2 - discoveryInfo.getHeight() / (float) 2;
+			float topOfDiscoveryInfo = relativeLayout.getHeight() / (float) 2 - discoveryInfo.getHeight() / (float) 2;
 
 			TranslateAnimation animation = new TranslateAnimation(0, 0, -topOfDiscoveryInfo, 0);
 			animation.setDuration(750);
@@ -457,17 +456,17 @@ public class DeviceDiscoveryLayout {
 		}
 		else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
-			LinearLayout linearLayout = (LinearLayout) lv.getParent();
+			RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
 			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
 
-			TranslateAnimation animation2 = new TranslateAnimation(0, linearLayout.getWidth() - discoveryInfo.getWidth(), 0, 0);
+			TranslateAnimation animation2 = new TranslateAnimation(0, relativeLayout.getWidth() - discoveryInfo.getWidth(), 0, 0);
 			animation2.setDuration(750);
 
 			lv.startAnimation(animation2);
 
 			lv.setVisibility(View.GONE);
 
-			float leftOfDiscoveryInfo = linearLayout.getWidth() / (float) 2 - discoveryInfo.getWidth() / (float) 2;
+			float leftOfDiscoveryInfo = relativeLayout.getWidth() / (float) 2 - discoveryInfo.getWidth() / (float) 2;
 
 			TranslateAnimation animation = new TranslateAnimation(-leftOfDiscoveryInfo, 0, 0, 0);
 			animation.setDuration(750);
