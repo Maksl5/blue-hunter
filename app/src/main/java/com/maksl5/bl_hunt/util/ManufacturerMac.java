@@ -25,11 +25,8 @@ public class ManufacturerMac {
 		if (o instanceof ManufacturerMac) {
 			
 			ManufacturerMac manuMac = ((ManufacturerMac) o);
-			
-			if(manuMac.one == one && manuMac.two == two && manuMac.three == three)
-				return true;
-			else 
-				return false;
+
+			return manuMac.one == one && manuMac.two == two && manuMac.three == three;
 
 		} else {
 			return false;
@@ -38,9 +35,6 @@ public class ManufacturerMac {
 	}
 	
 	public boolean equals(ManufacturerMac manuMac) {
-		if(manuMac != null && manuMac.one == one && manuMac.two == two && manuMac.three == three)
-			return true;
-		else 
-			return false;
+		return manuMac != null && manuMac.one == one && manuMac.two == two && manuMac.three == three;
 	}
 }

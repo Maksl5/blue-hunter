@@ -32,33 +32,15 @@ public class FoundDevice {
 
 	}
 
-	public void setName(String dName) {
-
-		name = dName;
-
-	}
-
 	public void setRssi(short dRssi) {
 
 		rssi = dRssi;
 
 	}
 
-	public void setRssi(String dRssi) {
-
-		if (dRssi != null) rssi = Short.valueOf(dRssi);
-
-	}
-
 	public void setTime(long dTime) {
 
 		time = dTime;
-
-	}
-
-	public void setTime(String dTime) {
-
-		if (dTime != null) time = Long.valueOf(dTime);
 
 	}
 
@@ -71,22 +53,6 @@ public class FoundDevice {
 	public void setBoost(float dBonus) {
 
 		bonus = dBonus;
-
-	}
-
-	public void setBoost(String dBonus) {
-
-		if (dBonus != null) {
-
-			if (dBonus.equals(""))
-				bonus = 0f;
-			else
-				bonus = Float.valueOf(dBonus);
-
-		}
-		else {
-			bonus = 0f;
-		}
 
 	}
 
@@ -105,14 +71,32 @@ public class FoundDevice {
 		return name;
 	}
 
+	public void setName(String dName) {
+
+		name = dName;
+
+	}
+
 	public short getRssi() {
 
 		return rssi;
 	}
 
+	public void setRssi(String dRssi) {
+
+		if (dRssi != null) rssi = Short.valueOf(dRssi);
+
+	}
+
 	public long getTime() {
 
 		return time;
+	}
+
+	public void setTime(String dTime) {
+
+		if (dTime != null) time = Long.valueOf(dTime);
+
 	}
 
 	public int getManufacturer() {
@@ -128,12 +112,27 @@ public class FoundDevice {
 		return bonus;
 	}
 
-	public void setOld(boolean old) {
-		this.isOld = old;
+	public void setBoost(String dBonus) {
+
+		if (dBonus != null) {
+
+			if (dBonus.equals(""))
+				bonus = 0f;
+			else
+				bonus = Float.valueOf(dBonus);
+
+		} else {
+			bonus = 0f;
+		}
+
 	}
 
 	public boolean isOld() {
 		return isOld;
+	}
+
+	public void setOld(boolean old) {
+		this.isOld = old;
 	}
 
 	public int checkNull() {
@@ -151,10 +150,7 @@ public class FoundDevice {
 	public boolean equals(Object o) {
 		if (!(o instanceof FoundDevice)) return false;
 
-		if (((FoundDevice) o).macAddress.equals(macAddress))
-			return true;
-		else
-			return false;
+		return ((FoundDevice) o).macAddress.equals(macAddress);
 	}
 
 }

@@ -13,6 +13,6 @@
         <item name="android:subtitleTextStyle">@style/NoTitleText</item>
     </style>
 
-    <style name="EnableBluetoothTheme" parent="android:Theme.DeviceDefault.NoActionBar" />
+    <style name="EnableBluetoothTheme" parent="android:Theme.Holo.NoActionBar" />
 
 </resources>

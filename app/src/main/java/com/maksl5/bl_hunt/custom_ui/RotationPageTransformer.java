@@ -53,7 +53,7 @@ public class RotationPageTransformer implements ViewPager.PageTransformer{
         int pageWidth = view.getWidth();
         int pageHeight = view.getHeight();
         view.setPivotX((float) pageWidth / 2);
-        view.setPivotY((float) (pageHeight + pageWidth * distanceToCentreFactor)); 
+        view.setPivotY(pageHeight + pageWidth * distanceToCentreFactor);
  
         if(position < -1){ //[-infinity,1)
             //off to the left by a lot

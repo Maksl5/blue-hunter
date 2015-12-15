@@ -1,18 +1,5 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.LevelSystem;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.storage.AchievementSystem;
-import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.util.Achievement;
-
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
@@ -20,6 +7,17 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
+
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.storage.AchievementSystem;
+import com.maksl5.bl_hunt.util.Achievement;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -42,10 +40,9 @@ public class AchievementsLayout {
 
 				if (view instanceof CheckBox) {
 
-					if (((String) data).equals("true")) {
+					if (data.equals("true")) {
 						((CheckBox) view).setChecked(true);
-					}
-					else if (((String) data).equals("false")) {
+					} else if (data.equals("false")) {
 						((CheckBox) view).setChecked(false);
 					}
 

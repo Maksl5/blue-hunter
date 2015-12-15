@@ -1,9 +1,10 @@
-<manifest package="com.maksl5.bl_hunt"
-    android:versionCode="2074"
-    android:versionName="pre-beta_0.4.0.2074_161215-0011" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.maksl5.bl_hunt"
+    android:versionCode="2077"
+    android:versionName="pre-beta_0.4.0.2077_161215-0051">
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="14"
         android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />

@@ -4,30 +4,6 @@
  */
 package com.maksl5.bl_hunt.storage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.channels.ClosedByInterruptException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
-import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
-import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
-import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
-import com.maksl5.bl_hunt.util.FoundDevice;
-import com.maksl5.bl_hunt.util.MacAddress;
-
-import android.R.bool;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -37,23 +13,29 @@ import android.database.sqlite.SQLiteStatement;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
-import android.os.Debug;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
+import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
+import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
+import com.maksl5.bl_hunt.util.FoundDevice;
+import com.maksl5.bl_hunt.util.MacAddress;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 public class DatabaseManager {
-
-	private int version;
-	private BlueHunter bhApp;
-	private DatabaseHelper dbHelper;
-	private SQLiteDatabase db;
-
-	private static boolean locked;
-
-	private static ArrayList<FoundDevice> temporaryAsyncList;
-	private static ArrayList<FoundDevice> cachedList;
-
-	private static LoadAllDevicesThread loadAllDevicesTask;
 
 	public static final int INDEX_MAC_ADDRESS = 1;
 	public static final int INDEX_NAME = 2;
@@ -61,6 +43,14 @@ public class DatabaseManager {
 	public static final int INDEX_TIME = 4;
 	public static final int INDEX_MANUFACTURER = 5;
 	public static final int INDEX_BONUS = 6;
+	private static boolean locked;
+	private static ArrayList<FoundDevice> temporaryAsyncList;
+	private static ArrayList<FoundDevice> cachedList;
+	private static LoadAllDevicesThread loadAllDevicesTask;
+	private int version;
+	private BlueHunter bhApp;
+	private DatabaseHelper dbHelper;
+	private SQLiteDatabase db;
 
 	/**
 	 * @throws InterruptedException
@@ -73,6 +63,57 @@ public class DatabaseManager {
 
 		this.dbHelper = new DatabaseHelper(bhApp, version);
 		this.db = dbHelper.getWritableDatabase();
+
+	}
+
+	private static boolean addNewDeviceForIterate(SQLiteStatement sqLiteStatement, FoundDevice device) {
+
+		sqLiteStatement.bindLong(1, device.getMacAddress().getA());
+		sqLiteStatement.bindLong(2, device.getMacAddress().getB());
+		sqLiteStatement.bindLong(3, device.getMacAddress().getC());
+		sqLiteStatement.bindLong(4, device.getMacAddress().getD());
+		sqLiteStatement.bindLong(5, device.getMacAddress().getE());
+		sqLiteStatement.bindLong(6, device.getMacAddress().getF());
+
+		sqLiteStatement.bindLong(7, device.getManufacturer());
+
+		if (device.getName() != null) sqLiteStatement.bindString(8, device.getName());
+
+		sqLiteStatement.bindLong(9, device.getRssi());
+		sqLiteStatement.bindLong(10, device.getTime());
+		sqLiteStatement.bindDouble(11, device.getBoost());
+
+		long entry = sqLiteStatement.executeInsert();
+		sqLiteStatement.clearBindings();
+
+		return entry != -1;
+
+	}
+
+	public static synchronized ArrayList<FoundDevice> getCachedList() {
+
+		if (cachedList != null) {
+			return cachedList;
+		}
+		else {
+			return null;
+		}
+
+	}
+
+	public static synchronized ArrayList<FoundDevice> getProgressList() {
+
+		if (temporaryAsyncList != null) {
+			return temporaryAsyncList;
+		} else {
+			return null;
+		}
+
+	}
+
+	public static void cancelAllTasks() {
+
+		if (loadAllDevicesTask != null) loadAllDevicesTask.cancel(true);
 
 	}
 
@@ -102,8 +143,7 @@ public class DatabaseManager {
 			if (cachedList != null) {
 				cachedList.add(0, device);
 				close();
-			}
-			else {
+			} else {
 				loadAllDevices(true);
 			}
 
@@ -115,35 +155,6 @@ public class DatabaseManager {
 		else {
 			close();
 			updateModifiedTime(System.currentTimeMillis());
-			return false;
-		}
-
-	}
-
-	private static boolean addNewDeviceForIterate(SQLiteStatement sqLiteStatement, FoundDevice device) {
-
-		sqLiteStatement.bindLong(1, device.getMacAddress().getA());
-		sqLiteStatement.bindLong(2, device.getMacAddress().getB());
-		sqLiteStatement.bindLong(3, device.getMacAddress().getC());
-		sqLiteStatement.bindLong(4, device.getMacAddress().getD());
-		sqLiteStatement.bindLong(5, device.getMacAddress().getE());
-		sqLiteStatement.bindLong(6, device.getMacAddress().getF());
-
-		sqLiteStatement.bindLong(7, device.getManufacturer());
-
-		if (device.getName() != null) sqLiteStatement.bindString(8, device.getName());
-
-		sqLiteStatement.bindLong(9, device.getRssi());
-		sqLiteStatement.bindLong(10, device.getTime());
-		sqLiteStatement.bindDouble(11, device.getBoost());
-
-		long entry = sqLiteStatement.executeInsert();
-		sqLiteStatement.clearBindings();
-
-		if (entry != -1) {
-			return true;
-		}
-		else {
 			return false;
 		}
 
@@ -166,28 +177,6 @@ public class DatabaseManager {
 		// check ob schon läuft nicht vergessen.
 
 		// closeAfter nicht vergessen!
-
-	}
-
-	public static synchronized ArrayList<FoundDevice> getCachedList() {
-
-		if (cachedList != null) {
-			return cachedList;
-		}
-		else {
-			return null;
-		}
-
-	}
-
-	public static synchronized ArrayList<FoundDevice> getProgressList() {
-
-		if (temporaryAsyncList != null) {
-			return temporaryAsyncList;
-		}
-		else {
-			return null;
-		}
 
 	}
 
@@ -215,15 +204,15 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_NAME, name);
 
 		// @formatter:off
-		
-		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, 
+
+		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values,
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_F + " = ?"
-															, 
+				,
 																	new String[] { 	"" + macAddress.getA(),
 																					"" + macAddress.getB(),
 																					"" + macAddress.getC(),
@@ -266,15 +255,15 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_MANUFACTURER, manufacturer);
 
 		// @formatter:off
-		
-		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, 
+
+		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values,
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_F + " = ?"
-															, 
+				,
 																	new String[] { 	"" + macAddress.getA(),
 																					"" + macAddress.getB(),
 																					"" + macAddress.getC(),
@@ -293,7 +282,7 @@ public class DatabaseManager {
 		if (cachedList != null) {
 			int index = cachedList.indexOf(change);
 			FoundDevice foundDevice = cachedList.get(index);
-			foundDevice.setManu(manufacturer);;
+			foundDevice.setManu(manufacturer);
 
 			cachedList.set(index, foundDevice);
 			close();
@@ -311,15 +300,15 @@ public class DatabaseManager {
 		values.put(DatabaseHelper.COLUMN_BONUS, bonus);
 
 		// @formatter:off
-		
-		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values, 
+
+		db.update(DatabaseHelper.FOUND_DEVICES_TABLE, values,
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND " +
 																	DatabaseHelper.COLUMN_MAC_ADDRESS_F + " = ?"
-															, 
+				,
 																	new String[] { 	"" + macAddress.getA(),
 																					"" + macAddress.getB(),
 																					"" + macAddress.getC(),
@@ -356,15 +345,15 @@ public class DatabaseManager {
 	public boolean deleteDevice(MacAddress macAddress) {
 
 		// @formatter:off
-		
-		int result = db.delete(DatabaseHelper.FOUND_DEVICES_TABLE	, 
+
+		int result = db.delete(DatabaseHelper.FOUND_DEVICES_TABLE,
 																			DatabaseHelper.COLUMN_MAC_ADDRESS_A + " = ? AND " +
 																			DatabaseHelper.COLUMN_MAC_ADDRESS_B + " = ? AND " +
 																			DatabaseHelper.COLUMN_MAC_ADDRESS_C + " = ? AND " +
 																			DatabaseHelper.COLUMN_MAC_ADDRESS_D + " = ? AND " +
 																			DatabaseHelper.COLUMN_MAC_ADDRESS_E + " = ? AND " +
 																			DatabaseHelper.COLUMN_MAC_ADDRESS_F + " = ?"
-																	, 
+				,
 																			new String[] { 	"" + macAddress.getA(),
 																							"" + macAddress.getB(),
 																							"" + macAddress.getC(),
@@ -372,7 +361,7 @@ public class DatabaseManager {
 																							"" + macAddress.getE(),
 																							"" + macAddress.getF()
 																	});
-		
+
 		// @formatter:on
 
 		FoundDevice removeDevice = new FoundDevice();
@@ -425,7 +414,7 @@ public class DatabaseManager {
 		for (FoundDevice device : devices) {
 			addNewDeviceForIterate(sqLiteStatement, device);
 
-			Log.d("newSyncedDatabase number", "" + number);
+//			Log.d("newSyncedDatabase number", "" + number);
 			number++;
 
 		}
@@ -501,6 +490,8 @@ public class DatabaseManager {
 
 	}
 
+	// LEADERBOARD CHANGE
+
 	public int rebuildDatabase() {
 
 		dbHelper = new DatabaseHelper(bhApp, version);
@@ -512,8 +503,7 @@ public class DatabaseManager {
 		File backup = new File(dbFile.getPath() + ".bak");
 		try {
 			copy(dbFile, backup);
-		}
-		catch (IOException e1) {
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -565,18 +555,15 @@ public class DatabaseManager {
 
 				if (failureRows.size() == 0) {
 					return 0;
-				}
-				else {
+				} else {
 					return -failureRows.size();
 				}
 
-			}
-			else {
+			} else {
 				return 1001;
 			}
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 
 			bhApp.deleteDatabase(DatabaseHelper.DATABASE_NAME);
 			dbFile.delete();
@@ -585,28 +572,6 @@ public class DatabaseManager {
 
 			return 1002;
 		}
-
-	}
-
-	// LEADERBOARD CHANGE
-
-	public void setLeaderboardChanges(HashMap<Integer, Integer[]> changes) {
-
-		Set<Integer> keySet = changes.keySet();
-		for (Integer uid : keySet) {
-			ContentValues values = new ContentValues();
-			values.put(DatabaseHelper.COLUMN_LD_UID, uid);
-
-			Integer[] changeValues = changes.get(uid);
-
-			values.put(DatabaseHelper.COLUMN_LD_RANK, changeValues[0]);
-			values.put(DatabaseHelper.COLUMN_LD_EXP, changeValues[1]);
-			values.put(DatabaseHelper.COLUMN_LD_DEV, changeValues[2]);
-
-			db.insert(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, values);
-		}
-
-		close();
 
 	}
 
@@ -638,7 +603,7 @@ public class DatabaseManager {
 
 	// WEEKLY LEADERBOARD CHANGE
 
-	public void setWeeklyLeaderboardChanges(HashMap<Integer, Integer[]> changes) {
+	public void setLeaderboardChanges(HashMap<Integer, Integer[]> changes) {
 
 		Set<Integer> keySet = changes.keySet();
 		for (Integer uid : keySet) {
@@ -648,9 +613,10 @@ public class DatabaseManager {
 			Integer[] changeValues = changes.get(uid);
 
 			values.put(DatabaseHelper.COLUMN_LD_RANK, changeValues[0]);
-			values.put(DatabaseHelper.COLUMN_LD_DEV, changeValues[1]);
+			values.put(DatabaseHelper.COLUMN_LD_EXP, changeValues[1]);
+			values.put(DatabaseHelper.COLUMN_LD_DEV, changeValues[2]);
 
-			db.insert(DatabaseHelper.WEEKLY_LEADERBOARD_CHANGES_TABLE, null, values);
+			db.insert(DatabaseHelper.LEADERBOARD_CHANGES_TABLE, null, values);
 		}
 
 		close();
@@ -681,6 +647,25 @@ public class DatabaseManager {
 		close();
 
 		return changes;
+	}
+
+	public void setWeeklyLeaderboardChanges(HashMap<Integer, Integer[]> changes) {
+
+		Set<Integer> keySet = changes.keySet();
+		for (Integer uid : keySet) {
+			ContentValues values = new ContentValues();
+			values.put(DatabaseHelper.COLUMN_LD_UID, uid);
+
+			Integer[] changeValues = changes.get(uid);
+
+			values.put(DatabaseHelper.COLUMN_LD_RANK, changeValues[0]);
+			values.put(DatabaseHelper.COLUMN_LD_DEV, changeValues[1]);
+
+			db.insert(DatabaseHelper.WEEKLY_LEADERBOARD_CHANGES_TABLE, null, values);
+		}
+
+		close();
+
 	}
 
 	public long getLastModifiedTime() {
@@ -715,12 +700,6 @@ public class DatabaseManager {
 		}
 		in.close();
 		out.close();
-	}
-
-	public static void cancelAllTasks() {
-
-		if (loadAllDevicesTask != null) loadAllDevicesTask.cancel(true);
-
 	}
 
 	/**
@@ -758,42 +737,37 @@ public class DatabaseManager {
 		public final static String COLUMN_LD_RANK = "rank";
 		public final static String COLUMN_LD_EXP = "changeExp";
 		public final static String COLUMN_LD_DEV = "changeDev";
-
-		private BlueHunter bhApplication;
-		private int version;
-
 		// @formatter:off
 		// CREATE DECLARATION
-		public final static String FOUND_DEVICES_CREATE = 
+		public final static String FOUND_DEVICES_CREATE =
 				"Create Table " + FOUND_DEVICES_TABLE +
-				" (_id Integer Primary Key Autoincrement, " + 
-				COLUMN_MAC_ADDRESS_A + " Integer Not Null, " + 
-				COLUMN_MAC_ADDRESS_B + " Integer Not Null, " + 
-				COLUMN_MAC_ADDRESS_C + " Integer Not Null, " + 
-				COLUMN_MAC_ADDRESS_D + " Integer Not Null, " + 
-				COLUMN_MAC_ADDRESS_E + " Integer Not Null, " + 
-				COLUMN_MAC_ADDRESS_F + " Integer Not Null, " + 
-				COLUMN_NAME + " Text, " + 
-				COLUMN_RSSI + " Integer Not Null, "	+ 
-				COLUMN_TIME + " Integer, " + 
+						" (_id Integer Primary Key Autoincrement, " +
+						COLUMN_MAC_ADDRESS_A + " Integer Not Null, " +
+						COLUMN_MAC_ADDRESS_B + " Integer Not Null, " +
+						COLUMN_MAC_ADDRESS_C + " Integer Not Null, " +
+						COLUMN_MAC_ADDRESS_D + " Integer Not Null, " +
+						COLUMN_MAC_ADDRESS_E + " Integer Not Null, " +
+						COLUMN_MAC_ADDRESS_F + " Integer Not Null, " +
+						COLUMN_NAME + " Text, " +
+						COLUMN_RSSI + " Integer Not Null, " +
+						COLUMN_TIME + " Integer, " +
 				COLUMN_MANUFACTURER + " Integer, " +
 				COLUMN_BONUS + " Real);";
-
 		public final static String CHANGES_SYNC_CREATE = "Create Table " + CHANGES_SYNC_TABLE + " (_id Integer Primary Key Autoincrement, "
 				+ COLUMN_CHANGE + " Text Not Null);";
-
-		public final static String LEADERBOARD_CHANGES_CREATE = 
+		public final static String LEADERBOARD_CHANGES_CREATE =
 				"Create Table " + LEADERBOARD_CHANGES_TABLE +
-				" (" + COLUMN_LD_UID + " Integer Not Null, " + 
+						" (" + COLUMN_LD_UID + " Integer Not Null, " +
 				COLUMN_LD_RANK + " Integer Not Null, " +
 				COLUMN_LD_EXP + " Integer Not Null, " +
 				COLUMN_LD_DEV + " Integer Not Null);";
-		
-		public final static String WEEKLY_LEADERBOARD_CHANGES_CREATE = 
+		public final static String WEEKLY_LEADERBOARD_CHANGES_CREATE =
 				"Create Table " + WEEKLY_LEADERBOARD_CHANGES_TABLE +
-				" (" + COLUMN_LD_UID + " Integer Not Null, " + 
+						" (" + COLUMN_LD_UID + " Integer Not Null, " +
 				COLUMN_LD_RANK + " Integer Not Null, " +
 				COLUMN_LD_DEV + " Integer Not Null);";
+		private BlueHunter bhApplication;
+		private int version;
 		
 		// @formatter:on
 

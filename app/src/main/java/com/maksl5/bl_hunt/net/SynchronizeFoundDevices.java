@@ -4,6 +4,18 @@
  */
 package com.maksl5.bl_hunt.net;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
+import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.FoundDevice;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -12,43 +24,24 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.ErrorHandler;
-import com.maksl5.bl_hunt.LevelSystem;
-import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
-import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
-import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
-import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
-import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
-import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
-import com.maksl5.bl_hunt.util.FoundDevice;
-
-import android.util.Log;
-import android.widget.Toast;
-
 /**
  * @author Maksl5[Markus Bensing]
  * 
  */
 public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener, OnLoginChangeListener {
 
-	private static int exp = 0;
-	private static int deviceNum = 0;
-	private BlueHunter blueHunter;
-
-	private List<String> changesToSync = new ArrayList<String>();
-	private List<String> backupList = new ArrayList<String>();
-
-	public boolean needForceOverrideUp = false;
-
 	public static final int CHANGE_ADD = 1;
 	public static final int CHANGE_REMOVE = -1;
 	public static final int CHANGE_EDIT = 2;
-
 	public static final int MODE_UP = 1;
 	public static final int MODE_DOWN = 2;
 	public static final int MODE_INIT = 3;
+	private static int exp = 0;
+	private static int deviceNum = 0;
+	public boolean needForceOverrideUp = false;
+	private BlueHunter blueHunter;
+	private List<String> changesToSync = new ArrayList<String>();
+	private List<String> backupList = new ArrayList<String>();
 
 	public SynchronizeFoundDevices(BlueHunter blHunt) {
 
@@ -389,7 +382,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 					long diff = endTime - startTime;
 					int num = deviceStrings.length;
 
-					float timePerDev = (float) (diff / (float) num);
+					float timePerDev = diff / (float) num;
 
 					Log.d("SyncMode 2 [DOWN]", "Time: " + diff + "ms");
 					Log.d("SyncMode 2 [DOWN]", "Time per device: " + timePerDev + "ms");

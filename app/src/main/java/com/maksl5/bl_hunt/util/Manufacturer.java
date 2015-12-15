@@ -26,7 +26,7 @@ public class Manufacturer {
 				return true;
 		} else if (o instanceof String) {
 
-			if (((String) o).equals(name)) {
+			if (o.equals(name)) {
 				return true;
 			}
 		}

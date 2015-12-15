@@ -4,19 +4,6 @@
  */
 package com.maksl5.bl_hunt.net;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.acra.ACRA;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.ErrorHandler;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
-
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
@@ -32,22 +19,28 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager.BadTokenException;
-import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
+
+import org.acra.ACRA;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Maksl5[Markus Bensing]
  * 
  */
 public class Authentification {
-
-	private AuthentificationSecure secure;
-	private Context context;
-	protected BlueHunter bhApp;
-	private volatile ArrayList<OnNetworkResultAvailableListener> listenerList = new ArrayList<Authentification.OnNetworkResultAvailableListener>();
-	private ArrayList<OnLoginChangeListener> loginChangeListeners = new ArrayList<Authentification.OnLoginChangeListener>();
 
 	public static final int NETRESULT_ID_SERIAL_CHECK = 1;
 	public static final int NETRESULT_ID_CHECK_UPDATE = 2;
@@ -60,9 +53,13 @@ public class Authentification {
 	public static final int NETRESULT_ID_SYNC_FD_CHECK = 9;
 	public static final int NETRESULT_ID_SYNC_FD_APPLY = 10;
 	public static final int NETRESULT_ID_APPLY_NAME = 11;
-
 	public static boolean newUpdateAvailable = false;
 	public boolean internetIsAvailable = false;
+	protected BlueHunter bhApp;
+	private AuthentificationSecure secure;
+	private Context context;
+	private volatile ArrayList<OnNetworkResultAvailableListener> listenerList = new ArrayList<Authentification.OnNetworkResultAvailableListener>();
+	private ArrayList<OnLoginChangeListener> loginChangeListeners = new ArrayList<Authentification.OnLoginChangeListener>();
 
 	public Authentification(BlueHunter app) {
 
@@ -103,6 +100,11 @@ public class Authentification {
 		return serial;
 	}
 
+	public static String getPassHash(String pass) {
+
+		return AuthentificationSecure.getPassHash(pass);
+	}
+
 	public String getSerialNumberHash() {
 
 		return secure.getSerialHash(getSerialNumber());
@@ -116,11 +118,6 @@ public class Authentification {
 	public String getPassChangeHash(String newPass) {
 
 		return secure.getPassChangeHash(getSerialNumber(), newPass);
-	}
-
-	public static String getPassHash(String pass) {
-
-		return AuthentificationSecure.getPassHash(pass);
 	}
 
 	public String getStoredPass() {
@@ -313,21 +310,6 @@ public class Authentification {
 
 	}
 
-	public interface OnNetworkResultAvailableListener {
-
-		/**
-		 * Called, when a network result is available.
-		 * 
-		 * @param requestId
-		 *            The requestId, that identifies the request.
-		 * @param resultString
-		 *            The String, that is returned.
-		 * @return True, if you want to remove the listener from listening to
-		 *         the results available. False, if not removing.
-		 */
-		public abstract boolean onResult(int requestId, String resultString);
-	}
-
 	public synchronized void setOnNetworkResultAvailableListener(OnNetworkResultAvailableListener listener) {
 
 		synchronized (listenerList) {
@@ -358,9 +340,70 @@ public class Authentification {
 
 	}
 
+	public synchronized void setOnLoginChangeListener(OnLoginChangeListener onLoginChangeListener) {
+
+		if (!loginChangeListeners.contains(onLoginChangeListener))
+			loginChangeListeners.add(onLoginChangeListener);
+	}
+
+	public synchronized void fireLoginChange(boolean loggedIn) {
+
+		for (OnLoginChangeListener onLoginChangeListener : loginChangeListeners) {
+			onLoginChangeListener.loginStateChange(loggedIn);
+		}
+
+	}
+
+	public synchronized void removeOnLoginChangeListener(OnLoginChangeListener onLoginChangeListener) {
+
+		loginChangeListeners.remove(onLoginChangeListener);
+	}
+
+	private void checkInternetConnection() {
+
+		ConnectivityManager connectivityManager = (ConnectivityManager) bhApp.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+		if (networkInfo == null) {
+			internetIsAvailable = false;
+		} else internetIsAvailable = networkInfo.isConnected();
+	}
+
+	public boolean isInternetAvailable() {
+
+		return internetIsAvailable;
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public String getAchieveHash(int id) {
+
+		return secure.getAchieveHash(id);
+	}
+
+	public interface OnNetworkResultAvailableListener {
+
+		/**
+		 * Called, when a network result is available.
+		 *
+		 * @param requestId    The requestId, that identifies the request.
+		 * @param resultString The String, that is returned.
+		 * @return True, if you want to remove the listener from listening to
+		 * the results available. False, if not removing.
+		 */
+		boolean onResult(int requestId, String resultString);
+	}
+
+	public interface OnLoginChangeListener {
+
+		void loginStateChange(boolean loggedIn);
+	}
+
 	/**
 	 * @author Maksl5
-	 * 
+	 *
 	 */
 	public class LoginManager extends BroadcastReceiver implements OnNetworkResultAvailableListener {
 
@@ -498,7 +541,7 @@ public class Authentification {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * com.maksl5.bl_hunt.Authentification.OnNetworkResultAvailableListener#
 		 * onResult(int, java.lang.String)
@@ -627,7 +670,7 @@ public class Authentification {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * android.content.BroadcastReceiver#onReceive(android.content.Context,
 		 * android.content.Intent)
@@ -652,60 +695,5 @@ public class Authentification {
 			}
 		}
 
-	}
-
-	public interface OnLoginChangeListener {
-
-		public abstract void loginStateChange(boolean loggedIn);
-	}
-
-	public synchronized void setOnLoginChangeListener(OnLoginChangeListener onLoginChangeListener) {
-
-		if (!loginChangeListeners.contains(onLoginChangeListener)) loginChangeListeners.add(onLoginChangeListener);
-	}
-
-	public synchronized void fireLoginChange(boolean loggedIn) {
-
-		for (OnLoginChangeListener onLoginChangeListener : loginChangeListeners) {
-			onLoginChangeListener.loginStateChange(loggedIn);
-		}
-
-	}
-
-	public synchronized void removeOnLoginChangeListener(OnLoginChangeListener onLoginChangeListener) {
-
-		loginChangeListeners.remove(onLoginChangeListener);
-	}
-
-	private void checkInternetConnection() {
-
-		ConnectivityManager connectivityManager = (ConnectivityManager) bhApp.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
-		if (networkInfo == null) {
-			internetIsAvailable = false;
-		}
-		else {
-			if (networkInfo.isConnected()) {
-				internetIsAvailable = true;
-			}
-			else {
-				internetIsAvailable = false;
-			}
-		}
-	}
-
-	public boolean isInternetAvailable() {
-
-		return internetIsAvailable;
-	}
-
-	/**
-	 * @param id
-	 * @return
-	 */
-	public String getAchieveHash(int id) {
-
-		return secure.getAchieveHash(id);
 	}
 }

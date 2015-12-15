@@ -4,16 +4,10 @@
  */
 package com.maksl5.bl_hunt.storage;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
-import org.joda.time.DateTime;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
@@ -25,12 +19,14 @@ import com.maksl5.bl_hunt.storage.DatabaseManager.DatabaseHelper;
 import com.maksl5.bl_hunt.util.Achievement;
 import com.maksl5.bl_hunt.util.FoundDevice;
 
-import android.bluetooth.BluetoothHealthAppConfiguration;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.view.MenuItem;
-import android.widget.CompoundButton;
-import android.widget.Toast;
+import org.joda.time.DateTime;
+
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -38,27 +34,18 @@ import android.widget.Toast;
  */
 public class AchievementSystem {
 
-	private static float boost = 0.0f;
-
 	public static HashMap<Integer, Boolean> achievementStates;
 	public static HashMap<Integer, Boolean> temporaryStates;
-
-	private static AchievementsCheckerThread checkerThread;
-
-	private static List<FoundDevice> allDevices;
-
 	static int checksInRow = 0;
-
-	public static List<Achievement> achievements = Arrays.asList(new Achievement[] {
-			new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
+	private static float boost = 0.0f;
+	private static AchievementsCheckerThread checkerThread;
+	private static List<FoundDevice> allDevices;
+	public static List<Achievement> achievements = Arrays.asList(new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
 
 				@Override
 				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					if (BlueHunter.isSupport)
-						return true;
-					else
-						return false;
+					return BlueHunter.isSupport;
 
 				}
 
@@ -79,9 +66,8 @@ public class AchievementSystem {
 
 					String deviceSerial = Authentification.getSerialNumber();
 
-					if (serialsToCheck.contains(deviceSerial)) return true;
+					return serialsToCheck.contains(deviceSerial);
 
-					return false;
 				}
 
 			}.setBoost(0.5f),
@@ -93,10 +79,7 @@ public class AchievementSystem {
 
 					setNewProgressString("" + exp + " / 100");
 
-					if (exp >= 100)
-						return true;
-					else
-						return false;
+					return exp >= 100;
 
 				}
 
@@ -109,10 +92,7 @@ public class AchievementSystem {
 
 					setNewProgressString("" + deviceNum + " / 200");
 
-					if (deviceNum >= 200)
-						return true;
-					else
-						return false;
+					return deviceNum >= 200;
 
 				}
 
@@ -127,10 +107,7 @@ public class AchievementSystem {
 							+ bhApp.getString(R.string.str_foundDevices_exp_abbreviation) + ": " + exp + " / 8000");
 
 					if (deviceNum >= 300)
-						if (exp >= 8000)
-							return true;
-						else
-							return false;
+						return exp >= 8000;
 					else
 						return false;
 
@@ -147,10 +124,7 @@ public class AchievementSystem {
 
 					setNewProgressString("" + devices + " / 25");
 
-					if (devices >= 25)
-						return true;
-					else
-						return false;
+					return devices >= 25;
 
 				}
 
@@ -284,10 +258,7 @@ public class AchievementSystem {
 
 					setNewProgressString("" + devices + " / 5");
 
-					if (devices >= 5)
-						return true;
-					else
-						return false;
+					return devices >= 5;
 				}
 
 			}.setBoost(0.04f),
@@ -302,10 +273,7 @@ public class AchievementSystem {
 
 					setNewProgressString("" + devices + " / 50");
 
-					if (devices >= 50)
-						return true;
-					else
-						return false;
+					return devices >= 50;
 				}
 
 			}.setBoost(0.08f),
@@ -635,9 +603,7 @@ public class AchievementSystem {
 					return false;
 				}
 
-			}.setBoost(0.20f)
-
-	});
+			}.setBoost(0.20f));
 
 	public static void checkAchievements(BlueHunter bhApp, boolean completeCheck) {
 
@@ -856,7 +822,7 @@ public class AchievementSystem {
 		@Override
 		protected void onPreExecute() {
 
-			Log.d("AchievementsCheckerThread", "onPreExecute() called.");
+			Log.d("AchievementThread", "onPreExecute() called.");
 
 			running = true;
 
@@ -868,7 +834,7 @@ public class AchievementSystem {
 			running = false;
 			checksInRow++;
 
-			Log.d("AchievementsCheckerThread", "onPostExecute() called | result = " + result + " | checksInRow = " + checksInRow);
+			Log.d("AchievementThread", "onPostExecute() called | result = " + result + " | checksInRow = " + checksInRow);
 
 			if (result == 0) {
 				// allDevices was null
@@ -918,7 +884,7 @@ public class AchievementSystem {
 			long checkATime = System.currentTimeMillis();
 
 			completeCheck = params[0];
-			Log.d("AchievementsCheckerThread", "doInBackground() called. | completeCheck = " + completeCheck);
+			Log.d("AchievementThread", "doInBackground() called. | completeCheck = " + completeCheck);
 
 			temporaryStates = new HashMap<Integer, Boolean>();
 

@@ -1,21 +1,5 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import com.maksl5.bl_hunt.LevelSystem;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.ManufacturerList;
-import com.maksl5.bl_hunt.util.FoundDevice;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -26,6 +10,21 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.ManufacturerList;
+import com.maksl5.bl_hunt.util.FoundDevice;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class StatisticsFragment {
 
@@ -124,7 +123,7 @@ public class StatisticsFragment {
 
 			while (iterator.hasNext()) {
 
-				Integer manufacturerID = (Integer) iterator.next();
+				Integer manufacturerID = iterator.next();
 
 				String name = ManufacturerList.getName(manufacturerID);
 

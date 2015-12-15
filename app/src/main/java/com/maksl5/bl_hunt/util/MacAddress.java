@@ -79,8 +79,7 @@ public class MacAddress {
 		if (c != other.c) return false;
 		if (d != other.d) return false;
 		if (e != other.e) return false;
-		if (f != other.f) return false;
-		return true;
+		return f == other.f;
 	}
 
 }

@@ -4,14 +4,13 @@
 package com.maksl5.bl_hunt.custom_ui;
 
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.EditText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -20,6 +19,8 @@ import android.widget.EditText;
  * 
  */
 public class AdjustedEditText extends EditText {
+
+	List<OnBackKeyClickedListener> listeners = new ArrayList<OnBackKeyClickedListener>();
 
 	/**
 	 * @param context
@@ -44,8 +45,6 @@ public class AdjustedEditText extends EditText {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
 	}
-
-	List<OnBackKeyClickedListener> listeners = new ArrayList<OnBackKeyClickedListener>();
 
 	/**
 	 * @param context
@@ -82,7 +81,7 @@ public class AdjustedEditText extends EditText {
 
 	public interface OnBackKeyClickedListener {
 
-		public abstract void onBackKeyClicked();
+		void onBackKeyClicked();
 	}
 
 }

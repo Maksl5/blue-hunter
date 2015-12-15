@@ -4,14 +4,13 @@
  */
 package com.maksl5.bl_hunt.net;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.view.MenuItem;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
 
-import android.view.MenuItem;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -41,9 +40,8 @@ public class NetworkManager {
 
 	public boolean areThreadsRunning() {
 
-		if (curRunningThreads.size() == 0) return false;
+		return curRunningThreads.size() != 0;
 
-		return true;
 	}
 
 	/**

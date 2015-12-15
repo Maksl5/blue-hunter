@@ -1,7 +1,16 @@
 package com.maksl5.bl_hunt;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Vibrator;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
@@ -11,20 +20,9 @@ import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 import com.maksl5.bl_hunt.util.FoundDevice;
 import com.maksl5.bl_hunt.util.MacAddress;
-import com.maksl5.bl_hunt.R;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Debug;
-import android.os.Vibrator;
-import android.util.Log;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ListView;
-import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -43,11 +41,10 @@ import android.widget.TextView;
 
 public class DiscoveryManager {
 
+	public int newDevicesInCurDiscoverySession = 0;
 	private BlueHunter bhApp;
 	private TextView stateTextView;
 	private BluetoothDiscoveryHandler btHandler;
-
-	public int newDevicesInCurDiscoverySession = 0;
 
 	public DiscoveryManager(BlueHunter application) {
 
@@ -250,6 +247,19 @@ public class DiscoveryManager {
 			return "";
 		}
 
+		private static String formatStateText(String stateText) {
+
+			char[] splittedText = stateText.toCharArray();
+
+			String newText = "";
+
+			for (int i = 0; i < splittedText.length; i++) {
+				newText = newText + String.valueOf(splittedText[i]) + " ";
+			}
+
+			return newText.trim().toUpperCase();
+		}
+
 		private String getDiscoveryState() {
 
 			return getDiscoveryState(curDiscoveryState, context);
@@ -269,19 +279,6 @@ public class DiscoveryManager {
 		public String getCurDiscoveryStateText() {
 
 			return getDiscoveryState();
-		}
-
-		private static String formatStateText(String stateText) {
-
-			char[] splittedText = stateText.toCharArray();
-
-			String newText = "";
-
-			for (int i = 0; i < splittedText.length; i++) {
-				newText = newText + String.valueOf(splittedText[i]) + " ";
-			}
-
-			return newText.trim().toUpperCase();
 		}
 
 		/**
@@ -309,8 +306,7 @@ public class DiscoveryManager {
 			// return false;
 
 			curDiscoveryState = state;
-			if (!setDiscoveryStateTextView()) return false;
-			return true;
+			return setDiscoveryStateTextView();
 		}
 
 	}
@@ -452,12 +448,7 @@ public class DiscoveryManager {
 
 		private boolean forceSetStateText() {
 
-			if (disState.setDiscoveryState(disState.getCurDiscoveryState())) {
-				return true;
-			}
-			else {
-				return false;
-			}
+			return disState.setDiscoveryState(disState.getCurDiscoveryState());
 		}
 
 		private void enableBluetoothResult(int result, int request) {
@@ -478,17 +469,15 @@ public class DiscoveryManager {
 
 		private boolean enableBluetooth() {
 
-			if (btAdapter.enable()) return true;
+			return btAdapter.enable();
 
-			return false;
 		}
 
 		private boolean disableBluetooth() {
 
 			if (isBluetoothEnabled()) {
-				if (btAdapter.disable()) return true;
+				return btAdapter.disable();
 
-				return false;
 			}
 
 			return true;

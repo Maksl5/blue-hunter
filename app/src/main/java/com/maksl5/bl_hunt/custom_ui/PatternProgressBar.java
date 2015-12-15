@@ -4,8 +4,6 @@
  */
 package com.maksl5.bl_hunt.custom_ui;
 
-import com.maksl5.bl_hunt.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -18,6 +16,8 @@ import android.graphics.drawable.LayerDrawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
+
+import com.maksl5.bl_hunt.R;
 
 /**
  * From <a href="http://www.jagsaund.com/">http://www.jagsaund.com/</a>
@@ -125,7 +125,7 @@ public class PatternProgressBar extends ProgressBar {
 	 * The text formatter is used for customizing the presentation of the text
 	 * displayed in the progress indicator. The default text format is X% where
 	 * X is [0,100]. To use the formatter you must provide an object which
-	 * implements the {@linkplain SaundProgressBar.Formatter} interface.
+	 * implements the {@linkplain PatternProgressBar.Formatter} interface.
 	 * 
 	 * @param formatter
 	 */
@@ -386,6 +386,6 @@ public class PatternProgressBar extends ProgressBar {
 	 */
 	public interface Formatter {
 
-		public String getText(int progress);
+		String getText(int progress);
 	}
 }

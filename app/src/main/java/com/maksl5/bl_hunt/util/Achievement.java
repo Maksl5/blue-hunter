@@ -4,15 +4,13 @@
  */
 package com.maksl5.bl_hunt.util;
 
-import java.util.HashMap;
-import java.util.List;
+import android.content.Context;
 
 import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
-import android.content.Context;
-import android.widget.Toast;
+import java.util.HashMap;
+import java.util.List;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -22,8 +20,18 @@ import android.widget.Toast;
  */
 public abstract class Achievement {
 
+	private boolean isHidden = false;
+	private int id;
+	private int title;
+
+	// Properties
+	private int descriptionString;
+	private float boost;
+	private boolean hasProgress;
+	private String progressString = "none";
+
 	/**
-	 * 
+	 *
 	 */
 	public Achievement(int id, int title, int description, boolean hasProgress) {
 
@@ -42,7 +50,6 @@ public abstract class Achievement {
 		this.hasProgress = false;
 
 	}
-
 	public Achievement(int id, boolean isHidden, int title, int description) {
 
 		this.id = id;
@@ -53,30 +60,13 @@ public abstract class Achievement {
 
 	}
 
-	// Properties
-
-	private boolean isHidden = false;
-
-	private int id;
-
-	private int title;
-
-	private int descriptionString;
-
-	private float boost;
-
-	private boolean hasProgress;
-	private String progressString = "none";
-
 	//Returns true if Toast should be showed.
 	public boolean accomplish(BlueHunter bhApp, boolean alreadyAccomplished) {
 
 		PreferenceManager.setPref(bhApp, "pref_achievement_" + id, bhApp.authentification.getAchieveHash(id));
 
-		if (!alreadyAccomplished)
-			return true;
-		
-		return false;
+		return !alreadyAccomplished;
+
 	}
 
 	public void invalidate(BlueHunter bhApp) {
@@ -138,16 +128,6 @@ public abstract class Achievement {
 		return this;
 	}
 
-	/**
-	 * @param boost
-	 *            the boost to set
-	 */
-	public Achievement setBoost(float boost) {
-
-		this.boost = boost;
-		return this;
-	}
-
 	public String getName(Context context) {
 		return context.getString(title);
 	}
@@ -158,6 +138,15 @@ public abstract class Achievement {
 
 	public float getBoost() {
 		return boost;
+	}
+
+	/**
+	 * @param boost the boost to set
+	 */
+	public Achievement setBoost(float boost) {
+
+		this.boost = boost;
+		return this;
 	}
 
 	public int getId() {
