@@ -1,0 +1,130 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+<!--
+    
+		Czech translation for Blue Hunter 
+		Author: Scorpio-cz
+		2013 © Scorpio-cz
+		
+-->
+
+    <string name="str_mainTitle">Blue Hunter</string>
+    <string name="str_versionName">0.1_alpha</string>
+    <string name="str_pageTitle_main">Objevená zařízení</string>
+    <string name="str_pageTitle_leaderboard">Žebříček</string>
+    <string name="str_pageTitle_foundDevices">Nalezená zařízení</string>
+    <string name="str_pageTitle_achievements">Achievementy</string>
+    <string name="str_pageTitle_profile">Profil</string>
+    <string name="str_menu_settings">Nastavení</string>
+    <string name="str_menu_info">Help</string>
+    <string name="str_menu_search">Hledat</string>
+    <string name="str_menu_context_remove">Odstranit</string>
+    <string name="str_actBar_userInfo">User Information</string>
+    <string name="str_mainActTitle">Blue Hunter</string>
+    <string name="str_discoveryState_running">Hledání běží.</string>
+    <string name="str_discoveryState_stopped">Hledání zastaveno.</string>
+    <string name="str_discoveryState_btOff">Bluetooth vypnut.</string>
+    <string name="str_discoveryState_finished">Hledání skončilo. Reaktivace...</string>
+    <string name="str_discoveryState_btEnabling">Bluetooth je zapínán...</string>
+    <string name="str_discoveryState_btDisabling">Bluetooth je vypínán...</string>
+    <string name="str_discoveryState_error">Chyba při hledání.</string>
+    <string name="str_discoveryState_off">Hledání je vypnuto.</string>
+    <string name="str_enableBT_title">Povolit Bluetooth ?</string>
+    <string name="str_enableBT_text">Tato hra vyžaduje, aby byl zapnut Bluetooth kvůli vyhledávání zařízení. Chcete zapnout Bluetooth a umožnit aplikaci ho používát pro vyhledávání zařízení  ?</string>
+    <string name="str_enableBT_yesButton">Ano</string>
+    <string name="str_enableBT_noButton">Ne</string>
+    <string name="str_PreferenceHeader_info">Info</string>
+    <string name="str_PreferenceHeader_info_sum">Informace o hře.</string>
+    <string name="str_PreferenceHeader_behaviour">Chování</string>
+    <string name="str_PreferenceHeader_behaviour_sum">Manage the device specific behaviour of the game.</string>
+    <string name="str_PreferenceHeader_profile">Profil</string>
+    <string name="str_PreferenceHeader_profile_sum">Upravte nastavení profilu. (Online)</string>
+    <string name="str_PreferenceHeader_misc">Ostatní</string>
+    <string name="str_PreferenceHeader_misc_sum">Change misc. settings or clean up the game.</string>
+    <string name="str_Preferences_changePass_title">Změňte heslo</string>
+    <string name="str_Preferences_changePass_sum">Změňte heslo svého profilu. (Online)</string>
+    <string name="str_Preferences_changePass_new_title">Nastavte heslo</string>
+    <string name="str_Preferences_changePass_new_sum">Nastavte heslo svého profilu. (Online)</string>
+    <string name="str_Preferences_changePass_success">Heslo úspěšně změněno.</string>
+    <string name="str_Preferences_localPass_title">Přihlašovací heslo</string>
+    <string name="str_Preferences_localPass_sum">Nastavte heslo používané hrou pro přihlášení do vašeho profilu.</string>
+    <string name="str_Preferences_version_title">Verze</string>
+    <string name="str_Preferences_showChangelog_title">Ukaž seznam změn</string>
+    <string name="str_Preferences_checkUpdate_title">Automaticky kontrolovat aktualizace</string>
+    <string name="str_Preferences_checkUpdate_sum">Automaticky kontrolovat dostupnost nočních aktualizací.</string>
+    <string name="str_Preferences_newUpdateAvailable_title">Je dostupná nová aktualizace</string>
+    <string name="str_Preferences_newUpdateAvailable_sum">Nová aktualizace je dostupná. Klikněte zde pro stažení nové verze.</string>
+    <string name="str_Preferences_vibrate_title">Vibrovat</string>
+    <string name="str_Preferences_vibrate_sum">Vibrace při nalezení nového zařízení.</string>
+    <string name="str_Preferences_showNotification_title">Zobrazit notifikace</string>
+    <string name="str_Preferences_showNotification_sum">Zobrazit aktuální stav hledání, úrovně a zkušeností jako natifikaci.</string>
+    <string name="str_Preferences_rebuildDB_title">Znovu vytvořit databázi (ALPHA! MAKE BACKUP BEFORE DOING THIS!)</string>
+    <string name="str_Preferences_rebuildDB_sum">Znovu vytvořit lokální databázi nalezených zařízení. Pouze pokud máte problémy, či se vyskytují chyby .</string>
+    <string name="str_foundDevices_manu_unkown">Neznámý</string>
+    <string name="str_foundDevices_exp_abbreviation">Zkušenosti</string>
+    <string name="str_foundDevices_level">Úroveň</string>
+    <string name="str_statistics_editName_apply">Použít</string>
+    <string name="str_changePass_title">Změňte heslo profilu</string>
+    <string name="str_changePass_new_title">Nastavte heslo profilu</string>
+    <string name="str_changePass_cancelButton">Zrušit</string>
+    <string name="str_changePass_applyButton">Použít</string>
+    <string name="str_changePass_sureButton">Oravdu provést?</string>
+    <string name="str_changePass_oldPass">Zadejte staré heslo...</string>
+    <string name="str_changePass_newPass">Zadejte nové heslo...</string>
+    <string name="str_changePass_confirmNewPass">Potvrďte nové heslo...</string>
+    <string name="str_loginPass_title">Nastavte přihlašovací heslo</string>
+    <string name="str_auth_newUpdateAvailable" formatted="false">Nová noční verze k dispozici. %n V současné době nainstalované sestavení: %d. %n Dostupné sestavení: %d.</string>
+    <string name="str_auth_updated" formatted="false">Aktualizováno na novou verzi %s.%n</string>
+    <string name="str_auth_updated_1_4_5">Nelze načíst seznam změn. Pravděpodobně žádné připojení k internetu.</string>
+    <string name="str_auth_updated_90">Žádný seznam změn není dostupný.</string>
+    <string name="str_auth_updated_404">Nelze načíst seznam změn. Pravděpodobně spadl server nebo dokument není dostupný.</string>
+    <string name="str_auth_updated_500">Nelze načíst seznam změn. Server error. Prosím kontaktujte vývojáře.</string>
+    <string name="str_auth_changelog">Seznam změn</string>
+    <string name="str_auth_loginSuccess">Přihlášení bylo úspěšné.</string>
+    <string name="str_auth_securityMsg">Poznámka: Vzhledem k bezpečnostním aspektům, byste měli zvážit nastavení hesla pro hru. Můžete to udělat v nastavení vašeho profilu.</string>
+    <string name="str_auth_storeTokenFailed">Nelze uložit přihlašovací token.</string>
+    <string name="str_auth_changelog_ok">Ok</string>
+
+    <!-- Error strings -->
+
+    <string name="str_Error_1_4_5">Nelze načíst data. Pravděpodobně žádné připojení k internetu.</string>
+    <string name="str_Error_404">Nelze načíst data. Pravděpodobně spadl server nebo dokument není dostupný.</string>
+    <string name="str_Error_500">Nelze načíst data. Server error. Prosím kontaktujte vývojáře..</string>
+    <string name="str_Error_serialCheck">Error %d while checking serial.</string>
+    <string name="str_Error_serialCheck_100_1_2_4">Nekompletní parametry.</string>
+    <string name="str_Error_serialCheck_100_3">Hashe se neshodují.</string>
+    <string name="str_Error_serialCheck_100_5">Failed inserting serial into DB.</string>
+    <string name="str_Error_serialCheck_100_6">Failed updating serial in DB.</string>
+    <string name="str_Error_serialCheck_100_7">More than 1 row in DB query result.</string>
+    <string name="str_Error_getUserInfo">Chyba %d při získávání User Info.</string>
+    <string name="str_Error_checkUpdate">Chyba %d při kontrole aktualizací.</string>
+    <string name="str_Error_changePass">Chyba %d při změně hesla.</string>
+    <string name="str_Error_changePass_100_1_2_3_4_16">Nekompletní parametry.</string>
+    <string name="str_Error_changePass_100_5">Hashe se neshodují.</string>
+    <string name="str_Error_changePass_100_6_8">Nelze nastavit nové heslo v DB.</string>
+    <string name="str_Error_changePass_100_7">Old password must be committed.</string>
+    <string name="str_Error_changePass_100_9">Heslo neodpovídá tomu zadanému.</string>
+    <string name="str_Error_changePass_100_10_13">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_changePass_100_11">Unknown login token. [Error deleting it from DB.]</string>
+    <string name="str_Error_changePass_100_12">Unknown login token. Try again.</string>
+    <string name="str_Error_changePass_100_14">Found more than 1 login token. [Error deleting them from DB.]</string>
+    <string name="str_Error_changePass_100_15">Found more than 1 login token. Try again.</string>
+    <string name="str_Error_preLogin">Error %d while prelogin.</string>
+    <string name="str_Error_preLogin_100_1_2_6">Nekompletní parametry.</string>
+    <string name="str_Error_preLogin_100_3">Hashe se neshodují.</string>
+    <string name="str_Error_preLogin_100_4_5">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_Login">Chyba %d při přihlášení.</string>
+    <string name="str_Error_Login_100_1_2_3_11">Nekompletní parametry.</string>
+    <string name="str_Error_Login_100_4">Hashe se neshodují..</string>
+    <string name="str_Error_Login_100_5_7">Failed inserting session into DB.</string>
+    <string name="str_Error_Login_100_6">Password must be committed.</string>
+    <string name="str_Error_Login_100_8">Heslo je nesprávné.</string>
+    <string name="str_Error_Login_100_9">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_Login_100_10">Request timeout.</string>
+    <string name="str_Error_checkLogin">Chyba %d při kontrole přihlášení..</string>
+    <string name="str_Error_checkLogin_100_1_2">Nekompletní parametry.</string>
+    <string name="str_Error_checkLogin_100_3">Password must be committed.</string>
+    <string name="str_Error_checkLogin_100_4">Heslo je nesprávné.</string>
+    <string name="str_Error_checkLogin_100_5">Unexpected number of rows in DB query result.</string>
+    <string name="str_Error_checkLogin_100_6_7">Nepodařilo se smazat řádky v DB.</string>
+
+</resources>

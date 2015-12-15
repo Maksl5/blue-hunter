@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/discoveryLLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:animateLayoutChanges="false"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TableLayout
+        android:id="@+id/discoveryInfoTable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:animateLayoutChanges="false"
+        android:gravity="center"
+        android:padding="@dimen/padding_xsmall" >
+
+        <TableRow
+            android:id="@+id/DDtableRow5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/padding_medium" >
+
+            <TextView
+                android:id="@+id/txt_discoveryState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="TextView" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/TableRow01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-9dp"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/nextRankIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/progress_indicator"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="Next Rank"
+                android:textColor="@android:color/white"
+                android:textSize="9sp"
+                android:visibility="gone" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/DDtableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" >
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <com.maksl5.bl_hunt.custom_ui.PatternProgressBar
+                    android:id="@+id/progressBar1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="false"
+                    android:minHeight="1dip"
+                    android:minWidth="200dip"
+                    android:progress="35"
+                    android:progressDrawable="@drawable/bh_progress_bar" />
+
+                <TextView
+                    android:id="@+id/lvlIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="7"
+                    android:textSize="@dimen/levelIndicator_text"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/DDtableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/expIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="TextView" />
+        </TableRow>
+
+        <TableLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TableRow
+                android:id="@+id/DDTableRow02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/padding_large"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/txtName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_xsmall"
+                    android:text="@string/str_discovery_devices"
+                    android:textColor="@color/text_holo_light_blue"
+                    android:textSize="@dimen/foundDevices_manufacturer_text"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/txt_devices"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:padding="@dimen/padding_xsmall"
+                    android:text="100" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/DDtableRow4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/boostTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_xsmall"
+                    android:text="@string/str_discovery_devExpPerDay"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/text_holo_light_blue"
+                    android:textSize="@dimen/foundDevices_manufacturer_text"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/txt_devExpPerDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:padding="@dimen/padding_xsmall"
+                    android:text="100" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/DDTableRow01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_xsmall"
+                    android:text="@string/str_discovery_devExpToday"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/text_holo_light_blue"
+                    android:textSize="@dimen/foundDevices_manufacturer_text"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/txt_devExpToday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center"
+                    android:padding="@dimen/padding_xsmall"
+                    android:text="100 /100" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/DDtableRow3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/txt_discovery_devInSession_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:padding="@dimen/padding_xsmall"
+                    android:text="@string/str_discovery_devInSession"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/text_holo_light_blue"
+                    android:textSize="@dimen/foundDevices_manufacturer_text"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/txt_discovery_devInSession_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center"
+                    android:padding="@dimen/padding_xsmall"
+                    android:text="1" />
+
+            </TableRow>
+
+        </TableLayout>
+
+    </TableLayout>
+
+    <ListView
+        android:id="@+id/discoveryListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:animateLayoutChanges="true"
+        android:background="#77aaaaaa"
+        android:visibility="gone" >
+
+    </ListView>
+
+</LinearLayout>

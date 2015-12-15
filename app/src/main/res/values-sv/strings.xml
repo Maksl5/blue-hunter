@@ -1,0 +1,245 @@
+	<resources xmlns:tools="http://schemas.android.com/tools">
+	<!--
+	Swedish translation for Blue Hunter 
+	Author: Snah.
+	2013 © Snah.
+	-->
+	
+	
+	<string name="str_mainTitle">Blue Hunter</string>
+	<string name="str_versionName">0.1_alpha</string>
+	
+	<string name="str_pageTitle_main">Enhetssökning</string>
+	<string name="str_pageTitle_leaderboard">Topplista</string>
+	<string name="str_pageTitle_foundDevices">Funna enheter</string>
+	<string name="str_pageTitle_achievements">Bedrifter</string>
+	<string name="str_pageTitle_profile">Profil</string>
+	
+	<string name="str_menu_settings">Inställningar</string>
+	<string name="str_menu_info">Hjälp</string>
+	<string name="str_menu_search">Sök</string>
+	<string name="str_menu_context_remove">Ta bort</string>
+	<string name="str_menu_refresh">Uppdatera</string>
+	
+	
+	<string name="str_actBar_userInfo">Användarinformation</string>
+	<string name="str_mainActTitle">Blue Hunter</string>
+	
+	<string name="str_discoveryState_running">Söker</string>
+	<string name="str_discoveryState_stopped">Sökning stoppad.</string>
+	<string name="str_discoveryState_btOff">Bluetooth av.</string>
+	<string name="str_discoveryState_finished">Sökning avslutad. Startar om...</string>
+	<string name="str_discoveryState_btEnabling">Aktiverar Bluetooth...</string>
+	<string name="str_discoveryState_btDisabling">Deaktiverar Bluetooth... </string>
+	<string name="str_discoveryState_error">Sökfel.</string>
+	<string name="str_discoveryState_off">Sökning av.</string>
+	
+	<string name="str_discovery_devices">Enheter:</string>
+	<string name="str_discovery_devExpPerDay">Enheter / poäng per dag:</string>
+	<string name="str_discovery_devExpToday">Devices / poäng senaste 24 timmarna:</string>
+	
+	<string name="str_enableBT_title">Slå på Bluetooth?</string>
+	<string name="str_enableBT_text">Spelet kräver att Bluetooth är aktiverat för att kunna söka efter enheter och jaga Bluetooth-enheter. Vill du aktivera Bluetooth och tillåta att denna applikation använder Bluetooth för att söka efter enheter?</string>
+	<string name="str_enableBT_yesButton">Ja</string>
+	<string name="str_enableBT_noButton">Nej</string>
+	<string name="str_enableBT_remember">Kom ihåg valet?</string>
+	
+	<string name="str_PreferenceHeader_info">Information</string>
+	<string name="str_PreferenceHeader_info_sum">Visa information om spelet.</string>
+	<string name="str_PreferenceHeader_behaviour">Beteende</string>
+	<string name="str_PreferenceHeader_behaviour_sum">Hantera de enhetsspecifika beteendena i spelet.</string>
+	<string name="str_PreferenceHeader_profile">Profil</string>
+	<string name="str_PreferenceHeader_profile_sum">Justera dina profilinställningar. (Online)</string>
+	<string name="str_PreferenceHeader_misc">Övrigt</string>
+	<string name="str_PreferenceHeader_misc_sum">Ändra övriga inställningar eller rensa spelet.</string>
+	<string name="str_Preferences_changePass_title">Ändra lösenord</string>
+	<string name="str_Preferences_changePass_sum">Ändra din profils lösenord (online).</string>
+	<string name="str_Preferences_changePass_new_title">Bestäm lösenord</string>
+	<string name="str_Preferences_changePass_new_sum">Bestäm din profils lösenord (online).</string>
+	<string name="str_Preferences_changePass_success">Ändringe n av lösenordet lyckades.</string>
+	<string name="str_Preferences_localPass_title">Lösenord för inloggning</string>
+	<string name="str_Preferences_localPass_sum">Bestäm lösenordet som spelet använder för att logga in till din profil.</string>
+	<string name="str_Preferences_version_title">Version</string>
+	<string name="str_Preferences_showChangelog_title">Visa ändringsloggen</string>
+	<string name="str_Preferences_checkUpdate_title">Sök efter uppdateringar automatiskt</string>
+	<string name="str_Preferences_checkUpdate_sum">Sök efter nya nattliga uppdateringar automatiskt.</string>
+	<string name="str_Preferences_newUpdateAvailable_title">Ny uppdatering tillgänglig</string>
+	<string name="str_Preferences_newUpdateAvailable_sum">En ny uppdatering är tillgänglig. Klicka här för att ladda ner den nya versionen.</string>
+	<string name="str_Preferences_vibrate_title">Vibrera</string>
+	<string name="str_Preferences_vibrate_sum">Vibrera när en ny enhet hittas.</string>
+	<string name="str_Preferences_showNotification_title">Visa avisering</string>
+	<string name="str_Preferences_showNotification_sum">Visa nuvarande status för sökning, nivå och poäng som avisering.</string>
+	<string name="str_Preferences_rebuildDB_title">Bygg om databas (ALPHAFUNKTION! GÖR EN BACKUP INNAN DU ANVÄNDER FUNKTIONEN!)</string>
+	<string name="str_Preferences_rebuildDB_sum">Bygg om den lokala databasen med funna enheter. Pröva endast detta om du märker problem och buggar.</string>
+	<string name="str_Preferences_activateSync_title">Synkronisera hittade enheter</string>
+	<string name="str_Preferences_activateSync_sum">Synkronisera dina hittade enheter med topplistan online.</string>
+	<string name="str_Preferences_syncInterval_title">Intervall för synkronisering</string>
+	<string name="str_Preferences_syncInterval_sum">Bestäm intervallet för att synkronisera data.</string>
+	<string name="str_Preferences_forceUpSync_title">Tvinga synkronisering av all data </string>
+	<string name="str_Preferences_forceUpSync_sum">Detta skriver över all data online med din lokala data.</string>
+	<string name="str_Preferences_forceDownSync_title">Hämta extern databas.</string>
+	<string name="str_Preferences_forceDownSync_sum">Skriver över den lokala datan över funna enheter med onlinedatan.</string>
+	<string name="str_Preferences_enableBackground_title">Akti vera bakgrund</string>
+	<string name="str_Preferences_enableBackground_sum">[EXPERIMENTELLA. Kan leda till forced close när appen startas.]</string>
+	<string name="str_Preferences_deleteRemember_title">Ta bort kom ihåg-inställningar</string>
+	<string name="str_Preferences_deleteRemember_sum">Ta bort alla kom ihåg-inställningar du gjort i appen.</string>
+	
+	<string name="str_foundDevices_manu_unkown">Okända</string>
+	<string name="str_foundDevices_exp_abbreviation">Poäng</string>
+	<string name="str_foundDevices_level">Nivå</string>
+	<string name="str_foundDevices_bonusExp_attach">bonuspoäng </string>
+	
+	<string name="str_statistics_editName_apply">Tillämpa</string>
+	
+	<string name="str_changePass_title">Ändra lösenord för profil</string>
+	<string name="str_changePass_new_title">Sätt lösenord för profil</string>
+	<string name="str_changePass_cancelButton">Avbryt</string>
+	<string name="str_changePass_applyButton">Tillämpa</string>
+	<string name="str_changePass_sureButton">Är du säker?</string>
+	<string name="str_changePass_oldPass">Skriv gammalt lösenord...</string>
+	<string name="str_changePass_newPass">Skriv nytt lösenord...</string>
+	<string name="str_changePass_confirmNewPass">Bekräfta nytt lösenord...</string>
+	<string name="str_loginPass_title">Sätt lösenord för att logga in</string>
+	
+	<string name="str_auth_newUpdateAvailable" formatted="false">Ny nattlig version tillgänglig. %n Nuvarande installerade version:: %d. %n Tillgänglig version: %d.</string>
+	<string name="str_auth_updated" formatted="false">Uppdaterade till nya versionen %s.%n</string>
+	<string name="str_auth_updated_1_4_5">Kunde inte hämta ändringsloggen. Möjligen finns ingen internetanslutning.</string>
+	<string name="str_auth_updated_90">Ingen ändringslogg tillgänglig.</string>
+	<string name="str_auth_updated_404">Kunde inte hämta ändringsloggen. Server kan vara nere eller scriptet för ändringsloggen inte tillgängligt.</string>
+	<string name="str_auth_updated_500">Kunde inte hämta ändringsloggen. Serverfel. Vänligen kontakta utvecklaren.</string>
+	<string name="str_auth_changelog">Ändringslogg</string>
+	<string name="str_auth_loginSuccess">Login misslyckades.</string>
+	<string name="str_auth_securityMsg">OBS! På grund av säkerhetsaspekter bör du överväga att sätta ett lösenord för spelet. Du kan göra det i dina profilinställningar.</string>
+	<string name="str_auth_storeTokenFailed">Kunde inte spara Could not store login token.</string>
+	<string name="str_auth_changelog_ok">Ok</string>
+	
+	
+	<!-- Achievements -->
+	<string name="str_achievement_accomplish">Grattis! Du har klarat bedriften "%s".</string>
+	<string name="str_achievement_totalBoost">Boost:\n%s</string>
+	
+	<string name="str_achieve_1_title">Prövoperiod I</string>
+	<string name="str_achieve_1_description">Skaffa 100 poäng för att bli accepterad.</string>
+	
+	<string name="str_achieve_2_title">Prövoperiod II</string>
+	<string name="str_achieve_2_description">Hitta 200 enheter för att få veta några MAC-adresser.</string>
+	
+	<string name="str_achieve_3_title">Apple-fan I</string>
+	<string name="str_achieve_3_description">Hitta 25 enheter från Apple.</string>
+	
+	<string name="str_achieve_4_title">Tidsjagare I</string>
+	<string name="str_achieve_4_description">Hitta 15 enheter under 2 minuter.</string>
+	
+	<string name="str_achieve_5_title">Superior Supporter</string>
+	<string name="str_achieve_5_description">Denna bedrift är för människor som är tacksamma för det arbete jag lagt ner på detta projekt. Skaffa supporterversionen av spelet på Google Google Play för att uppnå denna bedrift. Jag är verkligen tacksam för varje köp, för jag behöver din hjälp för att hålla spelet tillgängligt, för att betala räkningarna för servern och kanske få lite inkomst. Tack så mycket! PS Titta på bonusen. ;-p</string>
+	
+	<string name="str_achieve_6_title">Apple-fan II</string>
+	<string name="str_achieve_6_description">Hitta 5 enheter från Apple i rad.</string>
+	
+	<string name="str_achieve_7_title">Gamlingar I</string>
+	<string name="str_achieve_7_description">Hitta 5 enheter från Siemens.</string>
+	
+	<string name="str_achieve_8_title">Tidsnörd I</string>
+	<string name="str_achieve_8_description">Hitta 15 enheter mellan klockan 22.00 och 22.30.</string>
+	
+	<string name="str_achieve_9_title">Tidsnörd II</string>
+	<string name="str_achieve_9_description">Stig upp tidigt och hitta 65 enheter mellan 05.00 och 07.00.</string>
+	
+	<string name="str_achieve_10_title">Tidsjagare II</string>
+	<string name="str_achieve_10_description">Jaga rejält och hitta 100 enheter inom 15 minuter.</string>
+	
+	<string name="str_achieve_11_title">Precist exakt I</string>
+	<string name="str_achieve_11_description">Du är en precis jägare och måste hitta 1 enhet exakt när klockan är på en hel timme. (T.ex. 14.00)</string>
+	
+	<string name="str_achieve_12_title">Sekvensentusiast I</string>
+	<string name="str_achieve_12_description">Hitta 1 enhet från Apple, 1 från Blackberry och 1 från Samsung i rad.</string>
+	
+	<string name="str_achieve_13_title">Erfaren spelare I</string>
+	<string name="str_achieve_13_description">Få 200 poäng inom 24 timmar.</string>
+	
+	
+	<!-- Error strings -->
+	
+	
+	<string name="str_Error_1_4_5">Could not retrieve data. Possibly no internet connection.</string>
+	<string name="str_Error_404">Could not retrieve data. Possibly server is down or script not available.</string>
+	<string name="str_Error_500">Could not retrieve data. Server error. Please contact the developer.</string>
+	
+	<string name="str_Error_serialCheck">Error %d while checking serial.</string>
+	<string name="str_Error_serialCheck_100_1_2_4">Uncomplete parameters.</string>
+	<string name="str_Error_serialCheck_100_3">Hashes don\'t match.</string>
+	<string name="str_Error_serialCheck_100_5">Failed inserting serial into DB.</string>
+	<string name="str_Error_serialCheck_100_6">Failed updating serial in DB.</string>
+	<string name="str_Error_serialCheck_100_7">More than 1 row in DB query result.</string>
+	<string name="str_Error_serialCheck_100_8_10">Failed initializing name.</string>
+	<string name="str_Error_serialCheck_100_9_11">Unexpected number of rows in DB query result.</string>
+	
+	<string name="str_Error_getUserInfo">Error %d while getting User Info.</string>
+	
+	<string name="str_Error_checkUpdate">Error %d while checking for update.</string>
+	<string name="str_Error_changePass">Error %d while changing password.</string>
+	<string name="str_Error_changePass_100_1_2_3_4_16">Uncompl ete parameters.</string>
+	<string name="str_Error_changePass_100_5">Hashes don\'t match.</string>
+	<string name="str_Error_changePass_100_6_8">Could not set new password in DB.</string>
+	<string name="str_Error_changePass_100_7">Old password must be committed.</string>
+	<string name="str_Error_changePass_100_9">Password does not match entered one.</string>
+	<string name="str_Error_changePass_100_10_13">Unexpected number of rows in DB query result.</string>
+	<string name="str_Error_changePass_100_11">Unknown login token. [Error deleting it from DB.]</string>
+	<string name="str_Error_changePass_100_12">Unknown login token. Try again.</string>
+	<string name="str_Error_changePass_100_14">Found more than 1 login token. [Error deleting them from DB.]</string>
+	<string name="str_Error_changePass_100_15">Found more than 1 login token. Try again.</string>
+	
+	<string name="str_Error_preLogin">Error %d while prelogin.</string>
+	<string name="str_Error_preLogin_100_1_2_6">Uncomplete parameters.</string>
+	<string name="str_Error_preLogin_100_3">Hashes don\'t match.</string>
+	<string name="str_Error_preLogin_100_4_5">Unexpected number of rows in DB query result.</string>
+	
+	<string name="str_Error_Login">Error %d while login.</string>
+	<string name="str_Error_Login_100_1_2_3_11">Uncomplete parameters.</string>
+	<string name="str_Error_Login_100_4">Hashes don\'t match.</string>
+	<string name="str_Error_Login_100_5_7">Failed inserting session into DB.</string>
+	<string name="str_Error_Login_100_6">Password must be committed.</string>
+	<string name="str_Error_Login_100_8">Password is wrong.</string>
+	<string name="str_Error_Login_100_9">Unexpected number of rows in DB query result.</string>
+	<string name="str_Error_Login_100_10">Request timeout.</string>
+	
+	<string name="str_Error_checkLogin">Error %d while checking login.</string>
+	<string name="str_Error_checkLogin_100_1_2">Uncomplete parameters.</string>
+	<string name="str_Error_checkLogin_100_3">Password must be committed.</string>
+	<string name="str_Error_checkLogin_100_4">Password is wrong.</string>
+	<string name="str_Error_checkLogin_100_5">Unexpected number of rows in DB query result.</string>
+	<string name="str_Error_checkLogin_100_6_7">Failed to delete rows in DB.</string>
+	
+	<string name="str_Error_checkSync">Error %d while checking synchronization of the database.</string>
+	<string name="str_Error_checkSync_100_1_2_3">Uncomplete parameters.</string>
+	<string name="str_Error_checkSync_100_4">Password must be committed.</string>
+	<string name="str_Error_checkSync_100_5">Password is wrong.</string>
+	<string name="str_Error_checkSync_100_6">Unexpected number of rows in DB query result.</string>
+	<string name="str_Error_checkSync_100_7">Inte inloggad. Wrong login token.</string>
+	<string name="str_Error_checkSync_100_8">Inte inloggad.</string>
+	<string name="str_Error_checkSync_100_9">Inte inloggad. More than one login token found.</string>
+	
+	<string name="str_Error_applySync">Fel %d medan databasen synkroniserades. </string>
+	<string name="str_Error_applySync_100_1_2_3">Ofullständiga parametrar.</string>
+	<string name="str_Error_applySync_100_4_7">Failed initiating database entry.</string>
+	<string name="str_Error_applySync_100_5_8">Uppdatering av databas misslyckades.</string>
+	<string name="str_Error_applySync_100_6"> Lösenord måste ges.</string>
+	<string name="str_Error_applySync_100_9"> Oväntat antal rader i resultat av databasförfrågan.</string>
+	<string name="str_Error_applySync_100_10"> Inte inloggad. Felaktig login token(!).</string>
+	<string name="str_Error_applySync_100_11">Inte inloggad.</string>
+	<string name="str_Error_applySync_100_12">Inte inloggad. Fler än en inloggnings token(!) funna.</string>
+	
+	<string name="str_Error_applyName">Fel %d medan namn tillämpades.</string>
+	<string name="str_Error_applyName_100_1_2_3">Ofullständiga parametrar.</string>
+	<string name="str_Error_applyName_100_4_6">Uppdatering av databaspost misslyckades. </string>
+	<string name="str_Error_applyName_100_5">Lösenord måste ges.</string>
+	<string name="str_Error_applyName_100_7">Oväntat antal rader i resultat av databasförfrågan.</string>
+	<string name="str_Error_applyName_100_8">Inte inloggad. Felaktig login token(!).</string>
+	<string name="str_Error_applyName_100_9">Inte inloggad.</string>
+	<string name="str_Error_applyName_100_10">Inte inloggad. Fler än en inloggnings token(!) funna.</string>
+	
+	
+	
+	
+	
+	</resources>
