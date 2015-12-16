@@ -157,9 +157,9 @@ public class DatabaseManager {
 
                 loadAllDevicesTask = new LoadAllDevicesThread();
                 loadAllDevicesTask.execute(true);
-            }
+            } else close();
 
-        }
+        } else close();
 
         // check ob schon läuft nicht vergessen.
 
@@ -1018,7 +1018,7 @@ public class DatabaseManager {
 
                 count++;
 
-                if (count >= 100) {
+                if (count >= 500) {
 
                     publishProgress(temporaryAsyncList);
                     count = 0;

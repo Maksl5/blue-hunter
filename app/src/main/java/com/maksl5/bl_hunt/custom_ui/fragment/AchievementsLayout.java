@@ -106,9 +106,16 @@ public class AchievementsLayout {
 
     public static void updateBoostIndicator(BlueHunter bhApp) {
 
+        if (AchievementSystem.achievementStates == null) {
+            MenuItem boostIndicator = bhApp.actionBarHandler.getMenuItem(R.id.menu_boostIndicator);
+            boostIndicator.setTitleCondensed(bhApp.getString(R.string.str_discovery_loading));
+            return;
+        }
+
         float boost = AchievementSystem.getBoost(bhApp);
 
         NumberFormat pFormat = DecimalFormat.getPercentInstance();
+
 
         MenuItem boostIndicator = bhApp.actionBarHandler.getMenuItem(R.id.menu_boostIndicator);
         boostIndicator.setTitleCondensed(bhApp.getString(R.string.str_achievement_totalBoost, pFormat.format(boost)));

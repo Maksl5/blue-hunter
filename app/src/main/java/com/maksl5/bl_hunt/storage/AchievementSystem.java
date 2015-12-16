@@ -688,6 +688,8 @@ public class AchievementSystem {
     public static List<HashMap<String, String>> getBoostList(BlueHunter bhApp) {
         List<HashMap<String, String>> boostList = new ArrayList<>();
 
+        if (achievementStates == null) return boostList;
+
         int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
         float levelBoost = getLevelBoost(bhApp);
 

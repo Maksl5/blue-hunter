@@ -1,6 +1,6 @@
 /**
- *  BlueHunter.java in com.maksl5.bl_hunt
- *  © Maksl5[Markus Bensing] 2012
+ * BlueHunter.java in com.maksl5.bl_hunt
+ * © Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt;
 
@@ -22,77 +22,78 @@ import org.acra.annotation.ReportsCrashes;
 
 /**
  * @author Maksl5[Markus Bensing]
- * 
+ *
  */
 @ReportsCrashes(formKey = "dFpyWWtjQ1E3VV9EaklYbFZETmpQLVE6MQ")
 public class BlueHunter extends Application {
 
-	public static final boolean isPlayStore = false;
-	public static final boolean isSupport = false;
-	public Authentification authentification;
-	public ActionBarHandler actionBarHandler;
-	public DiscoveryManager disMan;
-	public NetworkManager netMananger;
-	public LoginManager loginManager;
-	public SynchronizeFoundDevices synchronizeFoundDevices;
-	public MainActivity mainActivity;
-	public Activity currentActivity;
-	private boolean isTablet = false;
+    public static final boolean isPlayStore = false;
+    public static final boolean isSupport = false;
+    private static int versionCode = -1;
+    public Authentification authentification;
+    public ActionBarHandler actionBarHandler;
+    public DiscoveryManager disMan;
+    public NetworkManager netMananger;
+    public LoginManager loginManager;
+    public SynchronizeFoundDevices synchronizeFoundDevices;
+    public MainActivity mainActivity;
+    public Activity currentActivity;
+    private boolean isTablet = false;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Application#onCreate()
-	 */
-	@Override
-	public void onCreate() {
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.app.Application#onCreate()
+     */
+    @Override
+    public void onCreate() {
 
-		// TODO Auto-generated method stub
-		super.onCreate();
+        // TODO Auto-generated method stub
+        super.onCreate();
 
-		//ACRA.init(this);
+        //ACRA.init(this);
 
-		boolean xlarge = ((getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
-		boolean large = ((getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
-		isTablet = (xlarge || large);
+        boolean xlarge = ((getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
+        boolean large = ((getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
+        isTablet = (xlarge || large);
 
-		if (isPlayStore) {
-			PreferenceManager.setPref(this, "pref_checkUpdate", false);
-		}
+        if (isPlayStore) {
+            PreferenceManager.setPref(this, "pref_checkUpdate", false);
+        }
 
-		if (isSupport) {
+        if (isSupport) {
 
-		}
+        }
 
-	}
+    }
 
-	public int getVersionCode() {
+    public int getVersionCode() {
 
-		try {
-			return getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
-		}
-		catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			return 0;
-		}
-	}
+        if (versionCode != -1) return versionCode;
 
-	public String getVersionName() {
+        try {
+            return versionCode = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
+        } catch (NameNotFoundException e) {
+            // TODO Auto-generated catch block
+            return 0;
+        }
+    }
 
-		try {
-			return getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionName;
-		}
-		catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
-		}
-	}
+    public String getVersionName() {
 
-	public boolean isTablet() {
-		return isTablet;
-	}
+        try {
+            return getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionName;
+        } catch (NameNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public boolean isTablet() {
+        return isTablet;
+    }
 
 }

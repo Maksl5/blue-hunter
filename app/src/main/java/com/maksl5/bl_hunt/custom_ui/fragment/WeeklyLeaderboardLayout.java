@@ -625,6 +625,7 @@ public class WeeklyLeaderboardLayout {
 
             } catch (NullPointerException e) {
                 if (bhApp != null && threadManager != null) {
+                    e.printStackTrace();
                     new RefreshThread(bhApp, threadManager).execute(startIndex, length, (isUserInLD) ? 1 : 0);
                 }
 
