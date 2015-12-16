@@ -24,102 +24,96 @@ import java.util.List;
  */
 public class AchievementsLayout {
 
-	public static void initializeAchievements(BlueHunter bhApp) {
+    public static void initializeAchievements(BlueHunter bhApp) {
 
-		ListView lv = (ListView) bhApp.mainActivity.findViewById(R.id.listView_ach);
+        ListView lv = (ListView) bhApp.mainActivity.findViewById(R.id.listView_ach);
 
-		int[] to = new int[] {
-				R.id.txtName, R.id.txtDescription, R.id.txtBoost, R.id.chkBox, R.id.txtProgress };
-		String[] from = new String[] {
-				"name", "description", "boost", "accomplished", "progress" };
+        int[] to = new int[]{
+                R.id.txtName, R.id.txtDescription, R.id.txtBoost, R.id.chkBox, R.id.txtProgress};
+        String[] from = new String[]{
+                "name", "description", "boost", "accomplished", "progress"};
 
-		ViewBinder viewBinder = new ViewBinder() {
+        ViewBinder viewBinder = new ViewBinder() {
 
-			@Override
-			public boolean setViewValue(View view, Object data, String textRepresentation) {
+            @Override
+            public boolean setViewValue(View view, Object data, String textRepresentation) {
 
-				if (view instanceof CheckBox) {
+                if (view instanceof CheckBox) {
 
-					if (data.equals("true")) {
-						((CheckBox) view).setChecked(true);
-					} else if (data.equals("false")) {
-						((CheckBox) view).setChecked(false);
-					}
+                    if (data.equals("true")) {
+                        ((CheckBox) view).setChecked(true);
+                    } else if (data.equals("false")) {
+                        ((CheckBox) view).setChecked(false);
+                    }
 
-					return true;
+                    return true;
 
-				}
+                }
 
-				if (view instanceof TextView && view.getId() == R.id.txtProgress) {
-					TextView txtProgress = (TextView) view;
-					String progressString = (String) data;
+                if (view instanceof TextView && view.getId() == R.id.txtProgress) {
+                    TextView txtProgress = (TextView) view;
+                    String progressString = (String) data;
 
-					if (progressString.equals("none")) {
-						txtProgress.setVisibility(TextView.GONE);
-						return true;
-					}
-					else {
-						txtProgress.setText(progressString);
-						return true;
-					}
+                    if (progressString.equals("none")) {
+                        txtProgress.setVisibility(TextView.GONE);
+                        return true;
+                    } else {
+                        txtProgress.setText(progressString);
+                        return true;
+                    }
 
-				}
+                }
 
-				return false;
-			}
-		};
+                return false;
+            }
+        };
 
-		List<HashMap<String, String>> rows = new ArrayList<HashMap<String, String>>();
+        List<HashMap<String, String>> rows = new ArrayList<HashMap<String, String>>();
 
-		for (Achievement achievement : AchievementSystem.achievements) {
+        for (Achievement achievement : AchievementSystem.achievements) {
 
-			HashMap<String, String> dataHashMap = new HashMap<String, String>();
+            HashMap<String, String> dataHashMap = new HashMap<String, String>();
 
-			dataHashMap.put("name", achievement.getName(bhApp));
-			dataHashMap.put("description", achievement.getDescription(bhApp));
-			dataHashMap.put("boost", String.format("Boost: + %s", NumberFormat.getPercentInstance().format(achievement.getBoost())));
+            dataHashMap.put("name", achievement.getName(bhApp));
+            dataHashMap.put("description", achievement.getDescription(bhApp));
+            dataHashMap.put("boost", String.format("Boost: + %s", NumberFormat.getPercentInstance().format(achievement.getBoost())));
 
-			boolean accomplished = false;
+            boolean accomplished = AchievementSystem.achievementStates.get(achievement.getId(), false);
 
-			if (AchievementSystem.achievementStates.containsKey(achievement.getId())) {
-				accomplished = AchievementSystem.achievementStates.get(achievement.getId());
-			}
 
-			dataHashMap.put("accomplished", String.valueOf(accomplished));
+            dataHashMap.put("accomplished", String.valueOf(accomplished));
 
-			if (achievement.hasProgress() && !accomplished) {
-				dataHashMap.put("progress", achievement.getProgressString());
-			}
-			else {
-				dataHashMap.put("progress", "none");
-			}
+            if (achievement.hasProgress() && !accomplished) {
+                dataHashMap.put("progress", achievement.getProgressString());
+            } else {
+                dataHashMap.put("progress", "none");
+            }
 
-			if (!achievement.isHidden()) {
-				rows.add(dataHashMap);
-			}
-			else {
-				if (accomplished) {
-					rows.add(dataHashMap);
-				}
-			}
-		}
+            if (!achievement.isHidden()) {
+                rows.add(dataHashMap);
+            } else {
+                if (accomplished) {
+                    rows.add(dataHashMap);
+                }
+            }
+        }
 
-		SimpleAdapter simpleAdapter = new SimpleAdapter(bhApp.mainActivity, rows, R.layout.act_page_achievements_row, from, to);
-		simpleAdapter.setViewBinder(viewBinder);
-		lv.setAdapter(simpleAdapter);
+        SimpleAdapter simpleAdapter = new SimpleAdapter(bhApp.mainActivity, rows, R.layout.act_page_achievements_row, from, to);
+        simpleAdapter.setViewBinder(viewBinder);
+        lv.setAdapter(simpleAdapter);
 
-	}
+    }
 
-	public static void updateBoostIndicator(BlueHunter bhApp) {
+    public static void updateBoostIndicator(BlueHunter bhApp) {
 
-		float boost = AchievementSystem.getBoost(bhApp);
+        float boost = AchievementSystem.getBoost(bhApp);
 
-		NumberFormat pFormat = DecimalFormat.getPercentInstance();
+        NumberFormat pFormat = DecimalFormat.getPercentInstance();
 
-		MenuItem boostIndicator = bhApp.actionBarHandler.getMenuItem(R.id.menu_boostIndicator);
-		boostIndicator.setTitleCondensed(bhApp.getString(R.string.str_achievement_totalBoost, pFormat.format(boost)));
+        MenuItem boostIndicator = bhApp.actionBarHandler.getMenuItem(R.id.menu_boostIndicator);
+        boostIndicator.setTitleCondensed(bhApp.getString(R.string.str_achievement_totalBoost, pFormat.format(boost)));
 
-	}
+    }
 
 
 }

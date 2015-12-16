@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 <!--
     
 		Czech translation for Blue Hunter 
@@ -23,9 +23,9 @@
     <string name="str_discoveryState_running">Hledání běží.</string>
     <string name="str_discoveryState_stopped">Hledání zastaveno.</string>
     <string name="str_discoveryState_btOff">Bluetooth vypnut.</string>
-    <string name="str_discoveryState_finished">Hledání skončilo. Reaktivace...</string>
-    <string name="str_discoveryState_btEnabling">Bluetooth je zapínán...</string>
-    <string name="str_discoveryState_btDisabling">Bluetooth je vypínán...</string>
+    <string name="str_discoveryState_finished">Hledání skončilo. Reaktivace&#8230;</string>
+    <string name="str_discoveryState_btEnabling">Bluetooth je zapínán&#8230;</string>
+    <string name="str_discoveryState_btDisabling">Bluetooth je vypínán&#8230;</string>
     <string name="str_discoveryState_error">Chyba při hledání.</string>
     <string name="str_discoveryState_off">Hledání je vypnuto.</string>
     <string name="str_enableBT_title">Povolit Bluetooth ?</string>
@@ -68,9 +68,9 @@
     <string name="str_changePass_cancelButton">Zrušit</string>
     <string name="str_changePass_applyButton">Použít</string>
     <string name="str_changePass_sureButton">Oravdu provést?</string>
-    <string name="str_changePass_oldPass">Zadejte staré heslo...</string>
-    <string name="str_changePass_newPass">Zadejte nové heslo...</string>
-    <string name="str_changePass_confirmNewPass">Potvrďte nové heslo...</string>
+    <string name="str_changePass_oldPass">Zadejte staré heslo&#8230;</string>
+    <string name="str_changePass_newPass">Zadejte nové heslo&#8230;</string>
+    <string name="str_changePass_confirmNewPass">Potvrďte nové heslo&#8230;</string>
     <string name="str_loginPass_title">Nastavte přihlašovací heslo</string>
     <string name="str_auth_newUpdateAvailable" formatted="false">Nová noční verze k dispozici. %n V současné době nainstalované sestavení: %d. %n Dostupné sestavení: %d.</string>
     <string name="str_auth_updated" formatted="false">Aktualizováno na novou verzi %s.%n</string>

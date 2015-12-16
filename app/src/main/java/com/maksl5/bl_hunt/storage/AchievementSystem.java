@@ -1,11 +1,12 @@
 /**
- *  AchievementSystem.java in com.maksl5.bl_hunt.storage
- *  © Maksl5[Markus Bensing] 2013
+ * AchievementSystem.java in com.maksl5.bl_hunt.storage
+ * © Maksl5[Markus Bensing] 2013
  */
 package com.maksl5.bl_hunt.storage;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
@@ -26,928 +27,907 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Maksl5[Markus Bensing]
- * 
  */
 public class AchievementSystem {
 
-	public static HashMap<Integer, Boolean> achievementStates;
-	public static HashMap<Integer, Boolean> temporaryStates;
-	static int checksInRow = 0;
-	private static float boost = 0.0f;
-	private static AchievementsCheckerThread checkerThread;
-	private static List<FoundDevice> allDevices;
-	public static List<Achievement> achievements = Arrays.asList(new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
+    public static SparseBooleanArray achievementStates;
+    public static SparseBooleanArray temporaryStates;
+    static int checksInRow = 0;
+    private static float boost = 0.0f;
+    private static AchievementsCheckerThread checkerThread;
+    private static List<FoundDevice> allDevices;
+    public static List<Achievement> achievements = Arrays.asList(new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					return BlueHunter.isSupport;
+                    return BlueHunter.isSupport;
 
-				}
+                }
 
-			}.setBoost(1.0f),
+            }.setBoost(1.0f),
 
-			new Achievement(20, true, R.string.str_achieve_20_title, R.string.str_achieve_20_description) {
+            new Achievement(20, true, R.string.str_achieve_20_title, R.string.str_achieve_20_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					List<String> serialsToCheck = new ArrayList<String>();
+                    List<String> serialsToCheck = new ArrayList<String>();
 
-					serialsToCheck.add("0601a9e100511674");
-					serialsToCheck.add("ZX1G4283RM");
-					serialsToCheck.add("58f56953");
-					serialsToCheck.add("BH905X7Z06");
-					serialsToCheck.add("010c6e8b");
+                    serialsToCheck.add("0601a9e100511674");
+                    serialsToCheck.add("ZX1G4283RM");
+                    serialsToCheck.add("58f56953");
+                    serialsToCheck.add("BH905X7Z06");
+                    serialsToCheck.add("010c6e8b");
 
-					String deviceSerial = Authentification.getSerialNumber();
+                    String deviceSerial = Authentification.getSerialNumber();
 
-					return serialsToCheck.contains(deviceSerial);
+                    return serialsToCheck.contains(deviceSerial);
 
-				}
+                }
 
-			}.setBoost(0.5f),
+            }.setBoost(0.5f),
 
-			new Achievement(1, R.string.str_achieve_1_title, R.string.str_achieve_1_description, true) {
+            new Achievement(1, R.string.str_achieve_1_title, R.string.str_achieve_1_description, true) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					setNewProgressString("" + exp + " / 100");
+                    setNewProgressString("" + exp + " / 100");
 
-					return exp >= 100;
+                    return exp >= 100;
 
-				}
+                }
 
-			}.setBoost(0.01f),
+            }.setBoost(0.01f),
 
-			new Achievement(2, R.string.str_achieve_2_title, R.string.str_achieve_2_description, true) {
+            new Achievement(2, R.string.str_achieve_2_title, R.string.str_achieve_2_description, true) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					setNewProgressString("" + deviceNum + " / 200");
+                    setNewProgressString("" + deviceNum + " / 200");
 
-					return deviceNum >= 200;
+                    return deviceNum >= 200;
 
-				}
+                }
 
-			}.setBoost(0.02f),
+            }.setBoost(0.02f),
 
-			new Achievement(15, R.string.str_achieve_15_title, R.string.str_achieve_15_description, true) {
+            new Achievement(15, R.string.str_achieve_15_title, R.string.str_achieve_15_description, true) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					setNewProgressString(bhApp.getString(R.string.str_discovery_devices) + " " + deviceNum + " / 300\n"
-							+ bhApp.getString(R.string.str_foundDevices_exp_abbreviation) + ": " + exp + " / 8000");
+                    setNewProgressString(bhApp.getString(R.string.str_discovery_devices) + " " + deviceNum + " / 300\n"
+                            + bhApp.getString(R.string.str_foundDevices_exp_abbreviation) + ": " + exp + " / 8000");
 
-					if (deviceNum >= 300)
-						return exp >= 8000;
-					else
-						return false;
+                    if (deviceNum >= 300)
+                        return exp >= 8000;
+                    else
+                        return false;
 
-				}
+                }
 
-			}.setBoost(0.04f),
+            }.setBoost(0.04f),
 
-			new Achievement(3, R.string.str_achieve_3_title, R.string.str_achieve_3_description, true) {
+            new Achievement(3, R.string.str_achieve_3_title, R.string.str_achieve_3_description, true) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '1'"); // Apple
+                    int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '1'"); // Apple
 
-					setNewProgressString("" + devices + " / 25");
+                    setNewProgressString("" + devices + " / 25");
 
-					return devices >= 25;
+                    return devices >= 25;
 
-				}
+                }
 
-			}.setBoost(0.02f),
+            }.setBoost(0.02f),
 
-			new Achievement(6, R.string.str_achieve_6_title, R.string.str_achieve_6_description, true) {
+            new Achievement(6, R.string.str_achieve_6_title, R.string.str_achieve_6_description, true) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					int max = 0;
+                    int max = 0;
 
-					// 5 Apple in row
+                    // 5 Apple in row
 
-					for (int i = 4; i < allDevices.size(); i++) {
+                    for (int i = 4; i < allDevices.size(); i++) {
 
-						if (allDevices.get(i - 4).getManufacturer() == 1) {
-							max = (max < 1) ? 1 : max;
-							if (allDevices.get(i - 3).getManufacturer() == 1) {
-								max = (max < 2) ? 2 : max;
-								if (allDevices.get(i - 2).getManufacturer() == 1) {
-									max = (max < 3) ? 3 : max;
-									if (allDevices.get(i - 1).getManufacturer() == 1) {
-										max = (max < 4) ? 4 : max;
-										if (allDevices.get(i).getManufacturer() == 1) {
-											max = (max < 5) ? 5 : max;
-											return true;
-										}
-										else {
-											i = i + 4;
-										}
-									}
-									else {
-										i = i + 3;
-									}
-								}
-								else {
-									i = i + 2;
-								}
-							}
-							else {
-								i = i + 1;
-							}
-						}
+                        if (allDevices.get(i - 4).getManufacturer() == 1) {
+                            max = (max < 1) ? 1 : max;
+                            if (allDevices.get(i - 3).getManufacturer() == 1) {
+                                max = (max < 2) ? 2 : max;
+                                if (allDevices.get(i - 2).getManufacturer() == 1) {
+                                    max = (max < 3) ? 3 : max;
+                                    if (allDevices.get(i - 1).getManufacturer() == 1) {
+                                        max = (max < 4) ? 4 : max;
+                                        if (allDevices.get(i).getManufacturer() == 1) {
+                                            max = (max < 5) ? 5 : max;
+                                            return true;
+                                        } else {
+                                            i = i + 4;
+                                        }
+                                    } else {
+                                        i = i + 3;
+                                    }
+                                } else {
+                                    i = i + 2;
+                                }
+                            } else {
+                                i = i + 1;
+                            }
+                        }
 
-					}
+                    }
 
-					setNewProgressString("" + max + " / 5");
+                    setNewProgressString("" + max + " / 5");
 
-					return false;
+                    return false;
 
-				}
+                }
 
-			}.setBoost(0.03f),
+            }.setBoost(0.03f),
 
-			new Achievement(4, R.string.str_achieve_4_title, R.string.str_achieve_4_description) {
+            new Achievement(4, R.string.str_achieve_4_title, R.string.str_achieve_4_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// 15D in 2min
+                    // 15D in 2min
 
-					for (int i = 14; i < allDevices.size(); i++) {
+                    for (int i = 14; i < allDevices.size(); i++) {
 
-						long firstTime = allDevices.get(i - 14).getTime();
-						long secondTime = allDevices.get(i).getTime();
+                        long firstTime = allDevices.get(i - 14).getTime();
+                        long secondTime = allDevices.get(i).getTime();
 
-						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 120000) {
+                        if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 120000) {
 
-							return true;
-						}
-					}
+                            return true;
+                        }
+                    }
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.05f),
+            }.setBoost(0.05f),
 
-			new Achievement(10, R.string.str_achieve_10_title, R.string.str_achieve_10_description) {
+            new Achievement(10, R.string.str_achieve_10_title, R.string.str_achieve_10_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// 100D in 15min
+                    // 100D in 15min
 
-					for (int i = 99; i < allDevices.size(); i++) {
+                    for (int i = 99; i < allDevices.size(); i++) {
 
-						long firstTime = allDevices.get(i - 99).getTime();
-						long secondTime = allDevices.get(i).getTime();
+                        long firstTime = allDevices.get(i - 99).getTime();
+                        long secondTime = allDevices.get(i).getTime();
 
-						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 900000) {
+                        if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 900000) {
 
-							return true;
-						}
-					}
+                            return true;
+                        }
+                    }
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.06f),
+            }.setBoost(0.06f),
 
-			new Achievement(16, R.string.str_achieve_16_title, R.string.str_achieve_16_description) {
+            new Achievement(16, R.string.str_achieve_16_title, R.string.str_achieve_16_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// 20D in 15sec
+                    // 20D in 15sec
 
-					for (int i = 19; i < allDevices.size(); i++) {
+                    for (int i = 19; i < allDevices.size(); i++) {
 
-						long firstTime = allDevices.get(i - 19).getTime();
-						long secondTime = allDevices.get(i).getTime();
+                        long firstTime = allDevices.get(i - 19).getTime();
+                        long secondTime = allDevices.get(i).getTime();
 
-						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 15000) {
+                        if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 15000) {
 
-							return true;
-						}
-					}
+                            return true;
+                        }
+                    }
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.12f),
+            }.setBoost(0.12f),
 
-			new Achievement(7, R.string.str_achieve_7_title, R.string.str_achieve_7_description, true) {
+            new Achievement(7, R.string.str_achieve_7_title, R.string.str_achieve_7_description, true) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '21'"); // Siemens
+                    int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '21'"); // Siemens
 
-					setNewProgressString("" + devices + " / 5");
+                    setNewProgressString("" + devices + " / 5");
 
-					return devices >= 5;
-				}
+                    return devices >= 5;
+                }
 
-			}.setBoost(0.04f),
+            }.setBoost(0.04f),
 
-			new Achievement(17, R.string.str_achieve_17_title, R.string.str_achieve_17_description, true) {
+            new Achievement(17, R.string.str_achieve_17_title, R.string.str_achieve_17_description, true) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '9'"); // Sony
-																															// Ericsson
+                    int devices = new DatabaseManager(bhApp).getDeviceNum(DatabaseHelper.COLUMN_MANUFACTURER + " = '9'"); // Sony
+                    // Ericsson
 
-					setNewProgressString("" + devices + " / 50");
+                    setNewProgressString("" + devices + " / 50");
 
-					return devices >= 50;
-				}
+                    return devices >= 50;
+                }
 
-			}.setBoost(0.08f),
+            }.setBoost(0.08f),
 
-			new Achievement(8, R.string.str_achieve_8_title, R.string.str_achieve_8_description) {
+            new Achievement(8, R.string.str_achieve_8_title, R.string.str_achieve_8_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// 15D between 10:00 - 10:30pm
+                    // 15D between 10:00 - 10:30pm
 
-					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
-							.equals(bhApp.authentification.getAchieveHash(getId()));
+                    boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+                            .equals(bhApp.authentification.getAchieveHash(getId()));
 
-					if (alreadyAccomplished) return true;
+                    if (alreadyAccomplished) return true;
 
-					for (int i = 14; i < allDevices.size(); i++) {
+                    for (int i = 14; i < allDevices.size(); i++) {
 
-						long firstTime = allDevices.get(i - 14).getTime();
-						long secondTime = allDevices.get(i).getTime();
+                        long firstTime = allDevices.get(i - 14).getTime();
+                        long secondTime = allDevices.get(i).getTime();
 
-						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 1800000) {
+                        if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 1800000) {
 
-							DateTime recentDate = new DateTime(firstTime);
-							DateTime firstDate = new DateTime(secondTime);
+                            DateTime recentDate = new DateTime(firstTime);
+                            DateTime firstDate = new DateTime(secondTime);
 
-							int recHour = recentDate.getHourOfDay();
-							int firstHour = firstDate.getHourOfDay();
-							int recMinute = recentDate.getMinuteOfHour();
-							int firstMinute = firstDate.getMinuteOfHour();
+                            int recHour = recentDate.getHourOfDay();
+                            int firstHour = firstDate.getHourOfDay();
+                            int recMinute = recentDate.getMinuteOfHour();
+                            int firstMinute = firstDate.getMinuteOfHour();
 
-							if (recHour == 22 && firstHour == 22) {
-								if (recMinute >= 0 && recMinute < 30) {
-									if (firstMinute >= 0 && firstMinute < 30) {
-										return true;
-									}
-								}
-							}
+                            if (recHour == 22 && firstHour == 22) {
+                                if (recMinute >= 0 && recMinute < 30) {
+                                    if (firstMinute >= 0 && firstMinute < 30) {
+                                        return true;
+                                    }
+                                }
+                            }
 
-						}
-					}
+                        }
+                    }
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.02f),
+            }.setBoost(0.02f),
 
-			new Achievement(9, R.string.str_achieve_9_title, R.string.str_achieve_9_description) {
+            new Achievement(9, R.string.str_achieve_9_title, R.string.str_achieve_9_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// 65D between 5:00 - 7:00am
+                    // 65D between 5:00 - 7:00am
 
-					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
-							.equals(bhApp.authentification.getAchieveHash(getId()));
+                    boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+                            .equals(bhApp.authentification.getAchieveHash(getId()));
 
-					if (alreadyAccomplished) return true;
+                    if (alreadyAccomplished) return true;
 
-					for (int i = 64; i < allDevices.size(); i++) {
+                    for (int i = 64; i < allDevices.size(); i++) {
 
-						long firstTime = allDevices.get(i - 64).getTime();
-						long secondTime = allDevices.get(i).getTime();
+                        long firstTime = allDevices.get(i - 64).getTime();
+                        long secondTime = allDevices.get(i).getTime();
 
-						if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 7200000) {
+                        if (firstTime != 0 && secondTime != 0 && (firstTime - secondTime) <= 7200000) {
 
-							DateTime recentDate = new DateTime(firstTime);
-							DateTime firstDate = new DateTime(secondTime);
+                            DateTime recentDate = new DateTime(firstTime);
+                            DateTime firstDate = new DateTime(secondTime);
 
-							int firstHour = firstDate.getHourOfDay();
-							int recHour = recentDate.getHourOfDay();
+                            int firstHour = firstDate.getHourOfDay();
+                            int recHour = recentDate.getHourOfDay();
 
-							if (firstHour >= 5 && firstHour < 7) {
-								if (recHour >= 5 && recHour < 7) {
+                            if (firstHour >= 5 && firstHour < 7) {
+                                if (recHour >= 5 && recHour < 7) {
 
-									return true;
+                                    return true;
 
-								}
-							}
+                                }
+                            }
 
-						}
-					}
+                        }
+                    }
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.08f),
+            }.setBoost(0.08f),
 
-			new Achievement(11, R.string.str_achieve_11_title, R.string.str_achieve_11_description) {
+            new Achievement(11, R.string.str_achieve_11_title, R.string.str_achieve_11_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// 1D to full hour
+                    // 1D to full hour
 
-					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
-							.equals(bhApp.authentification.getAchieveHash(getId()));
+                    boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+                            .equals(bhApp.authentification.getAchieveHash(getId()));
 
-					if (alreadyAccomplished) return true;
+                    if (alreadyAccomplished) return true;
 
-					for (int i = 0; i < allDevices.size(); i++) {
+                    for (int i = 0; i < allDevices.size(); i++) {
 
-						long time = allDevices.get(i).getTime();
+                        long time = allDevices.get(i).getTime();
 
-						DateTime date = new DateTime(time);
+                        DateTime date = new DateTime(time);
 
-						if (time != 0 && date.getMinuteOfHour() == 0) {
+                        if (time != 0 && date.getMinuteOfHour() == 0) {
 
-							return true;
+                            return true;
 
-						}
+                        }
 
-					}
+                    }
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.08f),
+            }.setBoost(0.08f),
 
-			new Achievement(14, R.string.str_achieve_14_title, R.string.str_achieve_14_description) {
+            new Achievement(14, R.string.str_achieve_14_title, R.string.str_achieve_14_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// 1D 11th Nov 11:11am
+                    // 1D 11th Nov 11:11am
 
-					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
-							.equals(bhApp.authentification.getAchieveHash(getId()));
+                    boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+                            .equals(bhApp.authentification.getAchieveHash(getId()));
 
-					if (alreadyAccomplished) return true;
+                    if (alreadyAccomplished) return true;
 
-					for (int i = 0; i < allDevices.size(); i++) {
+                    for (int i = 0; i < allDevices.size(); i++) {
 
-						long time = allDevices.get(i).getTime();
+                        long time = allDevices.get(i).getTime();
 
-						DateTime date = new DateTime(time);
+                        DateTime date = new DateTime(time);
 
-						if (time != 0 && date.getDayOfMonth() == 11 && date.getMonthOfYear() == 11 && date.getHourOfDay() == 11
-								&& date.getMinuteOfHour() == 11) {
+                        if (time != 0 && date.getDayOfMonth() == 11 && date.getMonthOfYear() == 11 && date.getHourOfDay() == 11
+                                && date.getMinuteOfHour() == 11) {
 
-							return true;
+                            return true;
 
-						}
+                        }
 
-					}
+                    }
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.40f),
+            }.setBoost(0.40f),
 
-			new Achievement(12, R.string.str_achieve_12_title, R.string.str_achieve_12_description) {
+            new Achievement(12, R.string.str_achieve_12_title, R.string.str_achieve_12_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// In row: 1 Apple -> 1 BlackBerry -> 1 Samsung
+                    // In row: 1 Apple -> 1 BlackBerry -> 1 Samsung
 
-					for (int i = 2; i < allDevices.size(); i++) {
+                    for (int i = 2; i < allDevices.size(); i++) {
 
-						if (allDevices.get(i - 2).getManufacturer() == 3) {
-							if (allDevices.get(i - 1).getManufacturer() == 10) {
-								if (allDevices.get(i).getManufacturer() == 1) {
-									return true;
-								}
+                        if (allDevices.get(i - 2).getManufacturer() == 3) {
+                            if (allDevices.get(i - 1).getManufacturer() == 10) {
+                                if (allDevices.get(i).getManufacturer() == 1) {
+                                    return true;
+                                }
 
-							}
+                            }
 
-						}
+                        }
 
-					}
+                    }
 
-					return false;
+                    return false;
 
-				}
+                }
 
-			}.setBoost(0.15f),
+            }.setBoost(0.15f),
 
-			new Achievement(18, R.string.str_achieve_18_title, R.string.str_achieve_18_description) {
+            new Achievement(18, R.string.str_achieve_18_title, R.string.str_achieve_18_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// In row: Acer -> Bury -> Cisco -> D-Link
+                    // In row: Acer -> Bury -> Cisco -> D-Link
 
-					for (int i = 3; i < allDevices.size(); i++) {
+                    for (int i = 3; i < allDevices.size(); i++) {
 
-						if (allDevices.get(i - 3).getManufacturer() == 51) {
-							if (allDevices.get(i - 2).getManufacturer() == 30) {
-								if (allDevices.get(i - 1).getManufacturer() == 50) {
-									if (allDevices.get(i).getManufacturer() == 11) {
-										return true;
-									}
-								}
+                        if (allDevices.get(i - 3).getManufacturer() == 51) {
+                            if (allDevices.get(i - 2).getManufacturer() == 30) {
+                                if (allDevices.get(i - 1).getManufacturer() == 50) {
+                                    if (allDevices.get(i).getManufacturer() == 11) {
+                                        return true;
+                                    }
+                                }
 
-							}
+                            }
 
-						}
+                        }
 
-					}
+                    }
 
-					return false;
+                    return false;
 
-				}
+                }
 
-			}.setBoost(0.25f),
+            }.setBoost(0.25f),
 
-			new Achievement(13, R.string.str_achieve_13_title, R.string.str_achieve_13_description, true) {
+            new Achievement(13, R.string.str_achieve_13_title, R.string.str_achieve_13_description, true) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					long first = System.nanoTime();
+                    long first = System.nanoTime();
 
-					long end;
-					int max = 0;
+                    long end;
+                    int max = 0;
 
-					int deviceListSize = allDevices.size();
+                    int deviceListSize = allDevices.size();
 
-					long recentTime;
-					int exp24;
-					long earlyTime;
-					float bonus;
+                    long recentTime;
+                    int exp24;
+                    long earlyTime;
+                    float bonus;
 
-					for (int i = 0; i < deviceListSize; i++) {
+                    for (int i = 0; i < deviceListSize; i++) {
 
-						recentTime = allDevices.get(i).getTime();
+                        recentTime = allDevices.get(i).getTime();
 
-						exp24 = 0;
+                        exp24 = 0;
 
-						for (int j = i + 1; j < deviceListSize; j++) {
+                        for (int j = i + 1; j < deviceListSize; j++) {
 
-							earlyTime = allDevices.get(j).getTime();
+                            earlyTime = allDevices.get(j).getTime();
 
-							if (recentTime != 0 && earlyTime != 0 && (recentTime - earlyTime) < 86400000) {
+                            if (recentTime != 0 && earlyTime != 0 && (recentTime - earlyTime) < 86400000) {
 
-								bonus = allDevices.get(j).getBoost();
+                                bonus = allDevices.get(j).getBoost();
 
-								if (bonus == -1f) bonus = 0.0f;
+                                if (bonus == -1f) bonus = 0.0f;
 
-								exp24 += ManufacturerList.getExp(allDevices.get(j).getManufacturer()) * (1 + bonus);
-							}
-							else {
-								break;
-							}
+                                exp24 += ManufacturerList.getExp(allDevices.get(j).getManufacturer()) * (1 + bonus);
+                            } else {
+                                break;
+                            }
 
-						}
+                        }
 
-						max = (exp24 > max) ? exp24 : max;
+                        max = (exp24 > max) ? exp24 : max;
 
-						if (exp24 >= 200) {
+                        if (exp24 >= 200) {
 
-							end = System.nanoTime();
-							float msPerDev = (end - first) / (float) i;
-							Log.d("Exp Achievement Time:", "" + msPerDev / (float) 1000 + "�s/device");
-							Log.d("Exp Achievement Time:", "Total time: " + ((end - first) / (float) 1000000) + "ms | Total dev: " + i);
+                            end = System.nanoTime();
+                            float msPerDev = (end - first) / (float) i;
+                            Log.d("Exp Achievement Time:", "" + msPerDev / (float) 1000 + "�s/device");
+                            Log.d("Exp Achievement Time:", "Total time: " + ((end - first) / (float) 1000000) + "ms | Total dev: " + i);
 
-							return true;
-						}
-					}
+                            return true;
+                        }
+                    }
 
-					setNewProgressString("" + max + " / 200");
+                    setNewProgressString("" + max + " / 200");
 
-					end = System.nanoTime();
-					float msPerDev = (end - first) / (float) allDevices.size();
-					Log.d("Exp Achievement Time:", "" + msPerDev / (float) 1000 + "�s/device");
-					Log.d("Exp Achievement Time:",
-							"Total time: " + ((end - first) / (float) 1000000) + "ms | Total dev: " + allDevices.size());
+                    end = System.nanoTime();
+                    float msPerDev = (end - first) / (float) allDevices.size();
+                    Log.d("Exp Achievement Time:", "" + msPerDev / (float) 1000 + "�s/device");
+                    Log.d("Exp Achievement Time:",
+                            "Total time: " + ((end - first) / (float) 1000000) + "ms | Total dev: " + allDevices.size());
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.03f),
+            }.setBoost(0.03f),
 
-			new Achievement(21, R.string.str_achieve_21_title, R.string.str_achieve_21_description) {
+            new Achievement(21, R.string.str_achieve_21_title, R.string.str_achieve_21_description) {
 
-				@Override
-				public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
+                @Override
+                public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-					// Palindrome
+                    // Palindrome
 
-					boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
-							.equals(bhApp.authentification.getAchieveHash(getId()));
+                    boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
+                            .equals(bhApp.authentification.getAchieveHash(getId()));
 
-					// if (alreadyAccomplished) return true;
+                    // if (alreadyAccomplished) return true;
 
-					long startTime = System.currentTimeMillis();
+                    long startTime = System.currentTimeMillis();
 
-					int i = 0;
+                    int i = 0;
 
-					for (i = 0; i < allDevices.size(); i++) {
+                    for (i = 0; i < allDevices.size(); i++) {
 
-						long time = allDevices.get(i).getTime();
+                        long time = allDevices.get(i).getTime();
 
-						DateTime date = new DateTime(time);
+                        DateTime date = new DateTime(time);
 
-						int hour = date.getHourOfDay();
-						int minute = date.getMinuteOfHour();
+                        int hour = date.getHourOfDay();
+                        int minute = date.getMinuteOfHour();
 
-						int rotatedHour = 0;
+                        int rotatedHour = 0;
 
-						// rotating hour
-						if (hour < 10) {
-							rotatedHour = hour * 10;
-						}
-						else {
+                        // rotating hour
+                        if (hour < 10) {
+                            rotatedHour = hour * 10;
+                        } else {
 
-							int digit1 = (int) (hour / (float) 10);
-							int digit2 = hour - digit1 * 10;
+                            int digit1 = (int) (hour / (float) 10);
+                            int digit2 = hour - digit1 * 10;
 
-							rotatedHour = digit1 + digit2 * 10;
-						}
+                            rotatedHour = digit1 + digit2 * 10;
+                        }
 
-						if (rotatedHour == minute) {
-							long endTime = System.currentTimeMillis();
-							Log.d("Achievement 21 time",
-									(endTime - startTime) + "ms | " + ((endTime - startTime) / (float) (i + 1)) + "ms/device");
-							return true;
-						}
+                        if (rotatedHour == minute) {
+                            long endTime = System.currentTimeMillis();
+                            Log.d("Achievement 21 time",
+                                    (endTime - startTime) + "ms | " + ((endTime - startTime) / (float) (i + 1)) + "ms/device");
+                            return true;
+                        }
 
-					}
+                    }
 
-					long endTime = System.currentTimeMillis();
+                    long endTime = System.currentTimeMillis();
 
-					Log.d("Achievement 21 time", (endTime - startTime) + "ms | " + ((endTime - startTime) / (float) (i + 1)) + "ms/device");
+                    Log.d("Achievement 21 time", (endTime - startTime) + "ms | " + ((endTime - startTime) / (float) (i + 1)) + "ms/device");
 
-					return false;
-				}
+                    return false;
+                }
 
-			}.setBoost(0.20f));
+            }.setBoost(0.20f));
 
-	public static void checkAchievements(BlueHunter bhApp, boolean completeCheck) {
+    public static void checkAchievements(BlueHunter bhApp, boolean completeCheck) {
 
-		if (checkerThread == null || !checkerThread.running) {
-			checkerThread = new AchievementSystem().new AchievementsCheckerThread(bhApp);
-			checkerThread.execute(completeCheck);
-		}
+        if (checkerThread == null || !checkerThread.running) {
+            checkerThread = new AchievementSystem().new AchievementsCheckerThread(bhApp);
+            checkerThread.execute(completeCheck);
+        }
 
-	}
+    }
 
-	public static void checkSpecificAchievements(BlueHunter bhApp, boolean completeCheck, Integer... id) {
+    public static void checkSpecificAchievements(BlueHunter bhApp, boolean completeCheck, Integer... id) {
 
-		List<Integer> ids = Arrays.asList(id);
+        List<Integer> ids = Arrays.asList(id);
 
-		int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
-		int exp = LevelSystem.getCachedUserExp(bhApp);
+        int deviceNum = new DatabaseManager(bhApp).getDeviceNum();
+        int exp = LevelSystem.getCachedUserExp(bhApp);
 
-		allDevices = DatabaseManager.getCachedList();
+        allDevices = DatabaseManager.getCachedList();
 
-		if (allDevices == null) {
+        if (allDevices == null) {
 
-			new DatabaseManager(bhApp).loadAllDevices(true);
-			return;
+            new DatabaseManager(bhApp).loadAllDevices(true);
+            return;
 
-		}
+        }
 
-		for (Achievement achievement : achievements) {
-			if (!ids.contains(achievement.getId())) {
+        for (Achievement achievement : achievements) {
+            if (!ids.contains(achievement.getId())) {
 
-				boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "")
-						.equals(bhApp.authentification.getAchieveHash(achievement.getId()));
+                boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "")
+                        .equals(bhApp.authentification.getAchieveHash(achievement.getId()));
 
-				if (!completeCheck) {
-					if (alreadyAccomplished) {
-						achievementStates.put(achievement.getId(), true);
-					}
-					else {
+                if (!completeCheck) {
+                    if (alreadyAccomplished) {
+                        achievementStates.put(achievement.getId(), true);
+                    } else {
 
-						if (achievement.check(bhApp, deviceNum, exp)) {
-							achievement.accomplish(bhApp, alreadyAccomplished);
-							achievementStates.put(achievement.getId(), true);
-						}
-						else {
-							achievement.invalidate(bhApp);
-							achievementStates.put(achievement.getId(), false);
-						}
-					}
-				}
-				else {
-					if (achievement.check(bhApp, deviceNum, exp)) {
-						achievement.accomplish(bhApp, alreadyAccomplished);
-						achievementStates.put(achievement.getId(), true);
-					}
-					else {
-						achievement.invalidate(bhApp);
-						achievementStates.put(achievement.getId(), false);
-					}
-				}
+                        if (achievement.check(bhApp, deviceNum, exp)) {
+                            achievement.accomplish(bhApp, alreadyAccomplished);
+                            achievementStates.put(achievement.getId(), true);
+                        } else {
+                            achievement.invalidate(bhApp);
+                            achievementStates.put(achievement.getId(), false);
+                        }
+                    }
+                } else {
+                    if (achievement.check(bhApp, deviceNum, exp)) {
+                        achievement.accomplish(bhApp, alreadyAccomplished);
+                        achievementStates.put(achievement.getId(), true);
+                    } else {
+                        achievement.invalidate(bhApp);
+                        achievementStates.put(achievement.getId(), false);
+                    }
+                }
 
-			}
-		}
+            }
+        }
 
-	}
+    }
 
-	public static float getBoost(BlueHunter bhApp) {
+    public static float getBoost(BlueHunter bhApp) {
 
-		float bonus = 0.0f;
+        float bonus = 0.0f;
 
-		bonus += getLevelBoost(bhApp);
+        bonus += getLevelBoost(bhApp);
 
-		Set<Integer> ids = achievementStates.keySet();
 
-		for (Achievement achievement : achievements) {
-			if (ids.contains(achievement.getId())) {
-				if (achievementStates.get(achievement.getId())) {
-					bonus += achievement.getBoost();
-				}
-			}
-		}
+        for (Achievement achievement : achievements) {
 
-		// weekly boost addition
+            if (achievementStates.get(achievement.getId(), false)) {
+                bonus += achievement.getBoost();
+            }
 
-		switch (WeeklyLeaderboardLayout.weeklyPlace) {
-		case 1:
-			bonus += 1f;
-			break;
-		case 2:
-			bonus += 0.5f;
-			break;
-		case 3:
-			bonus += 0.25f;
-			break;
-		}
+        }
 
-		return bonus;
+        // weekly boost addition
 
-	}
+        switch (WeeklyLeaderboardLayout.weeklyPlace) {
+            case 1:
+                bonus += 1f;
+                break;
+            case 2:
+                bonus += 0.5f;
+                break;
+            case 3:
+                bonus += 0.25f;
+                break;
+        }
 
-	public static List<HashMap<String, String>> getBoostList(BlueHunter bhApp) {
-		List<HashMap<String, String>> boostList = new ArrayList<HashMap<String, String>>();
+        return bonus;
 
-		int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
-		float levelBoost = getLevelBoost(bhApp);
+    }
 
-		NumberFormat percentage = NumberFormat.getPercentInstance();
+    public static List<HashMap<String, String>> getBoostList(BlueHunter bhApp) {
+        List<HashMap<String, String>> boostList = new ArrayList<HashMap<String, String>>();
 
-		HashMap<String, String> levelHashMap = new HashMap<String, String>();
-		levelHashMap.put("description", bhApp.getString(R.string.str_boostComposition_levelBoost, level));
-		levelHashMap.put("boost", "+" + percentage.format(levelBoost));
+        int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
+        float levelBoost = getLevelBoost(bhApp);
 
-		boostList.add(levelHashMap);
+        NumberFormat percentage = NumberFormat.getPercentInstance();
 
-		HashMap<String, String> emptyHashMap = new HashMap<String, String>();
+        HashMap<String, String> levelHashMap = new HashMap<String, String>();
+        levelHashMap.put("description", bhApp.getString(R.string.str_boostComposition_levelBoost, level));
+        levelHashMap.put("boost", "+" + percentage.format(levelBoost));
 
-		emptyHashMap.put("description", "");
-		emptyHashMap.put("boost", "");
+        boostList.add(levelHashMap);
 
-		boostList.add(emptyHashMap);
+        HashMap<String, String> emptyHashMap = new HashMap<String, String>();
 
-		if (WeeklyLeaderboardLayout.weeklyPlace != 0) {
+        emptyHashMap.put("description", "");
+        emptyHashMap.put("boost", "");
 
-			HashMap<String, String> weeklyBoostHash = new HashMap<String, String>();
+        boostList.add(emptyHashMap);
 
-			float weeklyBoost = 0f;
+        if (WeeklyLeaderboardLayout.weeklyPlace != 0) {
 
-			switch (WeeklyLeaderboardLayout.weeklyPlace) {
-			case 1:
-				weeklyBoost = 1f;
+            HashMap<String, String> weeklyBoostHash = new HashMap<String, String>();
 
-				break;
-			case 2:
-				weeklyBoost = 0.5f;
+            float weeklyBoost = 0f;
 
-				break;
-			case 3:
-				weeklyBoost = 0.25f;
+            switch (WeeklyLeaderboardLayout.weeklyPlace) {
+                case 1:
+                    weeklyBoost = 1f;
 
-				break;
-			}
+                    break;
+                case 2:
+                    weeklyBoost = 0.5f;
 
-			weeklyBoostHash.put("description",
-					bhApp.getString(R.string.str_boostComposition_weeklyBoost, WeeklyLeaderboardLayout.weeklyPlace));
-			weeklyBoostHash.put("boost", "+" + percentage.format(weeklyBoost));
-			
-			boostList.add(weeklyBoostHash);
-			boostList.add(emptyHashMap);
+                    break;
+                case 3:
+                    weeklyBoost = 0.25f;
 
-		}
+                    break;
+            }
 
-		Set<Integer> ids = achievementStates.keySet();
+            weeklyBoostHash.put("description",
+                    bhApp.getString(R.string.str_boostComposition_weeklyBoost, WeeklyLeaderboardLayout.weeklyPlace));
+            weeklyBoostHash.put("boost", "+" + percentage.format(weeklyBoost));
 
-		for (Achievement achievement : achievements) {
-			if (ids.contains(achievement.getId())) {
-				if (achievementStates.get(achievement.getId())) {
+            boostList.add(weeklyBoostHash);
+            boostList.add(emptyHashMap);
 
-					HashMap<String, String> itemHashMap = new HashMap<String, String>();
-					itemHashMap.put("description",
-							bhApp.getString(R.string.str_boostComposition_achievementBoost, achievement.getName(bhApp)));
-					itemHashMap.put("boost", "+" + percentage.format(achievement.getBoost()));
+        }
 
-					boostList.add(itemHashMap);
+        for (Achievement achievement : achievements) {
 
-				}
-			}
-		}
+            if (achievementStates.get(achievement.getId(), false)) {
 
-		HashMap<String, String> sumHashMap = new HashMap<String, String>();
+                HashMap<String, String> itemHashMap = new HashMap<String, String>();
+                itemHashMap.put("description",
+                        bhApp.getString(R.string.str_boostComposition_achievementBoost, achievement.getName(bhApp)));
+                itemHashMap.put("boost", "+" + percentage.format(achievement.getBoost()));
 
-		sumHashMap.put("description", "");
-		sumHashMap.put("boost", "-------");
+                boostList.add(itemHashMap);
 
-		boostList.add(sumHashMap);
+            }
 
-		HashMap<String, String> totalHashMap = new HashMap<String, String>();
+        }
 
-		totalHashMap.put("description", "Total Boost:");
-		totalHashMap.put("boost", percentage.format(getBoost(bhApp)));
+        HashMap<String, String> sumHashMap = new HashMap<String, String>();
 
-		boostList.add(totalHashMap);
+        sumHashMap.put("description", "");
+        sumHashMap.put("boost", "-------");
 
-		return boostList;
+        boostList.add(sumHashMap);
 
-	}
+        HashMap<String, String> totalHashMap = new HashMap<String, String>();
 
-	private static float getLevelBoost(BlueHunter bhApp) {
+        totalHashMap.put("description", "Total Boost:");
+        totalHashMap.put("boost", percentage.format(getBoost(bhApp)));
 
-		float levelBoost = 0f;
-		int curLevel = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
+        boostList.add(totalHashMap);
 
-		// for (int level = 0; level <= curLevel; level++) {
-		// levelBoost += (float) level / (float) 100;
-		// }
+        return boostList;
 
-		levelBoost = (float) curLevel / (float) 100;
+    }
 
-		return levelBoost;
+    private static float getLevelBoost(BlueHunter bhApp) {
 
-	}
+        float levelBoost = 0f;
+        int curLevel = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
-	public static void cancelAllTasks() {
-		if (checkerThread != null) checkerThread.cancel(true);
+        // for (int level = 0; level <= curLevel; level++) {
+        // levelBoost += (float) level / (float) 100;
+        // }
 
-	}
+        levelBoost = (float) curLevel / (float) 100;
 
-	public class AchievementsCheckerThread extends AsyncTask<Boolean, Achievement, Integer> {
+        return levelBoost;
 
-		BlueHunter bhApp;
-		boolean running = false;
+    }
 
-		boolean completeCheck = false;
+    public static void cancelAllTasks() {
+        if (checkerThread != null) checkerThread.cancel(true);
 
-		public AchievementsCheckerThread(BlueHunter bhApp) {
-			this.bhApp = bhApp;
-		}
+    }
 
-		@Override
-		protected void onPreExecute() {
+    public class AchievementsCheckerThread extends AsyncTask<Boolean, Achievement, Integer> {
 
-			Log.d("AchievementThread", "onPreExecute() called.");
+        BlueHunter bhApp;
+        boolean running = false;
 
-			running = true;
+        boolean completeCheck = false;
 
-		}
+        public AchievementsCheckerThread(BlueHunter bhApp) {
+            this.bhApp = bhApp;
+        }
 
-		@Override
-		protected void onPostExecute(Integer result) {
+        @Override
+        protected void onPreExecute() {
 
-			running = false;
-			checksInRow++;
+            Log.d("AchievementThread", "onPreExecute() called.");
 
-			Log.d("AchievementThread", "onPostExecute() called | result = " + result + " | checksInRow = " + checksInRow);
+            running = true;
 
-			if (result == 0) {
-				// allDevices was null
-				if (checksInRow < 4) {
-					// check if this thread was run under 4 times in a row
+        }
 
-					checkAchievements(bhApp, completeCheck);
+        @Override
+        protected void onPostExecute(Integer result) {
 
-				}
-				else {
-					checksInRow = 0;
-				}
+            running = false;
+            checksInRow++;
 
-			}
-			else if (result == 1) {
-				checksInRow = 0;
+            Log.d("AchievementThread", "onPostExecute() called | result = " + result + " | checksInRow = " + checksInRow);
 
-				achievementStates = new HashMap<Integer, Boolean>(temporaryStates);
-				temporaryStates = null;
+            if (result == 0) {
+                // allDevices was null
+                if (checksInRow < 4) {
+                    // check if this thread was run under 4 times in a row
 
-				// Update indicator views
-				AchievementsLayout.initializeAchievements(bhApp);
-				AchievementsLayout.updateBoostIndicator(bhApp);
+                    checkAchievements(bhApp, completeCheck);
 
-				if (bhApp.mainActivity.justStarted && PreferenceManager.getPref(bhApp, "pref_runDiscoveryAfterStart", false)) {
-					((CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch)).setChecked(true);
-					bhApp.mainActivity.justStarted = false;
-				}
+                } else {
+                    checksInRow = 0;
+                }
 
-			}
+            } else if (result == 1) {
+                checksInRow = 0;
 
-		}
+                achievementStates = temporaryStates.clone();
+                temporaryStates = null;
 
-		@Override
-		protected void onProgressUpdate(Achievement... values) {
+                // Update indicator views
+                AchievementsLayout.initializeAchievements(bhApp);
+                AchievementsLayout.updateBoostIndicator(bhApp);
 
-			Achievement achievement = values[0];
+                if (bhApp.mainActivity.justStarted && PreferenceManager.getPref(bhApp, "pref_runDiscoveryAfterStart", false)) {
+                    ((CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch)).setChecked(true);
+                    bhApp.mainActivity.justStarted = false;
+                }
 
-			Toast.makeText(bhApp, bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Toast.LENGTH_LONG)
-					.show();
+            }
 
-		}
+        }
 
-		@Override
-		protected Integer doInBackground(Boolean... params) {
+        @Override
+        protected void onProgressUpdate(Achievement... values) {
 
-			long checkATime = System.currentTimeMillis();
+            Achievement achievement = values[0];
 
-			completeCheck = params[0];
-			Log.d("AchievementThread", "doInBackground() called. | completeCheck = " + completeCheck);
+            Toast.makeText(bhApp, bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Toast.LENGTH_LONG)
+                    .show();
 
-			temporaryStates = new HashMap<Integer, Boolean>();
+        }
 
-			allDevices = DatabaseManager.getCachedList();
+        @Override
+        protected Integer doInBackground(Boolean... params) {
 
-			if (allDevices == null) {
+            long checkATime = System.currentTimeMillis();
 
-				new DatabaseManager(bhApp).loadAllDevices(true);
-				return 0;
-			}
+            completeCheck = params[0];
+            Log.d("AchievementThread", "doInBackground() called. | completeCheck = " + completeCheck);
 
-			int deviceNum = allDevices.size();
-			int exp = LevelSystem.getCachedUserExp(bhApp);
+            temporaryStates = new SparseBooleanArray();
 
-			List<Achievement> temporaryAchievements = new ArrayList<Achievement>(achievements);
+            allDevices = DatabaseManager.getCachedList();
 
-			for (Achievement achievement : temporaryAchievements) {
+            if (allDevices == null) {
 
-				boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "")
-						.equals(bhApp.authentification.getAchieveHash(achievement.getId()));
+                new DatabaseManager(bhApp).loadAllDevices(true);
+                return 0;
+            }
 
-				if (!completeCheck) {
-					if (alreadyAccomplished) {
-						temporaryStates.put(achievement.getId(), true);
-					}
-					else {
+            int deviceNum = allDevices.size();
+            int exp = LevelSystem.getCachedUserExp(bhApp);
 
-						if (achievement.check(bhApp, deviceNum, exp)) {
-							if (achievement.accomplish(bhApp, alreadyAccomplished)) {
-								publishProgress(achievement);
-							}
-							temporaryStates.put(achievement.getId(), true);
-						}
-						else {
-							achievement.invalidate(bhApp);
-							temporaryStates.put(achievement.getId(), false);
-						}
-					}
-				}
-				else {
-					if (achievement.check(bhApp, deviceNum, exp)) {
-						if (achievement.accomplish(bhApp, alreadyAccomplished)) {
-							publishProgress(achievement);
-						}
-						temporaryStates.put(achievement.getId(), true);
-					}
-					else {
-						achievement.invalidate(bhApp);
-						temporaryStates.put(achievement.getId(), false);
-					}
-				}
+            List<Achievement> temporaryAchievements = new ArrayList<Achievement>(achievements);
 
-			}
+            for (Achievement achievement : temporaryAchievements) {
 
-			temporaryAchievements = null;
+                boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + achievement.getId(), "")
+                        .equals(bhApp.authentification.getAchieveHash(achievement.getId()));
 
-			long checkBTime = System.currentTimeMillis();
+                if (!completeCheck) {
+                    if (alreadyAccomplished) {
+                        temporaryStates.put(achievement.getId(), true);
+                    } else {
 
-			Log.d("checkAchievements()", "" + (checkBTime - checkATime) + "ms");
+                        if (achievement.check(bhApp, deviceNum, exp)) {
+                            if (achievement.accomplish(bhApp, alreadyAccomplished)) {
+                                publishProgress(achievement);
+                            }
+                            temporaryStates.put(achievement.getId(), true);
+                        } else {
+                            achievement.invalidate(bhApp);
+                            temporaryStates.put(achievement.getId(), false);
+                        }
+                    }
+                } else {
+                    if (achievement.check(bhApp, deviceNum, exp)) {
+                        if (achievement.accomplish(bhApp, alreadyAccomplished)) {
+                            publishProgress(achievement);
+                        }
+                        temporaryStates.put(achievement.getId(), true);
+                    } else {
+                        achievement.invalidate(bhApp);
+                        temporaryStates.put(achievement.getId(), false);
+                    }
+                }
 
-			return 1;
-		}
+            }
 
-	}
+            temporaryAchievements = null;
+
+            long checkBTime = System.currentTimeMillis();
+
+            Log.d("checkAchievements()", "" + (checkBTime - checkATime) + "ms");
+
+            return 1;
+        }
+
+    }
 
 }

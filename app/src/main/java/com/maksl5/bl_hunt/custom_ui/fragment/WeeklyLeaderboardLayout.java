@@ -1,36 +1,5 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
-
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,877 +19,876 @@ import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 /**
  * @author Maksl5
  */
 public class WeeklyLeaderboardLayout {
 
-	public static final int ARRAY_INDEX_NAME = 0;
-	public static final int ARRAY_INDEX_LEVEL = 1;
-	public static final int ARRAY_INDEX_PROGRESS_MAX = 2;
-	public static final int ARRAY_INDEX_PROGRESS_VALUE = 3;
-	public static final int ARRAY_INDEX_DEV_NUMBER = 4;
-	public static final int ARRAY_INDEX_EXP = 5;
-	public static final int ARRAY_INDEX_ID = 6;
+    public static final int ARRAY_INDEX_NAME = 0;
+    public static final int ARRAY_INDEX_LEVEL = 1;
+    public static final int ARRAY_INDEX_PROGRESS_MAX = 2;
+    public static final int ARRAY_INDEX_PROGRESS_VALUE = 3;
+    public static final int ARRAY_INDEX_DEV_NUMBER = 4;
+    public static final int ARRAY_INDEX_EXP = 5;
+    public static final int ARRAY_INDEX_ID = 6;
+    public volatile static ArrayList<LBAdapterData> completeLbList = new ArrayList<LBAdapterData>();
+    public static SparseArray<Integer[]> changeList = new SparseArray<>();
+    public static int userRank = -1;
+    public static long timeOffset = 0;
+    public static TextView timerTextView = null;
+    public static int weeklyPlace = 0;
+    private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<LBAdapterData>();
+    private static ThreadManager threadManager = null;
 
-	private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<LBAdapterData>();
-	public volatile static ArrayList<LBAdapterData> completeLbList = new ArrayList<LBAdapterData>();
+    public static void refreshLeaderboard(final BlueHunter bhApp) {
 
-	private static ThreadManager threadManager = null;
+        refreshLeaderboard(bhApp, false);
+    }
 
-	public static HashMap<Integer, Integer[]> changeList = new HashMap<Integer, Integer[]>();
+    public static void refreshLeaderboard(final BlueHunter bhApp, boolean orientationChanged) {
+
+        if (orientationChanged) {
 
-	public static int userRank = -1;
-	public static long timeOffset = 0;
-	public static TextView timerTextView = null;
+            ListView listView;
+            LeaderboardAdapter ldAdapter;
 
-	public static int weeklyPlace = 0;
+            if (bhApp.mainActivity.mViewPager == null) {
+                bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+            }
 
-	public static void refreshLeaderboard(final BlueHunter bhApp) {
+            ViewPager pager = bhApp.mainActivity.mViewPager;
+            View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
 
-		refreshLeaderboard(bhApp, false);
-	}
+            if (pageView == null) {
+                listView = (ListView) pager.findViewById(R.id.weeklyLdListView);
+            } else {
+                listView = (ListView) pageView.findViewById(R.id.weeklyLdListView);
+            }
 
-	public static void refreshLeaderboard(final BlueHunter bhApp, boolean orientationChanged) {
+            if (listView == null) {
+                listView = (ListView) bhApp.mainActivity.findViewById(R.id.weeklyLdListView);
+            }
 
-		if (orientationChanged) {
+            if (listView == null) {
+                return;
+            }
 
-			ListView listView;
-			LeaderboardAdapter ldAdapter;
+            ldAdapter = (LeaderboardAdapter) listView.getAdapter();
+            if (ldAdapter == null || ldAdapter.isEmpty()) {
+                ldAdapter = new WeeklyLeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
+                        showedLbList);
+                listView.setAdapter(ldAdapter);
+            }
 
-			if (bhApp.mainActivity.mViewPager == null) {
-				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
-			}
+            ldAdapter.notifyDataSetChanged();
 
-			ViewPager pager = bhApp.mainActivity.mViewPager;
-			View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
+            refreshUserRow(bhApp.mainActivity);
 
-			if (pageView == null) {
-				listView = (ListView) pager.findViewById(R.id.weeklyLdListView);
-			}
-			else {
-				listView = (ListView) pageView.findViewById(R.id.weeklyLdListView);
-			}
+            return;
 
-			if (listView == null) {
-				listView = (ListView) bhApp.mainActivity.findViewById(R.id.weeklyLdListView);
-			}
+        }
 
-			if (listView == null) {
-				return;
-			}
+        if (threadManager == null) {
+            threadManager = new WeeklyLeaderboardLayout().new ThreadManager();
+        }
 
-			ldAdapter = (LeaderboardAdapter) listView.getAdapter();
-			if (ldAdapter == null || ldAdapter.isEmpty()) {
-				ldAdapter = new WeeklyLeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
-						showedLbList);
-				listView.setAdapter(ldAdapter);
-			}
+        RefreshThread refreshThread = new WeeklyLeaderboardLayout().new RefreshThread(bhApp, threadManager);
+        if (refreshThread.canRun()) {
+            showedLbList.clear();
+            completeLbList.clear();
+            bhApp.actionBarHandler.getMenuItem(R.id.menu_search).collapseActionView();
+            refreshThread.execute(1, 5, 0);
+        }
 
-			ldAdapter.notifyDataSetChanged();
+    }
 
-			refreshUserRow(bhApp.mainActivity);
+    public static void filterLeaderboard(String text, BlueHunter bhApp) {
 
-			return;
+        if (threadManager.running) return;
 
-		}
+        List<String> searchedList = new ArrayList<String>();
 
-		if (threadManager == null) {
-			threadManager = new WeeklyLeaderboardLayout().new ThreadManager();
-		}
+        if (bhApp.mainActivity.mViewPager == null) {
+            bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+        }
 
-		RefreshThread refreshThread = new WeeklyLeaderboardLayout().new RefreshThread(bhApp, threadManager);
-		if (refreshThread.canRun()) {
-			showedLbList.clear();
-			completeLbList.clear();
-			bhApp.actionBarHandler.getMenuItem(R.id.menu_search).collapseActionView();
-			refreshThread.execute(1, 5, 0);
-		}
+        ViewPager pager = bhApp.mainActivity.mViewPager;
+        View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
+        ListView lv;
 
-	}
+        if (pageView == null) {
+            lv = (ListView) pager.findViewById(R.id.weeklyLdListView);
+        } else {
+            lv = (ListView) pageView.findViewById(R.id.weeklyLdListView);
+        }
 
-	public static void filterLeaderboard(String text, BlueHunter bhApp) {
+        if (lv == null) {
+            lv = (ListView) bhApp.mainActivity.findViewById(R.id.weeklyLdListView);
+        }
 
-		if (threadManager.running) return;
+        if (lv == null) {
+            return;
+        }
 
-		List<String> searchedList = new ArrayList<String>();
+        LeaderboardAdapter lbAdapter = (LeaderboardAdapter) lv.getAdapter();
 
-		if (bhApp.mainActivity.mViewPager == null) {
-			bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
-		}
+        if (lbAdapter == null || lbAdapter.isEmpty()) {
+            lbAdapter = new WeeklyLeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
+                    showedLbList);
+            lv.setAdapter(lbAdapter);
+        }
 
-		ViewPager pager = bhApp.mainActivity.mViewPager;
-		View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
-		ListView lv;
+        text = text.toLowerCase();
 
-		if (pageView == null) {
-			lv = (ListView) pager.findViewById(R.id.weeklyLdListView);
-		}
-		else {
-			lv = (ListView) pageView.findViewById(R.id.weeklyLdListView);
-		}
+        if (text.length() == 0) {
+            if (!showedLbList.equals(completeLbList)) {
+                showedLbList = new ArrayList<LBAdapterData>(completeLbList);
+                lbAdapter.refreshList(showedLbList);
+            }
+        } else {
 
-		if (lv == null) {
-			lv = (ListView) bhApp.mainActivity.findViewById(R.id.weeklyLdListView);
-		}
+            ArrayList<LBAdapterData> filterList = new ArrayList<LBAdapterData>(completeLbList);
 
-		if (lv == null) {
-			return;
-		}
+            final int count = filterList.size();
+            final ArrayList<LBAdapterData> newValues = new ArrayList<LBAdapterData>();
 
-		LeaderboardAdapter lbAdapter = (LeaderboardAdapter) lv.getAdapter();
+            for (int i = 0; i < count; i++) {
+                final LBAdapterData data = filterList.get(i);
 
-		if (lbAdapter == null || lbAdapter.isEmpty()) {
-			lbAdapter = new WeeklyLeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
-					showedLbList);
-			lv.setAdapter(lbAdapter);
-		}
+                if (data.getName().toLowerCase().contains(text))
+                    if (!newValues.contains(data)) newValues.add(data);
 
-		text = text.toLowerCase();
+                if (("" + data.getDevNum()).toLowerCase().contains(text))
+                    if (!newValues.contains(data)) newValues.add(data);
 
-		if (text.length() == 0) {
-			if (!showedLbList.equals(completeLbList)) {
-				showedLbList = new ArrayList<LBAdapterData>(completeLbList);
-				lbAdapter.refreshList(showedLbList);
-			}
-		}
-		else {
+            }
 
-			ArrayList<LBAdapterData> filterList = new ArrayList<LBAdapterData>(completeLbList);
+            showedLbList = newValues;
+            lbAdapter.refreshList(showedLbList);
 
-			final int count = filterList.size();
-			final ArrayList<LBAdapterData> newValues = new ArrayList<LBAdapterData>();
+        }
 
-			for (int i = 0; i < count; i++) {
-				final LBAdapterData data = filterList.get(i);
+    }
 
-				if (data.getName().toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
+    public static void scrollToPosition(MainActivity mainActivity, int index) {
 
-				if (("" + data.getDevNum()).toLowerCase().contains(text)) if (!newValues.contains(data)) newValues.add(data);
+        if (completeLbList != null && completeLbList.size() != 0) {
 
-			}
+            if (mainActivity.mViewPager == null) {
+                mainActivity.mViewPager = (ViewPager) mainActivity.findViewById(R.id.pager);
+            }
 
-			showedLbList = newValues;
-			lbAdapter.refreshList(showedLbList);
+            mainActivity.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_LEADERBOARD, true);
 
-		}
+            ListView listView = (ListView) mainActivity.mViewPager.findViewById(R.id.weeklyLdListView);
 
-	}
+            if (listView != null) {
 
-	public static void scrollToPosition(MainActivity mainActivity, int index) {
+                listView.smoothScrollToPositionFromTop(index, 0, 1000);
 
-		if (completeLbList != null && completeLbList.size() != 0) {
+            }
 
-			if (mainActivity.mViewPager == null) {
-				mainActivity.mViewPager = (ViewPager) mainActivity.findViewById(R.id.pager);
-			}
+        }
 
-			mainActivity.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_LEADERBOARD, true);
+    }
 
-			ListView listView = (ListView) mainActivity.mViewPager.findViewById(R.id.weeklyLdListView);
+    public static void cancelAllTasks() {
+        if (threadManager != null && threadManager.refreshThread != null)
+            threadManager.refreshThread.cancel(true);
 
-			if (listView != null) {
+    }
 
-				listView.smoothScrollToPositionFromTop(index, 0, 1000);
+    public static void refreshUserRow(final MainActivity mainActivity) {
 
-			}
+        LBAdapterData userData = completeLbList.get(userRank - 1);
 
-		}
+        String name = userData.getName();
+        int id = userData.getId();
+        int num = userData.getDevNum();
 
-	}
+        View container = mainActivity.findViewById(R.id.weeklyLdUserRL);
 
-	public static void cancelAllTasks() {
-		if (threadManager != null && threadManager.refreshThread != null) threadManager.refreshThread.cancel(true);
+        container.setOnClickListener(new OnClickListener() {
 
-	}
+            @Override
+            public void onClick(View v) {
+                scrollToPosition(mainActivity, userRank - 1);
+            }
+        });
 
-	public static void refreshUserRow(final MainActivity mainActivity) {
+        TextView rankView = (TextView) container.findViewById(R.id.rankTxtView);
+        TextView nameView = (TextView) container.findViewById(R.id.nameTxtView);
+        TextView devicesView = (TextView) container.findViewById(R.id.devTxtView);
 
-		LBAdapterData userData = completeLbList.get(userRank - 1);
+        ImageView changeRankImgView = (ImageView) container.findViewById(R.id.changeRankImgView);
+        TextView changeRankTxtView = (TextView) container.findViewById(R.id.changeRankTxtView);
 
-		String name = userData.getName();
-		int id = userData.getId();
-		int num = userData.getDevNum();
+        ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
+        TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
 
-		View container = mainActivity.findViewById(R.id.weeklyLdUserRL);
+        DecimalFormat decimalFormat = new DecimalFormat(",###");
 
-		container.setOnClickListener(new OnClickListener() {
+        rankView.setText("" + userRank + ".");
+        nameView.setText(name);
+        nameView.setTag(id);
 
-			@Override
-			public void onClick(View v) {
-				scrollToPosition(mainActivity, userRank - 1);
-			}
-		});
+        devicesView.setText(decimalFormat.format(num) + " Devices");
 
-		TextView rankView = (TextView) container.findViewById(R.id.rankTxtView);
-		TextView nameView = (TextView) container.findViewById(R.id.nameTxtView);
-		TextView devicesView = (TextView) container.findViewById(R.id.devTxtView);
+        Integer[] changes = changeList.get(id);
 
-		ImageView changeRankImgView = (ImageView) container.findViewById(R.id.changeRankImgView);
-		TextView changeRankTxtView = (TextView) container.findViewById(R.id.changeRankTxtView);
+        Integer rankBefore, devBefore;
 
-		ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
-		TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
+        if (changes == null) {
 
-		DecimalFormat decimalFormat = new DecimalFormat(",###");
+            rankBefore = userRank;
+            devBefore = num;
 
-		rankView.setText("" + userRank + ".");
-		nameView.setText(name);
-		nameView.setTag(id);
+        } else {
 
-		devicesView.setText(decimalFormat.format(num) + " Devices");
+            rankBefore = changes[0];
+            devBefore = changes[1];
 
-		Integer[] changes = changeList.get(id);
+        }
 
-		Integer rankBefore, devBefore;
+        if (rankBefore == null) rankBefore = userRank;
+        if (devBefore == null) devBefore = num;
 
-		if (changes == null) {
+        changeRankTxtView.setText("" + Math.abs(rankBefore - userRank));
 
-			rankBefore = userRank;
-			devBefore = num;
+        if ((rankBefore - userRank) > 0) {
 
-		}
-		else {
+            changeRankImgView.setImageResource(R.drawable.ic_change_up);
 
-			rankBefore = changes[0];
-			devBefore = changes[1];
+        } else if ((rankBefore - userRank) < 0) {
 
-		}
+            changeRankImgView.setImageResource(R.drawable.ic_change_down);
 
-		if (rankBefore == null) rankBefore = userRank;
-		if (devBefore == null) devBefore = num;
+        } else if ((rankBefore - userRank) == 0) {
 
-		changeRankTxtView.setText("" + Math.abs(rankBefore - userRank));
+            changeRankImgView.setImageResource(android.R.color.transparent);
+            changeRankTxtView.setText("");
+        }
 
-		if ((rankBefore - userRank) > 0) {
+        // change in dev
+        changeDEVTxtView.setText("" + decimalFormat.format(Math.abs(devBefore - num)));
 
-			changeRankImgView.setImageResource(R.drawable.ic_change_up);
+        if ((devBefore - num) > 0) {
 
-		}
-		else if ((rankBefore - userRank) < 0) {
+            changeDEVImgView.setImageResource(R.drawable.ic_change_down_s);
 
-			changeRankImgView.setImageResource(R.drawable.ic_change_down);
+        } else if ((devBefore - num) < 0) {
 
-		}
-		else if ((rankBefore - userRank) == 0) {
+            changeDEVImgView.setImageResource(R.drawable.ic_change_up_s);
 
-			changeRankImgView.setImageResource(android.R.color.transparent);
-			changeRankTxtView.setText("");
-		}
+        } else if ((devBefore - num) == 0) {
 
-		// change in dev
-		changeDEVTxtView.setText("" + decimalFormat.format(Math.abs(devBefore - num)));
+            changeDEVImgView.setImageResource(android.R.color.transparent);
+            changeDEVTxtView.setText("");
+        }
 
-		if ((devBefore - num) > 0) {
+    }
 
-			changeDEVImgView.setImageResource(R.drawable.ic_change_down_s);
+    static class ViewHolder {
 
-		}
-		else if ((devBefore - num) < 0) {
+        TextView rank;
+        TextView name;
 
-			changeDEVImgView.setImageResource(R.drawable.ic_change_up_s);
+        TextView devices;
 
-		}
-		else if ((devBefore - num) == 0) {
+        ImageView changeRankImg;
+        TextView changeRankTxt;
 
-			changeDEVImgView.setImageResource(android.R.color.transparent);
-			changeDEVTxtView.setText("");
-		}
+        ImageView changeDEVImg;
+        TextView changeDEVTxt;
 
-	}
+        TableRow prgTableRow;
+        TableRow expTableRow;
 
-	private class RefreshThread extends AsyncTask<Integer, Void, String> {
+    }
 
-		private BlueHunter bhApp;
-		private ListView listView;
+    private class RefreshThread extends AsyncTask<Integer, Void, String> {
 
-		private LeaderboardAdapter ldAdapter;
+        private BlueHunter bhApp;
+        private ListView listView;
 
-		private ThreadManager threadManager;
+        private LeaderboardAdapter ldAdapter;
 
-		private boolean canRun = true;
+        private ThreadManager threadManager;
 
-		private int scrollIndex;
-		private int scrollTop;
+        private boolean canRun = true;
 
-		private int startIndex;
-		private int length;
+        private int scrollIndex;
+        private int scrollTop;
 
-		private boolean isUserInLD = false;
+        private int startIndex;
+        private int length;
 
-		private RefreshThread(BlueHunter app, ThreadManager threadManager) {
+        private boolean isUserInLD = false;
 
-			super();
-			this.bhApp = app;
+        private RefreshThread(BlueHunter app, ThreadManager threadManager) {
 
-			if (bhApp.mainActivity.mViewPager == null) {
-				bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
-			}
+            super();
+            this.bhApp = app;
 
-			ViewPager pager = bhApp.mainActivity.mViewPager;
-			View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
+            if (bhApp.mainActivity.mViewPager == null) {
+                bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
+            }
 
-			if (pageView == null) {
-				listView = (ListView) pager.findViewById(R.id.weeklyLdListView);
-			}
-			else {
-				listView = (ListView) pageView.findViewById(R.id.weeklyLdListView);
-			}
+            ViewPager pager = bhApp.mainActivity.mViewPager;
+            View pageView = pager.getChildAt(FragmentLayoutManager.PAGE_LEADERBOARD + 1);
 
-			if (listView == null) {
-				listView = (ListView) bhApp.mainActivity.findViewById(R.id.weeklyLdListView);
-			}
+            if (pageView == null) {
+                listView = (ListView) pager.findViewById(R.id.weeklyLdListView);
+            } else {
+                listView = (ListView) pageView.findViewById(R.id.weeklyLdListView);
+            }
 
-			if (listView == null) {
-				canRun = false;
-				return;
-			}
+            if (listView == null) {
+                listView = (ListView) bhApp.mainActivity.findViewById(R.id.weeklyLdListView);
+            }
 
-			scrollIndex = listView.getFirstVisiblePosition();
-			View v = listView.getChildAt(0);
-			scrollTop = (v == null) ? 0 : v.getTop();
+            if (listView == null) {
+                canRun = false;
+                return;
+            }
 
-			this.ldAdapter = (LeaderboardAdapter) listView.getAdapter();
-			if (this.ldAdapter == null || this.ldAdapter.isEmpty()) {
-				this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedLbList);
-				this.listView.setAdapter(ldAdapter);
-			}
+            scrollIndex = listView.getFirstVisiblePosition();
+            View v = listView.getChildAt(0);
+            scrollTop = (v == null) ? 0 : v.getTop();
 
-			this.threadManager = threadManager;
+            this.ldAdapter = (LeaderboardAdapter) listView.getAdapter();
+            if (this.ldAdapter == null || this.ldAdapter.isEmpty()) {
+                this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedLbList);
+                this.listView.setAdapter(ldAdapter);
+            }
 
-			if (!this.threadManager.setThread(this)) {
-				canRun = false;
-			}
+            this.threadManager = threadManager;
 
-		}
+            if (!this.threadManager.setThread(this)) {
+                canRun = false;
+            }
 
-		public boolean canRun() {
+        }
 
-			return canRun;
-		}
+        public boolean canRun() {
 
-		@Override
-		protected String doInBackground(Integer... params) {
+            return canRun;
+        }
 
-			startIndex = params[0];
-			length = params[1];
+        @Override
+        protected String doInBackground(Integer... params) {
 
-			isUserInLD = (params[2] == 1) ? true : false;
+            startIndex = params[0];
+            length = params[1];
 
-			try {
+            isUserInLD = (params[2] == 1) ? true : false;
 
-				URL httpUri = new URL(AuthentificationSecure.SERVER_GET_WEEKLY_LEADERBOARD + "?s=" + startIndex + "&l=" + length);
+            try {
 
-				HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
-				conn.setReadTimeout(15000);
-				conn.setConnectTimeout(15000);
-				conn.setRequestMethod("GET");
+                URL httpUri = new URL(AuthentificationSecure.SERVER_GET_WEEKLY_LEADERBOARD + "?s=" + startIndex + "&l=" + length);
 
-				conn.connect();
+                HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("GET");
 
-				int responseCode = conn.getResponseCode();
+                conn.connect();
 
-				String result = "";
+                int responseCode = conn.getResponseCode();
 
-				if (responseCode == HttpURLConnection.HTTP_OK) {
+                String result = "";
 
-					String line = "";
-					BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                if (responseCode == HttpURLConnection.HTTP_OK) {
 
-					StringBuilder stringBuilder = new StringBuilder();
+                    String line = "";
+                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-					while ((line = br.readLine()) != null) {
-						stringBuilder.append(line + System.lineSeparator());
-					}
+                    StringBuilder stringBuilder = new StringBuilder();
 
-					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
+                    while ((line = br.readLine()) != null) {
+                        stringBuilder.append(line + System.lineSeparator());
+                    }
 
-					result = stringBuilder.toString();
+                    stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
 
-				}
-				else {
+                    result = stringBuilder.toString();
 
-					return "Error=" + responseCode + "\n" + conn.getResponseMessage();
+                } else {
 
-				}
+                    return "Error=" + responseCode + "\n" + conn.getResponseMessage();
 
-				return result;
-			}
-			catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return "Error=5\n" + e.getMessage();
-			}
+                }
 
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return "Error=1\n" + e.getMessage();
-			}
+                return result;
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return "Error=5\n" + e.getMessage();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return "Error=1\n" + e.getMessage();
+            }
 
-		}
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		@Override
-		protected void onPostExecute(String result) {
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(String result) {
 
-			try {
+            try {
 
-				weeklyPlace = 0;
+                weeklyPlace = 0;
 
-				Pattern pattern = Pattern.compile("Error=(\\d+)");
-				Matcher matcher = pattern.matcher(result);
-				if (matcher.find()) {
-					int errorCode = Integer.parseInt(matcher.group(1));
+                Pattern pattern = Pattern.compile("Error=(\\d+)");
+                Matcher matcher = pattern.matcher(result);
+                if (matcher.find()) {
+                    int errorCode = Integer.parseInt(matcher.group(1));
 
-					LBAdapterData data = new LBAdapterData("Error " + errorCode, 0, 0);
-					showedLbList.add(data);
+                    LBAdapterData data = new LBAdapterData("Error " + errorCode, 0, 0);
+                    showedLbList.add(data);
 
-					if (ldAdapter != null) ldAdapter.refreshList(showedLbList);
+                    if (ldAdapter != null) ldAdapter.refreshList(showedLbList);
 
-					listView.setSelectionFromTop(scrollIndex, scrollTop);
+                    listView.setSelectionFromTop(scrollIndex, scrollTop);
 
-					threadManager.finished(this);
+                    threadManager.finished(this);
 
-					return;
-				}
+                    return;
+                }
 
-				DocumentBuilder docBuilder;
-				Document document = null;
+                DocumentBuilder docBuilder;
+                Document document = null;
 
-				try {
-					docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-					document = docBuilder.parse(new InputSource(new StringReader(result)));
-				}
-				catch (Exception e) {
+                try {
+                    docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    document = docBuilder.parse(new InputSource(new StringReader(result)));
+                } catch (Exception e) {
 
-				}
+                }
 
-				document.getDocumentElement().normalize();
+                document.getDocumentElement().normalize();
 
-				Element rootElement = document.getDocumentElement();
+                Element rootElement = document.getDocumentElement();
 
-				long nextCycleTStamp = Long.parseLong(rootElement.getAttribute("until"));
-				timeOffset = System.currentTimeMillis() - Long.parseLong(rootElement.getAttribute("now"));
+                long nextCycleTStamp = Long.parseLong(rootElement.getAttribute("until"));
+                timeOffset = System.currentTimeMillis() - Long.parseLong(rootElement.getAttribute("now"));
 
-				List<Integer> bonusIds = new ArrayList<Integer>(3);
+                List<Integer> bonusIds = new ArrayList<Integer>(3);
 
-				bonusIds.add(Integer.parseInt(rootElement.getAttribute("first")));
-				bonusIds.add(Integer.parseInt(rootElement.getAttribute("second")));
-				bonusIds.add(Integer.parseInt(rootElement.getAttribute("third")));
+                bonusIds.add(Integer.parseInt(rootElement.getAttribute("first")));
+                bonusIds.add(Integer.parseInt(rootElement.getAttribute("second")));
+                bonusIds.add(Integer.parseInt(rootElement.getAttribute("third")));
 
-				NodeList nodes = document.getElementsByTagName("user");
+                NodeList nodes = document.getElementsByTagName("user");
 
-				boolean last = false;
+                boolean last = false;
 
-				int uid = bhApp.loginManager.getUid();
+                int uid = bhApp.loginManager.getUid();
 
-				for (int i = 0; i < nodes.getLength(); i++) {
+                for (int i = 0; i < nodes.getLength(); i++) {
 
-					Node node = nodes.item(i);
-					if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Node node = nodes.item(i);
+                    if (node.getNodeType() == Node.ELEMENT_NODE) {
 
-						Element element = (Element) node;
+                        Element element = (Element) node;
 
-						int id = Integer.parseInt(element.getAttribute("id"));
-						int rank = Integer.parseInt(element.getAttribute("rank"));
+                        int id = Integer.parseInt(element.getAttribute("id"));
+                        int rank = Integer.parseInt(element.getAttribute("rank"));
 
-						String name = element.getElementsByTagName("name").item(0).getTextContent();
-						int num = Integer.parseInt(element.getElementsByTagName("number").item(0).getTextContent());
+                        String name = element.getElementsByTagName("name").item(0).getTextContent();
+                        int num = Integer.parseInt(element.getElementsByTagName("number").item(0).getTextContent());
 
-						last = element.getAttribute("last").equals("1");
+                        last = element.getAttribute("last").equals("1");
 
-						LBAdapterData data = new LBAdapterData(name, num, id);
+                        LBAdapterData data = new LBAdapterData(name, num, id);
 
-						if (uid == id) {
-							isUserInLD = true;
-							userRank = rank;
-						}
+                        if (uid == id) {
+                            isUserInLD = true;
+                            userRank = rank;
+                        }
 
-						completeLbList.add(data);
-						completeLbList.set(rank - 1, data);
-						showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
+                        completeLbList.add(data);
+                        completeLbList.set(rank - 1, data);
+                        showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
 
-					}
+                    }
 
-				}
+                }
 
-				threadManager.finished(this);
+                threadManager.finished(this);
 
-				if (last || (startIndex == 1 && nodes.getLength() == 0)) {
+                if (last || (startIndex == 1 && nodes.getLength() == 0)) {
 
-					if (isUserInLD) {
-						View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
-						container.setVisibility(View.VISIBLE);
+                    if (isUserInLD) {
+                        View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
+                        container.setVisibility(View.VISIBLE);
 
-						refreshUserRow(bhApp.mainActivity);
-					}
+                        refreshUserRow(bhApp.mainActivity);
+                    }
 
-					long cachedNextCycleTS = PreferenceManager.getPref(bhApp, "cachedNextCycle", 0L);
+                    long cachedNextCycleTS = PreferenceManager.getPref(bhApp, "cachedNextCycle", 0L);
 
-					// store new cycleTS as cache
-					PreferenceManager.setPref(bhApp, "cachedNextCycle", nextCycleTStamp);
+                    // store new cycleTS as cache
+                    PreferenceManager.setPref(bhApp, "cachedNextCycle", nextCycleTStamp);
 
-					if (bonusIds.contains(uid)) {
+                    if (bonusIds.contains(uid)) {
 
-						weeklyPlace = bonusIds.indexOf(uid) + 1;
+                        weeklyPlace = bonusIds.indexOf(uid) + 1;
 
-						if (cachedNextCycleTS != nextCycleTStamp) {
+                        if (cachedNextCycleTS != nextCycleTStamp) {
 
-							Builder builder = new Builder(bhApp.mainActivity);
-							builder.setTitle("Congratulations!");
+                            Builder builder = new Builder(bhApp.mainActivity);
+                            builder.setTitle("Congratulations!");
 
-							float boost = 0f;
+                            float boost = 0f;
 
-							switch (weeklyPlace) {
-							case 1:
-								boost = 1f;
-								break;
-							case 2:
-								boost = 0.5f;
-								break;
-							case 3:
-								boost = 0.25f;
-								break;
-							}
+                            switch (weeklyPlace) {
+                                case 1:
+                                    boost = 1f;
+                                    break;
+                                case 2:
+                                    boost = 0.5f;
+                                    break;
+                                case 3:
+                                    boost = 0.25f;
+                                    break;
+                            }
 
-							NumberFormat percentage = NumberFormat.getPercentInstance();
-							String boostString = percentage.format(boost);
+                            NumberFormat percentage = NumberFormat.getPercentInstance();
+                            String boostString = percentage.format(boost);
 
-							builder.setMessage(
-									"You managed to get place " + weeklyPlace + " in the last weekly leaderboard!!! You will gain an extra "
-											+ boostString + " boost as reward until the current cycle did end. Congratulations!!!");
+                            builder.setMessage(
+                                    "You managed to get place " + weeklyPlace + " in the last weekly leaderboard!!! You will gain an extra "
+                                            + boostString + " boost as reward until the current cycle did end. Congratulations!!!");
 
-							builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                            builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									dialog.dismiss();
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
 
-								}
-							});
+                                }
+                            });
 
-							builder.show();
+                            builder.show();
 
-						}
+                        }
 
-					}
+                    }
 
-					AchievementsLayout.updateBoostIndicator(bhApp);
+                    AchievementsLayout.updateBoostIndicator(bhApp);
 
-					showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
-					ldAdapter.refreshList(showedLbList);
+                    showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
+                    ldAdapter.refreshList(showedLbList);
 
-					listView.setSelectionFromTop(scrollIndex, scrollTop);
-				}
-				else {
+                    listView.setSelectionFromTop(scrollIndex, scrollTop);
+                } else {
 
-					ldAdapter.notifyDataSetChanged();
-					new RefreshThread(bhApp, threadManager).execute(startIndex + length, length, (isUserInLD) ? 1 : 0);
+                    ldAdapter.notifyDataSetChanged();
+                    new RefreshThread(bhApp, threadManager).execute(startIndex + length, length, (isUserInLD) ? 1 : 0);
 
-				}
+                }
 
-			}
-			catch (NullPointerException e) {
-				if (bhApp != null && threadManager != null) {
-					new RefreshThread(bhApp, threadManager).execute(startIndex, length, (isUserInLD) ? 1 : 0);
-				}
+            } catch (NullPointerException e) {
+                if (bhApp != null && threadManager != null) {
+                    new RefreshThread(bhApp, threadManager).execute(startIndex, length, (isUserInLD) ? 1 : 0);
+                }
 
-			}
+            }
 
-		}
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
-		 */
-		@Override
-		protected void onProgressUpdate(Void... values) {
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+         */
+        @Override
+        protected void onProgressUpdate(Void... values) {
 
-		}
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
-		@Override
-		protected void onPreExecute() {
-			isUserInLD = false;
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onPreExecute()
+         */
+        @Override
+        protected void onPreExecute() {
+            isUserInLD = false;
 
-			View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
-			container.setVisibility(View.GONE);
+            View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
+            container.setVisibility(View.GONE);
 
-		}
-	}
+        }
+    }
 
-	private class ThreadManager {
+    private class ThreadManager {
 
-		RefreshThread refreshThread;
-		boolean running;
+        RefreshThread refreshThread;
+        boolean running;
 
-		/**
-		 * @param refreshThread2
-		 * @return
-		 */
-		public boolean setThread(RefreshThread refreshThread) {
+        public boolean setThread(RefreshThread refreshThread) {
 
-			if (running) {
-				return false;
-			}
+            if (running) {
+                return false;
+            }
 
-			this.refreshThread = refreshThread;
-			setRunning(true);
-			return true;
-		}
+            this.refreshThread = refreshThread;
+            setRunning(true);
+            return true;
+        }
 
-		public boolean finished(RefreshThread refreshThread) {
+        public boolean finished(RefreshThread refreshThread) {
 
-			if (this.refreshThread.equals(refreshThread)) {
-				setRunning(false);
-				return true;
-			}
-			return false;
-		}
+            if (this.refreshThread.equals(refreshThread)) {
+                setRunning(false);
+                return true;
+            }
+            return false;
+        }
 
-		private void setRunning(boolean running) {
+        private void setRunning(boolean running) {
 
-			this.running = running;
+            this.running = running;
 
-			if (!running) {
-				if (!refreshThread.bhApp.netMananger.areThreadsRunning()) {
-					MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-					progressBar.setVisible(false);
-				}
-			}
-			else {
-				MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-				progressBar.setVisible(true);
-			}
+            if (!running) {
+                if (!refreshThread.bhApp.netMananger.areThreadsRunning()) {
+                    MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+                    progressBar.setVisible(false);
+                }
+            } else {
+                MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+                progressBar.setVisible(true);
+            }
 
-		}
-	}
+        }
+    }
 
-	public class LBAdapterData {
+    public class LBAdapterData {
 
-		private String name;
-		private int devNum;
-		private int id;
+        private String name;
+        private int devNum;
+        private int id;
 
-		public LBAdapterData(String name, int devNum, int id) {
+        public LBAdapterData(String name, int devNum, int id) {
 
-			this.name = name;
-			this.devNum = devNum;
-			this.id = id;
-		}
+            this.name = name;
+            this.devNum = devNum;
+            this.id = id;
+        }
 
-		public String getName() {
+        public String getName() {
 
-			return name;
-		}
+            return name;
+        }
 
-		public void setName(String name) {
+        public void setName(String name) {
 
-			this.name = name;
-		}
+            this.name = name;
+        }
 
-		public int getDevNum() {
+        public int getDevNum() {
 
-			return devNum;
-		}
+            return devNum;
+        }
 
-		public void setDevNum(int devNum) {
+        public void setDevNum(int devNum) {
 
-			this.devNum = devNum;
-		}
+            this.devNum = devNum;
+        }
 
-		public int getId() {
+        public int getId() {
 
-			return id;
-		}
+            return id;
+        }
 
-		public void setId(int id) {
+        public void setId(int id) {
 
-			this.id = id;
-		}
+            this.id = id;
+        }
 
-		@Override
-		public boolean equals(Object o) {
+        @Override
+        public boolean equals(Object o) {
 
-			// TODO Auto-generated method stub
-			return id == ((LBAdapterData) (o)).id;
-		}
+            // TODO Auto-generated method stub
+            return id == ((LBAdapterData) (o)).id;
+        }
 
-	}
+    }
 
-	public class LeaderboardAdapter extends ArrayAdapter<LBAdapterData> {
+    public class LeaderboardAdapter extends ArrayAdapter<LBAdapterData> {
 
-		private ArrayList<LBAdapterData> dataList;
-		private ArrayList<LBAdapterData> originalDataList;
+        private ArrayList<LBAdapterData> dataList;
+        private ArrayList<LBAdapterData> originalDataList;
 
-		public LeaderboardAdapter(Context context, int textViewResourceId, ArrayList<LBAdapterData> newLbData) {
+        public LeaderboardAdapter(Context context, int textViewResourceId, ArrayList<LBAdapterData> newLbData) {
 
-			super(context, textViewResourceId, showedLbList);
+            super(context, textViewResourceId, showedLbList);
 
-			dataList = newLbData;
-			originalDataList = newLbData;
+            dataList = newLbData;
+            originalDataList = newLbData;
 
-		}
+        }
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
 
-			View rowView = convertView;
-			if (rowView == null) {
-				LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				rowView = inflater.inflate(R.layout.act_page_leaderboard_row, parent, false);
+            View rowView = convertView;
+            if (rowView == null) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                rowView = inflater.inflate(R.layout.act_page_leaderboard_row, parent, false);
 
-				WeeklyLeaderboardLayout.ViewHolder viewHolder = new ViewHolder();
+                WeeklyLeaderboardLayout.ViewHolder viewHolder = new ViewHolder();
 
-				viewHolder.rank = (TextView) rowView.findViewById(R.id.rankTxtView);
-				viewHolder.name = (TextView) rowView.findViewById(R.id.nameTxtView);
-				viewHolder.devices = (TextView) rowView.findViewById(R.id.devTxtView);
+                viewHolder.rank = (TextView) rowView.findViewById(R.id.rankTxtView);
+                viewHolder.name = (TextView) rowView.findViewById(R.id.nameTxtView);
+                viewHolder.devices = (TextView) rowView.findViewById(R.id.devTxtView);
 
-				viewHolder.changeRankImg = (ImageView) rowView.findViewById(R.id.changeRankImgView);
-				viewHolder.changeRankTxt = (TextView) rowView.findViewById(R.id.changeRankTxtView);
+                viewHolder.changeRankImg = (ImageView) rowView.findViewById(R.id.changeRankImgView);
+                viewHolder.changeRankTxt = (TextView) rowView.findViewById(R.id.changeRankTxtView);
 
-				viewHolder.changeDEVImg = (ImageView) rowView.findViewById(R.id.changeDEVImgView);
-				viewHolder.changeDEVTxt = (TextView) rowView.findViewById(R.id.changeDEVTxtView);
+                viewHolder.changeDEVImg = (ImageView) rowView.findViewById(R.id.changeDEVImgView);
+                viewHolder.changeDEVTxt = (TextView) rowView.findViewById(R.id.changeDEVTxtView);
 
-				viewHolder.prgTableRow = (TableRow) rowView.findViewById(R.id.LDRtableRow2);
-				viewHolder.expTableRow = (TableRow) rowView.findViewById(R.id.LDRTableRow01);
+                viewHolder.prgTableRow = (TableRow) rowView.findViewById(R.id.LDRtableRow2);
+                viewHolder.expTableRow = (TableRow) rowView.findViewById(R.id.LDRTableRow01);
 
-				rowView.setTag(viewHolder);
-			}
+                rowView.setTag(viewHolder);
+            }
 
-			WeeklyLeaderboardLayout.ViewHolder holder = (WeeklyLeaderboardLayout.ViewHolder) rowView.getTag();
+            WeeklyLeaderboardLayout.ViewHolder holder = (WeeklyLeaderboardLayout.ViewHolder) rowView.getTag();
 
-			if (holder != null && dataList != null && dataList.size() > position) {
+            if (holder != null && dataList != null && dataList.size() > position) {
 
-				LBAdapterData user = dataList.get(position);
+                LBAdapterData user = dataList.get(position);
 
-				String nameString = user.getName();
+                String nameString = user.getName();
 
-				DecimalFormat decimalFormat = new DecimalFormat(",###");
+                DecimalFormat decimalFormat = new DecimalFormat(",###");
 
-				int rankNow = (completeLbList.indexOf(user) + 1);
+                int rankNow = (completeLbList.indexOf(user) + 1);
 
-				if (rankNow == 1) {
-					rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xd4, 0xaf, 0x37)));
-				}
-				else if (rankNow == 2) {
-					rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xdd, 0xdd, 0xdd)));
-				}
-				else if (rankNow == 3) {
-					rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xcd, 0x7f, 0x32)));
-				}
-				else {
-					rowView.setBackground(null);
-				}
+                if (rankNow == 1) {
+                    rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xd4, 0xaf, 0x37)));
+                } else if (rankNow == 2) {
+                    rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xdd, 0xdd, 0xdd)));
+                } else if (rankNow == 3) {
+                    rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xcd, 0x7f, 0x32)));
+                } else {
+                    rowView.setBackground(null);
+                }
 
-				holder.rank.setText("" + rankNow + ".");
-				holder.name.setText(nameString);
-				holder.name.setTag(user.getId());
-				holder.devices.setText(decimalFormat.format(user.getDevNum()) + " Devices");
+                holder.rank.setText("" + rankNow + ".");
+                holder.name.setText(nameString);
+                holder.name.setTag(user.getId());
+                holder.devices.setText(decimalFormat.format(user.getDevNum()) + " Devices");
 
-				holder.prgTableRow.setVisibility(View.GONE);
-				holder.expTableRow.setVisibility(View.GONE);
+                holder.prgTableRow.setVisibility(View.GONE);
+                holder.expTableRow.setVisibility(View.GONE);
 
-				int devNow = user.getDevNum();
+                int devNow = user.getDevNum();
 
-				Integer[] changes = changeList.get(user.getId());
+                Integer[] changes = changeList.get(user.getId());
 
-				Integer rankBefore, devBefore;
+                Integer rankBefore, devBefore;
 
-				if (changes == null) {
+                if (changes == null) {
 
-					rankBefore = rankNow;
-					devBefore = devNow;
+                    rankBefore = rankNow;
+                    devBefore = devNow;
 
-				}
-				else {
+                } else {
 
-					rankBefore = changes[0];
-					devBefore = changes[1];
+                    rankBefore = changes[0];
+                    devBefore = changes[1];
 
-				}
+                }
 
-				if (rankBefore == null) rankBefore = rankNow;
-				if (devBefore == null) devBefore = devNow;
+                if (rankBefore == null) rankBefore = rankNow;
+                if (devBefore == null) devBefore = devNow;
 
-				// change in rank
-				holder.changeRankTxt.setText("" + Math.abs(rankBefore - rankNow));
+                // change in rank
+                holder.changeRankTxt.setText("" + Math.abs(rankBefore - rankNow));
 
-				if ((rankBefore - rankNow) > 0) {
+                if ((rankBefore - rankNow) > 0) {
 
-					holder.changeRankImg.setImageResource(R.drawable.ic_change_up);
+                    holder.changeRankImg.setImageResource(R.drawable.ic_change_up);
 
-				}
-				else if ((rankBefore - rankNow) < 0) {
+                } else if ((rankBefore - rankNow) < 0) {
 
-					holder.changeRankImg.setImageResource(R.drawable.ic_change_down);
+                    holder.changeRankImg.setImageResource(R.drawable.ic_change_down);
 
-				}
-				else if ((rankBefore - rankNow) == 0) {
+                } else if ((rankBefore - rankNow) == 0) {
 
-					holder.changeRankImg.setImageResource(android.R.color.transparent);
-					holder.changeRankTxt.setText("");
-				}
+                    holder.changeRankImg.setImageResource(android.R.color.transparent);
+                    holder.changeRankTxt.setText("");
+                }
 
-				// change in dev
-				holder.changeDEVTxt.setText("" + decimalFormat.format(Math.abs(devBefore - devNow)));
+                // change in dev
+                holder.changeDEVTxt.setText("" + decimalFormat.format(Math.abs(devBefore - devNow)));
 
-				if ((devBefore - devNow) > 0) {
+                if ((devBefore - devNow) > 0) {
 
-					holder.changeDEVImg.setImageResource(R.drawable.ic_change_down_s);
+                    holder.changeDEVImg.setImageResource(R.drawable.ic_change_down_s);
 
-				}
-				else if ((devBefore - devNow) < 0) {
+                } else if ((devBefore - devNow) < 0) {
 
-					holder.changeDEVImg.setImageResource(R.drawable.ic_change_up_s);
+                    holder.changeDEVImg.setImageResource(R.drawable.ic_change_up_s);
 
-				}
-				else if ((devBefore - devNow) == 0) {
+                } else if ((devBefore - devNow) == 0) {
 
-					holder.changeDEVImg.setImageResource(android.R.color.transparent);
-					holder.changeDEVTxt.setText("");
-				}
+                    holder.changeDEVImg.setImageResource(android.R.color.transparent);
+                    holder.changeDEVTxt.setText("");
+                }
 
-			}
-			return rowView;
-		}
+            }
+            return rowView;
+        }
 
-		public void refreshList(ArrayList<LBAdapterData> data) {
+        public void refreshList(ArrayList<LBAdapterData> data) {
 
-			clear();
-			addAll(data);
-			notifyDataSetChanged();
+            clear();
+            addAll(data);
+            notifyDataSetChanged();
 
-		}
+        }
 
-	}
-
-	static class ViewHolder {
-
-		TextView rank;
-		TextView name;
-
-		TextView devices;
-
-		ImageView changeRankImg;
-		TextView changeRankTxt;
-
-		ImageView changeDEVImg;
-		TextView changeDEVTxt;
-
-		TableRow prgTableRow;
-		TableRow expTableRow;
-
-	}
+    }
 
 }

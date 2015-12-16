@@ -1,9 +1,10 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 <!--
 
 		Dutch translation for Blue Hunter 
 		Author: Marc1510 [Marc]
-		2012-2013 © Marc1510 [Marc]
+		2012-2013 © Marc1510 [Marc]
+
 -->
 
     <string name="str_mainTitle">Blue Hunter</string>
@@ -22,9 +23,9 @@
     <string name="str_discoveryState_running">Bezig met scannen.</string>
     <string name="str_discoveryState_stopped">Scannen is gestopt.</string>
     <string name="str_discoveryState_btOff">Zet bluetooth uit.</string>
-    <string name="str_discoveryState_finished">Scannen voltooid. Opnieuw starten...</string>
+    <string name="str_discoveryState_finished">Scannen voltooid. Opnieuw starten&#8230;</string>
     <string name="str_discoveryState_btEnabling">Bluetooth aanzetten.</string>
-    <string name="str_discoveryState_btDisabling">Bluetooth uitzetten...</string>
+    <string name="str_discoveryState_btDisabling">Bluetooth uitzetten&#8230;</string>
     <string name="str_discoveryState_error">Scan error.</string>
     <string name="str_discoveryState_off">Scannen staat uit.</string>
     <string name="str_enableBT_title">Zet Bluetooth aan?</string>
@@ -67,9 +68,9 @@
     <string name="str_changePass_cancelButton">Annuleren</string>
     <string name="str_changePass_applyButton">Toepassen</string>
     <string name="str_changePass_sureButton">Weet je het zeker?</string>
-    <string name="str_changePass_oldPass">Vul oud wachtwoord in...</string>
-    <string name="str_changePass_newPass">Vul nieuw wachtwoord in...</string>
-    <string name="str_changePass_confirmNewPass">Bevestig nieuw wachtwoord...</string>
+    <string name="str_changePass_oldPass">Vul oud wachtwoord in&#8230;</string>
+    <string name="str_changePass_newPass">Vul nieuw wachtwoord in&#8230;</string>
+    <string name="str_changePass_confirmNewPass">Bevestig nieuw wachtwoord&#8230;</string>
     <string name="str_loginPass_title">Zet login wachtwoord</string>
     <string name="str_auth_newUpdateAvailable" formatted="false">Nieuwe nightly versie beschikbaar %n Momenteel geinstalleerde versie: %d. %n Beschikbare versie: %d.</string>
     <string name="str_auth_updated" formatted="false">Geupdate naar nieuwe versie: %s.%n</string>

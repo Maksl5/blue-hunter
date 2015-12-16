@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 <!--
 		Default English translation for Blue Hunter 
 		Author: Maksl5 [Markus Bensing].
@@ -30,9 +30,9 @@
     <string name="str_discoveryState_running">Discovery running.</string>
     <string name="str_discoveryState_stopped">Discovery stopped.</string>
     <string name="str_discoveryState_btOff">Bluetooth off.</string>
-    <string name="str_discoveryState_finished">Reactivating...</string>
-    <string name="str_discoveryState_btEnabling">Enabling Bluetooth...</string>
-    <string name="str_discoveryState_btDisabling">Disabling Bluetooth...</string>
+    <string name="str_discoveryState_finished">Reactivating&#8230;</string>
+    <string name="str_discoveryState_btEnabling">Enabling Bluetooth&#8230;</string>
+    <string name="str_discoveryState_btDisabling">Disabling Bluetooth&#8230;</string>
     <string name="str_discoveryState_error">Discovery error.</string>
     <string name="str_discoveryState_off">Discovery off.</string>
     
@@ -40,7 +40,7 @@
     <string name="str_discovery_devExpPerDay">Devices / Exp per day:</string>
     <string name="str_discovery_devExpToday">Devices / Exp last 24\nhours:</string>
     <string name="str_discovery_devInSession">New / Old devices in\ndiscovery session:</string>
-    <string name="str_discovery_loading">Loading...</string>
+    <string name="str_discovery_loading">Loading&#8230;</string>
     <string name="str_discovery_state_old">OLD</string>
     <string name="str_discovery_state_new">NEW</string>
     <string name="str_discovery_nextRank">Next Rank</string>
@@ -118,9 +118,9 @@
     <string name="str_changePass_cancelButton">Cancel</string>
     <string name="str_changePass_applyButton">Apply</string>
     <string name="str_changePass_sureButton">Are you sure?</string>
-    <string name="str_changePass_oldPass">Enter old password...</string>
-    <string name="str_changePass_newPass">Enter new password...</string>
-    <string name="str_changePass_confirmNewPass">Confirm new password...</string>
+    <string name="str_changePass_oldPass">Enter old password&#8230;</string>
+    <string name="str_changePass_newPass">Enter new password&#8230;</string>
+    <string name="str_changePass_confirmNewPass">Confirm new password&#8230;</string>
     <string name="str_loginPass_title">Set login password</string>
     
     <string name="str_auth_newUpdateAvailable" formatted="false">New nightly version available. %n Currently installed build: %d. %n Available build: %d.</string>

@@ -1,11 +1,44 @@
 package com.maksl5.bl_hunt.activity;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import android.app.AlarmManager;
+import android.app.AlertDialog.Builder;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabaseLockedException;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.view.ViewPager.PageTransformer;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.CompoundButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.DiscoveryManager;
@@ -36,47 +69,29 @@ import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
-import android.app.AlarmManager;
-import android.app.AlertDialog.Builder;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.database.sqlite.SQLiteDatabaseLockedException;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
-import android.os.Build.VERSION;
-import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v4.view.ViewPager.PageTransformer;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.widget.CompoundButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends FragmentActivity {
 
+	public static final int REQ_PICK_USER_IMAGE = 32;
+	/**
+	 * The {@link ViewPager} that will host the section contents.
+	 */
+	public ViewPager mViewPager;
+	public Notification.Builder stateNotificationBuilder;
+	public TextView userInfoTextView;
+	public boolean passSet = false;
+	public int oldVersion = 0;
+	public int newVersion = 0;
+	public boolean justStarted = true;
+	public boolean destroyed = false;
+	protected NotificationManager notificationManager;
+	protected TextView disStateTextView;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -86,29 +101,7 @@ public class MainActivity extends FragmentActivity {
 	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
 	SectionsPagerAdapter mSectionsPagerAdapter;
-
-	public static final int REQ_PICK_USER_IMAGE = 32;
-
-	/**
-	 * The {@link ViewPager} that will host the section contents.
-	 */
-	public ViewPager mViewPager;
-
 	private BlueHunter bhApp;
-
-	protected NotificationManager notificationManager;
-	public Notification.Builder stateNotificationBuilder;
-
-	protected TextView disStateTextView;
-	public TextView userInfoTextView;
-
-	public boolean passSet = false;
-
-	public int oldVersion = 0;
-	public int newVersion = 0;
-
-	public boolean justStarted = true;
-	public boolean destroyed = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -516,88 +509,9 @@ public class MainActivity extends FragmentActivity {
 		return false;
 	}
 
-	/**
-	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-	 * one of the primary sections of the app.
-	 */
-	public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-		@Override
-		public int getItemPosition(Object object) {
-			return POSITION_NONE;
-		}
-
-		public SectionsPagerAdapter(FragmentManager fm) {
-
-			super(fm);
-		}
-
-		@Override
-		public Fragment getItem(int i) {
-
-			Fragment fragment = new CustomSectionFragment();
-			Bundle args = new Bundle();
-			args.putInt(CustomSectionFragment.ARG_SECTION_NUMBER, i);
-			fragment.setArguments(args);
-			return fragment;
-		}
-
-		@Override
-		public int getCount() {
-
-			return 6;
-		}
-
-		@Override
-		public CharSequence getPageTitle(int position) {
-
-			switch (position) {
-			case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
-				return getString(R.string.str_pageTitle_main).toUpperCase();
-			case FragmentLayoutManager.PAGE_LEADERBOARD:
-				return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
-			case FragmentLayoutManager.PAGE_FOUND_DEVICES:
-				return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
-			case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
-				return getString(R.string.str_pageTitle_achievements).toUpperCase();
-			case FragmentLayoutManager.PAGE_PROFILE:
-				return getString(R.string.str_pageTitle_profile).toUpperCase();
-			case FragmentLayoutManager.PAGE_STATISTICS:
-				return getString(R.string.str_pageTitle_statistics).toUpperCase();
-			}
-			return null;
-		}
-	}
-
-	public static class CustomSectionFragment extends Fragment {
-
-		public CustomSectionFragment() {
-
-		}
-
-		public static final String ARG_SECTION_NUMBER = "section_number";
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-			Bundle args = getArguments();
-
-			return FragmentLayoutManager.getSpecificView(args, inflater, container, container.getContext());
-
-		}
-
-		@Override
-		public void onViewCreated(View view, Bundle savedInstanceState) {
-
-			super.onViewCreated(view, savedInstanceState);
-
-		}
-
-	}
-
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int,
 	 * android.content.Intent)
 	 */
@@ -609,12 +523,13 @@ public class MainActivity extends FragmentActivity {
 		if ((requestCode == 64 | requestCode == 128) & bhApp.disMan != null)
 			bhApp.disMan.passEnableBTActivityResult(resultCode, requestCode);
 
-		if (requestCode == REQ_PICK_USER_IMAGE && resultCode == RESULT_OK) ProfileLayout.passPickedImage(this, intent);
+		if (requestCode == REQ_PICK_USER_IMAGE && resultCode == RESULT_OK)
+			ProfileLayout.passPickedImage(this, intent);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.support.v4.app.FragmentActivity#onDestroy()
 	 */
 	@Override
@@ -636,26 +551,26 @@ public class MainActivity extends FragmentActivity {
 
 		// GLOBAL
 
-		HashMap<Integer, Integer[]> leaderboardChanges = new HashMap<Integer, Integer[]>();
+		SparseArray<Integer[]> leaderboardChanges = new SparseArray<>();
 
 		for (int i = 0; i < LeaderboardLayout.completeLbList.size(); i++) {
 			LBAdapterData leaderboardEntry = LeaderboardLayout.completeLbList.get(i);
 
-			leaderboardChanges.put(leaderboardEntry.getId(), new Integer[] {
-					i + 1, leaderboardEntry.getExp(), leaderboardEntry.getDevNum() });
+			leaderboardChanges.put(leaderboardEntry.getId(), new Integer[]{
+					i + 1, leaderboardEntry.getExp(), leaderboardEntry.getDevNum()});
 
 		}
 
 		// WEEKLY
 
-		HashMap<Integer, Integer[]> weeklyLeaderboardChanges = new HashMap<Integer, Integer[]>();
+		SparseArray<Integer[]> weeklyLeaderboardChanges = new SparseArray<>();
 
 		for (int i = 0; i < WeeklyLeaderboardLayout.completeLbList.size(); i++) {
 			com.maksl5.bl_hunt.custom_ui.fragment.WeeklyLeaderboardLayout.LBAdapterData weeklyLeaderboardEntry = WeeklyLeaderboardLayout.completeLbList
 					.get(i);
 
-			weeklyLeaderboardChanges.put(weeklyLeaderboardEntry.getId(), new Integer[] {
-					i + 1, weeklyLeaderboardEntry.getDevNum() });
+			weeklyLeaderboardChanges.put(weeklyLeaderboardEntry.getId(), new Integer[]{
+					i + 1, weeklyLeaderboardEntry.getDevNum()});
 
 		}
 
@@ -665,8 +580,7 @@ public class MainActivity extends FragmentActivity {
 
 			new DatabaseManager(bhApp).resetWeeklyLeaderboardChanges();
 			new DatabaseManager(bhApp).setWeeklyLeaderboardChanges(weeklyLeaderboardChanges);
-		}
-		catch (SQLiteDatabaseLockedException e) {
+		} catch (SQLiteDatabaseLockedException e) {
 			Toast.makeText(bhApp, "Could not save Leaderboard changes.", Toast.LENGTH_SHORT).show();
 		}
 
@@ -705,8 +619,7 @@ public class MainActivity extends FragmentActivity {
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
-			}
-			else {
+			} else {
 				notificationManager.notify(1, stateNotificationBuilder.getNotification());
 			}
 		}
@@ -731,13 +644,11 @@ public class MainActivity extends FragmentActivity {
 
 			if (VERSION.SDK_INT >= 16) {
 				notificationManager.notify(1, stateNotificationBuilder.build());
-			}
-			else {
+			} else {
 				notificationManager.notify(1, stateNotificationBuilder.getNotification());
 			}
 
-		}
-		else {
+		} else {
 			notificationManager.cancel(1);
 		}
 
@@ -745,7 +656,7 @@ public class MainActivity extends FragmentActivity {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * android.support.v4.app.FragmentActivity#onConfigurationChanged(android
 	 * .content.res.Configuration)
@@ -759,12 +670,10 @@ public class MainActivity extends FragmentActivity {
 		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
 			try {
 				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
 				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-			}
-			catch (OutOfMemoryError e) {
+			} catch (OutOfMemoryError e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
 				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 			}
@@ -791,7 +700,7 @@ public class MainActivity extends FragmentActivity {
 		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		final int oldHeight = progressBar.getHeight();
 		final int oldWidth = progressBar.getWidth();
-		
+
 		Log.d("onConfigurationChanged", "oldHeight=" + oldHeight);
 		Log.d("onConfigurationChanged", "oldWidth=" + oldWidth);
 
@@ -800,13 +709,13 @@ public class MainActivity extends FragmentActivity {
 
 			@Override
 			public void onGlobalLayout() {
-				
+
 				Log.d("onGlobalLayout", "height=" + progressBar.getHeight());
 				Log.d("onGlobalLayout", "width=" + progressBar.getWidth());
-				
+
 				if (progressBar.getHeight() != oldHeight && progressBar.getWidth() != oldWidth) {
 					progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-					
+
 					DeviceDiscoveryLayout.updateNextRankIndicator(MainActivity.this, DeviceDiscoveryLayout.expToUpdate);
 
 				}
@@ -817,6 +726,85 @@ public class MainActivity extends FragmentActivity {
 		LeaderboardLayout.refreshLeaderboard(bhApp, true);
 		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
 
+	}
+
+	public static class CustomSectionFragment extends Fragment {
+
+		public static final String ARG_SECTION_NUMBER = "section_number";
+
+		public CustomSectionFragment() {
+
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+			Bundle args = getArguments();
+
+			return FragmentLayoutManager.getSpecificView(args, inflater, container, container.getContext());
+
+		}
+
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+
+			super.onViewCreated(view, savedInstanceState);
+
+		}
+
+	}
+
+	/**
+	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+	 * one of the primary sections of the app.
+	 */
+	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+		public SectionsPagerAdapter(FragmentManager fm) {
+
+			super(fm);
+		}
+
+		@Override
+		public int getItemPosition(Object object) {
+			return POSITION_NONE;
+		}
+
+		@Override
+		public Fragment getItem(int i) {
+
+			Fragment fragment = new CustomSectionFragment();
+			Bundle args = new Bundle();
+			args.putInt(CustomSectionFragment.ARG_SECTION_NUMBER, i);
+			fragment.setArguments(args);
+			return fragment;
+		}
+
+		@Override
+		public int getCount() {
+
+			return 6;
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+
+			switch (position) {
+				case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
+					return getString(R.string.str_pageTitle_main).toUpperCase();
+				case FragmentLayoutManager.PAGE_LEADERBOARD:
+					return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
+				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
+					return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
+				case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
+					return getString(R.string.str_pageTitle_achievements).toUpperCase();
+				case FragmentLayoutManager.PAGE_PROFILE:
+					return getString(R.string.str_pageTitle_profile).toUpperCase();
+				case FragmentLayoutManager.PAGE_STATISTICS:
+					return getString(R.string.str_pageTitle_statistics).toUpperCase();
+			}
+			return null;
+		}
 	}
 
 }

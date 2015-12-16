@@ -1,4 +1,4 @@
-	<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 	<!--
 	Swedish translation for Blue Hunter 
 	Author: Snah.
@@ -28,9 +28,9 @@
 	<string name="str_discoveryState_running">Söker</string>
 	<string name="str_discoveryState_stopped">Sökning stoppad.</string>
 	<string name="str_discoveryState_btOff">Bluetooth av.</string>
-	<string name="str_discoveryState_finished">Sökning avslutad. Startar om...</string>
-	<string name="str_discoveryState_btEnabling">Aktiverar Bluetooth...</string>
-	<string name="str_discoveryState_btDisabling">Deaktiverar Bluetooth... </string>
+	<string name="str_discoveryState_finished">Sökning avslutad. Startar om&#8230;</string>
+	<string name="str_discoveryState_btEnabling">Aktiverar Bluetooth&#8230;</string>
+	<string name="str_discoveryState_btDisabling">Deaktiverar Bluetooth&#8230;</string>
 	<string name="str_discoveryState_error">Sökfel.</string>
 	<string name="str_discoveryState_off">Sökning av.</string>
 	
@@ -87,7 +87,6 @@
 	<string name="str_foundDevices_manu_unkown">Okända</string>
 	<string name="str_foundDevices_exp_abbreviation">Poäng</string>
 	<string name="str_foundDevices_level">Nivå</string>
-	<string name="str_foundDevices_bonusExp_attach">bonuspoäng </string>
 	
 	<string name="str_statistics_editName_apply">Tillämpa</string>
 	
@@ -96,9 +95,9 @@
 	<string name="str_changePass_cancelButton">Avbryt</string>
 	<string name="str_changePass_applyButton">Tillämpa</string>
 	<string name="str_changePass_sureButton">Är du säker?</string>
-	<string name="str_changePass_oldPass">Skriv gammalt lösenord...</string>
-	<string name="str_changePass_newPass">Skriv nytt lösenord...</string>
-	<string name="str_changePass_confirmNewPass">Bekräfta nytt lösenord...</string>
+	<string name="str_changePass_oldPass">Skriv gammalt lösenord&#8230;.</string>
+	<string name="str_changePass_newPass">Skriv nytt lösenord&#8230;</string>
+	<string name="str_changePass_confirmNewPass">Bekräfta nytt lösenord&#8230;</string>
 	<string name="str_loginPass_title">Sätt lösenord för att logga in</string>
 	
 	<string name="str_auth_newUpdateAvailable" formatted="false">Ny nattlig version tillgänglig. %n Nuvarande installerade version:: %d. %n Tillgänglig version: %d.</string>

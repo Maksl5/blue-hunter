@@ -1,43 +1,9 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.joda.time.Seconds;
-import org.joda.time.field.MillisDurationField;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.LevelSystem;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout.FDAdapterData;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
-
 import android.content.Context;
 import android.os.AsyncTask;
-import android.provider.ContactsContract.Contacts.Data;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,9 +15,38 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
-import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * @author Maksl5
@@ -65,17 +60,12 @@ public class LeaderboardLayout {
 	public static final int ARRAY_INDEX_DEV_NUMBER = 4;
 	public static final int ARRAY_INDEX_EXP = 5;
 	public static final int ARRAY_INDEX_ID = 6;
-
-	private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<LBAdapterData>();
 	public volatile static ArrayList<LBAdapterData> completeLbList = new ArrayList<LBAdapterData>();
-
-	private static ThreadManager threadManager = null;
-
-	public static HashMap<Integer, Integer[]> changeList = new HashMap<Integer, Integer[]>();
-
+	public static SparseArray<Integer[]> changeList = new SparseArray<>();
 	public static int userRank = -1;
-
 	public static int currentSelectedTab = 0;
+	private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<LBAdapterData>();
+	private static ThreadManager threadManager = null;
 
 	public static void initTabs(final BlueHunter bhApp) {
 
@@ -485,6 +475,25 @@ public class LeaderboardLayout {
 
 	}
 
+	static class ViewHolder {
+
+		TextView rank;
+		TextView name;
+		TextView level;
+		ProgressBar levelPrg;
+		TextView devices;
+		TextView exp;
+
+		ImageView changeRankImg;
+		TextView changeRankTxt;
+
+		ImageView changeEXPImg;
+		TextView changeEXPTxt;
+
+		ImageView changeDEVImg;
+		TextView changeDEVTxt;
+	}
+
 	private class RefreshThread extends AsyncTask<Integer, Void, String> {
 
 		private BlueHunter bhApp;
@@ -618,7 +627,7 @@ public class LeaderboardLayout {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override
@@ -774,7 +783,7 @@ public class LeaderboardLayout {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
 		 */
 		@Override
@@ -784,7 +793,7 @@ public class LeaderboardLayout {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
 		@Override
@@ -801,10 +810,6 @@ public class LeaderboardLayout {
 		RefreshThread refreshThread;
 		boolean running;
 
-		/**
-		 * @param refreshThread2
-		 * @return
-		 */
 		public boolean setThread(RefreshThread refreshThread) {
 
 			if (running) {
@@ -1103,25 +1108,6 @@ public class LeaderboardLayout {
 
 		}
 
-	}
-
-	static class ViewHolder {
-
-		TextView rank;
-		TextView name;
-		TextView level;
-		ProgressBar levelPrg;
-		TextView devices;
-		TextView exp;
-
-		ImageView changeRankImg;
-		TextView changeRankTxt;
-
-		ImageView changeEXPImg;
-		TextView changeEXPTxt;
-
-		ImageView changeDEVImg;
-		TextView changeDEVTxt;
 	}
 
 }
