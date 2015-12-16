@@ -5,16 +5,15 @@
 package com.maksl5.bl_hunt;
 
 
-
-import com.maksl5.bl_hunt.net.CheckUpdateService;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
+
+import com.maksl5.bl_hunt.net.CheckUpdateService;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 
 
@@ -36,7 +35,7 @@ public class BootReceiver extends BroadcastReceiver {
 		alarmManager.cancel(pendingIntent);
 		
 		if (PreferenceManager.getPref(context, "pref_checkUpdate", true)) {
-			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1 * 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
+			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60 * 1000, AlarmManager.INTERVAL_HOUR, pendingIntent);
 		}
 
 

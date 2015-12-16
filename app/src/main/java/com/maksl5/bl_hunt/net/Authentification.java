@@ -26,7 +26,6 @@ import android.widget.Toast;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
 
 import org.acra.ACRA;
 
@@ -43,7 +42,6 @@ import java.util.regex.Pattern;
 public class Authentification {
 
 	public static final int NETRESULT_ID_SERIAL_CHECK = 1;
-	public static final int NETRESULT_ID_CHECK_UPDATE = 2;
 	public static final int NETRESULT_ID_GET_USER_INFO = 3;
 	public static final int NETRESULT_ID_UPDATED = 4;
 	public static final int NETRESULT_ID_PRE_LOGIN = 5;
@@ -53,13 +51,14 @@ public class Authentification {
 	public static final int NETRESULT_ID_SYNC_FD_CHECK = 9;
 	public static final int NETRESULT_ID_SYNC_FD_APPLY = 10;
 	public static final int NETRESULT_ID_APPLY_NAME = 11;
+	private static final int NETRESULT_ID_CHECK_UPDATE = 2;
 	public static boolean newUpdateAvailable = false;
-	public boolean internetIsAvailable = false;
-	protected BlueHunter bhApp;
-	private AuthentificationSecure secure;
-	private Context context;
-	private volatile ArrayList<OnNetworkResultAvailableListener> listenerList = new ArrayList<Authentification.OnNetworkResultAvailableListener>();
-	private ArrayList<OnLoginChangeListener> loginChangeListeners = new ArrayList<Authentification.OnLoginChangeListener>();
+	final BlueHunter bhApp;
+	private final AuthentificationSecure secure;
+	private final Context context;
+	private final ArrayList<OnNetworkResultAvailableListener> listenerList = new ArrayList<>();
+	private final ArrayList<OnLoginChangeListener> loginChangeListeners = new ArrayList<>();
+	private boolean internetIsAvailable = false;
 
 	public Authentification(BlueHunter app) {
 
@@ -110,7 +109,7 @@ public class Authentification {
 		return secure.getSerialHash(getSerialNumber());
 	}
 
-	public String getLoginHash(String resultFromPreLogin) {
+	private String getLoginHash(String resultFromPreLogin) {
 
 		return secure.getLoginHash(getSerialNumber(), resultFromPreLogin);
 	}
@@ -133,7 +132,7 @@ public class Authentification {
 	/**
 	 * @param tokenString
 	 */
-	public void storeLoginToken(String tokenString) {
+	private void storeLoginToken(String tokenString) {
 
 		secure.storeLoginToken(tokenString);
 
@@ -155,51 +154,51 @@ public class Authentification {
 
 	public void checkUpdate() {
 
-		if (true) return;
+		return;
 
-		if (PreferenceManager.getPref(context, "pref_checkUpdate", true)) {
-
-			// Set result listener
-			setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
-
-				@Override
-				public boolean onResult(int requestId, String resultString) {
-
-					if (requestId == NETRESULT_ID_CHECK_UPDATE) {
-						try {
-							Pattern pattern = Pattern.compile("android:versionCode=\"(\\d+)\"");
-							Matcher matcher = pattern.matcher(resultString);
-							matcher.find();
-
-							int verCode = Integer.parseInt(matcher.group(1));
-
-							if (verCode > bhApp.getVersionCode()) {
-								Toast.makeText(bhApp,
-										bhApp.getString(R.string.str_auth_newUpdateAvailable, bhApp.getVersionCode(), verCode),
-										Toast.LENGTH_LONG).show();
-								newUpdateAvailable = true;
-							}
-						}
-						catch (IllegalStateException e) {
-							Pattern pattern = Pattern.compile("Error=(\\d+)");
-							Matcher matcher = pattern.matcher(resultString);
-							if (matcher.find()) {
-								int errorCode = Integer.parseInt(matcher.group(1));
-								Toast.makeText(bhApp, bhApp.getString(R.string.str_Error_checkUpdate, errorCode), Toast.LENGTH_LONG).show();
-							}
-						}
-
-						return true;
-					}
-
-					return false;
-				}
-			});
-
-			NetworkThread checkUpdateThread = new NetworkThread(bhApp);
-
-			checkUpdateThread.execute(AuthentificationSecure.SERVER_CHECK_UPDATE, String.valueOf(NETRESULT_ID_CHECK_UPDATE));
-		}
+//		if (PreferenceManager.getPref(context, "pref_checkUpdate", true)) {
+//
+//			// Set result listener
+////			setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
+////
+////				@Override
+////				public boolean onResult(int requestId, String resultString) {
+////
+////					if (requestId == NETRESULT_ID_CHECK_UPDATE) {
+////						try {
+////							Pattern pattern = Pattern.compile("android:versionCode=\"(\\d+)\"");
+////							Matcher matcher = pattern.matcher(resultString);
+////							matcher.find();
+////
+////							int verCode = Integer.parseInt(matcher.group(1));
+////
+////							if (verCode > bhApp.getVersionCode()) {
+////								Toast.makeText(bhApp,
+////										bhApp.getString(R.string.str_auth_newUpdateAvailable, bhApp.getVersionCode(), verCode),
+////										Toast.LENGTH_LONG).show();
+////								newUpdateAvailable = true;
+////							}
+////						}
+////						catch (IllegalStateException e) {
+////							Pattern pattern = Pattern.compile("Error=(\\d+)");
+////							Matcher matcher = pattern.matcher(resultString);
+////							if (matcher.find()) {
+////								int errorCode = Integer.parseInt(matcher.group(1));
+////								Toast.makeText(bhApp, bhApp.getString(R.string.str_Error_checkUpdate, errorCode), Toast.LENGTH_LONG).show();
+////							}
+////						}
+////
+////						return true;
+////					}
+////
+////					return false;
+////				}
+////			});
+////
+////			NetworkThread checkUpdateThread = new NetworkThread(bhApp);
+////
+////			checkUpdateThread.execute(AuthentificationSecure.SERVER_CHECK_UPDATE, String.valueOf(NETRESULT_ID_CHECK_UPDATE));
+//		}
 
 	}
 
@@ -323,7 +322,7 @@ public class Authentification {
 	 */
 	public synchronized void fireOnNetworkResultAvailable(int requestId, String resultString) {
 
-		List<OnNetworkResultAvailableListener> iterateList = new ArrayList<Authentification.OnNetworkResultAvailableListener>(listenerList);
+		List<OnNetworkResultAvailableListener> iterateList = new ArrayList<>(listenerList);
 
 		for (OnNetworkResultAvailableListener onNetworkResultAvailableListener : iterateList) {
 			if (onNetworkResultAvailableListener.onResult(requestId, resultString)) {
@@ -346,7 +345,7 @@ public class Authentification {
 			loginChangeListeners.add(onLoginChangeListener);
 	}
 
-	public synchronized void fireLoginChange(boolean loggedIn) {
+	private synchronized void fireLoginChange(boolean loggedIn) {
 
 		for (OnLoginChangeListener onLoginChangeListener : loginChangeListeners) {
 			onLoginChangeListener.loginStateChange(loggedIn);
@@ -364,12 +363,10 @@ public class Authentification {
 		ConnectivityManager connectivityManager = (ConnectivityManager) bhApp.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-		if (networkInfo == null) {
-			internetIsAvailable = false;
-		} else internetIsAvailable = networkInfo.isConnected();
+		internetIsAvailable = networkInfo != null && networkInfo.isConnected();
 	}
 
-	public boolean isInternetAvailable() {
+	private boolean isInternetAvailable() {
 
 		return internetIsAvailable;
 	}
@@ -407,11 +404,10 @@ public class Authentification {
 	 */
 	public class LoginManager extends BroadcastReceiver implements OnNetworkResultAvailableListener {
 
+		private final String serialNumber;
 		private int timestamp;
 		private String password;
 		private String loginToken;
-		private String serialNumber;
-
 		private int uid;
 
 		private boolean loggedIn = false;
@@ -647,8 +643,7 @@ public class Authentification {
 
 					setLoginState("1".equals(checkLoginMatcher.group(1)));
 
-					boolean passExists = "1".equals(checkLoginMatcher.group(2));
-					bhApp.mainActivity.passSet = passExists;
+					bhApp.mainActivity.passSet = "1".equals(checkLoginMatcher.group(2));
 
 					if (!loggedIn) {
 						preLogin();
@@ -683,13 +678,12 @@ public class Authentification {
 				checkInternetConnection();
 				boolean afterCheck = isInternetAvailable();
 
-				if (beforeCheck == false && afterCheck == true) {
+				if (!beforeCheck && afterCheck) {
 					NetworkThread serialSubmit = new NetworkThread(bhApp);
 					serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL,
 							String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK), "s=" + Authentification.getSerialNumber(),
 							"v=" + bhApp.getVersionCode(), "h=" + bhApp.authentification.getSerialNumberHash());
-				}
-				else if (beforeCheck == true && afterCheck == false) {
+				} else if (beforeCheck && !afterCheck) {
 					setLoginState(false);
 				}
 			}

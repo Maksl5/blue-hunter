@@ -13,11 +13,9 @@ import java.util.List;
 
 public class ManufacturerList {
 
-	private static List<Manufacturer> manufacturerList;
-
-	private static SparseIntArray expCacheArray = new SparseIntArray();
-	private static SparseArray<String> nameCacheArray = new SparseArray<String>();
-
+    private static final SparseIntArray expCacheArray = new SparseIntArray();
+    private static final SparseArray<String> nameCacheArray = new SparseArray<>();
+    private static List<Manufacturer> manufacturerList;
 	private static Context context;
 
 	private static boolean needAddingUnknown = true;
@@ -90,10 +88,8 @@ public class ManufacturerList {
 
 			}
 
-			String unknown = context.getString(R.string.str_foundDevices_manu_unkown);
-
-			return unknown;
-		}
+            return context.getString(R.string.str_foundDevices_manu_unkown);
+        }
 		else {
 			return name;
 		}
@@ -146,7 +142,7 @@ public class ManufacturerList {
 
 	}
 
-	public static List<Manufacturer> getManufacturers() {
+    public static void getManufacturers() {
 
 		if (manufacturerList == null) {
 
@@ -3024,7 +3020,7 @@ public class ManufacturerList {
 			}
 
 		}
-		return manufacturerList;
-	}
+
+    }
 
 }

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -61,13 +62,13 @@ public class WeeklyLeaderboardLayout {
     public static final int ARRAY_INDEX_DEV_NUMBER = 4;
     public static final int ARRAY_INDEX_EXP = 5;
     public static final int ARRAY_INDEX_ID = 6;
-    public volatile static ArrayList<LBAdapterData> completeLbList = new ArrayList<LBAdapterData>();
+    public final static ArrayList<LBAdapterData> completeLbList = new ArrayList<>();
     public static SparseArray<Integer[]> changeList = new SparseArray<>();
-    public static int userRank = -1;
     public static long timeOffset = 0;
     public static TextView timerTextView = null;
     public static int weeklyPlace = 0;
-    private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<LBAdapterData>();
+    private static int userRank = -1;
+    private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<>();
     private static ThreadManager threadManager = null;
 
     public static void refreshLeaderboard(final BlueHunter bhApp) {
@@ -105,7 +106,7 @@ public class WeeklyLeaderboardLayout {
 
             ldAdapter = (LeaderboardAdapter) listView.getAdapter();
             if (ldAdapter == null || ldAdapter.isEmpty()) {
-                ldAdapter = new WeeklyLeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
+                ldAdapter = new WeeklyLeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity,
                         showedLbList);
                 listView.setAdapter(ldAdapter);
             }
@@ -136,8 +137,6 @@ public class WeeklyLeaderboardLayout {
 
         if (threadManager.running) return;
 
-        List<String> searchedList = new ArrayList<String>();
-
         if (bhApp.mainActivity.mViewPager == null) {
             bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
         }
@@ -163,7 +162,7 @@ public class WeeklyLeaderboardLayout {
         LeaderboardAdapter lbAdapter = (LeaderboardAdapter) lv.getAdapter();
 
         if (lbAdapter == null || lbAdapter.isEmpty()) {
-            lbAdapter = new WeeklyLeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
+            lbAdapter = new WeeklyLeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity,
                     showedLbList);
             lv.setAdapter(lbAdapter);
         }
@@ -172,15 +171,15 @@ public class WeeklyLeaderboardLayout {
 
         if (text.length() == 0) {
             if (!showedLbList.equals(completeLbList)) {
-                showedLbList = new ArrayList<LBAdapterData>(completeLbList);
+                showedLbList = new ArrayList<>(completeLbList);
                 lbAdapter.refreshList(showedLbList);
             }
         } else {
 
-            ArrayList<LBAdapterData> filterList = new ArrayList<LBAdapterData>(completeLbList);
+            ArrayList<LBAdapterData> filterList = new ArrayList<>(completeLbList);
 
             final int count = filterList.size();
-            final ArrayList<LBAdapterData> newValues = new ArrayList<LBAdapterData>();
+            final ArrayList<LBAdapterData> newValues = new ArrayList<>();
 
             for (int i = 0; i < count; i++) {
                 final LBAdapterData data = filterList.get(i);
@@ -200,7 +199,7 @@ public class WeeklyLeaderboardLayout {
 
     }
 
-    public static void scrollToPosition(MainActivity mainActivity, int index) {
+    private static void scrollToPosition(MainActivity mainActivity, int index) {
 
         if (completeLbList != null && completeLbList.size() != 0) {
 
@@ -228,7 +227,7 @@ public class WeeklyLeaderboardLayout {
 
     }
 
-    public static void refreshUserRow(final MainActivity mainActivity) {
+    private static void refreshUserRow(final MainActivity mainActivity) {
 
         LBAdapterData userData = completeLbList.get(userRank - 1);
 
@@ -331,14 +330,14 @@ public class WeeklyLeaderboardLayout {
         ImageView changeDEVImg;
         TextView changeDEVTxt;
 
-        TableRow prgTableRow;
+        RelativeLayout prgTableRow;
         TableRow expTableRow;
 
     }
 
     private class RefreshThread extends AsyncTask<Integer, Void, String> {
 
-        private BlueHunter bhApp;
+        private final BlueHunter bhApp;
         private ListView listView;
 
         private LeaderboardAdapter ldAdapter;
@@ -388,7 +387,7 @@ public class WeeklyLeaderboardLayout {
 
             this.ldAdapter = (LeaderboardAdapter) listView.getAdapter();
             if (this.ldAdapter == null || this.ldAdapter.isEmpty()) {
-                this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedLbList);
+                this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, showedLbList);
                 this.listView.setAdapter(ldAdapter);
             }
 
@@ -411,7 +410,7 @@ public class WeeklyLeaderboardLayout {
             startIndex = params[0];
             length = params[1];
 
-            isUserInLD = (params[2] == 1) ? true : false;
+            isUserInLD = (params[2] == 1);
 
             try {
 
@@ -426,17 +425,17 @@ public class WeeklyLeaderboardLayout {
 
                 int responseCode = conn.getResponseCode();
 
-                String result = "";
+                String result;
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
 
-                    String line = "";
+                    String line;
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                     StringBuilder stringBuilder = new StringBuilder();
 
                     while ((line = br.readLine()) != null) {
-                        stringBuilder.append(line + System.lineSeparator());
+                        stringBuilder.append(line).append(System.lineSeparator());
                     }
 
                     stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
@@ -508,7 +507,7 @@ public class WeeklyLeaderboardLayout {
                 long nextCycleTStamp = Long.parseLong(rootElement.getAttribute("until"));
                 timeOffset = System.currentTimeMillis() - Long.parseLong(rootElement.getAttribute("now"));
 
-                List<Integer> bonusIds = new ArrayList<Integer>(3);
+                List<Integer> bonusIds = new ArrayList<>(3);
 
                 bonusIds.add(Integer.parseInt(rootElement.getAttribute("first")));
                 bonusIds.add(Integer.parseInt(rootElement.getAttribute("second")));
@@ -544,7 +543,7 @@ public class WeeklyLeaderboardLayout {
 
                         completeLbList.add(data);
                         completeLbList.set(rank - 1, data);
-                        showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
+                        showedLbList = new ArrayList<>(completeLbList);
 
                     }
 
@@ -613,7 +612,7 @@ public class WeeklyLeaderboardLayout {
 
                     AchievementsLayout.updateBoostIndicator(bhApp);
 
-                    showedLbList = new ArrayList<WeeklyLeaderboardLayout.LBAdapterData>(completeLbList);
+                    showedLbList = new ArrayList<>(completeLbList);
                     ldAdapter.refreshList(showedLbList);
 
                     listView.setSelectionFromTop(scrollIndex, scrollTop);
@@ -674,13 +673,12 @@ public class WeeklyLeaderboardLayout {
             return true;
         }
 
-        public boolean finished(RefreshThread refreshThread) {
+        public void finished(RefreshThread refreshThread) {
 
             if (this.refreshThread.equals(refreshThread)) {
                 setRunning(false);
-                return true;
+                return;
             }
-            return false;
         }
 
         private void setRunning(boolean running) {
@@ -746,20 +744,22 @@ public class WeeklyLeaderboardLayout {
         @Override
         public boolean equals(Object o) {
 
-            // TODO Auto-generated method stub
-            return id == ((LBAdapterData) (o)).id;
+            if (o instanceof LBAdapterData)
+                return id == ((LBAdapterData) (o)).id;
+            else
+                return false;
         }
 
     }
 
     public class LeaderboardAdapter extends ArrayAdapter<LBAdapterData> {
 
-        private ArrayList<LBAdapterData> dataList;
-        private ArrayList<LBAdapterData> originalDataList;
+        private final ArrayList<LBAdapterData> dataList;
+        private final ArrayList<LBAdapterData> originalDataList;
 
-        public LeaderboardAdapter(Context context, int textViewResourceId, ArrayList<LBAdapterData> newLbData) {
+        public LeaderboardAdapter(Context context, ArrayList<LBAdapterData> newLbData) {
 
-            super(context, textViewResourceId, showedLbList);
+            super(context, R.layout.act_page_leaderboard_row, showedLbList);
 
             dataList = newLbData;
             originalDataList = newLbData;
@@ -786,7 +786,7 @@ public class WeeklyLeaderboardLayout {
                 viewHolder.changeDEVImg = (ImageView) rowView.findViewById(R.id.changeDEVImgView);
                 viewHolder.changeDEVTxt = (TextView) rowView.findViewById(R.id.changeDEVTxtView);
 
-                viewHolder.prgTableRow = (TableRow) rowView.findViewById(R.id.LDRtableRow2);
+                viewHolder.prgTableRow = (RelativeLayout) rowView.findViewById(R.id.LdrPrgParent);
                 viewHolder.expTableRow = (TableRow) rowView.findViewById(R.id.LDRTableRow01);
 
                 rowView.setTag(viewHolder);

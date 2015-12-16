@@ -41,7 +41,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,12 +59,12 @@ public class LeaderboardLayout {
 	public static final int ARRAY_INDEX_DEV_NUMBER = 4;
 	public static final int ARRAY_INDEX_EXP = 5;
 	public static final int ARRAY_INDEX_ID = 6;
-	public volatile static ArrayList<LBAdapterData> completeLbList = new ArrayList<LBAdapterData>();
-	public static SparseArray<Integer[]> changeList = new SparseArray<>();
+    public final static ArrayList<LBAdapterData> completeLbList = new ArrayList<>();
+    public static SparseArray<Integer[]> changeList = new SparseArray<>();
 	public static int userRank = -1;
 	public static int currentSelectedTab = 0;
-	private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<LBAdapterData>();
-	private static ThreadManager threadManager = null;
+    private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<>();
+    private static ThreadManager threadManager = null;
 
 	public static void initTabs(final BlueHunter bhApp) {
 
@@ -135,7 +134,7 @@ public class LeaderboardLayout {
 											int seconds = (int) (restTime / (float) 1000) - days * 24 * 60 * 60 - hours * 60 * 60
 													- minutes * 60;
 
-											String timerString = "";
+                                            String timerString;
 
 											if (nextCycleTimestamp == 1450051200000L) {
 												timerString = String.format("Initial Start in %dd %dh %dmin and %dsec", days, hours,
@@ -211,8 +210,8 @@ public class LeaderboardLayout {
 
 			ldAdapter = (LeaderboardAdapter) listView.getAdapter();
 			if (ldAdapter == null || ldAdapter.isEmpty()) {
-				ldAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row,
-						showedLbList);
+                ldAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity,
+                        showedLbList);
 				listView.setAdapter(ldAdapter);
 			}
 
@@ -220,7 +219,7 @@ public class LeaderboardLayout {
 
 			refreshUserRow(bhApp.mainActivity);
 
-			WeeklyLeaderboardLayout.refreshLeaderboard(bhApp, orientationChanged);
+            WeeklyLeaderboardLayout.refreshLeaderboard(bhApp, true);
 
 			return;
 
@@ -238,15 +237,13 @@ public class LeaderboardLayout {
 			refreshThread.execute(1, 5, 0);
 		}
 
-		WeeklyLeaderboardLayout.refreshLeaderboard(bhApp, orientationChanged);
+        WeeklyLeaderboardLayout.refreshLeaderboard(bhApp, false);
 
 	}
 
 	public static void filterLeaderboard(String text, BlueHunter bhApp) {
 
 		if (threadManager.running) return;
-
-		List<String> searchedList = new ArrayList<String>();
 
 		if (bhApp.mainActivity.mViewPager == null) {
 			bhApp.mainActivity.mViewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
@@ -274,24 +271,24 @@ public class LeaderboardLayout {
 		LeaderboardAdapter lbAdapter = (LeaderboardAdapter) lv.getAdapter();
 
 		if (lbAdapter == null || lbAdapter.isEmpty()) {
-			lbAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedLbList);
-			lv.setAdapter(lbAdapter);
+            lbAdapter = new LeaderboardLayout().new LeaderboardAdapter(bhApp.mainActivity, showedLbList);
+            lv.setAdapter(lbAdapter);
 		}
 
 		text = text.toLowerCase();
 
 		if (text.length() == 0) {
 			if (!showedLbList.equals(completeLbList)) {
-				showedLbList = new ArrayList<LBAdapterData>(completeLbList);
-				lbAdapter.refreshList(showedLbList);
+                showedLbList = new ArrayList<>(completeLbList);
+                lbAdapter.refreshList(showedLbList);
 			}
 		}
 		else {
 
-			ArrayList<LBAdapterData> filterList = new ArrayList<LBAdapterData>(completeLbList);
+            ArrayList<LBAdapterData> filterList = new ArrayList<>(completeLbList);
 
 			final int count = filterList.size();
-			final ArrayList<LBAdapterData> newValues = new ArrayList<LBAdapterData>();
+            final ArrayList<LBAdapterData> newValues = new ArrayList<>();
 
 			for (int i = 0; i < count; i++) {
 				final LBAdapterData data = filterList.get(i);
@@ -345,7 +342,7 @@ public class LeaderboardLayout {
 
 	}
 
-	public static void refreshUserRow(final MainActivity mainActivity) {
+    private static void refreshUserRow(final MainActivity mainActivity) {
 
 		LBAdapterData userData = completeLbList.get(userRank - 1);
 
@@ -496,8 +493,8 @@ public class LeaderboardLayout {
 
 	private class RefreshThread extends AsyncTask<Integer, Void, String> {
 
-		private BlueHunter bhApp;
-		private ListView listView;
+        private final BlueHunter bhApp;
+        private ListView listView;
 
 		private LeaderboardAdapter ldAdapter;
 
@@ -547,8 +544,8 @@ public class LeaderboardLayout {
 
 			this.ldAdapter = (LeaderboardAdapter) listView.getAdapter();
 			if (this.ldAdapter == null || this.ldAdapter.isEmpty()) {
-				this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, R.layout.act_page_leaderboard_row, showedLbList);
-				this.listView.setAdapter(ldAdapter);
+                this.ldAdapter = new LeaderboardAdapter(bhApp.mainActivity, showedLbList);
+                this.listView.setAdapter(ldAdapter);
 			}
 
 			this.threadManager = threadManager;
@@ -570,7 +567,7 @@ public class LeaderboardLayout {
 			startIndex = params[0];
 			length = params[1];
 
-			isUserInLD = (params[2] == 1) ? true : false;
+            isUserInLD = (params[2] == 1);
 
 			try {
 
@@ -585,18 +582,18 @@ public class LeaderboardLayout {
 
 				int responseCode = conn.getResponseCode();
 
-				String result = "";
+                String result;
 
 				if (responseCode == HttpURLConnection.HTTP_OK) {
 
-					String line = "";
-					BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    String line;
+                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
 					StringBuilder stringBuilder = new StringBuilder();
 
 					while ((line = br.readLine()) != null) {
-						stringBuilder.append(line + System.lineSeparator());
-					}
+                        stringBuilder.append(line).append(System.lineSeparator());
+                    }
 
 					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
 
@@ -700,7 +697,7 @@ public class LeaderboardLayout {
 
 						completeLbList.add(data);
 						completeLbList.set(rank - 1, data);
-						showedLbList = new ArrayList<LeaderboardLayout.LBAdapterData>(completeLbList);
+                        showedLbList = new ArrayList<>(completeLbList);
 
 					}
 
@@ -759,8 +756,8 @@ public class LeaderboardLayout {
 
 					}
 
-					showedLbList = new ArrayList<LeaderboardLayout.LBAdapterData>(completeLbList);
-					ldAdapter.refreshList(showedLbList);
+                    showedLbList = new ArrayList<>(completeLbList);
+                    ldAdapter.refreshList(showedLbList);
 
 					listView.setSelectionFromTop(scrollIndex, scrollTop);
 				}
@@ -821,13 +818,12 @@ public class LeaderboardLayout {
 			return true;
 		}
 
-		public boolean finished(RefreshThread refreshThread) {
+        public void finished(RefreshThread refreshThread) {
 
 			if (this.refreshThread.equals(refreshThread)) {
 				setRunning(false);
-				return true;
-			}
-			return false;
+                return;
+            }
 		}
 
 		private void setRunning(boolean running) {
@@ -942,20 +938,22 @@ public class LeaderboardLayout {
 		@Override
 		public boolean equals(Object o) {
 
-			// TODO Auto-generated method stub
-			return id == ((LBAdapterData) (o)).id;
-		}
+            if (o instanceof LBAdapterData)
+                return id == ((LBAdapterData) (o)).id;
+            else
+                return false;
+        }
 
 	}
 
 	public class LeaderboardAdapter extends ArrayAdapter<LBAdapterData> {
 
-		private ArrayList<LBAdapterData> dataList;
-		private ArrayList<LBAdapterData> originalDataList;
+        private final ArrayList<LBAdapterData> dataList;
+        private final ArrayList<LBAdapterData> originalDataList;
 
-		public LeaderboardAdapter(Context context, int textViewResourceId, ArrayList<LBAdapterData> newLbData) {
+        public LeaderboardAdapter(Context context, ArrayList<LBAdapterData> newLbData) {
 
-			super(context, textViewResourceId, showedLbList);
+            super(context, R.layout.act_page_leaderboard_row, showedLbList);
 
 			dataList = newLbData;
 			originalDataList = newLbData;

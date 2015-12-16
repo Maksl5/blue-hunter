@@ -1,10 +1,10 @@
 package com.maksl5.bl_hunt.custom_ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.v4.view.ViewPager.PageTransformer;
 import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Parallax transformer for ViewPagers that let you set different parallax 
@@ -15,7 +15,7 @@ import android.view.View;
 public class ParallaxPageTransformer implements PageTransformer {
 
     private List<ParallaxTransformInformation> mViewsToParallax
-            = new ArrayList<ParallaxTransformInformation>();
+            = new ArrayList<>();
 
     public ParallaxPageTransformer() {
     }
@@ -24,12 +24,11 @@ public class ParallaxPageTransformer implements PageTransformer {
         mViewsToParallax = viewsToParallax;
     }
 
-    public ParallaxPageTransformer addViewToParallax(
-             ParallaxTransformInformation viewInfo) {
+    public void addViewToParallax(
+            ParallaxTransformInformation viewInfo) {
         if (mViewsToParallax != null) {
             mViewsToParallax.add(viewInfo);
         }
-        return this;
     }
 
     public void transformPage(View view, float position) {

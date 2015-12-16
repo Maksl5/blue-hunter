@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * @author Markus
  * 
  */
-public class RegexHelper {
+class RegexHelper {
 
 	public static List<String> findGroups(	String regex,
 										String searchIn) {
@@ -25,8 +25,8 @@ public class RegexHelper {
 		Pattern pattern = Pattern.compile(regex);
 
 		Matcher matcher = pattern.matcher(searchIn);
-		
-		List<String> groupList = new ArrayList<String>();
+
+		List<String> groupList = new ArrayList<>();
 		
 		if(matcher.find()) {
 			

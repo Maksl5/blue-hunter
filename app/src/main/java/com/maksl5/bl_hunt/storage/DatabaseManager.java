@@ -36,18 +36,11 @@ import java.util.List;
 
 public class DatabaseManager {
 
-    public static final int INDEX_MAC_ADDRESS = 1;
-    public static final int INDEX_NAME = 2;
-    public static final int INDEX_RSSI = 3;
-    public static final int INDEX_TIME = 4;
-    public static final int INDEX_MANUFACTURER = 5;
-    public static final int INDEX_BONUS = 6;
-    private static boolean locked;
     private static ArrayList<FoundDevice> temporaryAsyncList;
     private static ArrayList<FoundDevice> cachedList;
     private static LoadAllDevicesThread loadAllDevicesTask;
-    private int version;
-    private BlueHunter bhApp;
+    private final int version;
+    private final BlueHunter bhApp;
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
 
@@ -64,7 +57,7 @@ public class DatabaseManager {
 
     }
 
-    private static boolean addNewDeviceForIterate(SQLiteStatement sqLiteStatement, FoundDevice device) {
+    private static void addNewDeviceForIterate(SQLiteStatement sqLiteStatement, FoundDevice device) {
 
         sqLiteStatement.bindLong(1, device.getMacAddress().getA());
         sqLiteStatement.bindLong(2, device.getMacAddress().getB());
@@ -84,7 +77,7 @@ public class DatabaseManager {
         long entry = sqLiteStatement.executeInsert();
         sqLiteStatement.clearBindings();
 
-        return entry != -1;
+        // return entry != -1;
 
     }
 
@@ -114,13 +107,11 @@ public class DatabaseManager {
 
     }
 
-    public boolean addNewDevice(FoundDevice device) {
-
-        long time = System.currentTimeMillis();
+    public void addNewDevice(FoundDevice device) {
 
         ContentValues values = new ContentValues();
 
-        if (device.checkNull() == 0) return false;
+        if (device.checkNull() == 0) return;
 
         values.put(DatabaseHelper.COLUMN_MAC_ADDRESS_A, device.getMacAddress().getA());
         values.put(DatabaseHelper.COLUMN_MAC_ADDRESS_B, device.getMacAddress().getB());
@@ -141,22 +132,22 @@ public class DatabaseManager {
                 cachedList.add(0, device);
                 close();
             } else {
-                loadAllDevices(true);
+                loadAllDevices();
             }
 
             bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.CHANGE_ADD, device, false);
 
             updateModifiedTime(System.currentTimeMillis());
-            return true;
+            return;
         } else {
             close();
             updateModifiedTime(System.currentTimeMillis());
-            return false;
+            return;
         }
 
     }
 
-    public synchronized void loadAllDevices(boolean closeAfter) {
+    public synchronized void loadAllDevices() {
 
         if (cachedList == null || cachedList.size() == 0) {
 
@@ -165,7 +156,7 @@ public class DatabaseManager {
             if (loadAllDevicesTask == null || !loadAllDevicesTask.running) {
 
                 loadAllDevicesTask = new LoadAllDevicesThread();
-                loadAllDevicesTask.execute(closeAfter);
+                loadAllDevicesTask.execute(true);
             }
 
         }
@@ -233,12 +224,12 @@ public class DatabaseManager {
             cachedList.set(index, foundDevice);
             close();
         } else {
-            loadAllDevices(true);
+            loadAllDevices();
         }
 
         bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.CHANGE_EDIT, change, false);
 
-        FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
+        FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 
         updateModifiedTime(System.currentTimeMillis());
 
@@ -282,7 +273,7 @@ public class DatabaseManager {
             cachedList.set(index, foundDevice);
             close();
         } else {
-            loadAllDevices(true);
+            loadAllDevices();
         }
 
         updateModifiedTime(System.currentTimeMillis());
@@ -327,7 +318,7 @@ public class DatabaseManager {
             cachedList.set(index, foundDevice);
             close();
         } else {
-            loadAllDevices(true);
+            loadAllDevices();
         }
 
         bhApp.synchronizeFoundDevices.addNewChange(SynchronizeFoundDevices.CHANGE_EDIT, change, false);
@@ -368,7 +359,7 @@ public class DatabaseManager {
             cachedList.remove(index);
             close();
         } else {
-            loadAllDevices(true);
+            loadAllDevices();
         }
 
         updateModifiedTime(System.currentTimeMillis());
@@ -419,12 +410,12 @@ public class DatabaseManager {
         Log.d("newSyncedDatabase TIME", "" + (syncB - syncA) + "ms");
 
         cachedList = null;
-        loadAllDevices(true);
+        loadAllDevices();
 
         updateModifiedTime(System.currentTimeMillis());
     }
 
-    public boolean addChange(String changeToSync) {
+    public void addChange(String changeToSync) {
 
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_CHANGE, changeToSync);
@@ -432,11 +423,11 @@ public class DatabaseManager {
         if (db.insert(DatabaseHelper.CHANGES_SYNC_TABLE, null, values) != -1) {
             close();
             updateModifiedTime(System.currentTimeMillis());
-            return true;
+            return;
         } else {
             close();
             updateModifiedTime(System.currentTimeMillis());
-            return false;
+            return;
         }
 
     }
@@ -457,7 +448,7 @@ public class DatabaseManager {
 
     public List<String> getAllChanges() {
 
-        List<String> changes = new ArrayList<String>();
+        List<String> changes = new ArrayList<>();
 
         Cursor cursor = db.query(DatabaseHelper.CHANGES_SYNC_TABLE, new String[]{
                 DatabaseHelper.COLUMN_CHANGE}, null, null, null, null, null);
@@ -510,7 +501,7 @@ public class DatabaseManager {
                 dbHelper = new DatabaseHelper(bhApp, version);
                 db = dbHelper.getWritableDatabase();
 
-                List<Integer> failureRows = new ArrayList<Integer>();
+                List<Integer> failureRows = new ArrayList<>();
 
                 for (FoundDevice device : cachedList) {
 
@@ -758,8 +749,7 @@ public class DatabaseManager {
                         " (" + COLUMN_LD_UID + " Integer Not Null, " +
                         COLUMN_LD_RANK + " Integer Not Null, " +
                         COLUMN_LD_DEV + " Integer Not Null);";
-        private BlueHunter bhApplication;
-        private int version;
+        private final BlueHunter bhApplication;
 
         // @formatter:on
 
@@ -768,7 +758,6 @@ public class DatabaseManager {
             super(app.mainActivity, DATABASE_NAME, null, version);
 
             this.bhApplication = app;
-            this.version = version;
 
         }
 
@@ -822,7 +811,7 @@ public class DatabaseManager {
             }
 
             if (oldVersion < 1419) {
-                List<FoundDevice> devices = new ArrayList<FoundDevice>();
+                List<FoundDevice> devices = new ArrayList<>();
 
                 Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null,
                         DatabaseHelper.COLUMN_TIME + " DESC");
@@ -874,10 +863,7 @@ public class DatabaseManager {
 
                 try {
                     bhApp.mainActivity.getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-                } catch (Exception e) {
-                    PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-                    bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-                } catch (OutOfMemoryError e) {
+                } catch (Exception | OutOfMemoryError e) {
                     PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
                     bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                 }
@@ -890,7 +876,7 @@ public class DatabaseManager {
                         "Upgrading database structure. This may take several minutes for found device values over 10000. Don't force close! Otherwise data is lost!",
                         Toast.LENGTH_LONG).show();
 
-                List<FoundDevice> devices = new ArrayList<FoundDevice>();
+                List<FoundDevice> devices = new ArrayList<>();
 
                 Cursor cursor = db.query(DatabaseHelper.FOUND_DEVICES_TABLE, null, null, null, null, null,
                         DatabaseHelper.COLUMN_TIME + " DESC");
@@ -999,7 +985,7 @@ public class DatabaseManager {
 
             ManufacturerList.getManufacturers();
 
-            temporaryAsyncList = new ArrayList<FoundDevice>();
+            temporaryAsyncList = new ArrayList<>();
 
             long startTime = System.currentTimeMillis();
 
@@ -1067,6 +1053,7 @@ public class DatabaseManager {
 
         }
 
+
         @Override
         protected void onProgressUpdate(ArrayList<FoundDevice>... values) {
 
@@ -1075,7 +1062,7 @@ public class DatabaseManager {
             Log.d("LoadAllDevicesThread", "onProgressUpdate() is called @ " + temporaryAsyncList.size() + " devices.");
 
             if (!isCancelled())
-                DeviceDiscoveryLayout.updateDuringDBLoading(bhApp.mainActivity, true);
+                DeviceDiscoveryLayout.updateDuringDBLoading(bhApp.mainActivity);
 
         }
 
@@ -1086,11 +1073,11 @@ public class DatabaseManager {
 
             running = false;
 
-            cachedList = new ArrayList<FoundDevice>(result);
+            cachedList = new ArrayList<>(result);
             temporaryAsyncList = null;
 
             DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
-            FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
+            FoundDevicesLayout.refreshFoundDevicesList(bhApp);
             AchievementSystem.checkAchievements(bhApp, true);
 
             if (bhApp.synchronizeFoundDevices.needForceOverrideUp) {

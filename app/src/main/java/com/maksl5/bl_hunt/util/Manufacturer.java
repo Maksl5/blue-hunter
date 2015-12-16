@@ -2,10 +2,10 @@ package com.maksl5.bl_hunt.util;
 
 public class Manufacturer {
 
-	private int id;
-	private ManufacturerMac[] macAddresses;
-	private String name;
-	private int exp;
+	private final int id;
+	private final ManufacturerMac[] macAddresses;
+	private final String name;
+	private final int exp;
 
 	public Manufacturer(int id, String name, int exp, ManufacturerMac[] macAddresses) {
 		this.id = id;

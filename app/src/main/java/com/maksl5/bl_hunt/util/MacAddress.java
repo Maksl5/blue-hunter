@@ -2,7 +2,12 @@ package com.maksl5.bl_hunt.util;
 
 public class MacAddress {
 
-	private short a, b, c, d, e, f;
+	private final short a;
+	private final short b;
+	private final short c;
+	private final short d;
+	private final short e;
+	private final short f;
 
 	private String macAdress;
 
@@ -78,8 +83,7 @@ public class MacAddress {
 		if (b != other.b) return false;
 		if (c != other.c) return false;
 		if (d != other.d) return false;
-		if (e != other.e) return false;
-		return f == other.f;
+		return e == other.e && f == other.f;
 	}
 
 }

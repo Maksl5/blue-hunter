@@ -1,20 +1,6 @@
 package com.maksl5.bl_hunt.net;
 
 
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.SettingsActivity;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -29,6 +15,18 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.SettingsActivity;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class CheckUpdateService extends Service {
@@ -63,6 +61,28 @@ public class CheckUpdateService extends Service {
 
 	}
 
+	@Override
+	public void onStart(Intent intent,
+						int startId) {
+
+		handleIntent(intent);
+	}
+
+	@Override
+	public int onStartCommand(Intent intent,
+							  int flags,
+							  int startId) {
+
+		handleIntent(intent);
+		return START_NOT_STICKY;
+	}
+
+	public void onDestroy() {
+
+		super.onDestroy();
+		mWakeLock.release();
+	}
+
 	private class PollTask extends AsyncTask<String, Void, String> {
 
 		@Override
@@ -74,8 +94,8 @@ public class CheckUpdateService extends Service {
 			if (remoteFile.startsWith("https")) https = true;
 
 			try {
-				
-				
+
+
 				URL httpUri = new URL(remoteFile);
 
 				HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
@@ -97,11 +117,11 @@ public class CheckUpdateService extends Service {
 					StringBuilder stringBuilder = new StringBuilder();
 
 					while ((line = br.readLine()) != null) {
-						stringBuilder.append(line + System.lineSeparator());
+						stringBuilder.append(line).append(System.lineSeparator());
 					}
 
 					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
-					
+
 					result = stringBuilder.toString();
 
 				}
@@ -134,7 +154,7 @@ public class CheckUpdateService extends Service {
 			Matcher matcher = pattern.matcher(result);
 
 			Log.d("CheckUpdateService", result);
-			
+
 			int verCode;
 			int oldVerCode;
 			boolean newUpdateAvailable = false;
@@ -182,28 +202,6 @@ public class CheckUpdateService extends Service {
 
 			stopSelf();
 		}
-	}
-
-	@Override
-	public void onStart(Intent intent,
-						int startId) {
-
-		handleIntent(intent);
-	}
-
-	@Override
-	public int onStartCommand(	Intent intent,
-								int flags,
-								int startId) {
-
-		handleIntent(intent);
-		return START_NOT_STICKY;
-	}
-
-	public void onDestroy() {
-
-		super.onDestroy();
-		mWakeLock.release();
 	}
 
 }

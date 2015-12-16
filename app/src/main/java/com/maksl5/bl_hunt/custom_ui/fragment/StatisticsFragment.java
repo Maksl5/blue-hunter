@@ -28,162 +28,160 @@ import java.util.TreeMap;
 
 public class StatisticsFragment {
 
-	private final static String DIALOG_ENTRY_NAME = "name";
-	private final static String DIALOG_ENTRY_COUNT = "count";
+    private final static String DIALOG_ENTRY_NAME = "name";
+    private final static String DIALOG_ENTRY_COUNT = "count";
 
-	public static void initializeStatisticsView(final MainActivity mainActivity) {
+    public static void initializeStatisticsView(final MainActivity mainActivity) {
 
-		ListView listView = (ListView) mainActivity.findViewById(R.id.SlistView);
+        ListView listView = (ListView) mainActivity.findViewById(R.id.SlistView);
 
-		ArrayList<String> categories = new ArrayList<String>();
+        ArrayList<String> categories = new ArrayList<>();
 
-		categories.add(mainActivity.getString(R.string.str_statistics_general_title));
-		categories.add(mainActivity.getString(R.string.str_statistics_manufacturerCount_title));
+        categories.add(mainActivity.getString(R.string.str_statistics_general_title));
+        categories.add(mainActivity.getString(R.string.str_statistics_manufacturerCount_title));
 
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mainActivity, android.R.layout.simple_list_item_1, categories);
-		listView.setAdapter(arrayAdapter);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_list_item_1, categories);
+        listView.setAdapter(arrayAdapter);
 
-		listView.setOnItemClickListener(new OnItemClickListener() {
+        listView.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-				switch (position) {
-				case 0:
+                switch (position) {
+                    case 0:
 
-					general(mainActivity);
-					break;
-				case 1:
+                        general(mainActivity);
+                        break;
+                    case 1:
 
-					manufacturerCount(mainActivity);
-					break;
+                        manufacturerCount(mainActivity);
+                        break;
 
-				default:
-					break;
-				}
+                    default:
+                        break;
+                }
 
-			}
-		});
+            }
+        });
 
-	}
+    }
 
-	private static void general(MainActivity mainActivity) {
+    private static void general(MainActivity mainActivity) {
 
-		int userExp = LevelSystem.getCachedUserExp(mainActivity.getBlueHunter());
-		int deviceNum = DatabaseManager.getCachedList().size();
+        int userExp = LevelSystem.getCachedUserExp(mainActivity.getBlueHunter());
+        int deviceNum = DatabaseManager.getCachedList().size();
 
-		List<HashMap<String, String>> dialogMappings = new ArrayList<HashMap<String, String>>();
+        List<HashMap<String, String>> dialogMappings = new ArrayList<>();
 
-		float averageExpPerDevice = userExp / (float) deviceNum;
+        float averageExpPerDevice = userExp / (float) deviceNum;
 
-		HashMap<String, String> hashMap = new HashMap<String, String>();
-		hashMap.put(DIALOG_ENTRY_NAME, "Average Exp / Device");
-		hashMap.put(DIALOG_ENTRY_COUNT, String.format("%.2f", averageExpPerDevice));
-		
-		dialogMappings.add(hashMap);
-		
-		showDialog(mainActivity, dialogMappings, R.string.str_statistics_general_title);
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put(DIALOG_ENTRY_NAME, "Average Exp / Device");
+        hashMap.put(DIALOG_ENTRY_COUNT, String.format("%.2f", averageExpPerDevice));
 
-	}
+        dialogMappings.add(hashMap);
 
-	private static void manufacturerCount(MainActivity mainActivity) {
+        showDialog(mainActivity, dialogMappings, R.string.str_statistics_general_title);
 
-		if (DatabaseManager.getCachedList() == null) {
-			new DatabaseManager(mainActivity.getBlueHunter()).loadAllDevices(true);
-		}
-		else {
+    }
 
-			ArrayList<FoundDevice> allDevices = DatabaseManager.getCachedList();
-			HashMap<Integer, Integer> manuCountMappings = new HashMap<Integer, Integer>();
+    private static void manufacturerCount(MainActivity mainActivity) {
 
-			for (FoundDevice foundDevice : allDevices) {
+        if (DatabaseManager.getCachedList() == null) {
+            new DatabaseManager(mainActivity.getBlueHunter()).loadAllDevices();
+        } else {
 
-				int manufacturerID = foundDevice.getManufacturer();
+            ArrayList<FoundDevice> allDevices = DatabaseManager.getCachedList();
+            HashMap<Integer, Integer> manuCountMappings = new HashMap<>();
 
-				if (!manuCountMappings.containsKey(manufacturerID)) {
-					manuCountMappings.put(manufacturerID, 1);
-				}
-				else {
+            for (FoundDevice foundDevice : allDevices) {
 
-					int count = manuCountMappings.get(manufacturerID);
-					count++;
-					manuCountMappings.put(manufacturerID, count);
 
-				}
+                int manufacturerID = foundDevice.getManufacturer();
 
-			}
+                if (!manuCountMappings.containsKey(manufacturerID)) {
+                    manuCountMappings.put(manufacturerID, 1);
+                } else {
 
-			ValueComparator valueComparator = new StatisticsFragment().new ValueComparator(manuCountMappings);
-			TreeMap<Integer, Integer> sortedMap = new TreeMap<Integer, Integer>(valueComparator);
-			sortedMap.putAll(manuCountMappings);
+                    int count = manuCountMappings.get(manufacturerID);
+                    count++;
+                    manuCountMappings.put(manufacturerID, count);
 
-			Iterator<Integer> iterator = sortedMap.keySet().iterator();
+                }
 
-			List<HashMap<String, String>> dialogMappings = new ArrayList<HashMap<String, String>>();
+            }
 
-			while (iterator.hasNext()) {
+            ValueComparator valueComparator = new StatisticsFragment().new ValueComparator(manuCountMappings);
+            TreeMap<Integer, Integer> sortedMap = new TreeMap<>(valueComparator);
+            sortedMap.putAll(manuCountMappings);
 
-				Integer manufacturerID = iterator.next();
+            Iterator<Integer> iterator = sortedMap.keySet().iterator();
 
-				String name = ManufacturerList.getName(manufacturerID);
+            List<HashMap<String, String>> dialogMappings = new ArrayList<>();
 
-				HashMap<String, String> fromToHashMap = new HashMap<String, String>();
+            while (iterator.hasNext()) {
 
-				fromToHashMap.put(DIALOG_ENTRY_NAME, name);
-				fromToHashMap.put(DIALOG_ENTRY_COUNT, "" + manuCountMappings.get(manufacturerID));
+                Integer manufacturerID = iterator.next();
 
-				dialogMappings.add(fromToHashMap);
+                String name = ManufacturerList.getName(manufacturerID);
 
-			}
+                HashMap<String, String> fromToHashMap = new HashMap<>();
 
-			showDialog(mainActivity, dialogMappings, R.string.str_statistics_manufacturerCount_title);
+                fromToHashMap.put(DIALOG_ENTRY_NAME, name);
+                fromToHashMap.put(DIALOG_ENTRY_COUNT, "" + manuCountMappings.get(manufacturerID));
 
-		}
-	}
+                dialogMappings.add(fromToHashMap);
 
-	private static void showDialog(MainActivity mainActivity, List<HashMap<String, String>> dialogMappings, int titleResource) {
+            }
 
-		int[] to = new int[] {
-				R.id.descriptionTxt, R.id.boostTxt };
-		String[] from = new String[] {
-				DIALOG_ENTRY_NAME, DIALOG_ENTRY_COUNT };
+            showDialog(mainActivity, dialogMappings, R.string.str_statistics_manufacturerCount_title);
 
-		SimpleAdapter boostAdapater = new SimpleAdapter(mainActivity, dialogMappings, R.layout.dlg_boost_composite_row, from, to);
+        }
+    }
 
-		AlertDialog.Builder builder = new Builder(mainActivity);
-		builder.setTitle(titleResource);
+    private static void showDialog(MainActivity mainActivity, List<HashMap<String, String>> dialogMappings, int titleResource) {
 
-		builder.setAdapter(boostAdapater, null);
-		builder.setNeutralButton("Ok", new OnClickListener() {
+        int[] to = new int[]{
+                R.id.descriptionTxt, R.id.boostTxt};
+        String[] from = new String[]{
+                DIALOG_ENTRY_NAME, DIALOG_ENTRY_COUNT};
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
+        SimpleAdapter boostAdapater = new SimpleAdapter(mainActivity, dialogMappings, R.layout.dlg_boost_composite_row, from, to);
 
-			}
-		});
+        AlertDialog.Builder builder = new Builder(mainActivity);
+        builder.setTitle(titleResource);
 
-		builder.create().show();
+        builder.setAdapter(boostAdapater, null);
+        builder.setNeutralButton("Ok", new OnClickListener() {
 
-	}
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
 
-	class ValueComparator implements Comparator<Integer> {
+            }
+        });
 
-		Map<Integer, Integer> map;
+        builder.create().show();
 
-		public ValueComparator(Map<Integer, Integer> map) {
-			this.map = map;
-		}
+    }
 
-		@Override
-		public int compare(Integer lhs, Integer rhs) {
-			if (map.get(lhs) >= map.get(rhs)) {
-				return -1;
-			}
-			else {
-				return 1;
-			}
-		}
-	}
+    class ValueComparator implements Comparator<Integer> {
+
+        final Map<Integer, Integer> map;
+
+        public ValueComparator(Map<Integer, Integer> map) {
+            this.map = map;
+        }
+
+        @Override
+        public int compare(Integer lhs, Integer rhs) {
+            if (map.get(lhs) >= map.get(rhs)) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+    }
 
 }

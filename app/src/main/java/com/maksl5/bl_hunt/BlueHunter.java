@@ -4,8 +4,11 @@
  */
 package com.maksl5.bl_hunt;
 
-import org.acra.ACRA;
-import org.acra.annotation.ReportsCrashes;
+import android.app.Activity;
+import android.app.Application;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 
 import com.maksl5.bl_hunt.activity.ActionBarHandler;
 import com.maksl5.bl_hunt.activity.MainActivity;
@@ -15,11 +18,7 @@ import com.maksl5.bl_hunt.net.NetworkManager;
 import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
+import org.acra.annotation.ReportsCrashes;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -28,20 +27,17 @@ import android.content.res.Configuration;
 @ReportsCrashes(formKey = "dFpyWWtjQ1E3VV9EaklYbFZETmpQLVE6MQ")
 public class BlueHunter extends Application {
 
+	public static final boolean isPlayStore = false;
+	public static final boolean isSupport = false;
 	public Authentification authentification;
 	public ActionBarHandler actionBarHandler;
 	public DiscoveryManager disMan;
 	public NetworkManager netMananger;
 	public LoginManager loginManager;
 	public SynchronizeFoundDevices synchronizeFoundDevices;
-
 	public MainActivity mainActivity;
 	public Activity currentActivity;
-
 	private boolean isTablet = false;
-
-	public static final boolean isPlayStore = false;
-	public static final boolean isSupport = false;
 
 	/*
 	 * (non-Javadoc)
@@ -67,10 +63,6 @@ public class BlueHunter extends Application {
 		}
 
 		if (isSupport) {
-
-			if (true) {
-
-			}
 
 		}
 

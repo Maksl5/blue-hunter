@@ -9,9 +9,6 @@ import android.content.Context;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 
-import java.util.HashMap;
-import java.util.List;
-
 // TODO: Auto-generated Javadoc
 /**
  * The Class Achievement.
@@ -20,14 +17,13 @@ import java.util.List;
  */
 public abstract class Achievement {
 
-	private boolean isHidden = false;
-	private int id;
-	private int title;
-
+	private final int id;
+	private final int title;
 	// Properties
-	private int descriptionString;
+	private final int descriptionString;
+	private final boolean hasProgress;
+	private boolean isHidden = false;
 	private float boost;
-	private boolean hasProgress;
 	private String progressString = "none";
 
 	/**
@@ -72,60 +68,6 @@ public abstract class Achievement {
 	public void invalidate(BlueHunter bhApp) {
 
 		PreferenceManager.deletePreference(bhApp, "pref_achievement_" + id);
-	}
-
-	/**
-	 * @param numDevices
-	 *            the numDevices to set
-	 */
-	public Achievement setNumDevices(int numDevices) {
-
-		return this;
-	}
-
-	/**
-	 * @param numExp
-	 *            the numExp to set
-	 */
-	public Achievement setNumExp(int numExp) {
-
-		return this;
-	}
-
-	/**
-	 * @param numLevel
-	 *            the numLevel to set
-	 */
-	public Achievement setNumLevel(int numLevel) {
-
-		return this;
-	}
-
-	/**
-	 * @param timeInterval
-	 *            the timeInterval to set
-	 */
-	public Achievement setTimeInterval(int timeInterval) {
-
-		return this;
-	}
-
-	/**
-	 * @param manufacturerList
-	 *            the manufacturerList to set
-	 */
-	public Achievement setManufacturerList(List<String> manufacturerList) {
-
-		return this;
-	}
-
-	/**
-	 * @param preferencesList
-	 *            the preferencesList to set
-	 */
-	public Achievement setPreferencesList(HashMap<String, Boolean> preferencesList) {
-
-		return this;
 	}
 
 	public String getName(Context context) {

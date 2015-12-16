@@ -4,36 +4,6 @@
  */
 package com.maksl5.bl_hunt.activity;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.ErrorHandler;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout.FDAdapterData;
-import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
-import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.net.NetworkThread;
-import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
-import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
-import com.maksl5.bl_hunt.util.FoundDevice;
-import com.maksl5.bl_hunt.util.MacAddress;
-
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -51,9 +21,9 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.util.Log;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,22 +31,50 @@ import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.NetworkThread;
+import com.maksl5.bl_hunt.net.SynchronizeFoundDevices;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.FoundDevice;
+import com.maksl5.bl_hunt.util.MacAddress;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author Maksl5[Markus Bensing]
  * 
  */
 public class SettingsActivity extends android.preference.PreferenceActivity implements OnNetworkResultAvailableListener {
 
-	Menu menu;
-	ProgressBar progressBar;
 	MenuItem progressBarItem;
-
+	private Menu menu;
+	private ProgressBar progressBar;
 	private String newPass = null;
 
-	BlueHunter bhApp;
-	PrefNetManager netManager;
+	private BlueHunter bhApp;
+	private PrefNetManager netManager;
 
-	List<Header> headers;
+	private List<Header> headers;
 	private boolean isDestroyed = false;
 
 	/*
@@ -103,7 +101,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 
-		headers = new ArrayList<Header>();
+		headers = new ArrayList<>();
 		loadHeadersFromResource(R.xml.preference_headers, target);
 		headers = target;
 	}
@@ -291,9 +289,14 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 		super.onDestroy();
 	}
 
+	@Override
+	protected boolean isValidFragment(String fragmentName) {
+		return true;
+	}
+
 	/**
 	 * @author Maksl5[Markus Bensing]
-	 * 
+	 *
 	 */
 	public static class InfoFragment extends PreferenceFragment {
 
@@ -301,7 +304,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
 		 */
@@ -315,7 +318,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 			addPreferencesFromResource(R.xml.info_preference);
 
-			if (!Authentification.newUpdateAvailable || BlueHunter.isPlayStore) {
+			if (!Authentification.newUpdateAvailable) {
 				Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
 				PreferenceScreen infoScreen = getPreferenceScreen();
 				infoScreen.removePreference(newUpdatePref);
@@ -335,7 +338,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		private void registerListeners() {
 
@@ -393,7 +396,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 					int number = 0;
 
-					ArrayList<FoundDevice> foundDevices = new ArrayList<FoundDevice>();
+					ArrayList<FoundDevice> foundDevices = new ArrayList<>();
 
 					for (short a = 0x00; a < 0xFF; a++) {
 
@@ -457,7 +460,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
 		 */
@@ -515,12 +518,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 							try {
 								bhApp.mainActivity.getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-							}
-							catch (Exception e) {
-								PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-								bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-							}
-							catch (OutOfMemoryError e) {
+							} catch (Exception | OutOfMemoryError e) {
 								PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
 								bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 							}
@@ -540,14 +538,13 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 	/**
 	 * @author Maksl5
-	 * 
+	 *
 	 */
 	public static class ProfileFragment extends PreferenceFragment {
 
-		BlueHunter bhApp;
-
 		public static Preference changeOnlinePass;
 		public static Preference changeLoginPass;
+		BlueHunter bhApp;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -683,6 +680,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 					builder.setView(LayoutInflater.from(builder.getContext()).inflate(R.layout.dlg_sync_interval, null));
 
+
 					AlertDialog alertDialog = builder.show();
 
 					NumberPicker numberPicker = (NumberPicker) alertDialog.findViewById(R.id.numberPicker1);
@@ -725,7 +723,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 	/**
 	 * @author Maksl5[Markus Bensing]
-	 * 
+	 *
 	 */
 	public static class MiscFragment extends PreferenceFragment {
 
@@ -733,7 +731,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
 		 */
@@ -750,7 +748,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		private void registerListeners() {
 
@@ -789,17 +787,17 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 	/**
 	 * @author Maksl5
-	 * 
+	 *
 	 */
 	public class PrefNetManager {
 
-		private SettingsActivity prefActivity;
-		private List<PrefNetThread> curRunningThreads;
+		private final SettingsActivity prefActivity;
+		private final List<PrefNetThread> curRunningThreads;
 
 		public PrefNetManager(SettingsActivity prefActivity) {
 
 			this.prefActivity = prefActivity;
-			curRunningThreads = new ArrayList<PrefNetThread>();
+			curRunningThreads = new ArrayList<>();
 		}
 
 		public void addRunningThread(PrefNetThread netThread) {
@@ -821,7 +819,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		private void checkList() {
 
@@ -837,13 +835,13 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 	/**
 	 * @author Maksl5
-	 * 
+	 *
 	 */
 	public class PrefNetThread extends AsyncTask<String, Integer, String> {
 
-		private SettingsActivity preferenceActivity;
-		private PrefNetManager networkMananger;
-		private BlueHunter bhApp;
+		private final SettingsActivity preferenceActivity;
+		private final PrefNetManager networkMananger;
+		private final BlueHunter bhApp;
 
 		public PrefNetThread(SettingsActivity preferenceActivity, BlueHunter app, PrefNetManager networkMananger) {
 
@@ -856,7 +854,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 */
 		@Override
@@ -870,7 +868,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 			try {
 
-				HashMap<String, String> postValues = new HashMap<String, String>();
+				HashMap<String, String> postValues = new HashMap<>();
 
 				for (int i = 2; i < params.length; i++) {
 					Pattern pattern = Pattern.compile("(.+)=(.+)", Pattern.CASE_INSENSITIVE);
@@ -902,17 +900,17 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 				int responseCode = conn.getResponseCode();
 
-				String result = "";
+				String result;
 
 				if (responseCode == HttpURLConnection.HTTP_OK) {
 
-					String line = "";
+					String line;
 					BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
 					StringBuilder stringBuilder = new StringBuilder();
 
 					while ((line = br.readLine()) != null) {
-						stringBuilder.append(line + System.lineSeparator());
+						stringBuilder.append(line).append(System.lineSeparator());
 					}
 
 					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
@@ -945,7 +943,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override
@@ -966,7 +964,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
 		@Override
@@ -981,17 +979,12 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
 		 */
 		@Override
 		protected void onProgressUpdate(Integer... values) {
 
 		}
-	}
-
-	@Override
-	protected boolean isValidFragment(String fragmentName) {
-		return true;
 	}
 }

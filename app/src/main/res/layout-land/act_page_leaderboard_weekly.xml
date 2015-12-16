@@ -102,17 +102,13 @@
             android:layout_centerVertical="true"
             android:gravity="center" >
 
-            <TableRow
-                android:id="@+id/LDRtableRow2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingRight="@dimen/padding_xsmall"
-                android:visibility="gone" >
+
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content"
+                    android:paddingRight="@dimen/padding_xsmall"
+                    android:visibility="gone">
 
                     <com.maksl5.bl_hunt.custom_ui.PatternProgressBar
                         android:id="@+id/levelPrgBar"
@@ -138,7 +134,7 @@
                         android:textSize="@dimen/levelIndicator_text"
                         android:textStyle="bold" />
                 </RelativeLayout>
-            </TableRow>
+
 
             <LinearLayout
                 android:layout_width="wrap_content"

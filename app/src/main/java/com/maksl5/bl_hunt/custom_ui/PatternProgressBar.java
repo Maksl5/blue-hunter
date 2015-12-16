@@ -217,9 +217,8 @@ public class PatternProgressBar extends ProgressBar {
 		}
 
 		Rect r = m_indicator.copyBounds();
-		int width = r.width();
 
-		return width;
+		return r.width();
 	}
 
 	private int getIndicatorHeight() {
@@ -229,9 +228,8 @@ public class PatternProgressBar extends ProgressBar {
 		}
 
 		Rect r = m_indicator.copyBounds();
-		int height = r.height();
 
-		return height;
+		return r.height();
 	}
 
 	@Override
@@ -319,9 +317,7 @@ public class PatternProgressBar extends ProgressBar {
 
 	private float getScale(int progress) {
 
-		float scale = getMax() > 0 ? (float) progress / (float) getMax() : 0;
-
-		return scale;
+		return getMax() > 0 ? (float) progress / (float) getMax() : 0;
 	}
 
 	/**

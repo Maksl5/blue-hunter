@@ -18,13 +18,13 @@ import java.util.List;
  */
 public class NetworkManager {
 
-	private BlueHunter bhApp;
-	private List<NetworkThread> curRunningThreads;
+	private final BlueHunter bhApp;
+	private final List<NetworkThread> curRunningThreads;
 
 	public NetworkManager(BlueHunter app) {
 
 		bhApp = app;
-		curRunningThreads = new ArrayList<NetworkThread>();
+		curRunningThreads = new ArrayList<>();
 	}
 
 	public void addRunningThread(NetworkThread netThread) {

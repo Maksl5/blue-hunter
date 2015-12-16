@@ -4,21 +4,20 @@
  */
 package com.maksl5.bl_hunt;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.widget.SimpleAdapter;
 
 import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.util.FoundDevice;
-import com.maksl5.bl_hunt.R;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.util.AndroidException;
-import android.widget.SimpleAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Maksl5[Markus Bensing]
@@ -36,7 +35,7 @@ public class LevelSystem {
 
 		if (allDevices == null) {
 
-			new DatabaseManager(bhApp).loadAllDevices(true);
+			new DatabaseManager(bhApp).loadAllDevices();
 			return (cachedExp != -1) ? cachedExp : 0;
 
 		}
@@ -61,11 +60,11 @@ public class LevelSystem {
 
 	}
 
-	public static int getUserExp(BlueHunter bhApp, List<FoundDevice> listToUse) {
+	public static int getUserExp(List<FoundDevice> listToUse) {
 
 		int exp = 0;
 
-		List<FoundDevice> tempList = new ArrayList<FoundDevice>(listToUse);
+		List<FoundDevice> tempList = new ArrayList<>(listToUse);
 
 		for (FoundDevice foundDevice : tempList) {
 
@@ -77,8 +76,6 @@ public class LevelSystem {
 			exp += Math.floor(ManufacturerList.getExp(manufacturerId) * (1 + bonus));
 
 		}
-
-		tempList = null;
 
 		cachedExp = exp;
 
@@ -102,7 +99,7 @@ public class LevelSystem {
 
 		if (allDevices == null) {
 
-			new DatabaseManager(bhApp).loadAllDevices(true);
+			new DatabaseManager(bhApp).loadAllDevices();
 			return exp;
 
 		}

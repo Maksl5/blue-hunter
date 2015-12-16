@@ -5,11 +5,10 @@
 package com.maksl5.bl_hunt.custom_ui;
 
 
-
-import java.util.Random;
-
 import android.content.Context;
 import android.widget.Toast;
+
+import java.util.Random;
 
 
 
@@ -20,9 +19,9 @@ import android.widget.Toast;
  */
 public class RandomToast {
 
-	private Context context;
-	private CharSequence message;
-	private double probability;
+	private final Context context;
+	private final CharSequence message;
+	private final double probability;
 
 	private RandomToast(Context context,
 			CharSequence message,

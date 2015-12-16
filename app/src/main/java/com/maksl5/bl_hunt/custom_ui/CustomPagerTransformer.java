@@ -13,8 +13,8 @@ import android.view.View;
  */
 public class CustomPagerTransformer implements PageTransformer {
 
-	private static float MIN_SCALE = 0.85f;
-	private static float MIN_ALPHA = 0.5f;
+	private final static float MIN_SCALE = 0.85f;
+	private final static float MIN_ALPHA = 0.5f;
 
 	/*
 	 * (non-Javadoc)

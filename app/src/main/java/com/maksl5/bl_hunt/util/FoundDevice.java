@@ -131,8 +131,8 @@ public class FoundDevice {
 		return isOld;
 	}
 
-	public void setOld(boolean old) {
-		this.isOld = old;
+	public void setOld() {
+		this.isOld = true;
 	}
 
 	public int checkNull() {
@@ -148,9 +148,8 @@ public class FoundDevice {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof FoundDevice)) return false;
+		return o instanceof FoundDevice && ((FoundDevice) o).macAddress.equals(macAddress);
 
-		return ((FoundDevice) o).macAddress.equals(macAddress);
 	}
 
 }

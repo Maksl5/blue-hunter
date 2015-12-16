@@ -4,6 +4,12 @@
  */
 package com.maksl5.bl_hunt.net;
 
+import android.os.AsyncTask;
+import android.view.MenuItem;
+
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,13 +25,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-
-import android.os.AsyncTask;
-import android.view.MenuItem;
-
 /**
  * 
  * 
@@ -37,7 +36,7 @@ import android.view.MenuItem;
 
 public class NetworkThread extends AsyncTask<String, Integer, String> {
 
-	private BlueHunter bhApp;
+	private final BlueHunter bhApp;
 
 	public NetworkThread(BlueHunter app) {
 
@@ -46,9 +45,26 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 		bhApp.netMananger.addRunningThread(this);
 	}
 
+	public static String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (Map.Entry<String, String> entry : params.entrySet()) {
+			if (first)
+				first = false;
+			else
+				result.append("&");
+
+			result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+			result.append("=");
+			result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+		}
+
+		return result.toString();
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.os.AsyncTask#doInBackground(Params[])
 	 */
 	@Override
@@ -62,7 +78,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 		try {
 
-			HashMap<String, String> postValues = new HashMap<String, String>();
+			HashMap<String, String> postValues = new HashMap<>();
 
 			for (int i = 2; i < params.length; i++) {
 				Pattern pattern = Pattern.compile("(.+)=(.+)", Pattern.CASE_INSENSITIVE);
@@ -94,7 +110,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 			int responseCode = conn.getResponseCode();
 
-			String result = "";
+			String result;
 
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 
@@ -102,9 +118,9 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 				StringBuilder stringBuilder = new StringBuilder();
 
-				String line = "";
+				String line;
 				while ((line = br.readLine()) != null) {
-					stringBuilder.append(line + System.lineSeparator());
+					stringBuilder.append(line).append(System.lineSeparator());
 
 				}
 
@@ -138,7 +154,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 	 */
 	@Override
@@ -159,7 +175,7 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.os.AsyncTask#onPreExecute()
 	 */
 	@Override
@@ -172,29 +188,12 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
 	 */
 	@Override
 	protected void onProgressUpdate(Integer... values) {
 
-	}
-
-	public static String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
-		StringBuilder result = new StringBuilder();
-		boolean first = true;
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-			if (first)
-				first = false;
-			else
-				result.append("&");
-
-			result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-			result.append("=");
-			result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-		}
-
-		return result.toString();
 	}
 
 }

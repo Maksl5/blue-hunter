@@ -14,6 +14,7 @@
         android:id="@+id/discoveryInfoTable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/view"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
@@ -22,8 +23,7 @@
         android:layout_gravity="center"
         android:animateLayoutChanges="false"
         android:gravity="center"
-        android:padding="@dimen/padding_xsmall"
-        android:layout_above="@+id/view">
+        android:padding="@dimen/padding_xsmall">
 
         <TableRow
             android:id="@+id/DDtableRow5"
@@ -64,11 +64,7 @@
 
         </TableRow>
 
-        <TableRow
-            android:id="@+id/DDtableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center">
+
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -97,7 +93,7 @@
                     android:textStyle="bold" />
 
             </RelativeLayout>
-        </TableRow>
+
 
         <TableRow
             android:id="@+id/DDtableRow2"
@@ -231,10 +227,10 @@
     </TableLayout>
 
     <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_centerInParent="true"
-        android:id="@+id/view" />
+        android:layout_centerInParent="true" />
 
     <ListView
         android:id="@+id/discoveryListView"
@@ -245,13 +241,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/view"
         android:animateLayoutChanges="true"
         android:background="#77aaaaaa"
         android:fastScrollEnabled="true"
         android:scrollingCache="true"
         android:visibility="gone"
-        tools:listitem="@layout/act_page_discovery_row"
-        android:layout_below="@+id/view">
+        tools:listitem="@layout/act_page_discovery_row">
 
     </ListView>
 

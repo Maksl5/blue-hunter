@@ -33,15 +33,15 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 	public static final int CHANGE_ADD = 1;
 	public static final int CHANGE_REMOVE = -1;
 	public static final int CHANGE_EDIT = 2;
-	public static final int MODE_UP = 1;
 	public static final int MODE_DOWN = 2;
 	public static final int MODE_INIT = 3;
+	private static final int MODE_UP = 1;
 	private static int exp = 0;
 	private static int deviceNum = 0;
+	private final BlueHunter blueHunter;
 	public boolean needForceOverrideUp = false;
-	private BlueHunter blueHunter;
-	private List<String> changesToSync = new ArrayList<String>();
-	private List<String> backupList = new ArrayList<String>();
+	private List<String> changesToSync = new ArrayList<>();
+	private List<String> backupList = new ArrayList<>();
 
 	public SynchronizeFoundDevices(BlueHunter blHunt) {
 
@@ -143,7 +143,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 			StringBuilder builder = new StringBuilder();
 			for (String change : changesToSync) {
-				builder.append(change + ";");
+				builder.append(change).append(";");
 			}
 
 			String rules = "[UP]";
@@ -155,7 +155,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 			NetworkThread applySync = new NetworkThread(blueHunter);
 
-			backupList = new ArrayList<String>(changesToSync);
+			backupList = new ArrayList<>(changesToSync);
 			changesToSync.clear();
 			new DatabaseManager(blueHunter).resetChanges();
 
@@ -182,7 +182,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 			if (allDevices == null) {
 
-				new DatabaseManager(blueHunter).loadAllDevices(true);
+				new DatabaseManager(blueHunter).loadAllDevices();
 				return;
 
 			}
@@ -213,7 +213,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				rulesString = rulesString.substring(0, rulesString.lastIndexOf(';'));
 			}
 
-			backupList = new ArrayList<String>(changesToSync);
+			backupList = new ArrayList<>(changesToSync);
 			changesToSync.clear();
 			new DatabaseManager(blueHunter).resetChanges();
 
@@ -303,7 +303,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 				Toast.makeText(blueHunter, errorMsg, Toast.LENGTH_LONG).show();
 
 				if (changesToSync.isEmpty()) {
-					changesToSync = new ArrayList<String>(backupList);
+					changesToSync = new ArrayList<>(backupList);
 					new DatabaseManager(blueHunter).resetChanges();
 					new DatabaseManager(blueHunter).addChanges(changesToSync);
 				}
@@ -331,7 +331,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 					Log.d("SyncMode 2 [DOWN]", resultString);
 
-					List<FoundDevice> devices = new ArrayList<FoundDevice>();
+					List<FoundDevice> devices = new ArrayList<>();
 					String[] deviceStrings = resultString.split(";");
 
 					Pattern parsePattern = Pattern.compile(

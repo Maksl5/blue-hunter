@@ -34,12 +34,11 @@ import java.util.List;
 public class AchievementSystem {
 
     public static SparseBooleanArray achievementStates;
-    public static SparseBooleanArray temporaryStates;
-    static int checksInRow = 0;
-    private static float boost = 0.0f;
+    private static SparseBooleanArray temporaryStates;
+    private static int checksInRow = 0;
     private static AchievementsCheckerThread checkerThread;
     private static List<FoundDevice> allDevices;
-    public static List<Achievement> achievements = Arrays.asList(new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
+    public static final List<Achievement> achievements = Arrays.asList(new Achievement(5, R.string.str_achieve_5_title, R.string.str_achieve_5_description) {
 
                 @Override
                 public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
@@ -55,7 +54,7 @@ public class AchievementSystem {
                 @Override
                 public boolean check(BlueHunter bhApp, int deviceNum, int exp) {
 
-                    List<String> serialsToCheck = new ArrayList<String>();
+                    List<String> serialsToCheck = new ArrayList<>();
 
                     serialsToCheck.add("0601a9e100511674");
                     serialsToCheck.add("ZX1G4283RM");
@@ -105,10 +104,7 @@ public class AchievementSystem {
                     setNewProgressString(bhApp.getString(R.string.str_discovery_devices) + " " + deviceNum + " / 300\n"
                             + bhApp.getString(R.string.str_foundDevices_exp_abbreviation) + ": " + exp + " / 8000");
 
-                    if (deviceNum >= 300)
-                        return exp >= 8000;
-                    else
-                        return false;
+                    return deviceNum >= 300 && exp >= 8000;
 
                 }
 
@@ -149,7 +145,6 @@ public class AchievementSystem {
                                     if (allDevices.get(i - 1).getManufacturer() == 1) {
                                         max = (max < 4) ? 4 : max;
                                         if (allDevices.get(i).getManufacturer() == 1) {
-                                            max = (max < 5) ? 5 : max;
                                             return true;
                                         } else {
                                             i = i + 4;
@@ -552,11 +547,11 @@ public class AchievementSystem {
                     boolean alreadyAccomplished = PreferenceManager.getPref(bhApp, "pref_achievement_" + getId(), "")
                             .equals(bhApp.authentification.getAchieveHash(getId()));
 
-                    // if (alreadyAccomplished) return true;
+                    if (alreadyAccomplished) return true;
 
                     long startTime = System.currentTimeMillis();
 
-                    int i = 0;
+                    int i;
 
                     for (i = 0; i < allDevices.size(); i++) {
 
@@ -567,7 +562,7 @@ public class AchievementSystem {
                         int hour = date.getHourOfDay();
                         int minute = date.getMinuteOfHour();
 
-                        int rotatedHour = 0;
+                        int rotatedHour;
 
                         // rotating hour
                         if (hour < 10) {
@@ -618,7 +613,7 @@ public class AchievementSystem {
 
         if (allDevices == null) {
 
-            new DatabaseManager(bhApp).loadAllDevices(true);
+            new DatabaseManager(bhApp).loadAllDevices();
             return;
 
         }
@@ -691,20 +686,20 @@ public class AchievementSystem {
     }
 
     public static List<HashMap<String, String>> getBoostList(BlueHunter bhApp) {
-        List<HashMap<String, String>> boostList = new ArrayList<HashMap<String, String>>();
+        List<HashMap<String, String>> boostList = new ArrayList<>();
 
         int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
         float levelBoost = getLevelBoost(bhApp);
 
         NumberFormat percentage = NumberFormat.getPercentInstance();
 
-        HashMap<String, String> levelHashMap = new HashMap<String, String>();
+        HashMap<String, String> levelHashMap = new HashMap<>();
         levelHashMap.put("description", bhApp.getString(R.string.str_boostComposition_levelBoost, level));
         levelHashMap.put("boost", "+" + percentage.format(levelBoost));
 
         boostList.add(levelHashMap);
 
-        HashMap<String, String> emptyHashMap = new HashMap<String, String>();
+        HashMap<String, String> emptyHashMap = new HashMap<>();
 
         emptyHashMap.put("description", "");
         emptyHashMap.put("boost", "");
@@ -713,7 +708,7 @@ public class AchievementSystem {
 
         if (WeeklyLeaderboardLayout.weeklyPlace != 0) {
 
-            HashMap<String, String> weeklyBoostHash = new HashMap<String, String>();
+            HashMap<String, String> weeklyBoostHash = new HashMap<>();
 
             float weeklyBoost = 0f;
 
@@ -745,7 +740,7 @@ public class AchievementSystem {
 
             if (achievementStates.get(achievement.getId(), false)) {
 
-                HashMap<String, String> itemHashMap = new HashMap<String, String>();
+                HashMap<String, String> itemHashMap = new HashMap<>();
                 itemHashMap.put("description",
                         bhApp.getString(R.string.str_boostComposition_achievementBoost, achievement.getName(bhApp)));
                 itemHashMap.put("boost", "+" + percentage.format(achievement.getBoost()));
@@ -756,14 +751,14 @@ public class AchievementSystem {
 
         }
 
-        HashMap<String, String> sumHashMap = new HashMap<String, String>();
+        HashMap<String, String> sumHashMap = new HashMap<>();
 
         sumHashMap.put("description", "");
         sumHashMap.put("boost", "-------");
 
         boostList.add(sumHashMap);
 
-        HashMap<String, String> totalHashMap = new HashMap<String, String>();
+        HashMap<String, String> totalHashMap = new HashMap<>();
 
         totalHashMap.put("description", "Total Boost:");
         totalHashMap.put("boost", percentage.format(getBoost(bhApp)));
@@ -776,7 +771,7 @@ public class AchievementSystem {
 
     private static float getLevelBoost(BlueHunter bhApp) {
 
-        float levelBoost = 0f;
+        float levelBoost;
         int curLevel = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
         // for (int level = 0; level <= curLevel; level++) {
@@ -796,7 +791,7 @@ public class AchievementSystem {
 
     public class AchievementsCheckerThread extends AsyncTask<Boolean, Achievement, Integer> {
 
-        BlueHunter bhApp;
+        final BlueHunter bhApp;
         boolean running = false;
 
         boolean completeCheck = false;
@@ -876,14 +871,14 @@ public class AchievementSystem {
 
             if (allDevices == null) {
 
-                new DatabaseManager(bhApp).loadAllDevices(true);
+                new DatabaseManager(bhApp).loadAllDevices();
                 return 0;
             }
 
             int deviceNum = allDevices.size();
             int exp = LevelSystem.getCachedUserExp(bhApp);
 
-            List<Achievement> temporaryAchievements = new ArrayList<Achievement>(achievements);
+            List<Achievement> temporaryAchievements = new ArrayList<>(achievements);
 
             for (Achievement achievement : temporaryAchievements) {
 

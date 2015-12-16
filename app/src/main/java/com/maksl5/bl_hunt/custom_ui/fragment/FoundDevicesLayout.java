@@ -1,34 +1,10 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Stack;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.ManufacturerList;
-import com.maksl5.bl_hunt.storage.PreferenceManager;
-import com.maksl5.bl_hunt.util.FoundDevice;
-import com.maksl5.bl_hunt.util.MacAddress;
-
-import android.R.integer;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Debug;
-import android.provider.ContactsContract.Contacts.Data;
 import android.support.v4.view.ViewPager;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +20,23 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.ManufacturerList;
+import com.maksl5.bl_hunt.storage.PreferenceManager;
+import com.maksl5.bl_hunt.util.FoundDevice;
+import com.maksl5.bl_hunt.util.MacAddress;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Maksl5
  */
@@ -55,15 +48,8 @@ public class FoundDevicesLayout {
 	public static final int ARRAY_INDEX_MANUFACTURER = 3;
 	public static final int ARRAY_INDEX_EXP = 4;
 	public static final int ARRAY_INDEX_TIME = 5;
-
-	private static ArrayList<FDAdapterData> showedFdList = new ArrayList<FDAdapterData>();
-	private static ArrayList<FDAdapterData> completeFdList = new ArrayList<FDAdapterData>();
-
-	private static ThreadManager threadManager = null;
-
 	public static int selectedItem = -1;
-
-	private static OnItemLongClickListener onLongClickListener = new OnItemLongClickListener() {
+	private static final OnItemLongClickListener onLongClickListener = new OnItemLongClickListener() {
 
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -95,14 +81,17 @@ public class FoundDevicesLayout {
 		}
 
 	};
+	private static ArrayList<FDAdapterData> showedFdList = new ArrayList<>();
+	private static ArrayList<FDAdapterData> completeFdList = new ArrayList<>();
+	private static ThreadManager threadManager = null;
 
-	public static void refreshFoundDevicesList(final BlueHunter bhApp, boolean orientationChanged) {
+	public static void refreshFoundDevicesList(final BlueHunter bhApp) {
 
 		if (threadManager == null) {
 			threadManager = new FoundDevicesLayout().new ThreadManager();
 		}
 
-		if (orientationChanged) {
+		if (false) {
 
 			ListView listView;
 			FoundDevicesAdapter fdAdapter;
@@ -134,7 +123,7 @@ public class FoundDevicesLayout {
 
 			fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 			if (fdAdapter == null || fdAdapter.isEmpty()) {
-				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row,
+				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity,
 						showedFdList);
 				listView.setAdapter(fdAdapter);
 			}
@@ -180,7 +169,7 @@ public class FoundDevicesLayout {
 
 			fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 			if (fdAdapter == null || fdAdapter.isEmpty()) {
-				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row,
+				fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity,
 						showedFdList);
 				listView.setAdapter(fdAdapter);
 			}
@@ -195,7 +184,7 @@ public class FoundDevicesLayout {
 
 		if (threadManager.running) return;
 
-		ArrayList<FDAdapterData> searchedList = new ArrayList<FDAdapterData>();
+		ArrayList<FDAdapterData> searchedList = new ArrayList<>();
 
 		ListView listView;
 		FoundDevicesAdapter fdAdapter;
@@ -227,7 +216,7 @@ public class FoundDevicesLayout {
 
 		fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 		if (fdAdapter == null || fdAdapter.isEmpty()) {
-			fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row,
+			fdAdapter = new FoundDevicesLayout().new FoundDevicesAdapter(bhApp.mainActivity,
 					showedFdList);
 			listView.setAdapter(fdAdapter);
 		}
@@ -235,8 +224,6 @@ public class FoundDevicesLayout {
 		text = text.toLowerCase();
 
 		if (text.equals("[unknown]")) {
-
-			String unknownString = bhApp.getString(R.string.str_foundDevices_manu_unkown);
 
 			for (FDAdapterData data : completeFdList) {
 
@@ -250,17 +237,17 @@ public class FoundDevicesLayout {
 		}
 		else if (text.length() == 0) {
 			if (!showedFdList.equals(completeFdList)) {
-				showedFdList = new ArrayList<FDAdapterData>(completeFdList);
+				showedFdList = new ArrayList<>(completeFdList);
 				fdAdapter.refreshList(showedFdList);
 
 			}
 		}
 		else {
 
-			ArrayList<FDAdapterData> filterList = new ArrayList<FDAdapterData>(completeFdList);
+			ArrayList<FDAdapterData> filterList = new ArrayList<>(completeFdList);
 
 			final int count = filterList.size();
-			final ArrayList<FDAdapterData> newValues = new ArrayList<FDAdapterData>();
+			final ArrayList<FDAdapterData> newValues = new ArrayList<>();
 
 			for (int i = 0; i < count; i++) {
 				final FDAdapterData data = filterList.get(i);
@@ -301,21 +288,28 @@ public class FoundDevicesLayout {
 		if (threadManager != null && threadManager.refreshThread != null) threadManager.refreshThread.cancel(true);
 	}
 
+	static class ViewHolder {
+
+		TextView macAddress;
+		TextView name;
+		TextView manufacturer;
+		ImageView rssi;
+		TextView time;
+		TextView exp;
+		TableRow nameTableRow;
+		CheckBox selectCheckBox;
+	}
+
 	private class RefreshThread extends AsyncTask<Void, ArrayList<FDAdapterData>, ArrayList<FDAdapterData>> {
 
-		private BlueHunter bhApp;
+		private final BlueHunter bhApp;
+		boolean needManuCheck = false;
 		private ListView listView;
-
 		private FoundDevicesAdapter fdAdapter;
-
 		private ThreadManager threadManager;
-
 		private boolean canRun = true;
-
 		private int scrollIndex;
 		private int scrollTop;
-
-		boolean needManuCheck = false;
 
 		private RefreshThread(BlueHunter app, ThreadManager threadManager) {
 
@@ -378,7 +372,7 @@ public class FoundDevicesLayout {
 
 			this.fdAdapter = (FoundDevicesAdapter) listView.getAdapter();
 			if (this.fdAdapter == null || this.fdAdapter.isEmpty()) {
-				this.fdAdapter = new FoundDevicesAdapter(bhApp.mainActivity, R.layout.act_page_founddevices_row, showedFdList);
+				this.fdAdapter = new FoundDevicesAdapter(bhApp.mainActivity, showedFdList);
 				this.listView.setAdapter(fdAdapter);
 			}
 
@@ -403,14 +397,14 @@ public class FoundDevicesLayout {
 
 			if (DatabaseManager.getCachedList() == null) {
 
-				new DatabaseManager(bhApp).loadAllDevices(true);
+				new DatabaseManager(bhApp).loadAllDevices();
 				return completeFdList;
 
 			}
 
-			List<FoundDevice> allDevices = new ArrayList<FoundDevice>(DatabaseManager.getCachedList());
+			List<FoundDevice> allDevices = new ArrayList<>(DatabaseManager.getCachedList());
 
-			ArrayList<FDAdapterData> listViewList = new ArrayList<FDAdapterData>();
+			ArrayList<FDAdapterData> listViewList = new ArrayList<>();
 
 			String expString = bhApp.getString(R.string.str_foundDevices_exp_abbreviation);
 
@@ -441,7 +435,7 @@ public class FoundDevicesLayout {
 					addBonus.setMacAddress(deviceMac);
 					addBonus.setManufacturer(-100);
 
-					ArrayList<FDAdapterData> publishList = new ArrayList<FDAdapterData>();
+					ArrayList<FDAdapterData> publishList = new ArrayList<>();
 					publishList.add(addBonus);
 
 					publishProgress(publishList);
@@ -487,7 +481,7 @@ public class FoundDevicesLayout {
 			// Debug.stopMethodTracing();
 			long backTimeB = System.currentTimeMillis();
 
-			Log.d("FD Layout Background Thread", "" + (backTimeB - backTimeA) + "ms");
+			Log.d("FD Background Thread", "" + (backTimeB - backTimeA) + "ms");
 
 			return listViewList;
 
@@ -500,7 +494,7 @@ public class FoundDevicesLayout {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override
@@ -509,8 +503,8 @@ public class FoundDevicesLayout {
 			long postA = System.currentTimeMillis();
 
 			if (!completeFdList.equals(result)) {
-				completeFdList = new ArrayList<FDAdapterData>(result);
-				showedFdList = new ArrayList<FDAdapterData>(result);
+				completeFdList = new ArrayList<>(result);
+				showedFdList = new ArrayList<>(result);
 
 				fdAdapter.refreshList(showedFdList);
 			}
@@ -531,17 +525,18 @@ public class FoundDevicesLayout {
 
 			long postB = System.currentTimeMillis();
 
-			Log.d("FD Layout BG Thread PostExecute", "" + (postB - postA) + "ms");
+			Log.d("FD Thread PostExecute", "" + (postB - postA) + "ms");
 
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
 		 */
+		@SafeVarargs
 		@Override
-		protected void onProgressUpdate(ArrayList<FDAdapterData>... values) {
+		protected final void onProgressUpdate(ArrayList<FDAdapterData>... values) {
 
 			// showedFdList = values[0];
 
@@ -558,14 +553,14 @@ public class FoundDevicesLayout {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
 		@Override
 		protected void onPreExecute() {
 			if (needManuCheck) {
 				Toast.makeText(bhApp, "Require Manufacturer Check...", Toast.LENGTH_SHORT).show();
-				Log.d("FD Layout Background Thread", "Require Manufacturer Check...");
+				Log.d("FD Thread", "Require Manufacturer Check...");
 			}
 		}
 	}
@@ -590,19 +585,24 @@ public class FoundDevicesLayout {
 			return true;
 		}
 
-		public boolean finished(RefreshThread refreshThread) {
+		public void finished(RefreshThread refreshThread) {
 
 			if (this.refreshThread.equals(refreshThread)) {
 				running = false;
-				return true;
+				return;
 			}
-			return false;
 		}
 
 	}
 
 	public class FDAdapterData {
 
+		private MacAddress macAddress;
+		private String name;
+		private int rssiRes;
+		private int manufacturer;
+		private String expString;
+		private String timeFormatted;
 		public FDAdapterData(MacAddress macAddress, String name, int rssiRes, int manufacturer, String expString, String timeFormatted) {
 
 			this.macAddress = macAddress;
@@ -613,22 +613,13 @@ public class FoundDevicesLayout {
 			this.expString = expString;
 			this.timeFormatted = timeFormatted;
 		}
-
 		/**
-		 * 
+		 *
 		 */
 		public FDAdapterData() {
 
 			// TODO Auto-generated constructor stub
 		}
-
-		private MacAddress macAddress;
-
-		private String name;
-		private int rssiRes;
-		private int manufacturer;
-		private String expString;
-		private String timeFormatted;
 
 		public String getMacAddress() {
 
@@ -704,13 +695,8 @@ public class FoundDevicesLayout {
 
 			if (name == null && fData.name == null) {
 				return true;
-			}
-			else if (name == null) {
-				return false;
-			}
-			else {
-				return name.equals(fData.name);
-			}
+			} else
+				return name != null && name.equals(fData.name);
 
 		}
 
@@ -718,14 +704,12 @@ public class FoundDevicesLayout {
 
 	public class FoundDevicesAdapter extends ArrayAdapter<FDAdapterData> {
 
-		private ArrayList<FDAdapterData> dataList;
-		private ArrayList<FDAdapterData> originalDataList;
+		private final ArrayList<FDAdapterData> dataList;
 
-		public FoundDevicesAdapter(Context context, int textViewResourceId, ArrayList<FDAdapterData> objects) {
+		public FoundDevicesAdapter(Context context, ArrayList<FDAdapterData> objects) {
 
-			super(context, textViewResourceId, objects);
+			super(context, R.layout.act_page_founddevices_row, objects);
 			dataList = objects;
-			originalDataList = objects;
 
 		}
 
@@ -785,23 +769,11 @@ public class FoundDevicesLayout {
 		public void refreshList(ArrayList<FDAdapterData> data) {
 
 			clear();
-			addAll(new ArrayList<FDAdapterData>(data));
+			addAll(new ArrayList<>(data));
 			notifyDataSetChanged();
 
 		}
 
-	}
-
-	static class ViewHolder {
-
-		TextView macAddress;
-		TextView name;
-		TextView manufacturer;
-		ImageView rssi;
-		TextView time;
-		TextView exp;
-		TableRow nameTableRow;
-		CheckBox selectCheckBox;
 	}
 
 }

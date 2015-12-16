@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class AdjustedEditText extends EditText {
 
-	List<OnBackKeyClickedListener> listeners = new ArrayList<OnBackKeyClickedListener>();
+	private final List<OnBackKeyClickedListener> listeners = new ArrayList<>();
 
 	/**
 	 * @param context

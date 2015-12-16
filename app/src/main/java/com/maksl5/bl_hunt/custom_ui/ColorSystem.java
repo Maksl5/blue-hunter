@@ -4,21 +4,21 @@
  */
 package com.maksl5.bl_hunt.custom_ui;
 
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+
 
 /**
  * @author Maksl5[Markus Bensing]
  *
  */
-public class ColorSystem {
+class ColorSystem {
 
 	public static Drawable getColoredBackground(BlueHunter blueHunter) {
 		
@@ -26,7 +26,8 @@ public class ColorSystem {
 		
 		float[] HSV = new float[3];
 		Color.colorToHSV(Color.GREEN, HSV);
-		
+
+
 		bg.setColorFilter(adjustHue(HSV[0] - 196));
 		return bg;
 		
@@ -73,7 +74,7 @@ public class ColorSystem {
 	    cm.postConcat(new ColorMatrix(mat));
 	}
 
-	protected static float cleanValue(float p_val, float p_limit)
+	private static float cleanValue(float p_val, float p_limit)
 	{
 	    return Math.min(p_limit, Math.max(-p_limit, p_val));
 	}

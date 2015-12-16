@@ -2,7 +2,9 @@ package com.maksl5.bl_hunt.util;
 
 public class ManufacturerMac {
 
-	short one, two, three;
+	private final short one;
+	private final short two;
+	private final short three;
 
 	public ManufacturerMac(short one, short two, short three) {
 		this.one = one;

@@ -90,8 +90,8 @@ public class MainActivity extends FragmentActivity {
 	public int newVersion = 0;
 	public boolean justStarted = true;
 	public boolean destroyed = false;
-	protected NotificationManager notificationManager;
-	protected TextView disStateTextView;
+	private NotificationManager notificationManager;
+	private TextView disStateTextView;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -100,7 +100,7 @@ public class MainActivity extends FragmentActivity {
 	 * intensive, it may be best to switch to a
 	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
-	SectionsPagerAdapter mSectionsPagerAdapter;
+	private SectionsPagerAdapter mSectionsPagerAdapter;
 	private BlueHunter bhApp;
 
 	@Override
@@ -137,7 +137,7 @@ public class MainActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(7);
 
-		PageTransformer parallaxPageTransformer = setupPageTransformer();
+		//PageTransformer parallaxPageTransformer = setupPageTransformer();
 
 		mViewPager.setPageTransformer(true, new CustomPagerTransformer());
 
@@ -156,12 +156,7 @@ public class MainActivity extends FragmentActivity {
 		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
 			try {
 				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-			}
-			catch (Exception e) {
-				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-			}
-			catch (OutOfMemoryError e) {
+			} catch (Exception | OutOfMemoryError e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
 				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 			}
@@ -195,7 +190,7 @@ public class MainActivity extends FragmentActivity {
 		ParallaxPageTransformer pageTransformer = new ParallaxPageTransformer();
 
 		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow5, 1, -0.5f));
-		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
+		//pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
 		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.lvlIndicator, 1, 1.5f));
 		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow2, 1, -0.75f));
 
@@ -232,7 +227,7 @@ public class MainActivity extends FragmentActivity {
 		alarmManager.cancel(pendingIntent);
 
 		if (PreferenceManager.getPref(this, "pref_checkUpdate", true)) {
-			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 0 * 60 * 1000,
+			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
 					AlarmManager.INTERVAL_HOUR, pendingIntent);
 		}
 
@@ -289,7 +284,7 @@ public class MainActivity extends FragmentActivity {
 						int error = Integer.parseInt(matcher.group(1));
 
 						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
-						ProfileLayout.setName(bhApp, errorMsg, true);
+						ProfileLayout.setName(bhApp, errorMsg);
 
 						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
 						break;
@@ -313,7 +308,7 @@ public class MainActivity extends FragmentActivity {
 							e.printStackTrace();
 						}
 
-						ProfileLayout.setName(bhApp, nameString, false);
+						ProfileLayout.setName(bhApp, nameString);
 
 					}
 
@@ -424,7 +419,7 @@ public class MainActivity extends FragmentActivity {
 
 		// Debug.startMethodTracing("startTrace");
 
-		DeviceDiscoveryLayout.updateDuringDBLoading(this, true);
+		DeviceDiscoveryLayout.updateDuringDBLoading(this);
 
 		LeaderboardLayout.initTabs(bhApp);
 		LeaderboardLayout.changeList = new DatabaseManager(bhApp).getLeaderboardChanges();
@@ -435,11 +430,11 @@ public class MainActivity extends FragmentActivity {
 		StatisticsFragment.initializeStatisticsView(this);
 
 		if (DatabaseManager.getCachedList() == null) {
-			new DatabaseManager(bhApp).loadAllDevices(true);
+			new DatabaseManager(bhApp).loadAllDevices();
 		}
 		else {
 			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
-			FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
+			FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 			AchievementsLayout.initializeAchievements(bhApp);
 			AchievementsLayout.updateBoostIndicator(bhApp);
 
@@ -670,10 +665,7 @@ public class MainActivity extends FragmentActivity {
 		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
 			try {
 				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-			} catch (Exception e) {
-				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-			} catch (OutOfMemoryError e) {
+			} catch (Exception | OutOfMemoryError e) {
 				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
 				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 			}
@@ -724,7 +716,7 @@ public class MainActivity extends FragmentActivity {
 
 		LeaderboardLayout.initTabs(bhApp);
 		LeaderboardLayout.refreshLeaderboard(bhApp, true);
-		FoundDevicesLayout.refreshFoundDevicesList(bhApp, false);
+		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 
 	}
 
@@ -742,13 +734,6 @@ public class MainActivity extends FragmentActivity {
 			Bundle args = getArguments();
 
 			return FragmentLayoutManager.getSpecificView(args, inflater, container, container.getContext());
-
-		}
-
-		@Override
-		public void onViewCreated(View view, Bundle savedInstanceState) {
-
-			super.onViewCreated(view, savedInstanceState);
 
 		}
 

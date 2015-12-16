@@ -1,22 +1,5 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import java.io.FileNotFoundException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.ErrorHandler;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.AdjustedEditText;
-import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.net.Authentification;
-import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
-import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
-import com.maksl5.bl_hunt.net.AuthentificationSecure;
-import com.maksl5.bl_hunt.net.NetworkThread;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -35,6 +18,23 @@ import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
+
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.ErrorHandler;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.custom_ui.AdjustedEditText;
+import com.maksl5.bl_hunt.custom_ui.AdjustedEditText.OnBackKeyClickedListener;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.net.Authentification;
+import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
+import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
+import com.maksl5.bl_hunt.net.AuthentificationSecure;
+import com.maksl5.bl_hunt.net.NetworkThread;
+
+import java.io.FileNotFoundException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Maksl5
@@ -93,7 +93,7 @@ public class ProfileLayout {
 					userName = nameEditText.getText().toString();
 
 					nameTextView.setText("Applying...");
-					submit(nameTextView);
+					submit();
 
 					nameEditText.animate().setDuration(500).alpha(1f);
 					nameEditText.setVisibility(EditText.GONE);
@@ -107,7 +107,7 @@ public class ProfileLayout {
 				return false;
 			}
 
-			private void submit(TextView nameTextView) {
+			private void submit() {
 
 				isEditable = false;
 
@@ -125,12 +125,12 @@ public class ProfileLayout {
 								int error = Integer.parseInt(matcher.group(1));
 								String errorMsg = ErrorHandler.getErrorString(mainActivity, requestId, error);
 
-								setName(mainActivity.getBlueHunter(), backUpName, true);
+								setName(mainActivity.getBlueHunter(), backUpName);
 
 								Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
 							}
 							else if (resultString.equals("<done />")) {
-								setName(mainActivity.getBlueHunter(), userName, true);
+								setName(mainActivity.getBlueHunter(), userName);
 							}
 							if (mainActivity.getBlueHunter().loginManager.getLoginState()) isEditable = true;
 						}
@@ -212,14 +212,14 @@ public class ProfileLayout {
 			}
 		});
 
-		setName(mainActivity.getBlueHunter(), userName, true);
+		setName(mainActivity.getBlueHunter(), userName);
 
 	}
 
 	/**
 	 * @param nameString
 	 */
-	public static void setName(BlueHunter blueHunter, String nameString, boolean forceSet) {
+	public static void setName(BlueHunter blueHunter, String nameString) {
 
 		userName = nameString;
 

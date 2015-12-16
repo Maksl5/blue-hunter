@@ -23,10 +23,10 @@ import android.view.View;
  * @author Steven Kideckel
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class RotationPageTransformer implements ViewPager.PageTransformer{
-    private float minAlpha;
-    private int degrees;
-    private float distanceToCentreFactor;
+class RotationPageTransformer implements ViewPager.PageTransformer {
+    private final float minAlpha;
+    private final int degrees;
+    private final float distanceToCentreFactor;
  
     /**
      * Creates a RotationPageTransformer
@@ -43,7 +43,7 @@ public class RotationPageTransformer implements ViewPager.PageTransformer{
      * Note, this will only work with an obtuse angle
      * @param minAlpha the least faded out that the side
      */
-    public RotationPageTransformer(int degrees, float minAlpha){
+    private RotationPageTransformer(int degrees, float minAlpha) {
         this.degrees = degrees;
         distanceToCentreFactor = (float) Math.tan(Math.toRadians(degrees / 2))/2;
         this.minAlpha = minAlpha;

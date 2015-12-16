@@ -68,11 +68,11 @@ public class AchievementsLayout {
             }
         };
 
-        List<HashMap<String, String>> rows = new ArrayList<HashMap<String, String>>();
+        List<HashMap<String, String>> rows = new ArrayList<>();
 
         for (Achievement achievement : AchievementSystem.achievements) {
 
-            HashMap<String, String> dataHashMap = new HashMap<String, String>();
+            HashMap<String, String> dataHashMap = new HashMap<>();
 
             dataHashMap.put("name", achievement.getName(bhApp));
             dataHashMap.put("description", achievement.getDescription(bhApp));

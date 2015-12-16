@@ -1,18 +1,5 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
-import com.maksl5.bl_hunt.LevelSystem;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.activity.MainActivity;
-import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.storage.DatabaseManager;
-import com.maksl5.bl_hunt.storage.ManufacturerList;
-import com.maksl5.bl_hunt.util.FoundDevice;
-
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -34,6 +21,19 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
+import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.MainActivity;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.storage.DatabaseManager;
+import com.maksl5.bl_hunt.storage.ManufacturerList;
+import com.maksl5.bl_hunt.util.FoundDevice;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Maksl5
  */
@@ -44,8 +44,6 @@ public class DeviceDiscoveryLayout {
 
 	public static int expToUpdate = 0;
 
-	private static ArrayList<FoundDevice> curList;
-
 	public static void updateIndicatorViews(MainActivity mainActivity) {
 
 		// Debug.startMethodTracing("updateIndicatorViews");
@@ -54,7 +52,7 @@ public class DeviceDiscoveryLayout {
 
 		if (allDevices == null) {
 
-			new DatabaseManager(mainActivity.getBlueHunter()).loadAllDevices(true);
+			new DatabaseManager(mainActivity.getBlueHunter()).loadAllDevices();
 			return;
 
 		}
@@ -87,11 +85,6 @@ public class DeviceDiscoveryLayout {
 		String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
 		String format3 = df.format(LevelSystem.getLevelEndExp(level));
 		String format4 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
-
-		if (format1 == null) format1 = "";
-		if (format2 == null) format2 = "";
-		if (format3 == null) format3 = "";
-		if (format4 == null) format4 = "";
 
 		expTextView.setText(String.format("%s %s / %s %s", format1, format2, format3, format4));
 		lvlTextView.setText(String.format("%d", level));
@@ -156,7 +149,7 @@ public class DeviceDiscoveryLayout {
 
 		if (mainActivity == null || mainActivity.destroyed) return;
 
-		curList = new ArrayList<FoundDevice>(mainActivity.getBlueHunter().disMan.getFDInCurDiscoverySession());
+		ArrayList<FoundDevice> curList = new ArrayList<>(mainActivity.getBlueHunter().disMan.getFDInCurDiscoverySession());
 		int curNewDevices = mainActivity.getBlueHunter().disMan.newDevicesInCurDiscoverySession;
 
 		TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
@@ -175,8 +168,7 @@ public class DeviceDiscoveryLayout {
 			lv.setAdapter(dAdapter);
 		}
 
-		if (lv != null && mainActivity != null && mainActivity.getBlueHunter() != null && mainActivity.getBlueHunter().disMan != null
-				&& mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != -2) {
+		if (lv != null && mainActivity.getBlueHunter() != null && mainActivity.getBlueHunter().disMan != null && mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != -2) {
 
 			if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() == DiscoveryState.DISCOVERY_STATE_RUNNING
 					&& lv.getVisibility() != View.VISIBLE) {
@@ -199,7 +191,7 @@ public class DeviceDiscoveryLayout {
 
 	}
 
-	public static void updateDuringDBLoading(MainActivity mainActivity, boolean setOthersToLoading) {
+	public static void updateDuringDBLoading(MainActivity mainActivity) {
 
 		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
 		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
@@ -211,7 +203,7 @@ public class DeviceDiscoveryLayout {
 
 		if (foundDevices != null) {
 
-			int exp = LevelSystem.getUserExp(mainActivity.getBlueHunter(), foundDevices);
+			int exp = LevelSystem.getUserExp(foundDevices);
 			int level = LevelSystem.getLevel(exp);
 
 			DecimalFormat df = new DecimalFormat(",###");
@@ -220,11 +212,6 @@ public class DeviceDiscoveryLayout {
 			String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
 			String format3 = df.format(LevelSystem.getLevelEndExp(level));
 			String format4 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
-
-			if (format1 == null) format1 = "";
-			if (format2 == null) format2 = "";
-			if (format3 == null) format3 = "";
-			if (format4 == null) format4 = "";
 
 			expTextView.setText(String.format("%s %s / %s %s", format1, format2, format3, format4));
 			lvlTextView.setText(String.format("%d", level));
@@ -245,7 +232,7 @@ public class DeviceDiscoveryLayout {
 
 		}
 
-		if (setOthersToLoading) {
+		if (true) {
 
 			TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
 			TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
@@ -302,7 +289,6 @@ public class DeviceDiscoveryLayout {
 			int xPlacedOverProgressbar = (int) (left + (width / (float) 2) * (percOfProgressbar - 0.5f));
 
 			int indicatorCenter = nextRankIndicator.getWidth() / 2;
-			int calculatedLeftForIndicator = xPlacedOverProgressbar - indicatorCenter;
 
 			// new method
 
@@ -477,10 +463,20 @@ public class DeviceDiscoveryLayout {
 
 	}
 
+	static class Holder {
+
+		TextView macAddress;
+		TextView manufacturer;
+		TextView exp;
+		ImageView rssi;
+		TextView state;
+
+	}
+
 	public class DiscoveryAdapter extends ArrayAdapter<FoundDevice> {
 
-		private Activity context;
-		private ArrayList<FoundDevice> values;
+		private final Activity context;
+		private final ArrayList<FoundDevice> values;
 
 		public DiscoveryAdapter(Activity context, ArrayList<FoundDevice> curList) {
 
@@ -495,7 +491,7 @@ public class DeviceDiscoveryLayout {
 			View rowView = convertView;
 			if (rowView == null) {
 				LayoutInflater inflater = context.getLayoutInflater();
-				rowView = inflater.inflate(R.layout.act_page_discovery_row, null);
+				rowView = inflater.inflate(R.layout.act_page_discovery_row, parent);
 
 				DeviceDiscoveryLayout.Holder holder = new Holder();
 				holder.macAddress = (TextView) rowView.findViewById(R.id.macTxtView);
@@ -567,16 +563,6 @@ public class DeviceDiscoveryLayout {
 
 			return rowView;
 		}
-
-	}
-
-	static class Holder {
-
-		TextView macAddress;
-		TextView manufacturer;
-		TextView exp;
-		ImageView rssi;
-		TextView state;
 
 	}
 

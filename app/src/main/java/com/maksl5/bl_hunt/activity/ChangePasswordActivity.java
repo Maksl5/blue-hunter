@@ -4,11 +4,6 @@
 package com.maksl5.bl_hunt.activity;
 
 
-
-import com.maksl5.bl_hunt.BlueHunter;
-import com.maksl5.bl_hunt.R;
-import com.maksl5.bl_hunt.net.Authentification;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +16,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.maksl5.bl_hunt.BlueHunter;
+import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.net.Authentification;
+
 
 
 /**
@@ -32,16 +31,16 @@ public class ChangePasswordActivity extends Activity {
 	public static final int MODE_CHANGE_ONLINE_PASS = 100;
 	public static final int MODE_CHANGE_LOGIN_PASS = 101;
 
-	Button cancelButton;
-	Button applyButton;
+	private Button cancelButton;
+	private Button applyButton;
 
-	EditText oldPass;
-	EditText newPass;
-	EditText confirmPass;
+	private EditText oldPass;
+	private EditText newPass;
+	private EditText confirmPass;
 
-	ImageView equalIndicator;
+	private ImageView equalIndicator;
 
-	boolean isPasswordSet = false;
+	private boolean isPasswordSet = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,13 +95,13 @@ public class ChangePasswordActivity extends Activity {
 				public void onClick(View v) {
 
 					String caption = (String) applyButton.getText();
-					if (caption.equalsIgnoreCase(getString(R.string.str_changePass_applyButton)) && newPass.getText().toString() != null && !newPass.getText().toString().equals("")) {
+					if (caption.equalsIgnoreCase(getString(R.string.str_changePass_applyButton)) && !newPass.getText().toString().equals("")) {
 						applyButton.setText(R.string.str_changePass_sureButton);
 					}
 					else if (caption.equalsIgnoreCase(getString(R.string.str_changePass_sureButton))) {
 
 						if (newPass.getText().toString().equals(confirmPass.getText().toString())) {
-							if (isPasswordSet && oldPass.getText().toString() != null && oldPass.getText().toString().length() != 0) {
+							if (isPasswordSet && oldPass.getText().toString().length() != 0) {
 								Intent intent = new Intent();
 								intent.putExtra("oldPass", Authentification.getPassHash(oldPass.getText().toString()));
 								intent.putExtra("newPass", Authentification.getPassHash(newPass.getText().toString()));
@@ -150,7 +149,7 @@ public class ChangePasswordActivity extends Activity {
 					applyButton.setText(R.string.str_changePass_applyButton);
 
 					if (isPasswordSet) {
-						if (s.toString() == null || s.toString().equals("")) {
+						if (s.toString().equals("")) {
 							applyButton.setEnabled(false);
 						}
 						else {
@@ -223,7 +222,7 @@ public class ChangePasswordActivity extends Activity {
 
 					String newPassText = newPass.getText().toString();
 
-					if (newPassText != null && !newPassText.equals("")) {
+					if (!newPassText.equals("")) {
 
 						Intent intent = new Intent();
 						intent.putExtra("newLoginPass", Authentification.getPassHash(newPassText));
@@ -260,7 +259,7 @@ public class ChangePasswordActivity extends Activity {
 				@Override
 				public void afterTextChanged(Editable s) {
 
-					if (s.toString() != null && !s.toString().equals("")) {
+					if (!s.toString().equals("")) {
 						applyButton.setEnabled(true);
 					}
 					else {
@@ -274,14 +273,14 @@ public class ChangePasswordActivity extends Activity {
 
 	}
 
-	public void checkEqualPass() {
+	private void checkEqualPass() {
 
 		String newPassText = newPass.getText().toString();
 		String confirmPassText = confirmPass.getText().toString();
 		String oldPassText = oldPass.getText().toString();
 
 		if (!isPasswordSet) {
-			if (newPassText != null && !newPassText.equals("") && newPassText.equals(confirmPassText)) {
+			if (!newPassText.equals("") && newPassText.equals(confirmPassText)) {
 
 				equalIndicator.setImageResource(R.drawable.ic_correct);
 				applyButton.setEnabled(true);
@@ -292,7 +291,7 @@ public class ChangePasswordActivity extends Activity {
 			}
 		}
 		else {
-			if (newPassText != null && !newPassText.equals("") && newPassText.equals(confirmPassText) && oldPassText != null && !oldPassText.equals("")) {
+			if (newPassText != null && !newPassText.equals("") && newPassText.equals(confirmPassText) && !oldPassText.equals("")) {
 
 				equalIndicator.setImageResource(R.drawable.ic_correct);
 				applyButton.setEnabled(true);
