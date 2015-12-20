@@ -1067,7 +1067,7 @@ public class DatabaseManager {
 
 				count++;
 
-				if (count >= 2500) {
+				if (count >= 100) {
 
 					publishProgress(temporaryAsyncList);
 					count = 0;

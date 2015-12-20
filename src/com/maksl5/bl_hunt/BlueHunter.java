@@ -4,7 +4,6 @@
  */
 package com.maksl5.bl_hunt;
 
-import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 
 import com.maksl5.bl_hunt.activity.ActionBarHandler;

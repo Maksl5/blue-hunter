@@ -287,7 +287,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 		if (netManager != null) netManager.cancelAllTasks();
 
 		isDestroyed = true;
-		
+
 		super.onDestroy();
 	}
 
@@ -385,53 +385,50 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
 			// Test Adding 10000 devices
 
-			// Preference infoPref = findPreference("pref_version");
-			// infoPref.setOnPreferenceClickListener(new
-			// OnPreferenceClickListener() {
-			//
-			// @Override
-			// public boolean onPreferenceClick(Preference preference) {
-			//
-			// int number = 0;
-			//
-			// ArrayList<FoundDevice> foundDevices = new
-			// ArrayList<FoundDevice>();
-			//
-			// for (short a = 0x00; a < 0xFF; a++) {
-			//
-			// if (number >= 30000) break;
-			//
-			// for (short b = 0x00; b < 0xFF; b++) {
-			//
-			// if (number >= 30000) break;
-			//
-			// for (short c = 0x00; c < 0xFF; c++) {
-			//
-			// if (number >= 30000) break;
-			//
-			// FoundDevice fd = new FoundDevice();
-			// fd.setMac(new MacAddress(a, b, c, (short) 0, (short) 0, (short)
-			// 0));
-			// fd.setName("" + number);
-			// fd.setTime(System.currentTimeMillis() - (number * 10000));
-			// fd.setRssi((short) 0);
-			// fd.setBoost(0f);
-			//
-			// foundDevices.add(fd);
-			//
-			// Log.d("Debug Devices Calc.", "" + number);
-			//
-			// number++;
-			//
-			// }
-			// }
-			// }
-			//
-			// new DatabaseManager(bhApp).newSyncedDatabase(foundDevices);
-			//
-			// return true;
-			// }
-			// });
+			Preference infoPref = findPreference("pref_version");
+			infoPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+
+					int number = 0;
+
+					ArrayList<FoundDevice> foundDevices = new ArrayList<FoundDevice>();
+
+					for (short a = 0x00; a < 0xFF; a++) {
+
+						if (number >= 30000) break;
+
+						for (short b = 0x00; b < 0xFF; b++) {
+
+							if (number >= 30000) break;
+
+							for (short c = 0x00; c < 0xFF; c++) {
+
+								if (number >= 30000) break;
+
+								FoundDevice fd = new FoundDevice();
+								fd.setMac(new MacAddress(a, b, c, (short) 0, (short) 0, (short) 0));
+								fd.setName("" + number);
+								fd.setTime(System.currentTimeMillis() - (number * 10000));
+								fd.setRssi((short) 0);
+								fd.setBoost(0f);
+
+								foundDevices.add(fd);
+
+								Log.d("Debug Devices Calc.", "" + number);
+
+								number++;
+
+							}
+						}
+					}
+
+					new DatabaseManager(bhApp).newSyncedDatabase(foundDevices);
+
+					return true;
+				}
+			});
 
 		}
 
