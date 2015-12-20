@@ -674,13 +674,25 @@ public class AchievementSystem {
                 bonus += 1f;
                 break;
             case 2:
-                bonus += 0.5f;
+                bonus += 0.75f;
                 break;
             case 3:
-                bonus += 0.25f;
+                bonus += 0.5f;
                 break;
         }
 
+        //Partial bonus calculation for places over rd
+
+        if (WeeklyLeaderboardLayout.weeklyPlace > 3) {
+
+            int weeklyPlaceSub3 = WeeklyLeaderboardLayout.weeklyPlace - 3;
+            int weeklyCountSub3 = WeeklyLeaderboardLayout.weeklyCount - 3;
+
+            int tempBonus = (int) (-(25 / (float) weeklyCountSub3) * (weeklyPlaceSub3 - 1) + 25);
+
+            bonus += tempBonus / (float) 100;
+
+        }
         return bonus;
 
     }
@@ -720,13 +732,24 @@ public class AchievementSystem {
 
                     break;
                 case 2:
-                    weeklyBoost = 0.5f;
+                    weeklyBoost = 0.75f;
 
                     break;
                 case 3:
-                    weeklyBoost = 0.25f;
+                    weeklyBoost = 0.5f;
 
                     break;
+            }
+
+            if (WeeklyLeaderboardLayout.weeklyPlace > 3) {
+
+                int weeklyPlaceSub3 = WeeklyLeaderboardLayout.weeklyPlace - 3;
+                int weeklyCountSub3 = WeeklyLeaderboardLayout.weeklyCount - 3;
+
+                int tempBonus = (int) (-(25 / (float) weeklyCountSub3) * (weeklyPlaceSub3 - 1) + 25);
+
+                weeklyBoost = tempBonus / (float) 100;
+
             }
 
             weeklyBoostHash.put("description",

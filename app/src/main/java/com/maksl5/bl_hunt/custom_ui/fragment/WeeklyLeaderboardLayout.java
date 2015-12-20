@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
@@ -43,7 +44,6 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,6 +67,7 @@ public class WeeklyLeaderboardLayout {
     public static long timeOffset = 0;
     public static TextView timerTextView = null;
     public static int weeklyPlace = 0;
+    public static int weeklyCount = 0;
     private static int userRank = -1;
     private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<>();
     private static ThreadManager threadManager = null;
@@ -414,7 +415,9 @@ public class WeeklyLeaderboardLayout {
 
             try {
 
-                URL httpUri = new URL(AuthentificationSecure.SERVER_GET_WEEKLY_LEADERBOARD + "?s=" + startIndex + "&l=" + length);
+                while (bhApp.loginManager.getUid() == -1) Thread.sleep(500);
+
+                URL httpUri = new URL(AuthentificationSecure.SERVER_GET_WEEKLY_LEADERBOARD + "?s=" + startIndex + "&l=" + length + "&uid=" + bhApp.loginManager.getUid());
 
                 HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
                 conn.setReadTimeout(15000);
@@ -457,6 +460,9 @@ public class WeeklyLeaderboardLayout {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
                 return "Error=1\n" + e.getMessage();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return "Error=1\n" + e.getMessage();
             }
 
         }
@@ -491,13 +497,13 @@ public class WeeklyLeaderboardLayout {
                 }
 
                 DocumentBuilder docBuilder;
-                Document document = null;
+                Document document;
 
                 try {
                     docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                     document = docBuilder.parse(new InputSource(new StringReader(result)));
                 } catch (Exception e) {
-
+                    return;
                 }
 
                 document.getDocumentElement().normalize();
@@ -507,11 +513,8 @@ public class WeeklyLeaderboardLayout {
                 long nextCycleTStamp = Long.parseLong(rootElement.getAttribute("until"));
                 timeOffset = System.currentTimeMillis() - Long.parseLong(rootElement.getAttribute("now"));
 
-                List<Integer> bonusIds = new ArrayList<>(3);
-
-                bonusIds.add(Integer.parseInt(rootElement.getAttribute("first")));
-                bonusIds.add(Integer.parseInt(rootElement.getAttribute("second")));
-                bonusIds.add(Integer.parseInt(rootElement.getAttribute("third")));
+                weeklyPlace = Integer.parseInt(rootElement.getAttribute("lastRank"));
+                weeklyCount = Integer.parseInt(rootElement.getAttribute("lastCount"));
 
                 NodeList nodes = document.getElementsByTagName("user");
 
@@ -565,9 +568,8 @@ public class WeeklyLeaderboardLayout {
                     // store new cycleTS as cache
                     PreferenceManager.setPref(bhApp, "cachedNextCycle", nextCycleTStamp);
 
-                    if (bonusIds.contains(uid)) {
+                    if (weeklyPlace != 0) {
 
-                        weeklyPlace = bonusIds.indexOf(uid) + 1;
 
                         if (cachedNextCycleTS != nextCycleTStamp) {
 
@@ -581,30 +583,49 @@ public class WeeklyLeaderboardLayout {
                                     boost = 1f;
                                     break;
                                 case 2:
-                                    boost = 0.5f;
+                                    boost = 0.75f;
                                     break;
                                 case 3:
-                                    boost = 0.25f;
+                                    boost = 0.5f;
                                     break;
                             }
+
+                            if (weeklyPlace > 3) {
+
+                                int weeklyPlaceSub3 = weeklyPlace - 3;
+                                int weeklyCountSub3 = weeklyCount - 3;
+
+                                int tempBonus = (int) (-(25 / (float) weeklyCountSub3) * (weeklyPlaceSub3 - 1) + 25);
+
+                                boost = tempBonus / (float) 100;
+
+                            }
+
 
                             NumberFormat percentage = NumberFormat.getPercentInstance();
                             String boostString = percentage.format(boost);
 
-                            builder.setMessage(
-                                    "You managed to get place " + weeklyPlace + " in the last weekly leaderboard!!! You will gain an extra "
-                                            + boostString + " boost as reward until the current cycle did end. Congratulations!!!");
+                            if (weeklyPlace > 3) {
 
-                            builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                                Toast.makeText(bhApp.mainActivity, "You got place " + weeklyPlace + " in the weekly leaderboard. Reward for 7 days: " + boostString + " boost!", Toast.LENGTH_LONG).show();
 
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
+                            } else {
+                                builder.setMessage(
+                                        "You managed to get place " + weeklyPlace + " in the last weekly leaderboard!!! You will gain an extra "
+                                                + boostString + " boost as reward until the current cycle ends. Congratulations!!!");
 
-                                }
-                            });
+                                builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
 
-                            builder.show();
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+
+                                    }
+                                });
+
+                                builder.show();
+
+                            }
 
                         }
 
@@ -680,7 +701,6 @@ public class WeeklyLeaderboardLayout {
 
             if (this.refreshThread.equals(refreshThread)) {
                 setRunning(false);
-                return;
             }
         }
 
@@ -747,10 +767,7 @@ public class WeeklyLeaderboardLayout {
         @Override
         public boolean equals(Object o) {
 
-            if (o instanceof LBAdapterData)
-                return id == ((LBAdapterData) (o)).id;
-            else
-                return false;
+            return o instanceof LBAdapterData && id == ((LBAdapterData) (o)).id;
         }
 
     }
