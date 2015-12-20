@@ -653,7 +653,9 @@ public class WeeklyLeaderboardLayout {
             isUserInLD = false;
 
             View container = bhApp.mainActivity.findViewById(R.id.weeklyLdUserRL);
-            container.setVisibility(View.GONE);
+            if (container != null)
+                container.setVisibility(View.GONE);
+
 
         }
     }

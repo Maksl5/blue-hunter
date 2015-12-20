@@ -1,7 +1,6 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
-apply from: "../artifacts.gradle"
 
 android {
     compileSdkVersion 23
@@ -11,17 +10,13 @@ android {
         checkReleaseBuilds false
     }
 
-
-
-
-
     def manifestFile = file("src/main/AndroidManifest.xml")
     def pattern = Pattern.compile("versionCode=\"(\\d+)\"")
     def manifestText = manifestFile.getText()
     def matcher = pattern.matcher(manifestText)
     matcher.find()
-    def versionCode = Integer.parseInt(matcher.group(1)) + 1
-    def manifestContent = matcher.replaceAll("versionCode=\"" + versionCode + "\"")
+    def code = Integer.parseInt(matcher.group(1)) + 1
+    def manifestContent = matcher.replaceAll("versionCode=\"" + code + "\"")
 
     def date = new Date()
     def formattedDate = date.format('ddMMyy-HHmm')
@@ -30,7 +25,7 @@ android {
     def matcher2 = pattern2.matcher(manifestContent)
     matcher2.find()
     def prefix = matcher2.group(1)
-    def newVersionName = prefix + versionCode + "_" + formattedDate
+    def newVersionName = prefix + code + "_" + formattedDate
 
     def completeString = matcher2.replaceAll("versionName=\"" + newVersionName + "\"")
 
@@ -41,6 +36,8 @@ android {
         applicationId "com.maksl5.bl_hunt"
         minSdkVersion 14
         targetSdkVersion 23
+        versionCode(code)
+        versionName newVersionName
     }
 
     signingConfigs {
@@ -49,8 +46,6 @@ android {
             storePassword System.getenv("STOREPWD")
             keyAlias "maksl5"
             keyPassword System.getenv("KEYPWD")
-
-
         }
     }
 
@@ -59,14 +54,14 @@ android {
         free {
             applicationId "com.maksl5.bl_hunt"
             buildConfigField "boolean", "IS_SUPPORT", "false"
-            setVersionCode versionCode
+            versionCode code
             setVersionName newVersionName
         }
         support {
             applicationId "com.maksl5.bl_hunt_sup"
             buildConfigField "boolean", "IS_SUPPORT", "true"
-            setVersionCode versionCode
-            setVersionName "support_" + newVersionName
+            versionCode code
+            versionName "support_" + newVersionName
         }
 
     }
