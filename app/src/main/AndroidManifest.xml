@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="2104"
-    android:versionName="pre-beta_0.4.0.2104_161215-0459">
+    android:versionCode="2171"
+    android:versionName="pre-beta_0.4.0.2171_201215-1634">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />

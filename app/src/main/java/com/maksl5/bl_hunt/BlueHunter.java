@@ -28,7 +28,7 @@ import org.acra.annotation.ReportsCrashes;
 public class BlueHunter extends Application {
 
     public static final boolean isPlayStore = false;
-    public static final boolean isSupport = false;
+    public static final boolean isSupport = BuildConfig.IS_SUPPORT;
     private static int versionCode = -1;
     public Authentification authentification;
     public ActionBarHandler actionBarHandler;
