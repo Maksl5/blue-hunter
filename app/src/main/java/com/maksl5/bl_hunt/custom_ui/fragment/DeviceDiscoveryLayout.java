@@ -39,531 +39,527 @@ import java.util.List;
  */
 public class DeviceDiscoveryLayout {
 
-	public static DiscoveryAdapter dAdapter;
-	public static ListView lv;
+    public static DiscoveryAdapter dAdapter;
+    public static ListView lv;
 
-	public static int expToUpdate = 0;
+    public static int expToUpdate = 0;
 
-	public static void updateIndicatorViews(MainActivity mainActivity) {
+    public static void updateIndicatorViews(MainActivity mainActivity) {
 
-		// Debug.startMethodTracing("updateIndicatorViews");
+        // Debug.startMethodTracing("updateIndicatorViews");
 
-		List<FoundDevice> allDevices = DatabaseManager.getCachedList();
+        List<FoundDevice> allDevices = DatabaseManager.getCachedList();
 
-		if (allDevices == null) {
+        if (allDevices == null) {
 
-			new DatabaseManager(mainActivity.getBlueHunter()).loadAllDevices();
-			return;
+            new DatabaseManager(mainActivity.getBlueHunter()).loadAllDevices();
+            return;
 
-		}
+        }
 
-		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
-		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
-		TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
-		TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
-		TextView devExpTodayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpToday);
+        TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
+        TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
+        TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
+        TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
+        TextView devExpTodayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpToday);
 
-		ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
+        ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
-		long expTimeA = System.currentTimeMillis();
+        long expTimeA = System.currentTimeMillis();
 
-		// Debug.startMethodTracing("getUserExp");
+        // Debug.startMethodTracing("getUserExp");
 
-		int exp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
+        int exp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
 
-		// Debug.stopMethodTracing();
+        // Debug.stopMethodTracing();
 
-		long expTimeB = System.currentTimeMillis();
+        long expTimeB = System.currentTimeMillis();
 
-		Log.d("getUserExp", "" + (expTimeB - expTimeA) + "ms");
+        Log.d("getUserExp", "" + (expTimeB - expTimeA) + "ms");
 
-		int level = LevelSystem.getLevel(exp);
+        int level = LevelSystem.getLevel(exp);
 
-		DecimalFormat df = new DecimalFormat(",###");
+        DecimalFormat df = new DecimalFormat(",###");
 
-		String format1 = df.format(exp);
-		String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
-		String format3 = df.format(LevelSystem.getLevelEndExp(level));
-		String format4 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+        String format1 = df.format(exp);
+        String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+        String format3 = df.format(LevelSystem.getLevelEndExp(level));
+        String format4 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
 
-		expTextView.setText(String.format("%s %s / %s %s", format1, format2, format3, format4));
-		lvlTextView.setText(String.format("%d", level));
+        expTextView.setText(String.format("%s %s / %s %s", format1, format2, format3, format4));
+        lvlTextView.setText(String.format("%d", level));
 
-		progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
-		progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
+        progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
+        progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 
-		int deviceNum = allDevices.size();
+        int deviceNum = allDevices.size();
 
-		int lastIndex = allDevices.size() - 1;
+        int lastIndex = allDevices.size() - 1;
 
-		long firstTime = 0;
+        long firstTime = 0;
 
-		do {
+        do {
 
-			if (lastIndex < 0) break;
+            if (lastIndex < 0) break;
 
-			firstTime = allDevices.get(lastIndex).getTime();
+            firstTime = allDevices.get(lastIndex).getTime();
 
-			lastIndex--;
-		}
-		while (firstTime == 0);
+            lastIndex--;
+        }
+        while (firstTime == 0);
 
-		long now = System.currentTimeMillis();
-		float devPerDay = (deviceNum / (float) (now - firstTime)) * 86400000;
-		float expPerDay = (exp / (float) (now - firstTime)) * 86400000;
+        long now = System.currentTimeMillis();
+        float devPerDay = (deviceNum / (float) (now - firstTime)) * 86400000;
+        float expPerDay = (exp / (float) (now - firstTime)) * 86400000;
 
-		devicesTextView.setText(df.format(deviceNum));
-		devExpPerDayTxt.setText(String.format("%.2f / %.2f", devPerDay, expPerDay));
+        devicesTextView.setText(df.format(deviceNum));
+        devExpPerDayTxt.setText(String.format("%.2f / %.2f", devPerDay, expPerDay));
 
-		int expTodayNum = 0;
-		int devicesTodayNum = 0;
+        int expTodayNum = 0;
+        int devicesTodayNum = 0;
 
-		for (FoundDevice foundDevice : allDevices) {
+        for (FoundDevice foundDevice : allDevices) {
 
-			if (foundDevice.getTime() > (now - 86400000)) {
-				devicesTodayNum++;
-				int manufacturer = foundDevice.getManufacturer();
-				float bonus = foundDevice.getBoost();
+            if (foundDevice.getTime() > (now - 86400000)) {
+                devicesTodayNum++;
+                int manufacturer = foundDevice.getManufacturer();
+                float bonus = foundDevice.getBoost();
 
-				expTodayNum += ManufacturerList.getExp(manufacturer) * (1 + bonus);
-			}
+                expTodayNum += ManufacturerList.getExp(manufacturer) * (1 + bonus);
+            }
 
-		}
+        }
 
-		devExpTodayTxt.setText(String.format("%d / %d", devicesTodayNum, expTodayNum));
+        devExpTodayTxt.setText(String.format("%d / %d", devicesTodayNum, expTodayNum));
 
-		onlyCurListUpdate(mainActivity);
+        onlyCurListUpdate(mainActivity);
 
-		if (exp > expToUpdate && expToUpdate != 0) {
-			expToUpdate = 0;
-			LeaderboardLayout.refreshLeaderboard(mainActivity.getBlueHunter());
-		}
+        if (exp > expToUpdate && expToUpdate != 0) {
+            expToUpdate = 0;
+            LeaderboardLayout.refreshLeaderboard(mainActivity.getBlueHunter());
+        }
 
-		updateNextRankIndicator(mainActivity, (expToUpdate == 0) ? -1 : expToUpdate);
+        updateNextRankIndicator(mainActivity, (expToUpdate == 0) ? -1 : expToUpdate);
 
-		// Debug.stopMethodTracing();
+        // Debug.stopMethodTracing();
 
-	}
+    }
 
-	public static void onlyCurListUpdate(MainActivity mainActivity) {
+    public static void onlyCurListUpdate(MainActivity mainActivity) {
 
-		if (mainActivity == null || mainActivity.destroyed) return;
+        if (mainActivity == null || mainActivity.destroyed) return;
 
-		ArrayList<FoundDevice> curList = new ArrayList<>(mainActivity.getBlueHunter().disMan.getFDInCurDiscoverySession());
-		int curNewDevices = mainActivity.getBlueHunter().disMan.newDevicesInCurDiscoverySession;
+        ArrayList<FoundDevice> curList = new ArrayList<>(mainActivity.getBlueHunter().disMan.getFDInCurDiscoverySession());
+        int curNewDevices = mainActivity.getBlueHunter().disMan.newDevicesInCurDiscoverySession;
 
-		TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
+        TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
 
-		if (devInCurDisTxt != null) {
+        if (devInCurDisTxt != null) {
 
-			devInCurDisTxt.setText(String.format("%d / %d", curNewDevices, curList.size() - curNewDevices));
+            devInCurDisTxt.setText(String.format("%d / %d", curNewDevices, curList.size() - curNewDevices));
 
-		}
+        }
 
-		if (dAdapter == null) {
-			dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, curList);
+        if (dAdapter == null) {
+            dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, curList);
 
-			if (lv == null) lv = (ListView) mainActivity.findViewById(R.id.discoveryListView);
+            if (lv == null) lv = (ListView) mainActivity.findViewById(R.id.discoveryListView);
 
-			lv.setAdapter(dAdapter);
-		}
+            lv.setAdapter(dAdapter);
+        }
 
-		if (lv != null && mainActivity.getBlueHunter() != null && mainActivity.getBlueHunter().disMan != null && mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != -2) {
+        if (lv != null && mainActivity.getBlueHunter() != null && mainActivity.getBlueHunter().disMan != null && mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != -2) {
 
-			if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() == DiscoveryState.DISCOVERY_STATE_RUNNING
-					&& lv.getVisibility() != View.VISIBLE) {
-				startShowLV(mainActivity);
-			}
-			else if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_RUNNING
-					&& mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_FINISHED
-					&& lv.getVisibility() == View.VISIBLE) {
-				stopShowLV(mainActivity);
-			}
-		}
+            if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() == DiscoveryState.DISCOVERY_STATE_RUNNING
+                    && lv.getVisibility() != View.VISIBLE) {
+                startShowLV(mainActivity);
+            } else if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_RUNNING
+                    && mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_FINISHED
+                    && lv.getVisibility() == View.VISIBLE) {
+                stopShowLV(mainActivity);
+            }
+        }
 
-		if (dAdapter.values.equals(curList)) {
-			dAdapter.notifyDataSetChanged();
-		}
-		else {
-			dAdapter.clear();
-			dAdapter.addAll(curList);
-		}
+        if (dAdapter.values.equals(curList)) {
+            dAdapter.notifyDataSetChanged();
+        } else {
+            dAdapter.clear();
+            dAdapter.addAll(curList);
+        }
 
-	}
+    }
 
-	public static void updateDuringDBLoading(MainActivity mainActivity) {
+    public static void updateDuringDBLoading(MainActivity mainActivity) {
 
-		TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
-		TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
-		TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
+        TextView expTextView = (TextView) mainActivity.findViewById(R.id.expIndicator);
+        TextView lvlTextView = (TextView) mainActivity.findViewById(R.id.lvlIndicator);
+        TextView devicesTextView = (TextView) mainActivity.findViewById(R.id.txt_devices);
 
-		ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
+        ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
 
-		List<FoundDevice> foundDevices = DatabaseManager.getProgressList();
+        List<FoundDevice> foundDevices = DatabaseManager.getProgressList();
 
-		if (foundDevices != null) {
+        if (foundDevices != null) {
 
-			int exp = LevelSystem.getUserExp(foundDevices);
-			int level = LevelSystem.getLevel(exp);
+            int exp = LevelSystem.getUserExp(foundDevices);
+            int level = LevelSystem.getLevel(exp);
 
-			DecimalFormat df = new DecimalFormat(",###");
+            DecimalFormat df = new DecimalFormat(",###");
 
-			String format1 = df.format(exp);
-			String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
-			String format3 = df.format(LevelSystem.getLevelEndExp(level));
-			String format4 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+            String format1 = df.format(exp);
+            String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+            String format3 = df.format(LevelSystem.getLevelEndExp(level));
+            String format4 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
 
-			expTextView.setText(String.format("%s %s / %s %s", format1, format2, format3, format4));
-			lvlTextView.setText(String.format("%d", level));
+            expTextView.setText(String.format("%s %s / %s %s", format1, format2, format3, format4));
+            lvlTextView.setText(String.format("%d", level));
 
-			progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
-			progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
+            progressBar.setMax(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level));
+            progressBar.setProgress(exp - LevelSystem.getLevelStartExp(level));
 
-			int deviceNum = foundDevices.size();
+            int deviceNum = foundDevices.size();
 
-			devicesTextView.setText(df.format(deviceNum));
+            devicesTextView.setText(df.format(deviceNum));
 
-		}
-		else {
+        } else {
 
-			expTextView.setText("Loading...");
-			lvlTextView.setText("Loading...");
-			devicesTextView.setText("Loading...");
+            expTextView.setText("Loading...");
+            lvlTextView.setText("Loading...");
+            devicesTextView.setText("Loading...");
 
-		}
+        }
 
-		if (true) {
+        if (true) {
 
-			TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
-			TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
-			TextView devExpTodayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpToday);
+            TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
+            TextView devExpPerDayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpPerDay);
+            TextView devExpTodayTxt = (TextView) mainActivity.findViewById(R.id.txt_devExpToday);
 
-			String loadingString = mainActivity.getString(R.string.str_discovery_loading);
+            String loadingString = mainActivity.getString(R.string.str_discovery_loading);
 
-			devInCurDisTxt.setText(loadingString);
-			devExpPerDayTxt.setText(loadingString);
-			devExpTodayTxt.setText(loadingString);
-		}
+            devInCurDisTxt.setText(loadingString);
+            devExpPerDayTxt.setText(loadingString);
+            devExpTodayTxt.setText(loadingString);
+        }
 
-	}
+    }
 
-	public static void updateNextRankIndicator(final MainActivity mainActivity, int exp) {
+    public static void updateNextRankIndicator(final MainActivity mainActivity, int exp) {
 
-		TextView nextRankIndicator = (TextView) mainActivity.findViewById(R.id.nextRankIndicator);
+        TextView nextRankIndicator = (TextView) mainActivity.findViewById(R.id.nextRankIndicator);
 
-		int oldVisible = nextRankIndicator.getVisibility();
+        int oldVisible = nextRankIndicator.getVisibility();
 
-		if (exp == -1) {
+        if (exp == -1) {
 
-			nextRankIndicator.setVisibility(TextView.GONE);
+            nextRankIndicator.setVisibility(TextView.GONE);
 
-		}
-		else {
+        } else {
 
-			ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
-			RelativeLayout parent = (RelativeLayout) progressBar.getParent();
+            ProgressBar progressBar = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
+            RelativeLayout parent = (RelativeLayout) progressBar.getParent();
 
-			int userExp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
-			int level = LevelSystem.getLevel(userExp);
+            int userExp = LevelSystem.getUserExp(mainActivity.getBlueHunter());
+            int level = LevelSystem.getLevel(userExp);
 
-			int levelStart = LevelSystem.getLevelStartExp(level);
-			int levelEnd = LevelSystem.getLevelEndExp(level);
+            int levelStart = LevelSystem.getLevelStartExp(level);
+            int levelEnd = LevelSystem.getLevelEndExp(level);
 
-			progressBar.setMax(levelEnd - levelStart);
-			progressBar.setProgress(userExp - levelStart);
+            progressBar.setMax(levelEnd - levelStart);
+            progressBar.setProgress(userExp - levelStart);
 
-			// define window range
-			int left = parent.getLeft();
+            // define window range
+            int left = parent.getLeft();
 
-			int width = progressBar.getWidth();
+            int width = progressBar.getWidth();
 
-			float percOfProgressbar = (float) (exp - levelStart) / (float) (levelEnd - levelStart);
+            float percOfProgressbar = (float) (exp - levelStart) / (float) (levelEnd - levelStart);
 
-			if (percOfProgressbar < 0) {
-				percOfProgressbar = 0f;
-			}
-			if (percOfProgressbar > 1) {
-				percOfProgressbar = 1f;
-			}
+            if (percOfProgressbar < 0) {
+                percOfProgressbar = 0f;
+            }
+            if (percOfProgressbar > 1) {
+                percOfProgressbar = 1f;
+            }
 
-			int xPlacedOverProgressbar = (int) (left + (width / (float) 2) * (percOfProgressbar - 0.5f));
+            int xPlacedOverProgressbar = (int) (left + (width / (float) 2) * (percOfProgressbar - 0.5f));
 
-			int indicatorCenter = nextRankIndicator.getWidth() / 2;
+            int indicatorCenter = nextRankIndicator.getWidth() / 2;
 
-			// new method
+            // new method
 
-			int calculatedCenterOffset = (int) ((width / (float) 2) * ((percOfProgressbar - 0.5) * 2));
+            int calculatedCenterOffset = (int) ((width / (float) 2) * ((percOfProgressbar - 0.5) * 2));
 
-			TableRow tableRow = (TableRow) nextRankIndicator.getParent();
+            TableRow tableRow = (TableRow) nextRankIndicator.getParent();
 
-			nextRankIndicator.setVisibility(View.VISIBLE);
+            nextRankIndicator.setVisibility(View.VISIBLE);
 
-			DecimalFormat df = new DecimalFormat(",###");
+            DecimalFormat df = new DecimalFormat(",###");
 
-			String format1 = df.format(exp);
-			String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+            int needExpForNextRank = exp - userExp;
 
-			nextRankIndicator
-					.setText(String.format("%s%n%s %s", mainActivity.getString(R.string.str_discovery_nextRank), format1, format2));
+            String format1 = df.format(needExpForNextRank);
+            String format2 = mainActivity.getString(R.string.str_foundDevices_exp_abbreviation);
+            String format3 = mainActivity.getString(R.string.str_discovery_left_remaining);
 
-			TableLayout.LayoutParams params = (android.widget.TableLayout.LayoutParams) tableRow.getLayoutParams();
-			params.setMargins(calculatedCenterOffset, params.topMargin, params.rightMargin, params.bottomMargin);
-			tableRow.setLayoutParams(params);
-			tableRow.requestLayout();
+            nextRankIndicator
+                    .setText(String.format("%s%n%s %s %s", mainActivity.getString(R.string.str_discovery_nextRank), format1, format2, format3));
 
-			nextRankIndicator.setOnClickListener(new OnClickListener() {
+            TableLayout.LayoutParams params = (android.widget.TableLayout.LayoutParams) tableRow.getLayoutParams();
+            params.setMargins(calculatedCenterOffset, params.topMargin, params.rightMargin, params.bottomMargin);
+            tableRow.setLayoutParams(params);
+            tableRow.requestLayout();
 
-				@Override
-				public void onClick(View v) {
+            nextRankIndicator.setOnClickListener(new OnClickListener() {
 
-					LeaderboardLayout.scrollToPosition(mainActivity, LeaderboardLayout.userRank - 2);
+                @Override
+                public void onClick(View v) {
 
-				}
-			});
+                    LeaderboardLayout.scrollToPosition(mainActivity, LeaderboardLayout.userRank - 2);
 
-		}
+                }
+            });
 
-		int newVisible = nextRankIndicator.getVisibility();
+        }
 
-		if (oldVisible != newVisible) updateIndicatorViews(mainActivity);
+        int newVisible = nextRankIndicator.getVisibility();
 
-	}
+        if (oldVisible != newVisible) updateIndicatorViews(mainActivity);
 
-	public static void startShowLV(final MainActivity main) {
+    }
 
-		// AlphaAnimation animation = new AlphaAnimation(1f, 0f);
-		// animation.setDuration(1000);
-		//
-		// TableLayout discoveryInfo = (TableLayout) main
-		// .findViewById(R.id.discoveryInfoTable);
-		// discoveryInfo.startAnimation(animation);
-		//
-		// lv.setVisibility(View.VISIBLE);
-		//
-		// animation = new AlphaAnimation(0f, 1f);
-		//
-		// animation.setDuration(1000);
-		// discoveryInfo.startAnimation(animation);
-		// lv.startAnimation(animation);
+    public static void startShowLV(final MainActivity main) {
 
-		if (lv == null) lv = (ListView) main.findViewById(R.id.discoveryListView);
+        // AlphaAnimation animation = new AlphaAnimation(1f, 0f);
+        // animation.setDuration(1000);
+        //
+        // TableLayout discoveryInfo = (TableLayout) main
+        // .findViewById(R.id.discoveryInfoTable);
+        // discoveryInfo.startAnimation(animation);
+        //
+        // lv.setVisibility(View.VISIBLE);
+        //
+        // animation = new AlphaAnimation(0f, 1f);
+        //
+        // animation.setDuration(1000);
+        // discoveryInfo.startAnimation(animation);
+        // lv.startAnimation(animation);
 
-		if (lv == null) return;
+        if (lv == null) lv = (ListView) main.findViewById(R.id.discoveryListView);
 
-		int orientation = main.getResources().getConfiguration().orientation;
+        if (lv == null) return;
 
-		if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        int orientation = main.getResources().getConfiguration().orientation;
 
-			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
-			TranslateAnimation animation2 = new TranslateAnimation(0, 0, discoveryInfo.getTop(), 0);
-			animation2.setDuration(1000);
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 
-			discoveryInfo.startAnimation(animation2);
+            TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
+            TranslateAnimation animation2 = new TranslateAnimation(0, 0, discoveryInfo.getTop(), 0);
+            animation2.setDuration(1000);
 
-			RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
+            discoveryInfo.startAnimation(animation2);
 
-			lv.setVisibility(View.VISIBLE);
-			animation2 = new TranslateAnimation(0, 0, relativeLayout.getHeight() - discoveryInfo.getHeight(), 0);
-			animation2.setDuration(1000);
+            RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
 
-			lv.startAnimation(animation2);
+            lv.setVisibility(View.VISIBLE);
+            animation2 = new TranslateAnimation(0, 0, relativeLayout.getHeight() - discoveryInfo.getHeight(), 0);
+            animation2.setDuration(1000);
 
-		}
-		else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            lv.startAnimation(animation2);
 
-			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
-			RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
-			TranslateAnimation animation2 = new TranslateAnimation(discoveryInfo.getLeft(), 0, 0, 0);
-			animation2.setDuration(1000);
+            TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
+            RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
 
-			discoveryInfo.startAnimation(animation2);
+            TranslateAnimation animation2 = new TranslateAnimation(discoveryInfo.getLeft(), 0, 0, 0);
+            animation2.setDuration(1000);
 
-			lv.setVisibility(View.VISIBLE);
-			animation2 = new TranslateAnimation(relativeLayout.getWidth() - discoveryInfo.getWidth(), 0, 0, 0);
-			animation2.setDuration(1000);
+            discoveryInfo.startAnimation(animation2);
 
-			lv.startAnimation(animation2);
+            lv.setVisibility(View.VISIBLE);
+            animation2 = new TranslateAnimation(relativeLayout.getWidth() - discoveryInfo.getWidth(), 0, 0, 0);
+            animation2.setDuration(1000);
 
-		}
+            lv.startAnimation(animation2);
 
-		lv.setOnItemClickListener(new OnItemClickListener() {
+        }
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        lv.setOnItemClickListener(new OnItemClickListener() {
 
-				FoundDevice device = main.getBlueHunter().disMan.getFDInCurDiscoverySession().get(position);
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-				List<FoundDevice> fDevices = DatabaseManager.getCachedList();
+                FoundDevice device = main.getBlueHunter().disMan.getFDInCurDiscoverySession().get(position);
 
-				if (fDevices != null) {
+                List<FoundDevice> fDevices = DatabaseManager.getCachedList();
 
-					int newPosition = fDevices.indexOf(device);
+                if (fDevices != null) {
 
-					main.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_FOUND_DEVICES, true);
-					ListView listView = (ListView) main.findViewById(R.id.listView2);
+                    int newPosition = fDevices.indexOf(device);
 
-					listView.smoothScrollToPositionFromTop(newPosition, 0, 1000);
+                    main.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_FOUND_DEVICES, true);
+                    ListView listView = (ListView) main.findViewById(R.id.listView2);
 
-				}
+                    listView.smoothScrollToPositionFromTop(newPosition, 0, 1000);
 
-			}
-		});
+                }
 
-	}
+            }
+        });
 
-	public static void stopShowLV(MainActivity main) {
+    }
 
-		if (lv == null) lv = (ListView) main.findViewById(R.id.discoveryListView);
+    public static void stopShowLV(MainActivity main) {
 
-		if (lv == null) return;
+        if (lv == null) lv = (ListView) main.findViewById(R.id.discoveryListView);
 
-		int orientation = main.getResources().getConfiguration().orientation;
+        if (lv == null) return;
 
-		if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        int orientation = main.getResources().getConfiguration().orientation;
 
-			RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
-			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 
-			TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, relativeLayout.getHeight() - discoveryInfo.getHeight());
-			animation2.setDuration(750);
+            RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
+            TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
 
-			lv.startAnimation(animation2);
+            TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, relativeLayout.getHeight() - discoveryInfo.getHeight());
+            animation2.setDuration(750);
 
-			lv.setVisibility(View.GONE);
+            lv.startAnimation(animation2);
 
-			float topOfDiscoveryInfo = relativeLayout.getHeight() / (float) 2 - discoveryInfo.getHeight() / (float) 2;
+            lv.setVisibility(View.GONE);
 
-			TranslateAnimation animation = new TranslateAnimation(0, 0, -topOfDiscoveryInfo, 0);
-			animation.setDuration(750);
+            float topOfDiscoveryInfo = relativeLayout.getHeight() / (float) 2 - discoveryInfo.getHeight() / (float) 2;
 
-			discoveryInfo.startAnimation(animation);
+            TranslateAnimation animation = new TranslateAnimation(0, 0, -topOfDiscoveryInfo, 0);
+            animation.setDuration(750);
 
-		}
-		else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            discoveryInfo.startAnimation(animation);
 
-			RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
-			TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
-			TranslateAnimation animation2 = new TranslateAnimation(0, relativeLayout.getWidth() - discoveryInfo.getWidth(), 0, 0);
-			animation2.setDuration(750);
+            RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
+            TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
 
-			lv.startAnimation(animation2);
+            TranslateAnimation animation2 = new TranslateAnimation(0, relativeLayout.getWidth() - discoveryInfo.getWidth(), 0, 0);
+            animation2.setDuration(750);
 
-			lv.setVisibility(View.GONE);
+            lv.startAnimation(animation2);
 
-			float leftOfDiscoveryInfo = relativeLayout.getWidth() / (float) 2 - discoveryInfo.getWidth() / (float) 2;
+            lv.setVisibility(View.GONE);
 
-			TranslateAnimation animation = new TranslateAnimation(-leftOfDiscoveryInfo, 0, 0, 0);
-			animation.setDuration(750);
+            float leftOfDiscoveryInfo = relativeLayout.getWidth() / (float) 2 - discoveryInfo.getWidth() / (float) 2;
 
-			discoveryInfo.startAnimation(animation);
+            TranslateAnimation animation = new TranslateAnimation(-leftOfDiscoveryInfo, 0, 0, 0);
+            animation.setDuration(750);
 
-		}
+            discoveryInfo.startAnimation(animation);
 
-	}
+        }
 
-	static class Holder {
+    }
 
-		TextView macAddress;
-		TextView manufacturer;
-		TextView exp;
-		ImageView rssi;
-		TextView state;
+    static class Holder {
 
-	}
+        TextView macAddress;
+        TextView manufacturer;
+        TextView exp;
+        ImageView rssi;
+        TextView state;
 
-	public class DiscoveryAdapter extends ArrayAdapter<FoundDevice> {
+    }
 
-		private final Activity context;
-		private final ArrayList<FoundDevice> values;
+    public class DiscoveryAdapter extends ArrayAdapter<FoundDevice> {
 
-		public DiscoveryAdapter(Activity context, ArrayList<FoundDevice> curList) {
+        private final Activity context;
+        private final ArrayList<FoundDevice> values;
 
-			super(context, R.layout.act_page_discovery_row, curList);
-			this.values = curList;
-			this.context = context;
-		}
+        public DiscoveryAdapter(Activity context, ArrayList<FoundDevice> curList) {
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+            super(context, R.layout.act_page_discovery_row, curList);
+            this.values = curList;
+            this.context = context;
+        }
 
-			View rowView = convertView;
-			if (rowView == null) {
-				LayoutInflater inflater = context.getLayoutInflater();
-				rowView = inflater.inflate(R.layout.act_page_discovery_row, null);
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
 
-				DeviceDiscoveryLayout.Holder holder = new Holder();
-				holder.macAddress = (TextView) rowView.findViewById(R.id.macTxtView);
-				holder.manufacturer = (TextView) rowView.findViewById(R.id.manufacturerTxtView);
-				holder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
-				holder.rssi = (ImageView) rowView.findViewById(R.id.rssiView);
-				holder.state = (TextView) rowView.findViewById(R.id.DDCStateTxtView);
+            View rowView = convertView;
+            if (rowView == null) {
+                LayoutInflater inflater = context.getLayoutInflater();
+                rowView = inflater.inflate(R.layout.act_page_discovery_row, null);
 
-				rowView.setTag(holder);
+                DeviceDiscoveryLayout.Holder holder = new Holder();
+                holder.macAddress = (TextView) rowView.findViewById(R.id.macTxtView);
+                holder.manufacturer = (TextView) rowView.findViewById(R.id.manufacturerTxtView);
+                holder.exp = (TextView) rowView.findViewById(R.id.expTxtView);
+                holder.rssi = (ImageView) rowView.findViewById(R.id.rssiView);
+                holder.state = (TextView) rowView.findViewById(R.id.DDCStateTxtView);
 
-			}
+                rowView.setTag(holder);
 
-			DeviceDiscoveryLayout.Holder vHolder = (DeviceDiscoveryLayout.Holder) rowView.getTag();
+            }
 
-			FoundDevice device = values.get(position);
+            DeviceDiscoveryLayout.Holder vHolder = (DeviceDiscoveryLayout.Holder) rowView.getTag();
 
-			String mac = device.getMacAddressString();
-			int manufacturer = device.getManufacturer();
+            FoundDevice device = values.get(position);
 
-			int exp = ManufacturerList.getExp(manufacturer);
+            String mac = device.getMacAddressString();
+            int manufacturer = device.getManufacturer();
 
-			int bonusExp = (int) (ManufacturerList.getExp(manufacturer) * device.getBoost());
+            int exp = ManufacturerList.getExp(manufacturer);
 
-			exp = bonusExp + exp;
+            int bonusExp = (int) (ManufacturerList.getExp(manufacturer) * device.getBoost());
 
-			int rssi = device.getRssi();
-			int rssiRes = 0;
+            exp = bonusExp + exp;
 
-			// 0 bars
-			if (rssi <= -102) rssiRes = 0;
+            int rssi = device.getRssi();
+            int rssiRes = 0;
 
-			// 1 bar
-			if (rssi >= -101 && rssi <= -93) rssiRes = R.drawable.rssi_1;
+            // 0 bars
+            if (rssi <= -102) rssiRes = 0;
 
-			// 2 bars
-			if (rssi >= -92 && rssi <= -87) rssiRes = R.drawable.rssi_2;
+            // 1 bar
+            if (rssi >= -101 && rssi <= -93) rssiRes = R.drawable.rssi_1;
 
-			// 3 bars
-			if (rssi >= -86 && rssi <= -78) rssiRes = R.drawable.rssi_3;
+            // 2 bars
+            if (rssi >= -92 && rssi <= -87) rssiRes = R.drawable.rssi_2;
 
-			// 4 bars
-			if (rssi >= -77 && rssi <= -40) rssiRes = R.drawable.rssi_4;
+            // 3 bars
+            if (rssi >= -86 && rssi <= -78) rssiRes = R.drawable.rssi_3;
 
-			// 5 bars
-			if (rssi >= -41) rssiRes = R.drawable.rssi_5;
+            // 4 bars
+            if (rssi >= -77 && rssi <= -40) rssiRes = R.drawable.rssi_4;
 
-			String expString = context.getString(R.string.str_foundDevices_exp_abbreviation);
+            // 5 bars
+            if (rssi >= -41) rssiRes = R.drawable.rssi_5;
 
-			if (device.isOld()) {
-				vHolder.state.setText(R.string.str_discovery_state_old);
-				vHolder.state.setTypeface(null, Typeface.NORMAL);
-				vHolder.state.setTextColor(ContextCompat.getColor(context, R.color.text_discovery_state_old));
-				((View) vHolder.state.getParent()).setAlpha(0.75f);
+            String expString = context.getString(R.string.str_foundDevices_exp_abbreviation);
 
-				vHolder.exp.setText("=" + exp + " " + expString);
-			}
-			else {
-				vHolder.state.setText(R.string.str_discovery_state_new);
-				vHolder.state.setTypeface(null, Typeface.BOLD);
-				vHolder.state.setTextColor(ContextCompat.getColor(context, R.color.text_holo_light_blue));
-				((View) vHolder.state.getParent()).setAlpha(1f);
+            if (device.isOld()) {
+                vHolder.state.setText(R.string.str_discovery_state_old);
+                vHolder.state.setTypeface(null, Typeface.NORMAL);
+                vHolder.state.setTextColor(ContextCompat.getColor(context, R.color.text_discovery_state_old));
+                ((View) vHolder.state.getParent()).setAlpha(0.75f);
 
-				vHolder.exp.setText("+" + exp + " " + expString);
-			}
+                vHolder.exp.setText("=" + exp + " " + expString);
+            } else {
+                vHolder.state.setText(R.string.str_discovery_state_new);
+                vHolder.state.setTypeface(null, Typeface.BOLD);
+                vHolder.state.setTextColor(ContextCompat.getColor(context, R.color.text_holo_light_blue));
+                ((View) vHolder.state.getParent()).setAlpha(1f);
 
-			vHolder.macAddress.setText(mac);
-			vHolder.manufacturer.setText(ManufacturerList.getName(manufacturer));
-			vHolder.rssi.setImageResource(rssiRes);
+                vHolder.exp.setText("+" + exp + " " + expString);
+            }
 
-			return rowView;
-		}
+            vHolder.macAddress.setText(mac);
+            vHolder.manufacturer.setText(ManufacturerList.getName(manufacturer));
+            vHolder.rssi.setImageResource(rssiRes);
 
-	}
+            return rowView;
+        }
+
+    }
 
 }

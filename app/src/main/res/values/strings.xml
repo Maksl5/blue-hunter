@@ -44,6 +44,7 @@
     <string name="str_discovery_state_old">OLD</string>
     <string name="str_discovery_state_new">NEW</string>
     <string name="str_discovery_nextRank">Next Rank</string>
+    <string name="str_discovery_left_remaining">left</string>
     
     <string name="str_leaderboard_global">Global</string>
     <string name="str_leaderboard_weekly">Weekly</string>
