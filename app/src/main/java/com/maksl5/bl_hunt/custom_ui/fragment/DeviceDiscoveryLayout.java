@@ -401,7 +401,7 @@ public class DeviceDiscoveryLayout {
                     main.mViewPager.setCurrentItem(FragmentLayoutManager.PAGE_FOUND_DEVICES, true);
                     ListView listView = (ListView) main.findViewById(R.id.listView2);
 
-                    listView.smoothScrollToPositionFromTop(newPosition, 0, 1000);
+                    LeaderboardLayout.ensureScrolling(listView, newPosition);
 
                 }
 

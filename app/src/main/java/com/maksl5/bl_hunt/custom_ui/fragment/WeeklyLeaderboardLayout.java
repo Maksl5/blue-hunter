@@ -214,7 +214,7 @@ public class WeeklyLeaderboardLayout {
 
             if (listView != null) {
 
-                listView.smoothScrollToPositionFromTop(index, 0, 1000);
+                LeaderboardLayout.ensureScrolling(listView, index);
 
             }
 
