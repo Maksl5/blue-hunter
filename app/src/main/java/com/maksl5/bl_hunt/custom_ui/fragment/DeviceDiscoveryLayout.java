@@ -491,7 +491,7 @@ public class DeviceDiscoveryLayout {
 			View rowView = convertView;
 			if (rowView == null) {
 				LayoutInflater inflater = context.getLayoutInflater();
-				rowView = inflater.inflate(R.layout.act_page_discovery_row, parent);
+				rowView = inflater.inflate(R.layout.act_page_discovery_row, null);
 
 				DeviceDiscoveryLayout.Holder holder = new Holder();
 				holder.macAddress = (TextView) rowView.findViewById(R.id.macTxtView);

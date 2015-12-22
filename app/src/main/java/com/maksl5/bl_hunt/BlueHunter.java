@@ -27,7 +27,7 @@ import org.acra.annotation.ReportsCrashes;
 @ReportsCrashes(formKey = "dFpyWWtjQ1E3VV9EaklYbFZETmpQLVE6MQ")
 public class BlueHunter extends Application {
 
-    public static final boolean isPlayStore = false;
+    public static final boolean isPlayStore = true;
     public static final boolean isSupport = BuildConfig.IS_SUPPORT;
     private static int versionCode = -1;
     public Authentification authentification;

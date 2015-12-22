@@ -1,6 +1,6 @@
 /**
- *  PreferenceActivity.java in com.maksl5.bl_hunt
- *  © Maksl5[Markus Bensing] 2012
+ * PreferenceActivity.java in com.maksl5.bl_hunt
+ * © Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt.activity;
 
@@ -62,929 +62,936 @@ import java.util.regex.Pattern;
 
 /**
  * @author Maksl5[Markus Bensing]
- * 
+ *
  */
 public class SettingsActivity extends android.preference.PreferenceActivity implements OnNetworkResultAvailableListener {
 
-	MenuItem progressBarItem;
-	private Menu menu;
-	private ProgressBar progressBar;
-	private String newPass = null;
+    MenuItem progressBarItem;
+    private Menu menu;
+    private ProgressBar progressBar;
+    private String newPass = null;
 
-	private BlueHunter bhApp;
-	private PrefNetManager netManager;
+    private BlueHunter bhApp;
+    private PrefNetManager netManager;
 
-	private List<Header> headers;
-	private boolean isDestroyed = false;
+    private List<Header> headers;
+    private boolean isDestroyed = false;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
-	 */
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		bhApp = (BlueHunter) getApplication();
-		bhApp.currentActivity = this;
+        bhApp = (BlueHunter) getApplication();
+        bhApp.currentActivity = this;
 
-		netManager = new PrefNetManager(this);
+        netManager = new PrefNetManager(this);
 
-		ActionBar actionBar = this.getActionBar();
+        ActionBar actionBar = this.getActionBar();
 
-		actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-	}
+        if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
+            try {
+                getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+            } catch (Exception | OutOfMemoryError e) {
+                PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+                getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            }
 
-	@Override
-	public void onBuildHeaders(List<Header> target) {
+        }
 
-		headers = new ArrayList<>();
-		loadHeadersFromResource(R.xml.preference_headers, target);
-		headers = target;
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.support.v4.app.FragmentActivity#onResume()
-	 */
-	@Override
-	protected void onResume() {
+    @Override
+    public void onBuildHeaders(List<Header> target) {
 
-		// TODO Auto-generated method stub
-		super.onResume();
+        headers = new ArrayList<>();
+        loadHeadersFromResource(R.xml.preference_headers, target);
+        headers = target;
+    }
 
-		bhApp.currentActivity = this;
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.support.v4.app.FragmentActivity#onResume()
+     */
+    @Override
+    protected void onResume() {
 
-		overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-	}
+        // TODO Auto-generated method stub
+        super.onResume();
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+        bhApp.currentActivity = this;
 
-		this.menu = menu;
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
 
-		getMenuInflater().inflate(R.menu.act_settings, this.menu);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-		progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
-		this.menu.findItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
-		progressBar.setPadding(5, 0, 5, 0);
+        this.menu = menu;
 
-		boolean goToInfoPref = getIntent().getBooleanExtra("goToInfoPref", false);
+        getMenuInflater().inflate(R.menu.act_settings, this.menu);
 
-		if (goToInfoPref) {
+        progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
+        this.menu.findItem(R.id.menu_progress).setVisible(false).setActionView(progressBar);
+        progressBar.setPadding(5, 0, 5, 0);
 
-			// switchToHeader(bhApp.getPackageName() +
-			// ".activity.SettingsActivity$InfoFragment", null);
-			if (headers == null) {
+        boolean goToInfoPref = getIntent().getBooleanExtra("goToInfoPref", false);
 
-				onCreate(null);
-				finish();
+        if (goToInfoPref) {
 
-			}
-			for (Header header : headers) {
-				if (header.fragment.equals(bhApp.getPackageName() + ".activity.SettingsActivity$InfoFragment")) {
-					switchToHeader(header);
-					break;
-				}
-			}
-		}
+            // switchToHeader(bhApp.getPackageName() +
+            // ".activity.SettingsActivity$InfoFragment", null);
+            if (headers == null) {
 
-		return true;
-	}
+                onCreate(null);
+                finish();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+            }
+            for (Header header : headers) {
+                if (header.fragment.equals(bhApp.getPackageName() + ".activity.SettingsActivity$InfoFragment")) {
+                    switchToHeader(header);
+                    break;
+                }
+            }
+        }
 
-		switch (item.getItemId()) {
-		case android.R.id.home:
+        return true;
+    }
 
-			finish();
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-			break;
+        switch (item.getItemId()) {
+            case android.R.id.home:
 
-		default:
-			break;
-		}
+                finish();
 
-		return true;
-	}
+                break;
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+            default:
+                break;
+        }
 
-		super.onActivityResult(requestCode, resultCode, data);
+        return true;
+    }
 
-		if (resultCode == 0) {
-			return;
-		}
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		switch (requestCode) {
-		case ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS:
-			if (resultCode == 1) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-				String oldPass = data.getStringExtra("oldPass");
-				newPass = data.getStringExtra("newPass");
+        if (resultCode == 0) {
+            return;
+        }
 
-				bhApp.authentification.setOnNetworkResultAvailableListener(this);
+        switch (requestCode) {
+            case ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS:
+                if (resultCode == 1) {
 
-				PrefNetThread changePass = new PrefNetThread(this, bhApp, netManager);
-				changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE),
-						"h=" + bhApp.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(),
-						"v=" + bhApp.getVersionCode(), "op=" + oldPass, "np=" + newPass,
-						"lt=" + bhApp.authentification.getStoredLoginToken());
-			}
-			else if (resultCode == 2) {
+                    String oldPass = data.getStringExtra("oldPass");
+                    newPass = data.getStringExtra("newPass");
 
-				newPass = data.getStringExtra("newPass");
+                    bhApp.authentification.setOnNetworkResultAvailableListener(this);
 
-				bhApp.authentification.setOnNetworkResultAvailableListener(this);
+                    PrefNetThread changePass = new PrefNetThread(this, bhApp, netManager);
+                    changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE),
+                            "h=" + bhApp.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(),
+                            "v=" + bhApp.getVersionCode(), "op=" + oldPass, "np=" + newPass,
+                            "lt=" + bhApp.authentification.getStoredLoginToken());
+                } else if (resultCode == 2) {
 
-				PrefNetThread changePass = new PrefNetThread(this, bhApp, netManager);
-				changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE),
-						"h=" + bhApp.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(),
-						"v=" + bhApp.getVersionCode(), "np=" + newPass, "lt=" + bhApp.authentification.getStoredLoginToken());
+                    newPass = data.getStringExtra("newPass");
 
-			}
-			break;
-		case ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS:
-			if (resultCode == 1) {
+                    bhApp.authentification.setOnNetworkResultAvailableListener(this);
 
-				String newLoginPass = data.getStringExtra("newLoginPass");
-				bhApp.authentification.storePass(newLoginPass);
+                    PrefNetThread changePass = new PrefNetThread(this, bhApp, netManager);
+                    changePass.execute(AuthentificationSecure.SERVER_PASS_CHANGE, String.valueOf(Authentification.NETRESULT_ID_PASS_CHANGE),
+                            "h=" + bhApp.authentification.getPassChangeHash(newPass), "s=" + Authentification.getSerialNumber(),
+                            "v=" + bhApp.getVersionCode(), "np=" + newPass, "lt=" + bhApp.authentification.getStoredLoginToken());
 
-				bhApp.loginManager.login();
+                }
+                break;
+            case ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS:
+                if (resultCode == 1) {
 
-			}
-			break;
-		}
+                    String newLoginPass = data.getStringExtra("newLoginPass");
+                    bhApp.authentification.storePass(newLoginPass);
 
-	}
+                    bhApp.loginManager.login();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener
-	 * #onResult(int, java.lang.String)
-	 */
-	@Override
-	public boolean onResult(int requestId, String resultString) {
+                }
+                break;
+        }
 
-		if (requestId == Authentification.NETRESULT_ID_PASS_CHANGE) {
+    }
 
-			Pattern pattern = Pattern.compile("Error=(\\d+)");
-			Matcher matcher = pattern.matcher(resultString);
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener
+     * #onResult(int, java.lang.String)
+     */
+    @Override
+    public boolean onResult(int requestId, String resultString) {
 
-			if (matcher.find()) {
-				int error = Integer.parseInt(matcher.group(1));
+        if (requestId == Authentification.NETRESULT_ID_PASS_CHANGE) {
 
-				String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
+            Pattern pattern = Pattern.compile("Error=(\\d+)");
+            Matcher matcher = pattern.matcher(resultString);
 
-				switch (error) {
-				case 1012:
-					bhApp.loginManager.login();
-					break;
-				case 1015:
-					bhApp.loginManager.login();
-					break;
-				}
+            if (matcher.find()) {
+                int error = Integer.parseInt(matcher.group(1));
 
-				Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
-			}
+                String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
 
-			if (resultString.equals("<SUCCESS>")) {
-				Toast.makeText(bhApp, getString(R.string.str_Preferences_changePass_success), Toast.LENGTH_LONG).show();
+                switch (error) {
+                    case 1012:
+                        bhApp.loginManager.login();
+                        break;
+                    case 1015:
+                        bhApp.loginManager.login();
+                        break;
+                }
 
-				if (ProfileFragment.changeLoginPass != null) {
-					ProfileFragment.changeLoginPass.setEnabled(true);
-				}
+                Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
+            }
 
-				if (newPass != null) {
-					bhApp.authentification.storePass(newPass);
-				}
+            if (resultString.equals("<SUCCESS>")) {
+                Toast.makeText(bhApp, getString(R.string.str_Preferences_changePass_success), Toast.LENGTH_LONG).show();
 
-			}
+                if (ProfileFragment.changeLoginPass != null) {
+                    ProfileFragment.changeLoginPass.setEnabled(true);
+                }
 
-		}
+                if (newPass != null) {
+                    bhApp.authentification.storePass(newPass);
+                }
 
-		return true;
-	}
+            }
 
-	@Override
-	protected void onDestroy() {
+        }
 
-		if (netManager != null) netManager.cancelAllTasks();
+        return true;
+    }
 
-		isDestroyed = true;
+    @Override
+    protected void onDestroy() {
 
-		super.onDestroy();
-	}
+        if (netManager != null) netManager.cancelAllTasks();
 
-	@Override
-	protected boolean isValidFragment(String fragmentName) {
-		return true;
-	}
+        isDestroyed = true;
 
-	/**
-	 * @author Maksl5[Markus Bensing]
-	 *
-	 */
-	public static class InfoFragment extends PreferenceFragment {
+        super.onDestroy();
+    }
 
-		BlueHunter bhApp;
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        return true;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see
-		 * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
-		 */
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
+    /**
+     * @author Maksl5[Markus Bensing]
+     */
+    public static class InfoFragment extends PreferenceFragment {
 
-			// TODO Auto-generated method stub
-			super.onCreate(savedInstanceState);
+        BlueHunter bhApp;
 
-			bhApp = (BlueHunter) getActivity().getApplication();
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
+         */
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
 
-			addPreferencesFromResource(R.xml.info_preference);
+            // TODO Auto-generated method stub
+            super.onCreate(savedInstanceState);
 
-			if (!Authentification.newUpdateAvailable) {
-				Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
-				PreferenceScreen infoScreen = getPreferenceScreen();
-				infoScreen.removePreference(newUpdatePref);
+            bhApp = (BlueHunter) getActivity().getApplication();
 
-				if (BlueHunter.isPlayStore) {
+            addPreferencesFromResource(R.xml.info_preference);
 
-					Preference checkPref = findPreference("pref_checkUpdate");
-					checkPref.setEnabled(false);
-					infoScreen.removePreference(checkPref);
+            if (!Authentification.newUpdateAvailable) {
+                Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
+                PreferenceScreen infoScreen = getPreferenceScreen();
+                infoScreen.removePreference(newUpdatePref);
 
-				}
+                if (BlueHunter.isPlayStore) {
 
-			}
+                    Preference checkPref = findPreference("pref_checkUpdate");
+                    checkPref.setEnabled(false);
+                    infoScreen.removePreference(checkPref);
 
-			initializeStaticPrefs();
-			registerListeners();
-		}
+                }
 
-		/**
-		 *
-		 */
-		private void registerListeners() {
+            }
 
-			// New Update Available - Click
-			Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
-			if (newUpdatePref != null) {
-				newUpdatePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            initializeStaticPrefs();
+            registerListeners();
+        }
 
-					@Override
-					public boolean onPreferenceClick(Preference preference) {
+        /**
+         *
+         */
+        private void registerListeners() {
 
-						Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-								Uri.parse("https://github.com/Maksl5/blue-hunter/raw/master/bin/Blue%20Hunter.apk"));
-						startActivity(browserIntent);
+            // New Update Available - Click
+            Preference newUpdatePref = findPreference("pref_newUpdateAvailable");
+            if (newUpdatePref != null) {
+                newUpdatePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-						return true;
-					}
-				});
-			}
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
 
-			// Show Changelog Click
-			Preference showChangelogPref = findPreference("pref_changelog");
-			if (showChangelogPref != null) {
-				showChangelogPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("https://github.com/Maksl5/blue-hunter/raw/master/bin/Blue%20Hunter.apk"));
+                        startActivity(browserIntent);
 
-					@Override
-					public boolean onPreferenceClick(Preference preference) {
+                        return true;
+                    }
+                });
+            }
 
-						if (bhApp != null && bhApp.authentification != null) bhApp.authentification.showChangelog();
+            // Show Changelog Click
+            Preference showChangelogPref = findPreference("pref_changelog");
+            if (showChangelogPref != null) {
+                showChangelogPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-						return true;
-					}
-				});
-			}
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
 
-			// Implement Issue Tracker linking
-			Preference issueTrackerPref = findPreference("pref_issuetracker");
-			issueTrackerPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+                        if (bhApp != null && bhApp.authentification != null)
+                            bhApp.authentification.showChangelog();
 
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
-					Intent trackerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://bluehunter.maks-dev.com/issues"));
-					startActivity(trackerIntent);
-					return true;
-				}
-			});
+                        return true;
+                    }
+                });
+            }
 
-			// Test Adding 10000 devices
+            // Implement Issue Tracker linking
+            Preference issueTrackerPref = findPreference("pref_issuetracker");
+            issueTrackerPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-			Preference infoPref = findPreference("pref_version");
-			infoPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent trackerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://bluehunter.maks-dev.com/issues"));
+                    startActivity(trackerIntent);
+                    return true;
+                }
+            });
 
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
+            // Test Adding 10000 devices
 
-					int number = 0;
+            //addTestDevices();
 
-					ArrayList<FoundDevice> foundDevices = new ArrayList<>();
+        }
 
-					for (short a = 0x00; a < 0xFF; a++) {
+        private void addTestDevices() {
 
-						if (number >= 30000) break;
+            Preference infoPref = findPreference("pref_version");
+            infoPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-						for (short b = 0x00; b < 0xFF; b++) {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
 
-							if (number >= 30000) break;
+                    int number = 0;
 
-							for (short c = 0x00; c < 0xFF; c++) {
+                    ArrayList<FoundDevice> foundDevices = new ArrayList<>();
 
-								if (number >= 30000) break;
+                    for (short a = 0x00; a < 0xFF; a++) {
 
-								FoundDevice fd = new FoundDevice();
-								fd.setMac(new MacAddress(a, b, c, (short) 0, (short) 0, (short) 0));
-								fd.setName("" + number);
-								fd.setTime(System.currentTimeMillis() - (number * 10000));
-								fd.setRssi((short) 0);
-								fd.setBoost(0f);
+                        if (number >= 30000) break;
 
-								foundDevices.add(fd);
+                        for (short b = 0x00; b < 0xFF; b++) {
 
-								Log.d("Debug Devices Calc.", "" + number);
+                            if (number >= 30000) break;
 
-								number++;
+                            for (short c = 0x00; c < 0xFF; c++) {
 
-							}
-						}
-					}
+                                if (number >= 30000) break;
 
-					new DatabaseManager(bhApp).newSyncedDatabase(foundDevices);
+                                FoundDevice fd = new FoundDevice();
+                                fd.setMac(new MacAddress(a, b, c, (short) 0, (short) 0, (short) 0));
+                                fd.setName("" + number);
+                                fd.setTime(System.currentTimeMillis() - (number * 10000));
+                                fd.setRssi((short) 0);
+                                fd.setBoost(0f);
 
-					return true;
-				}
-			});
+                                foundDevices.add(fd);
 
-		}
+                                Log.d("Debug Devices Calc.", "" + number);
 
-		private void initializeStaticPrefs() {
+                                number++;
 
-			Preference infoPref = findPreference("pref_version");
-			Preference serialPref = findPreference("pref_serialNumber");
-			Preference userIDPref = findPreference("pref_userID");
+                            }
+                        }
+                    }
 
-			try {
-				infoPref.setSummary(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
-				userIDPref.setSummary("" + bhApp.loginManager.getUid());
-				serialPref.setSummary(Authentification.getSerialNumber());
-			}
-			catch (NameNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+                    new DatabaseManager(bhApp).newSyncedDatabase(foundDevices);
 
-	}
+                    return true;
+                }
+            });
 
-	public static class BehaviourFragment extends PreferenceFragment {
+        }
 
-		BlueHunter bhApp;
+        private void initializeStaticPrefs() {
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see
-		 * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
-		 */
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
+            Preference infoPref = findPreference("pref_version");
+            Preference serialPref = findPreference("pref_serialNumber");
+            Preference userIDPref = findPreference("pref_userID");
 
-			// TODO Auto-generated method stub
-			super.onCreate(savedInstanceState);
+            try {
+                infoPref.setSummary(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
+                userIDPref.setSummary("" + bhApp.loginManager.getUid());
+                serialPref.setSummary(Authentification.getSerialNumber());
+            } catch (NameNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
-			bhApp = (BlueHunter) getActivity().getApplication();
+    }
 
-			addPreferencesFromResource(R.xml.behaviour_preference);
+    public static class BehaviourFragment extends PreferenceFragment {
 
-			registerListeners();
-		}
+        BlueHunter bhApp;
 
-		private void registerListeners() {
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
+         */
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
 
-			Preference showNotificationPref = findPreference("pref_showNotification");
-			if (showNotificationPref != null) {
-				showNotificationPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            // TODO Auto-generated method stub
+            super.onCreate(savedInstanceState);
 
-					@Override
-					public boolean onPreferenceChange(Preference preference, Object newValue) {
+            bhApp = (BlueHunter) getActivity().getApplication();
 
-						bhApp.mainActivity.alterNotification(newValue.equals(true));
+            addPreferencesFromResource(R.xml.behaviour_preference);
 
-						return true;
-					}
-				});
-			}
+            registerListeners();
+        }
 
-			Preference deleteRemember = findPreference("pref_deleteRemember");
-			if (deleteRemember != null) {
-				deleteRemember.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        private void registerListeners() {
 
-					@Override
-					public boolean onPreferenceClick(Preference preference) {
+            Preference showNotificationPref = findPreference("pref_showNotification");
+            if (showNotificationPref != null) {
+                showNotificationPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
-						PreferenceManager.setPref(bhApp, "pref_enableBT_remember", 0);
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
 
-						return true;
-					}
-				});
+                        bhApp.mainActivity.alterNotification(newValue.equals(true));
 
-			}
+                        return true;
+                    }
+                });
+            }
 
-			Preference enableBackground = findPreference("pref_enableBackground");
-			if (enableBackground != null) {
-				enableBackground.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            Preference deleteRemember = findPreference("pref_deleteRemember");
+            if (deleteRemember != null) {
+                deleteRemember.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-					@Override
-					public boolean onPreferenceChange(Preference preference, Object newValue) {
-						if (newValue.equals(true)) {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
 
-							try {
-								bhApp.mainActivity.getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-							} catch (Exception | OutOfMemoryError e) {
-								PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-								bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-							}
+                        PreferenceManager.setPref(bhApp, "pref_enableBT_remember", 0);
 
-						}
-						else {
-							bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-						}
-						return true;
-					}
-				});
-			}
+                        return true;
+                    }
+                });
 
-		}
+            }
 
-	}
+            Preference enableBackground = findPreference("pref_enableBackground");
+            if (enableBackground != null) {
+                enableBackground.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
-	/**
-	 * @author Maksl5
-	 *
-	 */
-	public static class ProfileFragment extends PreferenceFragment {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        if (newValue.equals(true)) {
 
-		public static Preference changeOnlinePass;
-		public static Preference changeLoginPass;
-		BlueHunter bhApp;
+                            try {
+                                bhApp.mainActivity.getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+                            } catch (Exception | OutOfMemoryError e) {
+                                PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+                                bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                            }
 
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
+                        } else {
+                            bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                        }
+                        return true;
+                    }
+                });
+            }
 
-			// TODO Auto-generated method stub
-			super.onCreate(savedInstanceState);
+        }
 
-			bhApp = (BlueHunter) getActivity().getApplication();
+    }
 
-			addPreferencesFromResource(R.xml.profile_preference);
+    /**
+     * @author Maksl5
+     *
+     */
+    public static class ProfileFragment extends PreferenceFragment {
 
-			changeOnlinePass = findPreference("pref_changePass");
+        public static Preference changeOnlinePass;
+        public static Preference changeLoginPass;
+        BlueHunter bhApp;
 
-			if (bhApp.loginManager != null) {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
 
-				changeOnlinePass.setEnabled(bhApp.loginManager.getLoginState());
-			}
+            // TODO Auto-generated method stub
+            super.onCreate(savedInstanceState);
 
-			changeLoginPass = findPreference("pref_localPass");
+            bhApp = (BlueHunter) getActivity().getApplication();
 
-			if (bhApp.loginManager != null && bhApp.mainActivity != null && !bhApp.mainActivity.passSet
-					&& bhApp.loginManager.getLoginState()) {
-				changeOnlinePass.setTitle(R.string.str_Preferences_changePass_new_title);
-				changeOnlinePass.setSummary(R.string.str_Preferences_changePass_new_sum);
-				changeLoginPass.setEnabled(false);
-			}
+            addPreferencesFromResource(R.xml.profile_preference);
 
-			if (bhApp.loginManager != null) {
-				bhApp.loginManager.login();
-			}
+            changeOnlinePass = findPreference("pref_changePass");
 
-			registerListeners();
+            if (bhApp.loginManager != null) {
 
-		}
+                changeOnlinePass.setEnabled(bhApp.loginManager.getLoginState());
+            }
 
-		private void registerListeners() {
+            changeLoginPass = findPreference("pref_localPass");
 
-			changeOnlinePass.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            if (bhApp.loginManager != null && bhApp.mainActivity != null && !bhApp.mainActivity.passSet
+                    && bhApp.loginManager.getLoginState()) {
+                changeOnlinePass.setTitle(R.string.str_Preferences_changePass_new_title);
+                changeOnlinePass.setSummary(R.string.str_Preferences_changePass_new_sum);
+                changeLoginPass.setEnabled(false);
+            }
 
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
+            if (bhApp.loginManager != null) {
+                bhApp.loginManager.login();
+            }
 
-					Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
-					Bundle parametersBundle = new Bundle();
-					parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
-					parametersBundle.putBoolean("passSet", bhApp.mainActivity.passSet);
-					intent.putExtras(parametersBundle);
+            registerListeners();
 
-					getActivity().startActivityForResult(intent, ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
+        }
 
-					return true;
-				}
-			});
+        private void registerListeners() {
 
-			changeLoginPass.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            changeOnlinePass.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
 
-					Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
-					Bundle parametersBundle = new Bundle();
-					parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS);
-					intent.putExtras(parametersBundle);
+                    Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+                    Bundle parametersBundle = new Bundle();
+                    parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
+                    parametersBundle.putBoolean("passSet", bhApp.mainActivity.passSet);
+                    intent.putExtras(parametersBundle);
 
-					getActivity().startActivityForResult(intent, ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS);
+                    getActivity().startActivityForResult(intent, ChangePasswordActivity.MODE_CHANGE_ONLINE_PASS);
 
-					return true;
-				}
-			});
+                    return true;
+                }
+            });
 
-			bhApp.authentification.setOnLoginChangeListener(new OnLoginChangeListener() {
+            changeLoginPass.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-				@Override
-				public void loginStateChange(boolean loggedIn) {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
 
-					if (loggedIn) {
-						changeOnlinePass.setEnabled(true);
-					}
-					else {
-						changeOnlinePass.setEnabled(false);
-					}
+                    Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+                    Bundle parametersBundle = new Bundle();
+                    parametersBundle.putInt("mode", ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS);
+                    intent.putExtras(parametersBundle);
 
-				}
-			});
+                    getActivity().startActivityForResult(intent, ChangePasswordActivity.MODE_CHANGE_LOGIN_PASS);
 
-			android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity())
-					.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+                    return true;
+                }
+            });
 
-						@Override
-						public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            bhApp.authentification.setOnLoginChangeListener(new OnLoginChangeListener() {
 
-							if (key.equals("pref_syncingActivated")) {
-								if (sharedPreferences.getBoolean(key, false)) {
-									bhApp.synchronizeFoundDevices.start();
-								}
-							}
+                @Override
+                public void loginStateChange(boolean loggedIn) {
 
-						}
-					});
+                    if (loggedIn) {
+                        changeOnlinePass.setEnabled(true);
+                    } else {
+                        changeOnlinePass.setEnabled(false);
+                    }
 
-			Preference syncInterval = findPreference("pref_syncInterval");
-			syncInterval.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+                }
+            });
 
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
+            android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
 
-					Builder builder = new Builder(getActivity());
-					builder.setTitle("Set sync interval.");
-					builder.setPositiveButton("Save", new OnClickListener() {
+                        @Override
+                        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
+                            if (key.equals("pref_syncingActivated")) {
+                                if (sharedPreferences.getBoolean(key, false)) {
+                                    bhApp.synchronizeFoundDevices.start();
+                                }
+                            }
 
-							NumberPicker numberPicker = (NumberPicker) ((AlertDialog) dialog).findViewById(R.id.numberPicker1);
+                        }
+                    });
 
-							int value = numberPicker.getValue();
+            Preference syncInterval = findPreference("pref_syncInterval");
+            syncInterval.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-							PreferenceManager.setPref(getActivity(), "pref_syncInterval", value);
-							dialog.dismiss();
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
 
-						}
-					});
+                    Builder builder = new Builder(getActivity());
+                    builder.setTitle("Set sync interval.");
+                    builder.setPositiveButton("Save", new OnClickListener() {
 
-					builder.setNegativeButton("Cancel", new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
+                            NumberPicker numberPicker = (NumberPicker) ((AlertDialog) dialog).findViewById(R.id.numberPicker1);
 
-							dialog.dismiss();
+                            int value = numberPicker.getValue();
 
-						}
-					});
+                            PreferenceManager.setPref(getActivity(), "pref_syncInterval", value);
+                            dialog.dismiss();
 
-					builder.setView(LayoutInflater.from(builder.getContext()).inflate(R.layout.dlg_sync_interval, null));
+                        }
+                    });
 
+                    builder.setNegativeButton("Cancel", new OnClickListener() {
 
-					AlertDialog alertDialog = builder.show();
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-					NumberPicker numberPicker = (NumberPicker) alertDialog.findViewById(R.id.numberPicker1);
-					numberPicker.setMinValue(1);
-					numberPicker.setMaxValue(100);
-					numberPicker.setWrapSelectorWheel(false);
-					numberPicker.setValue(PreferenceManager.getPref(getActivity(), "pref_syncInterval", 5));
+                            dialog.dismiss();
 
-					return true;
-				}
-			});
+                        }
+                    });
 
-			Preference forceUpSync = findPreference("pref_forceUpSync");
-			Preference forceDownSync = findPreference("pref_forceDownSync");
+                    builder.setView(LayoutInflater.from(builder.getContext()).inflate(R.layout.dlg_sync_interval, null));
 
-			forceUpSync.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
+                    AlertDialog alertDialog = builder.show();
 
-					bhApp.synchronizeFoundDevices.startSyncing(SynchronizeFoundDevices.MODE_INIT, true);
+                    NumberPicker numberPicker = (NumberPicker) alertDialog.findViewById(R.id.numberPicker1);
+                    numberPicker.setMinValue(1);
+                    numberPicker.setMaxValue(100);
+                    numberPicker.setWrapSelectorWheel(false);
+                    numberPicker.setValue(PreferenceManager.getPref(getActivity(), "pref_syncInterval", 5));
 
-					return true;
-				}
-			});
+                    return true;
+                }
+            });
 
-			forceDownSync.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            Preference forceUpSync = findPreference("pref_forceUpSync");
+            Preference forceDownSync = findPreference("pref_forceDownSync");
 
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
+            forceUpSync.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-					bhApp.synchronizeFoundDevices.startSyncing(SynchronizeFoundDevices.MODE_DOWN, true);
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
 
-					return true;
-				}
-			});
+                    bhApp.synchronizeFoundDevices.startSyncing(SynchronizeFoundDevices.MODE_INIT, true);
 
-		}
-	}
+                    return true;
+                }
+            });
 
-	/**
-	 * @author Maksl5[Markus Bensing]
-	 *
-	 */
-	public static class MiscFragment extends PreferenceFragment {
+            forceDownSync.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-		BlueHunter bhApp;
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see
-		 * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
-		 */
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
+                    bhApp.synchronizeFoundDevices.startSyncing(SynchronizeFoundDevices.MODE_DOWN, true);
 
-			super.onCreate(savedInstanceState);
+                    return true;
+                }
+            });
 
-			bhApp = (BlueHunter) getActivity().getApplication();
+        }
+    }
 
-			addPreferencesFromResource(R.xml.misc_preference);
+    /**
+     * @author Maksl5[Markus Bensing]
+     *
+     */
+    public static class MiscFragment extends PreferenceFragment {
 
-			registerListeners();
-		}
+        BlueHunter bhApp;
 
-		/**
-		 *
-		 */
-		private void registerListeners() {
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * android.preference.PreferenceFragment#onCreate(android.os.Bundle)
+         */
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
 
-			Preference rebuildDB = findPreference("pref_rebuildDB");
-			rebuildDB.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            super.onCreate(savedInstanceState);
 
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
+            bhApp = (BlueHunter) getActivity().getApplication();
 
-					int result = new DatabaseManager(bhApp).rebuildDatabase();
+            addPreferencesFromResource(R.xml.misc_preference);
 
-					if (result == 0) {
-						Toast.makeText(getActivity(), "Successfully rebuilt database. App will now restart.", Toast.LENGTH_LONG).show();
-					}
-					else if (result < 0) {
-						Toast.makeText(getActivity(), (-result) + " devices could not be rebuild. App will now restart.", Toast.LENGTH_LONG)
-								.show();
-					}
-					else if (result == 1001) {
-						Toast.makeText(getActivity(), "Database could not be rebuilt.", Toast.LENGTH_LONG).show();
-						return true;
-					}
+            registerListeners();
+        }
 
-					Intent i = getActivity().getBaseContext().getPackageManager()
-							.getLaunchIntentForPackage(getActivity().getBaseContext().getPackageName());
-					i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					startActivity(i);
+        /**
+         *
+         */
+        private void registerListeners() {
 
-					return true;
-				}
-			});
+            Preference rebuildDB = findPreference("pref_rebuildDB");
+            rebuildDB.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-		}
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
 
-	}
+                    int result = new DatabaseManager(bhApp).rebuildDatabase();
 
-	/**
-	 * @author Maksl5
-	 *
-	 */
-	public class PrefNetManager {
+                    if (result == 0) {
+                        Toast.makeText(getActivity(), "Successfully rebuilt database. App will now restart.", Toast.LENGTH_LONG).show();
+                    } else if (result < 0) {
+                        Toast.makeText(getActivity(), (-result) + " devices could not be rebuild. App will now restart.", Toast.LENGTH_LONG)
+                                .show();
+                    } else if (result == 1001) {
+                        Toast.makeText(getActivity(), "Database could not be rebuilt.", Toast.LENGTH_LONG).show();
+                        return true;
+                    }
 
-		private final SettingsActivity prefActivity;
-		private final List<PrefNetThread> curRunningThreads;
+                    Intent i = getActivity().getBaseContext().getPackageManager()
+                            .getLaunchIntentForPackage(getActivity().getBaseContext().getPackageName());
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
 
-		public PrefNetManager(SettingsActivity prefActivity) {
+                    return true;
+                }
+            });
 
-			this.prefActivity = prefActivity;
-			curRunningThreads = new ArrayList<>();
-		}
+        }
 
-		public void addRunningThread(PrefNetThread netThread) {
+    }
 
-			curRunningThreads.add(netThread);
-		}
+    /**
+     * @author Maksl5
+     *
+     */
+    public class PrefNetManager {
 
-		public synchronized void threadFinished(PrefNetThread netThread) {
+        private final SettingsActivity prefActivity;
+        private final List<PrefNetThread> curRunningThreads;
 
-			curRunningThreads.remove(netThread);
-			checkList();
-		}
+        public PrefNetManager(SettingsActivity prefActivity) {
 
-		public void cancelAllTasks() {
-			for (PrefNetThread prefNetThread : curRunningThreads) {
-				if (prefNetThread != null) prefNetThread.cancel(true);
-			}
+            this.prefActivity = prefActivity;
+            curRunningThreads = new ArrayList<>();
+        }
 
-		}
+        public void addRunningThread(PrefNetThread netThread) {
 
-		/**
-		 *
-		 */
-		private void checkList() {
+            curRunningThreads.add(netThread);
+        }
 
-			if (curRunningThreads.size() == 0) {
-				if (!prefActivity.isDestroyed()) {
-					MenuItem progressBar = prefActivity.menu.findItem(R.id.menu_progress);
-					progressBar.setVisible(false);
-				}
-			}
+        public synchronized void threadFinished(PrefNetThread netThread) {
 
-		}
-	}
+            curRunningThreads.remove(netThread);
+            checkList();
+        }
 
-	/**
-	 * @author Maksl5
-	 *
-	 */
-	public class PrefNetThread extends AsyncTask<String, Integer, String> {
+        public void cancelAllTasks() {
+            for (PrefNetThread prefNetThread : curRunningThreads) {
+                if (prefNetThread != null) prefNetThread.cancel(true);
+            }
 
-		private final SettingsActivity preferenceActivity;
-		private final PrefNetManager networkMananger;
-		private final BlueHunter bhApp;
+        }
 
-		public PrefNetThread(SettingsActivity preferenceActivity, BlueHunter app, PrefNetManager networkMananger) {
+        /**
+         *
+         */
+        private void checkList() {
 
-			super();
-			this.preferenceActivity = preferenceActivity;
-			this.bhApp = app;
-			this.networkMananger = networkMananger;
-			networkMananger.addRunningThread(this);
-		}
+            if (curRunningThreads.size() == 0) {
+                if (!prefActivity.isDestroyed()) {
+                    MenuItem progressBar = prefActivity.menu.findItem(R.id.menu_progress);
+                    progressBar.setVisible(false);
+                }
+            }
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
-		@Override
-		protected String doInBackground(String... params) {
+        }
+    }
 
-			String remoteFile = params[0];
-			int requestId = Integer.parseInt(params[1]);
-			boolean https = false;
+    /**
+     * @author Maksl5
+     *
+     */
+    public class PrefNetThread extends AsyncTask<String, Integer, String> {
 
-			if (remoteFile.startsWith("https")) https = true;
+        private final SettingsActivity preferenceActivity;
+        private final PrefNetManager networkMananger;
+        private final BlueHunter bhApp;
 
-			try {
+        public PrefNetThread(SettingsActivity preferenceActivity, BlueHunter app, PrefNetManager networkMananger) {
 
-				HashMap<String, String> postValues = new HashMap<>();
+            super();
+            this.preferenceActivity = preferenceActivity;
+            this.bhApp = app;
+            this.networkMananger = networkMananger;
+            networkMananger.addRunningThread(this);
+        }
 
-				for (int i = 2; i < params.length; i++) {
-					Pattern pattern = Pattern.compile("(.+)=(.+)", Pattern.CASE_INSENSITIVE);
-					Matcher matcher = pattern.matcher(params[i]);
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
+        @Override
+        protected String doInBackground(String... params) {
 
-					if (matcher.matches()) {
+            String remoteFile = params[0];
+            int requestId = Integer.parseInt(params[1]);
+            boolean https = false;
 
-						postValues.put(matcher.group(1), matcher.group(2));
-					}
-				}
+            if (remoteFile.startsWith("https")) https = true;
 
-				URL httpUri = new URL(remoteFile);
+            try {
 
-				HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
-				conn.setReadTimeout(15000);
-				conn.setConnectTimeout(15000);
-				conn.setRequestMethod("POST");
-				conn.setDoInput(true);
-				conn.setDoOutput(true);
-				conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                HashMap<String, String> postValues = new HashMap<>();
 
-				OutputStream os = conn.getOutputStream();
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-				writer.write(NetworkThread.getPostDataString(postValues));
+                for (int i = 2; i < params.length; i++) {
+                    Pattern pattern = Pattern.compile("(.+)=(.+)", Pattern.CASE_INSENSITIVE);
+                    Matcher matcher = pattern.matcher(params[i]);
 
-				writer.flush();
-				writer.close();
-				os.close();
+                    if (matcher.matches()) {
 
-				int responseCode = conn.getResponseCode();
+                        postValues.put(matcher.group(1), matcher.group(2));
+                    }
+                }
 
-				String result;
+                URL httpUri = new URL(remoteFile);
 
-				if (responseCode == HttpURLConnection.HTTP_OK) {
+                HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
-					String line;
-					BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(NetworkThread.getPostDataString(postValues));
 
-					StringBuilder stringBuilder = new StringBuilder();
+                writer.flush();
+                writer.close();
+                os.close();
 
-					while ((line = br.readLine()) != null) {
-						stringBuilder.append(line).append(System.lineSeparator());
-					}
+                int responseCode = conn.getResponseCode();
 
-					stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
+                String result;
 
-					result = stringBuilder.toString();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
 
-				}
-				else {
+                    String line;
+                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-					return "<requestID='" + requestId + "' />" + "Error=" + responseCode + "\n" + conn.getResponseMessage();
+                    StringBuilder stringBuilder = new StringBuilder();
 
-				}
+                    while ((line = br.readLine()) != null) {
+                        stringBuilder.append(line).append(System.lineSeparator());
+                    }
 
-				return "<requestID='" + requestId + "' />" + result;
-			}
-			catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return "<requestID='" + requestId + "' />" + "Error=5\n" + e.getMessage();
-			}
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return "<requestID='" + requestId + "' />" + "Error=1\n" + e.getMessage();
-			}
+                    stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(System.lineSeparator()));
 
-			// TODO Auto-generated method stub
+                    result = stringBuilder.toString();
 
-		}
+                } else {
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		@Override
-		protected void onPostExecute(String result) {
+                    return "<requestID='" + requestId + "' />" + "Error=" + responseCode + "\n" + conn.getResponseMessage();
 
-			Pattern reqIdPattern = Pattern.compile("<requestID='(\\d+)' />");
-			Matcher reqIdMatcher = reqIdPattern.matcher(result);
-			reqIdMatcher.find();
-			int reqId = Integer.parseInt(reqIdMatcher.group(1));
+                }
 
-			result = reqIdMatcher.replaceFirst("");
+                return "<requestID='" + requestId + "' />" + result;
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return "<requestID='" + requestId + "' />" + "Error=5\n" + e.getMessage();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return "<requestID='" + requestId + "' />" + "Error=1\n" + e.getMessage();
+            }
 
-			bhApp.authentification.fireOnNetworkResultAvailable(reqId, result);
+            // TODO Auto-generated method stub
 
-			networkMananger.threadFinished(this);
+        }
 
-		}
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(String result) {
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
-		@Override
-		protected void onPreExecute() {
+            Pattern reqIdPattern = Pattern.compile("<requestID='(\\d+)' />");
+            Matcher reqIdMatcher = reqIdPattern.matcher(result);
+            reqIdMatcher.find();
+            int reqId = Integer.parseInt(reqIdMatcher.group(1));
 
-			if (!preferenceActivity.isDestroyed) {
-				MenuItem progressBar = preferenceActivity.menu.findItem(R.id.menu_progress);
-				progressBar.setVisible(true);
-			}
+            result = reqIdMatcher.replaceFirst("");
 
-		}
+            bhApp.authentification.fireOnNetworkResultAvailable(reqId, result);
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
-		 */
-		@Override
-		protected void onProgressUpdate(Integer... values) {
+            networkMananger.threadFinished(this);
 
-		}
-	}
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onPreExecute()
+         */
+        @Override
+        protected void onPreExecute() {
+
+            if (!preferenceActivity.isDestroyed) {
+                MenuItem progressBar = preferenceActivity.menu.findItem(R.id.menu_progress);
+                progressBar.setVisible(true);
+            }
+
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+         */
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+        }
+    }
 }
