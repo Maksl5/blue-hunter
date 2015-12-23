@@ -341,7 +341,7 @@ public class LeaderboardLayout {
 
     public static void ensureScrolling(final ListView lv, final int index, int attempts) {
 
-        if (lv.getFirstVisiblePosition() != index && attempts < 4) {
+        if (lv.getFirstVisiblePosition() != index && attempts < 1) {
             attempts++;
             final int attemptsForAnonymousClass = attempts;
             lv.smoothScrollToPositionFromTop(index, 0, 500);
@@ -349,13 +349,6 @@ public class LeaderboardLayout {
                 @Override
                 public void run() {
                     ensureScrolling(lv, index, attemptsForAnonymousClass);
-                }
-            });
-        } else {
-            lv.post(new Runnable() {
-                @Override
-                public void run() {
-                    lv.setSelection(index);
                 }
             });
         }

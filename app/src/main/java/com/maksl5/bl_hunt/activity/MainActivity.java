@@ -145,7 +145,8 @@ public class MainActivity extends FragmentActivity {
 
         //PageTransformer parallaxPageTransformer = setupPageTransformer();
 
-        mViewPager.setPageTransformer(true, new CustomPagerTransformer());
+        mViewPager.setPageTransformer(true, new CustomPagerTransformer(this));
+
 
         registerListener();
 
@@ -269,12 +270,15 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onPageSelected(int position) {
 
-                bhApp.actionBarHandler.changePage(position);
+                //bhApp.actionBarHandler.changePage(position);
+
 
             }
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                bhApp.actionBarHandler.transformPage(position, positionOffset);
 
             }
 

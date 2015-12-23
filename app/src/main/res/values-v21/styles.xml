@@ -13,8 +13,10 @@
     <style name="bhActionBar" parent="android:Widget.Material.Light.ActionBar.Solid">
         <item name="android:background">@drawable/bg_actionbar_tiled</item>
         <item name="android:backgroundSplit">@drawable/bg_actionbar_tiled</item>
-        <item name="android:titleTextStyle">@style/NoTitleText</item>
+        <!--<item name="android:titleTextStyle">@style/NoTitleText</item>-->
         <item name="android:subtitleTextStyle">@style/NoTitleText</item>
+        <item name="android:displayOptions">showHome|showTitle</item>
+        <item name="android:icon">@android:color/transparent</item>
     </style>
 
     <style name="EnableBluetoothTheme" parent="android:Theme.Material.NoActionBar">

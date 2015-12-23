@@ -1,10 +1,11 @@
 package com.maksl5.bl_hunt.activity;
 
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,21 +46,27 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
     private final BlueHunter bhApp;
     private final android.app.ActionBar actBar;
     public ActionMode.Callback actionModeCallback;
+    public int temporaryCurPage = -1;
     private Menu menu;
     private Switch disSwitch;
-    private int currentPage;
+    private int currentPage = -1;
+    private View menuContainer;
 
-    @TargetApi(11)
     public ActionBarHandler(BlueHunter app) {
 
         bhApp = app;
         actBar = bhApp.mainActivity.getActionBar();
 
         if (actBar != null) {
-            actBar.setDisplayShowTitleEnabled(false);
-            actBar.setDisplayUseLogoEnabled(true);
-            actBar.setDisplayShowHomeEnabled(true);
-            actBar.setIcon(R.drawable.logo);
+            if (Build.VERSION.SDK_INT < 21) {
+
+                actBar.setDisplayShowTitleEnabled(false);
+                actBar.setDisplayUseLogoEnabled(true);
+                actBar.setDisplayShowHomeEnabled(true);
+                actBar.setIcon(R.drawable.logo);
+            } else {
+                actBar.setTitle("BlueHunter");
+            }
         }
 
 
@@ -177,6 +184,8 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 
         try {
 
+            if (currentPage == newPage) return;
+
             currentPage = newPage;
 
             switch (newPage) {
@@ -257,6 +266,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
                     }
                     break;
             }
+
         } catch (NullPointerException e) {
             return;
         }
@@ -271,6 +281,9 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 
         this.menu = menu;
         checkMenuNull();
+
+        menuContainer = (View) getActionView(R.id.menu_switch).getParent();
+
     }
 
 
@@ -384,6 +397,34 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
             disSwitch.setPadding(5, 0, 5, 0);
             disSwitch.setEnabled(enabled);
         }
+
+    }
+
+    public void transformPage(int position, float positionOffset) {
+
+        //0 center
+        //1 page moving to the right
+        //-1 page moving to the left
+
+        if (menuContainer == null) {
+            Log.d("onSwipe()", "menuContainer == null");
+            if (menu != null)
+                menuContainer = (View) getActionView(R.id.menu_switch).getParent();
+
+            return;
+        }
+
+
+        if (positionOffset < 0.5) {
+            changePage(position);
+            menuContainer.setAlpha(1 - (positionOffset * 2));
+            menuContainer.setTranslationX((positionOffset * 2) * 400);
+        } else {
+            changePage(position + 1);
+            menuContainer.setAlpha((positionOffset * 2) - 1);
+            menuContainer.setTranslationX((1 - (positionOffset * 2 - 1)) * 400);
+        }
+
 
     }
 

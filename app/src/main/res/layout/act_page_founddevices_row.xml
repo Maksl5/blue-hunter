@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/selectCheckbox"
-        android:background="@color/text_holo_light_blue"
+        android:background="@color/bg_transparent_grey"
         android:gravity="center"
         android:padding="@dimen/padding_small"
         android:visibility="visible" >
@@ -30,7 +30,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Maksl5"
-            android:textColor="#ffffff"
+            android:textColor="@color/text_holo_light_blue"
             android:textSize="@dimen/foundDevices_name_text" />
 
     </TableRow>

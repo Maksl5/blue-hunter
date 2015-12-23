@@ -7,5 +7,6 @@
     <color name="primary_material_dark">#6D6D6D</color>
     <color name="actionbar_gradient_start">#6D6D6D</color>
     <color name="actionbar_gradient_end">#505050</color>
+    <color name="bg_transparent_grey">#77aaaaaa</color>
 
 </resources>
