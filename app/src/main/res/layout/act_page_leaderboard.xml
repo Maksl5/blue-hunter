@@ -18,7 +18,8 @@
             <TabWidget
                 android:id="@android:id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:tabStripEnabled="false">
             </TabWidget>
 
             <FrameLayout
@@ -28,15 +29,15 @@
 
                 <include
                     android:id="@+id/globalTab"
+                    layout="@layout/act_page_leaderboard_global"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    layout="@layout/act_page_leaderboard_global" />
+                    android:layout_height="wrap_content" />
 
                 <include
                     android:id="@+id/weeklyTab"
+                    layout="@layout/act_page_leaderboard_weekly"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    layout="@layout/act_page_leaderboard_weekly" />
+                    android:layout_height="wrap_content" />
 
             </FrameLayout>
         </LinearLayout>

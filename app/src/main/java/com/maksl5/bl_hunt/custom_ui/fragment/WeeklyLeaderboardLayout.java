@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
@@ -334,7 +335,7 @@ public class WeeklyLeaderboardLayout {
 
         RelativeLayout prgTableRow;
         TableRow expTableRow;
-        TableRow devTableRow;
+        LinearLayout devLL;
 
     }
 
@@ -810,7 +811,7 @@ public class WeeklyLeaderboardLayout {
 
                 viewHolder.prgTableRow = (RelativeLayout) rowView.findViewById(R.id.LdrPrgParent);
                 viewHolder.expTableRow = (TableRow) rowView.findViewById(R.id.LDRTableRow01);
-                viewHolder.devTableRow = (TableRow) rowView.findViewById(R.id.LDRtableRow4);
+                viewHolder.devLL = (LinearLayout) rowView.findViewById(R.id.LDRtableRow4).getParent();
 
                 rowView.setTag(viewHolder);
             }
@@ -844,7 +845,7 @@ public class WeeklyLeaderboardLayout {
 
                 holder.prgTableRow.setVisibility(View.GONE);
                 holder.expTableRow.setVisibility(View.GONE);
-                holder.devTableRow.setGravity(Gravity.CENTER);
+                holder.devLL.setGravity(Gravity.CENTER);
 
                 int devNow = user.getDevNum();
 
