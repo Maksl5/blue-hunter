@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_small" >
+    android:padding="@dimen/padding_small">
 
     <TableRow
         android:id="@+id/LDRtableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" >
+        android:gravity="center">
 
         <QuickContactBadge
             android:id="@+id/picture"
@@ -29,58 +29,79 @@
             android:textStyle="italic|bold" />
     </TableRow>
 
-    <TableRow
-        android:id="@+id/LDRtableRow3"
+    <RelativeLayout
+        android:id="@+id/LDRrelativeLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/LDRtableRow1"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="false"
         android:layout_below="@+id/LDRtableRow1"
-        android:gravity="center" >
+        android:gravity="center">
 
 
+        <RelativeLayout
+            android:id="@+id/LdrPrgParent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="false"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/view"
+            android:gravity="center|right"
+            android:paddingRight="@dimen/padding_xsmall">
 
-            <RelativeLayout
-                android:id="@+id/LdrPrgParent"
+            <ProgressBar
+                android:id="@+id/levelPrgBar"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="@dimen/padding_xsmall">
+                android:layout_centerInParent="true"
+                android:indeterminate="false"
+                android:minHeight="1dip"
+                android:minWidth="125dip"
+                android:progress="35" />
 
-                <com.maksl5.bl_hunt.custom_ui.PatternProgressBar
-                    android:id="@+id/levelPrgBar"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:indeterminate="false"
-                    android:minHeight="1dip"
-                    android:minWidth="100dip"
-                    android:progress="35"
-                    android:progressDrawable="@drawable/bh_progress_bar" />
+            <TextView
+                android:id="@+id/levelTxtView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="1"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#bb000000"
+                android:textSize="@dimen/levelIndicator_text"
+                android:textStyle="bold" />
+        </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/levelTxtView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#bb000000"
-                    android:textSize="@dimen/levelIndicator_text"
-                    android:textStyle="bold" />
-            </RelativeLayout>
+        <View
+            android:id="@+id/view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/LdrPrgParent"
+            android:layout_centerHorizontal="true" />
 
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="false"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/view"
+            android:gravity="left|center"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/padding_xsmall" >
+            android:paddingLeft="@dimen/padding_xsmall">
 
             <TableRow
                 android:id="@+id/LDRTableRow01"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/expTxtView"
@@ -94,7 +115,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/padding_xsmall"
-                    android:gravity="center" >
+                    android:gravity="center">
 
                     <ImageView
                         android:id="@+id/changeEXPImgView"
@@ -117,7 +138,7 @@
             <TableRow
                 android:id="@+id/LDRtableRow4"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/devTxtView"
@@ -131,7 +152,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/padding_xsmall"
-                    android:gravity="center" >
+                    android:gravity="center">
 
                     <ImageView
                         android:id="@+id/changeDEVImgView"
@@ -151,7 +172,7 @@
 
             </TableRow>
         </LinearLayout>
-    </TableRow>
+    </RelativeLayout>
 
     <TableRow
         android:id="@+id/tableRow1"
@@ -160,7 +181,7 @@
         android:layout_alignBottom="@+id/LDRtableRow1"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:gravity="center" >
+        android:gravity="center">
 
         <TextView
             android:id="@+id/rankTxtView"
@@ -175,7 +196,7 @@
             android:id="@+id/LDRtableRow5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center" >
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/changeRankImgView"

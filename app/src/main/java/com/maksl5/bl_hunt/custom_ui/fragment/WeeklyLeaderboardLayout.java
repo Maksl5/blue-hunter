@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -333,6 +334,7 @@ public class WeeklyLeaderboardLayout {
 
         RelativeLayout prgTableRow;
         TableRow expTableRow;
+        TableRow devTableRow;
 
     }
 
@@ -808,6 +810,7 @@ public class WeeklyLeaderboardLayout {
 
                 viewHolder.prgTableRow = (RelativeLayout) rowView.findViewById(R.id.LdrPrgParent);
                 viewHolder.expTableRow = (TableRow) rowView.findViewById(R.id.LDRTableRow01);
+                viewHolder.devTableRow = (TableRow) rowView.findViewById(R.id.LDRtableRow4);
 
                 rowView.setTag(viewHolder);
             }
@@ -841,6 +844,7 @@ public class WeeklyLeaderboardLayout {
 
                 holder.prgTableRow.setVisibility(View.GONE);
                 holder.expTableRow.setVisibility(View.GONE);
+                holder.devTableRow.setGravity(Gravity.CENTER);
 
                 int devNow = user.getDevNum();
 
