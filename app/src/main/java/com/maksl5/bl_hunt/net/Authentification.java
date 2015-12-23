@@ -240,7 +240,7 @@ public class Authentification {
 
 						Builder builder = new Builder(bhApp.currentActivity);
 						builder.setTitle(bhApp.getString(R.string.str_auth_changelog));
-						builder.setNeutralButton(R.string.str_auth_changelog_ok, new OnClickListener() {
+						builder.setPositiveButton(R.string.str_auth_changelog_ok, new OnClickListener() {
 
 							@Override
 							public void onClick(DialogInterface dialog, int which) {

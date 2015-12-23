@@ -614,7 +614,7 @@ public class WeeklyLeaderboardLayout {
                                         "You managed to get place " + weeklyPlace + " in the last weekly leaderboard!!! You will gain an extra "
                                                 + boostString + " boost as reward until the current cycle ends. Congratulations!!!");
 
-                                builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {

@@ -66,7 +66,7 @@ public class EnableBluetoothActivity extends Activity {
 
 		((BlueHunter) getApplication()).currentActivity = this;
 
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		//overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
 	private void registerListeners() {

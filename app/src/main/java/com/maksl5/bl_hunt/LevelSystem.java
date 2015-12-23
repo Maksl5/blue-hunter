@@ -169,7 +169,7 @@ public class LevelSystem {
 		builder.setTitle(R.string.str_boostComposition_title);
 
 		builder.setAdapter(boostAdapater, null);
-		builder.setNeutralButton("Ok", new OnClickListener() {
+		builder.setPositiveButton("Ok", new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {

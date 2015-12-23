@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-            android:gravity="fill"
-            android:src="@drawable/actionbar_bg" />
-    </item>
-    <item>
-        <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    			android:src="@drawable/actionbar_stripes"
-    			android:tileMode="repeat" />
-    </item>
-</layer-list>
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:endColor="@color/actionbar_gradient_end"
+        android:startColor="@color/actionbar_gradient_start"
+        android:type="linear" />
+</shape>
+
+    <!--<item>--><!--<bitmap xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:src="@drawable/actionbar_stripes"--><!--android:tileMode="repeat" />--><!--</item>-->

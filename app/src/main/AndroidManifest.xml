@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.maksl5.bl_hunt"
-    android:versionCode="2248"
-    android:versionName="pre-beta_0.4.0.2248_221215-0236">
+    android:versionCode="2309"
+    android:versionName="pre-beta_0.4.0.2309_231215-0554">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -24,7 +24,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/str_mainTitle"
-        android:logo="@drawable/ic_logo"
+        android:logo="@drawable/logo"
         android:theme="@style/AppTheme"
         android:uiOptions="none" >
         <activity

@@ -473,7 +473,7 @@ public class FoundDevicesLayout {
                 listViewList.add(adapterData);
 
 
-                Log.d("FD doInBackground()", "@device #" + i);
+                //Log.d("FD doInBackground()", "@device #" + i);
 
                 i++;
 

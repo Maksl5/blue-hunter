@@ -7,6 +7,7 @@
 
 
     <string name="str_versionName">0.1_alpha</string>
+    <string name="ad_id">ca-app-pub-1840378385159527/7602306553</string>
     
     <string name="str_pageTitle_main">Device Discovery</string>
     <string name="str_pageTitle_leaderboard">Leaderboard</string>
@@ -107,6 +108,8 @@
     <string name="str_Preferences_runDiscoveryAfterStart_sum">Run discovery every time the app has opened.</string>
     <string name="str_Preferences_serialNumber_title">Serial Number</string>
     <string name="str_Preferences_userID_title">User ID</string>
+    <string name="str_Preferences_showAd_title">Show ad</string>
+    <string name="str_Preferences_showAd_sum">Show an advertise at the start of the app.</string>
     
     <string name="str_foundDevices_manu_unkown">Unknown</string>
     <string name="str_foundDevices_exp_abbreviation">Exp</string>

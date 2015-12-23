@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
         android:defaultValue="false"
@@ -16,7 +16,12 @@
         android:key="pref_enableBackground"
         android:summary="@string/str_Preferences_enableBackground_sum"
         android:title="@string/str_Preferences_enableBackground_title" />
-    <CheckBoxPreference android:key="pref_runDiscoveryAfterStart" android:summary="@string/str_Preferences_runDiscoveryAfterStart_sum" android:title="@string/str_Preferences_runDiscoveryAfterStart_title" android:defaultValue="false"/><CheckBoxPreference
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="pref_runDiscoveryAfterStart"
+        android:summary="@string/str_Preferences_runDiscoveryAfterStart_sum"
+        android:title="@string/str_Preferences_runDiscoveryAfterStart_title" />
+    <CheckBoxPreference
         android:defaultValue="false"
         android:key="pref_disBtExit"
         android:summary="@string/str_Preferences_disableBtExit_sum"
@@ -36,6 +41,11 @@
         android:key="pref_deleteRemember"
         android:summary="@string/str_Preferences_deleteRemember_sum"
         android:title="@string/str_Preferences_deleteRemember_title" />
-    
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_showAd"
+        android:summary="@string/str_Preferences_showAd_sum"
+        android:title="@string/str_Preferences_showAd_title" />
 
 </PreferenceScreen>

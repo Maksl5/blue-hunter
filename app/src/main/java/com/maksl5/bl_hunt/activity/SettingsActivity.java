@@ -18,9 +18,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.util.Log;
@@ -62,9 +64,8 @@ import java.util.regex.Pattern;
 
 /**
  * @author Maksl5[Markus Bensing]
- *
  */
-public class SettingsActivity extends android.preference.PreferenceActivity implements OnNetworkResultAvailableListener {
+public class SettingsActivity extends PreferenceActivity implements OnNetworkResultAvailableListener {
 
     MenuItem progressBarItem;
     private Menu menu;
@@ -114,6 +115,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
         headers = new ArrayList<>();
         loadHeadersFromResource(R.xml.preference_headers, target);
         headers = target;
+
     }
 
     /*
@@ -129,7 +131,7 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
         bhApp.currentActivity = this;
 
-        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        //overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
     @Override
@@ -488,6 +490,15 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
             addPreferencesFromResource(R.xml.behaviour_preference);
 
+
+            if (BlueHunter.isSupport) {
+
+                CheckBoxPreference showAdPref = (CheckBoxPreference) findPreference("pref_showAd");
+                showAdPref.setEnabled(false);
+                showAdPref.setChecked(false);
+
+            }
+
             registerListeners();
         }
 
@@ -522,25 +533,33 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
             }
 
-            Preference enableBackground = findPreference("pref_enableBackground");
+            CheckBoxPreference enableBackground = (CheckBoxPreference) findPreference("pref_enableBackground");
+
             if (enableBackground != null) {
                 enableBackground.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
+
                         if (newValue.equals(true)) {
 
                             try {
                                 bhApp.mainActivity.getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+                                getActivity().getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
                             } catch (Exception | OutOfMemoryError e) {
                                 PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
                                 bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                                getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                             }
 
                         } else {
                             bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                            getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                         }
+
+
                         return true;
+
                     }
                 });
             }
@@ -551,7 +570,6 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
     /**
      * @author Maksl5
-     *
      */
     public static class ProfileFragment extends PreferenceFragment {
 
@@ -735,7 +753,6 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
     /**
      * @author Maksl5[Markus Bensing]
-     *
      */
     public static class MiscFragment extends PreferenceFragment {
 
@@ -797,7 +814,6 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
     /**
      * @author Maksl5
-     *
      */
     public class PrefNetManager {
 
@@ -845,7 +861,6 @@ public class SettingsActivity extends android.preference.PreferenceActivity impl
 
     /**
      * @author Maksl5
-     *
      */
     public class PrefNetThread extends AsyncTask<String, Integer, String> {
 

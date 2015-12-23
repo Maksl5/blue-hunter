@@ -11,10 +11,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
@@ -43,10 +43,10 @@ import com.maksl5.bl_hunt.util.MacAddress;
 public class ActionBarHandler implements OnQueryTextListener, OnActionExpandListener {
 
     private final BlueHunter bhApp;
-    private final ActionBar actBar;
+    private final android.app.ActionBar actBar;
     public ActionMode.Callback actionModeCallback;
     private Menu menu;
-    private CompoundButton disSwitch;
+    private Switch disSwitch;
     private int currentPage;
 
     @TargetApi(11)
@@ -59,7 +59,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
             actBar.setDisplayShowTitleEnabled(false);
             actBar.setDisplayUseLogoEnabled(true);
             actBar.setDisplayShowHomeEnabled(true);
-            actBar.setIcon(R.drawable.ic_logo);
+            actBar.setIcon(R.drawable.logo);
         }
 
 
@@ -74,7 +74,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 
         final ViewPager viewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 
-        disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
+        disSwitch = (Switch) getActionView(R.id.menu_switch);
         disSwitch.setPadding(5, 0, 5, 0);
 
         ProgressBar progressBar = new ProgressBar(bhApp, null, android.R.attr.progressBarStyleSmall);
@@ -380,7 +380,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
         if (disSwitch != null) {
             disSwitch.setEnabled(enabled);
         } else {
-            disSwitch = (CompoundButton) getActionView(R.id.menu_switch);
+            disSwitch = (Switch) getActionView(R.id.menu_switch);
             disSwitch.setPadding(5, 0, 5, 0);
             disSwitch.setEnabled(enabled);
         }

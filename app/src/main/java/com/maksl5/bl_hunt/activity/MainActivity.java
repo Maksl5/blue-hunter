@@ -40,6 +40,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.DiscoveryManager;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
@@ -78,718 +81,744 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends FragmentActivity {
 
-	public static final int REQ_PICK_USER_IMAGE = 32;
-	/**
-	 * The {@link ViewPager} that will host the section contents.
-	 */
-	public ViewPager mViewPager;
-	public Notification.Builder stateNotificationBuilder;
-	public TextView userInfoTextView;
-	public boolean passSet = false;
-	public int oldVersion = 0;
-	public int newVersion = 0;
-	public boolean justStarted = true;
-	public boolean destroyed = false;
-	private NotificationManager notificationManager;
-	private TextView disStateTextView;
-	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide
-	 * fragments for each of the sections. We use a
-	 * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
-	 * will keep every loaded fragment in memory. If this becomes too memory
-	 * intensive, it may be best to switch to a
-	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-	 */
-	private SectionsPagerAdapter mSectionsPagerAdapter;
-	private BlueHunter bhApp;
+    public static final int REQ_PICK_USER_IMAGE = 32;
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    public ViewPager mViewPager;
+    public Notification.Builder stateNotificationBuilder;
+    public TextView userInfoTextView;
+    public boolean passSet = false;
+    public int oldVersion = 0;
+    public int newVersion = 0;
+    public boolean justStarted = true;
+    public boolean destroyed = false;
+    private NotificationManager notificationManager;
+    private TextView disStateTextView;
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
+     * will keep every loaded fragment in memory. If this becomes too memory
+     * intensive, it may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private BlueHunter bhApp;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
 
-		super.onCreate(savedInstanceState);
+    private InterstitialAd mInterstitialAd;
 
-		// Debug.startMethodTracing("startTrace");
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
 
-		bhApp = (BlueHunter) getApplication();
-		bhApp.mainActivity = this;
-		bhApp.currentActivity = this;
+        super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.act_main);
+        // Debug.startMethodTracing("startTrace");
 
-		ManufacturerList.setContext(this);
+        bhApp = (BlueHunter) getApplication();
+        bhApp.mainActivity = this;
+        bhApp.currentActivity = this;
 
-		bhApp.actionBarHandler = new ActionBarHandler(bhApp);
-		bhApp.disMan = new DiscoveryManager(bhApp);
+        setContentView(R.layout.act_main);
 
-		// Create the adapter that will return a fragment for each of the
-		// primary sections
-		// of the app.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        ManufacturerList.setContext(this);
 
-		bhApp.authentification = new Authentification(bhApp);
-		bhApp.netMananger = new NetworkManager(bhApp);
+        bhApp.actionBarHandler = new ActionBarHandler(bhApp);
+        bhApp.disMan = new DiscoveryManager(bhApp);
 
-		bhApp.loginManager = bhApp.authentification.new LoginManager(Authentification.getSerialNumber(),
-				bhApp.authentification.getStoredPass(), bhApp.authentification.getStoredLoginToken());
+        // Create the adapter that will return a fragment for each of the
+        // primary sections
+        // of the app.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		// Set up the ViewPager with the sections adapter.
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
-		mViewPager.setOffscreenPageLimit(7);
+        bhApp.authentification = new Authentification(bhApp);
+        bhApp.netMananger = new NetworkManager(bhApp);
 
-		//PageTransformer parallaxPageTransformer = setupPageTransformer();
+        bhApp.loginManager = bhApp.authentification.new LoginManager(Authentification.getSerialNumber(),
+                bhApp.authentification.getStoredPass(), bhApp.authentification.getStoredLoginToken());
 
-		mViewPager.setPageTransformer(true, new CustomPagerTransformer());
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(7);
 
-		registerListener();
+        //PageTransformer parallaxPageTransformer = setupPageTransformer();
 
-		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		stateNotificationBuilder = new Notification.Builder(this);
+        mViewPager.setPageTransformer(true, new CustomPagerTransformer());
 
-		stateNotificationBuilder.setOngoing(true);
-		stateNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
-		stateNotificationBuilder.setAutoCancel(false);
-		stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
-		stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0,
-				new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
+        registerListener();
 
-		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
-			try {
-				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-			} catch (Exception | OutOfMemoryError e) {
-				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-			}
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        stateNotificationBuilder = new Notification.Builder(this);
 
-		}
+        stateNotificationBuilder.setOngoing(true);
+        stateNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+        stateNotificationBuilder.setAutoCancel(false);
+        stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
+        stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
-		if (PreferenceManager.getPref(this, "pref_showAttentionDialog", true)) {
+        if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
+            try {
+                getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+            } catch (Exception | OutOfMemoryError e) {
+                PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+                getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            }
 
-			Builder builder = new Builder(this);
-			builder.setTitle("Information");
+        }
 
-			builder.setMessage(Html.fromHtml("Attention:<br><br>" + "This version (" + bhApp.getVersionName()
-					+ ") of BlueHunter is not stable, as it is still in Alpha phase. If you find bugs, crashes, etc. I would appreciate if you go to this <a href=\"http://bluehunter.maks-dev.com/issues\">Issues Tracker</a> and make a quick entry/task. That's it.<br>Thank you very much!"));
+        if (PreferenceManager.getPref(this, "pref_showAttentionDialog", true)) {
 
-			builder.setNeutralButton("Ok", new OnClickListener() {
+            Builder builder = new Builder(this);
+            builder.setTitle("Information");
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
+            builder.setMessage(Html.fromHtml("Attention:<br><br>" + "This version (" + bhApp.getVersionName()
+                    + ") of BlueHunter is not stable, as it is still in Alpha phase. If you find bugs, crashes, etc. I would appreciate if you go to this <a href=\"http://bluehunter.maks-dev.com/issues\">Issues Tracker</a> and make a quick entry/task. That's it.<br>Thank you very much!"));
 
-				}
-			});
+            builder.setPositiveButton("Ok", new OnClickListener() {
 
-			((TextView) builder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
 
-		}
+                }
+            });
 
-	}
+            ((TextView) builder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
 
-	private PageTransformer setupPageTransformer() {
-		ParallaxPageTransformer pageTransformer = new ParallaxPageTransformer();
+        }
 
-		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow5, 1, -0.5f));
-		//pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
-		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.lvlIndicator, 1, 1.5f));
-		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow2, 1, -0.75f));
+        if (BlueHunter.isSupport)
+            PreferenceManager.setPref(this, "pref_showAd", false);
 
-		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devices, 1, -1.56f));
-		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devExpPerDay, 1, -1.57f));
-		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devExpToday, 1, -1.55f));
-		pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_discovery_devInSession_value, 1, -1.58f));
 
-		return pageTransformer;
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.ad_id));
 
-		// return new RotationPageTransformer(160);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("50EB319D6AF558CA9DE12A51A68E7A2E").build();
+        mInterstitialAd.loadAd(adRequest);
 
-	}
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                if (!destroyed && PreferenceManager.getPref(MainActivity.this, "pref_showAd", true) && !BlueHunter.isSupport) {
+                    mInterstitialAd.show();
+                }
+            }
+        });
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.support.v4.app.FragmentActivity#onResume()
-	 */
-	@Override
-	protected void onResume() {
+    }
 
-		// TODO Auto-generated method stub
-		super.onResume();
+    private PageTransformer setupPageTransformer() {
+        ParallaxPageTransformer pageTransformer = new ParallaxPageTransformer();
 
-		overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow5, 1, -0.5f));
+        //pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow1, 1, -0.8f));
+        pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.lvlIndicator, 1, 1.5f));
+        pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.DDtableRow2, 1, -0.75f));
 
-		bhApp.currentActivity = this;
+        pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devices, 1, -1.56f));
+        pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devExpPerDay, 1, -1.57f));
+        pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_devExpToday, 1, -1.55f));
+        pageTransformer.addViewToParallax(new ParallaxTransformInformation(R.id.txt_discovery_devInSession_value, 1, -1.58f));
 
-		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        return pageTransformer;
 
-		Intent serviceIntent = new Intent(this, CheckUpdateService.class);
-		PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
-		alarmManager.cancel(pendingIntent);
+        // return new RotationPageTransformer(160);
 
-		if (PreferenceManager.getPref(this, "pref_checkUpdate", true)) {
-			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
-					AlarmManager.INTERVAL_HOUR, pendingIntent);
-		}
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.support.v4.app.FragmentActivity#onResume()
+     */
+    @Override
+    protected void onResume() {
 
-	/**
-	 * 
-	 */
+        // TODO Auto-generated method stub
+        super.onResume();
 
-	private void registerListener() {
+        //overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
-		mViewPager.addOnPageChangeListener(new OnPageChangeListener() {
+        bhApp.currentActivity = this;
 
-			@Override
-			public void onPageSelected(int position) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-				bhApp.actionBarHandler.changePage(position);
+        Intent serviceIntent = new Intent(this, CheckUpdateService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
+        alarmManager.cancel(pendingIntent);
 
-			}
+        if (PreferenceManager.getPref(this, "pref_checkUpdate", true)) {
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
+                    AlarmManager.INTERVAL_HOUR, pendingIntent);
+        }
 
-			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
 
-			}
+    /**
+     *
+     */
 
-			@Override
-			public void onPageScrollStateChanged(int state) {
+    private void registerListener() {
 
-				switch (state) {
+        mViewPager.addOnPageChangeListener(new OnPageChangeListener() {
 
-				case ViewPager.SCROLL_STATE_DRAGGING:
+            @Override
+            public void onPageSelected(int position) {
 
-				case ViewPager.SCROLL_STATE_IDLE:
+                bhApp.actionBarHandler.changePage(position);
 
-				case ViewPager.SCROLL_STATE_SETTLING:
+            }
 
-				}
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-			}
-		});
+            }
 
-		bhApp.authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
+            @Override
+            public void onPageScrollStateChanged(int state) {
 
-			@Override
-			public boolean onResult(int requestId, String resultString) {
+                switch (state) {
 
-				switch (requestId) {
-				case Authentification.NETRESULT_ID_SERIAL_CHECK:
+                    case ViewPager.SCROLL_STATE_DRAGGING:
 
-					Pattern pattern = Pattern.compile("Error=(\\d+)");
-					Matcher matcher = pattern.matcher(resultString);
+                    case ViewPager.SCROLL_STATE_IDLE:
 
-					if (matcher.find()) {
-						int error = Integer.parseInt(matcher.group(1));
+                    case ViewPager.SCROLL_STATE_SETTLING:
 
-						String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
-						ProfileLayout.setName(bhApp, errorMsg);
+                }
 
-						Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
-						break;
-					}
+            }
+        });
 
-					Pattern xmlPattern = Pattern.compile("<done name=\"(.+)\" uid=\"(\\d+)\" />");
-					Matcher xmlMatcher = xmlPattern.matcher(resultString);
+        bhApp.authentification.setOnNetworkResultAvailableListener(new OnNetworkResultAvailableListener() {
 
-					if (xmlMatcher.find()) {
+            @Override
+            public boolean onResult(int requestId, String resultString) {
 
-						String nameString = "";
+                switch (requestId) {
+                    case Authentification.NETRESULT_ID_SERIAL_CHECK:
 
-						try {
-							nameString = URLDecoder.decode(xmlMatcher.group(1), "UTF-8");
-							int uid = Integer.parseInt(xmlMatcher.group(2));
+                        Pattern pattern = Pattern.compile("Error=(\\d+)");
+                        Matcher matcher = pattern.matcher(resultString);
 
-							bhApp.loginManager.setUid(uid);
-						}
-						catch (UnsupportedEncodingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+                        if (matcher.find()) {
+                            int error = Integer.parseInt(matcher.group(1));
 
-						ProfileLayout.setName(bhApp, nameString);
+                            String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
+                            ProfileLayout.setName(bhApp, errorMsg);
 
-					}
+                            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                            break;
+                        }
 
-					bhApp.loginManager.login();
-					break;
-				case Authentification.NETRESULT_ID_GET_USER_INFO:
+                        Pattern xmlPattern = Pattern.compile("<done name=\"(.+)\" uid=\"(\\d+)\" />");
+                        Matcher xmlMatcher = xmlPattern.matcher(resultString);
 
-					//
-					// Pattern pattern2 = Pattern.compile("Error=(\\d+)");
-					// Matcher matcher2 = pattern2.matcher(resultString);
-					//
-					// if (matcher2.find()) {
-					// int error = Integer.parseInt(matcher2.group(1));
-					//
-					// String errorMsg = ErrorHandler.getErrorString(
-					// bhApp, requestId, error);
-					//
-					// userInfoTextView.setText(errorMsg);
-					// userInfoTextView.setVisibility(View.VISIBLE);
-					// userInfoTextView.setClickable(true);
-					// userInfoTextView
-					// .setMovementMethod(LinkMovementMethod
-					// .getInstance());
-					// userInfoTextView.setLinkTextColor(Color.DKGRAY);
-					// userInfoTextView.requestLayout();
-					// userInfoTextView.invalidate();
-					//
-					// TableRow userInfoRow = (TableRow)
-					// findViewById(R.id.userInfoTableRow);
-					// userInfoRow.setVisibility(View.VISIBLE);
-					// userInfoRow.invalidate();
-					// userInfoRow.setVisibility(View.INVISIBLE);
-					// return true;
-					// }
-					//
-					// userInfoTextView.setText(Html
-					// .fromHtml(resultString));
-					// userInfoTextView.setVisibility(View.VISIBLE);
-					// userInfoTextView.setClickable(true);
-					// userInfoTextView
-					// .setMovementMethod(LinkMovementMethod
-					// .getInstance());
-					// userInfoTextView.setLinkTextColor(Color.DKGRAY);
-					// userInfoTextView.requestLayout();
-					// userInfoTextView.invalidate();
-					//
-					// TableRow userInfoRow = (TableRow)
-					// findViewById(R.id.userInfoTableRow);
-					// userInfoRow.setVisibility(View.VISIBLE);
-					// userInfoRow.invalidate();
-					// userInfoRow.setVisibility(View.INVISIBLE);
-					// break;
-					//
-					//
-				}
+                        if (xmlMatcher.find()) {
 
-				return false;
-			}
-		});
+                            String nameString = "";
 
-	}
+                            try {
+                                nameString = URLDecoder.decode(xmlMatcher.group(1), "UTF-8");
+                                int uid = Integer.parseInt(xmlMatcher.group(2));
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+                                bhApp.loginManager.setUid(uid);
+                            } catch (UnsupportedEncodingException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
 
-		bhApp.currentActivity = this;
+                            ProfileLayout.setName(bhApp, nameString);
 
-		getMenuInflater().inflate(R.menu.act_main, menu);
-		bhApp.actionBarHandler.supplyMenu(menu);
-		bhApp.actionBarHandler.initialize();
+                        }
 
-		// Setting up Views
-		if (disStateTextView == null) disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
-		// Setting up DiscoveryManager
+                        bhApp.loginManager.login();
+                        break;
+                    case Authentification.NETRESULT_ID_GET_USER_INFO:
 
-		long disTimeA = System.currentTimeMillis();
+                        //
+                        // Pattern pattern2 = Pattern.compile("Error=(\\d+)");
+                        // Matcher matcher2 = pattern2.matcher(resultString);
+                        //
+                        // if (matcher2.find()) {
+                        // int error = Integer.parseInt(matcher2.group(1));
+                        //
+                        // String errorMsg = ErrorHandler.getErrorString(
+                        // bhApp, requestId, error);
+                        //
+                        // userInfoTextView.setText(errorMsg);
+                        // userInfoTextView.setVisibility(View.VISIBLE);
+                        // userInfoTextView.setClickable(true);
+                        // userInfoTextView
+                        // .setMovementMethod(LinkMovementMethod
+                        // .getInstance());
+                        // userInfoTextView.setLinkTextColor(Color.DKGRAY);
+                        // userInfoTextView.requestLayout();
+                        // userInfoTextView.invalidate();
+                        //
+                        // TableRow userInfoRow = (TableRow)
+                        // findViewById(R.id.userInfoTableRow);
+                        // userInfoRow.setVisibility(View.VISIBLE);
+                        // userInfoRow.invalidate();
+                        // userInfoRow.setVisibility(View.INVISIBLE);
+                        // return true;
+                        // }
+                        //
+                        // userInfoTextView.setText(Html
+                        // .fromHtml(resultString));
+                        // userInfoTextView.setVisibility(View.VISIBLE);
+                        // userInfoTextView.setClickable(true);
+                        // userInfoTextView
+                        // .setMovementMethod(LinkMovementMethod
+                        // .getInstance());
+                        // userInfoTextView.setLinkTextColor(Color.DKGRAY);
+                        // userInfoTextView.requestLayout();
+                        // userInfoTextView.invalidate();
+                        //
+                        // TableRow userInfoRow = (TableRow)
+                        // findViewById(R.id.userInfoTableRow);
+                        // userInfoRow.setVisibility(View.VISIBLE);
+                        // userInfoRow.invalidate();
+                        // userInfoRow.setVisibility(View.INVISIBLE);
+                        // break;
+                        //
+                        //
+                }
 
-		if (!bhApp.disMan.startDiscoveryManager()) {
-			if (!bhApp.disMan.supplyTextView(disStateTextView)) {
+                return false;
+            }
+        });
 
-				// ERROR
-			}
-			else {
-				bhApp.disMan.startDiscoveryManager();
-			}
-		}
+    }
 
-		long disTimeB = System.currentTimeMillis();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-		Log.d("Init Time", "Discovery Manager: " + (disTimeB - disTimeA) + "ms");
+        bhApp.currentActivity = this;
 
-		// Network Stuff
+        getMenuInflater().inflate(R.menu.act_main, menu);
+        bhApp.actionBarHandler.supplyMenu(menu);
+        bhApp.actionBarHandler.initialize();
 
-		bhApp.authentification.checkUpdate();
+        // Setting up Views
+        if (disStateTextView == null)
+            disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
+        // Setting up DiscoveryManager
 
-		NetworkThread serialSubmit = new NetworkThread(bhApp);
-		serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK),
-				"s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(),
-				"h=" + bhApp.authentification.getSerialNumberHash());
+        long disTimeA = System.currentTimeMillis();
 
-		new DatabaseManager(bhApp).close();
+        if (!bhApp.disMan.startDiscoveryManager()) {
+            if (!bhApp.disMan.supplyTextView(disStateTextView)) {
 
-		bhApp.synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
-		bhApp.authentification.setOnLoginChangeListener(bhApp.synchronizeFoundDevices);
+                // ERROR
+            } else {
+                bhApp.disMan.startDiscoveryManager();
+            }
+        }
 
-		NetworkThread getUserInfo = new NetworkThread(bhApp);
-		getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
+        long disTimeB = System.currentTimeMillis();
 
-		// Debug.startMethodTracing("startTrace");
+        Log.d("Init Time", "Discovery Manager: " + (disTimeB - disTimeA) + "ms");
 
-		DeviceDiscoveryLayout.updateDuringDBLoading(this);
+        // Network Stuff
 
-		LeaderboardLayout.initTabs(bhApp);
-		LeaderboardLayout.changeList = new DatabaseManager(bhApp).getLeaderboardChanges();
-		WeeklyLeaderboardLayout.changeList = new DatabaseManager(bhApp).getWeeklyLeaderboardChanges();
-		LeaderboardLayout.refreshLeaderboard(bhApp);
+        bhApp.authentification.checkUpdate();
 
-		ProfileLayout.initializeView(this);
-		StatisticsFragment.initializeStatisticsView(this);
+        NetworkThread serialSubmit = new NetworkThread(bhApp);
+        serialSubmit.execute(AuthentificationSecure.SERVER_CHECK_SERIAL, String.valueOf(Authentification.NETRESULT_ID_SERIAL_CHECK),
+                "s=" + Authentification.getSerialNumber(), "v=" + bhApp.getVersionCode(),
+                "h=" + bhApp.authentification.getSerialNumberHash());
 
-		if (DatabaseManager.getCachedList() == null) {
-			new DatabaseManager(bhApp).loadAllDevices();
-		}
-		else {
-			DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
-			FoundDevicesLayout.refreshFoundDevicesList(bhApp);
-			AchievementsLayout.initializeAchievements(bhApp);
-			AchievementsLayout.updateBoostIndicator(bhApp);
+        new DatabaseManager(bhApp).close();
 
-			if (PreferenceManager.getPref(this, "pref_runDiscoveryAfterStart", false)) {
-				((CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch)).setChecked(true);
-			}
+        bhApp.synchronizeFoundDevices = new SynchronizeFoundDevices(bhApp);
+        bhApp.authentification.setOnLoginChangeListener(bhApp.synchronizeFoundDevices);
 
-			justStarted = false;
+        NetworkThread getUserInfo = new NetworkThread(bhApp);
+        getUserInfo.execute(AuthentificationSecure.SERVER_GET_USER_INFO, String.valueOf(Authentification.NETRESULT_ID_GET_USER_INFO));
 
-		}
+        // Debug.startMethodTracing("startTrace");
 
-		updateNotification();
+        DeviceDiscoveryLayout.updateDuringDBLoading(this);
 
-		// Debug.stopMethodTracing();
+        LeaderboardLayout.initTabs(bhApp);
+        LeaderboardLayout.changeList = new DatabaseManager(bhApp).getLeaderboardChanges();
+        WeeklyLeaderboardLayout.changeList = new DatabaseManager(bhApp).getWeeklyLeaderboardChanges();
+        LeaderboardLayout.refreshLeaderboard(bhApp);
 
-		upgrade();
+        ProfileLayout.initializeView(this);
+        StatisticsFragment.initializeStatisticsView(this);
 
-		return true;
-	}
+        if (DatabaseManager.getCachedList() == null) {
+            new DatabaseManager(bhApp).loadAllDevices();
+        } else {
+            DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
+            FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+            AchievementsLayout.initializeAchievements(bhApp);
+            AchievementsLayout.updateBoostIndicator(bhApp);
 
-	/**
-	 * 
-	 */
-	private void upgrade() {
+            if (PreferenceManager.getPref(this, "pref_runDiscoveryAfterStart", false)) {
+                ((CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch)).setChecked(true);
+            }
 
-		if (oldVersion == 0 || newVersion == 0) return;
+            justStarted = false;
 
-		if (oldVersion > newVersion) return;
+        }
 
-		if (oldVersion < 1065) {
-			bhApp.synchronizeFoundDevices.needForceOverrideUp = true;
-		}
+        updateNotification();
 
-	}
+        // Debug.stopMethodTracing();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+        upgrade();
 
-		switch (item.getItemId()) {
-		case R.id.menu_settings:
-			Intent intent = new Intent(this, SettingsActivity.class);
-			startActivity(intent);
-			break;
-		case R.id.menu_info:
 
-			break;
-		case R.id.menu_refresh:
-			if (bhApp.actionBarHandler.getCurrentPage() == FragmentLayoutManager.PAGE_LEADERBOARD) {
-				LeaderboardLayout.refreshLeaderboard(bhApp);
-			}
-			break;
-		case R.id.menu_submit_mac:
-			Intent intentSubmit = new Intent(Intent.ACTION_VIEW, Uri.parse("http://bluehunter.mac.maks-dev.com"));
-			startActivity(intentSubmit);
-			break;
-		case R.id.menu_boostIndicator:
-			LevelSystem.getBoostCompositionDialog(bhApp).show();
-			break;
-		default:
-			break;
-		}
-		return false;
-	}
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int,
-	 * android.content.Intent)
-	 */
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-		super.onActivityResult(requestCode, resultCode, intent);
+        return true;
+    }
 
-		if ((requestCode == 64 | requestCode == 128) & bhApp.disMan != null)
-			bhApp.disMan.passEnableBTActivityResult(resultCode, requestCode);
+    /**
+     *
+     */
+    private void upgrade() {
 
-		if (requestCode == REQ_PICK_USER_IMAGE && resultCode == RESULT_OK)
-			ProfileLayout.passPickedImage(this, intent);
-	}
+        if (oldVersion == 0 || newVersion == 0) return;
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see android.support.v4.app.FragmentActivity#onDestroy()
-	 */
-	@Override
-	protected void onDestroy() {
+        if (oldVersion > newVersion) return;
 
-		if (PreferenceManager.getPref(bhApp, "pref_disBtExit", false)) {
+        if (oldVersion < 1065) {
+            bhApp.synchronizeFoundDevices.needForceOverrideUp = true;
+        }
 
-			bhApp.disMan.disableBluetooth();
+    }
 
-		}
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-		destroyed = true;
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.menu_info:
 
-		notificationManager.cancel(1);
-		bhApp.loginManager.unregisterInternetReceiver();
+                break;
+            case R.id.menu_refresh:
+                if (bhApp.actionBarHandler.getCurrentPage() == FragmentLayoutManager.PAGE_LEADERBOARD) {
+                    LeaderboardLayout.refreshLeaderboard(bhApp);
+                }
+                break;
+            case R.id.menu_submit_mac:
+                Intent intentSubmit = new Intent(Intent.ACTION_VIEW, Uri.parse("http://bluehunter.mac.maks-dev.com"));
+                startActivity(intentSubmit);
+                break;
+            case R.id.menu_boostIndicator:
+                LevelSystem.getBoostCompositionDialog(bhApp).show();
+                break;
+            default:
+                break;
+        }
+        return false;
+    }
 
-		bhApp.disMan.unregisterReceiver();
-		bhApp.disMan.stopDiscoveryManager();
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int,
+     * android.content.Intent)
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-		// GLOBAL
+        super.onActivityResult(requestCode, resultCode, intent);
 
-		SparseArray<Integer[]> leaderboardChanges = new SparseArray<>();
+        if ((requestCode == 64 | requestCode == 128) & bhApp.disMan != null)
+            bhApp.disMan.passEnableBTActivityResult(resultCode, requestCode);
 
-		for (int i = 0; i < LeaderboardLayout.completeLbList.size(); i++) {
-			LBAdapterData leaderboardEntry = LeaderboardLayout.completeLbList.get(i);
+        if (requestCode == REQ_PICK_USER_IMAGE && resultCode == RESULT_OK)
+            ProfileLayout.passPickedImage(this, intent);
+    }
 
-			leaderboardChanges.put(leaderboardEntry.getId(), new Integer[]{
-					i + 1, leaderboardEntry.getExp(), leaderboardEntry.getDevNum()});
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.support.v4.app.FragmentActivity#onDestroy()
+     */
+    @Override
+    protected void onDestroy() {
 
-		}
+        if (PreferenceManager.getPref(bhApp, "pref_disBtExit", false)) {
 
-		// WEEKLY
+            bhApp.disMan.disableBluetooth();
 
-		SparseArray<Integer[]> weeklyLeaderboardChanges = new SparseArray<>();
+        }
 
-		for (int i = 0; i < WeeklyLeaderboardLayout.completeLbList.size(); i++) {
-			com.maksl5.bl_hunt.custom_ui.fragment.WeeklyLeaderboardLayout.LBAdapterData weeklyLeaderboardEntry = WeeklyLeaderboardLayout.completeLbList
-					.get(i);
+        destroyed = true;
 
-			weeklyLeaderboardChanges.put(weeklyLeaderboardEntry.getId(), new Integer[]{
-					i + 1, weeklyLeaderboardEntry.getDevNum()});
+        notificationManager.cancel(1);
+        bhApp.loginManager.unregisterInternetReceiver();
 
-		}
+        bhApp.disMan.unregisterReceiver();
+        bhApp.disMan.stopDiscoveryManager();
 
-		try {
-			new DatabaseManager(bhApp).resetLeaderboardChanges();
-			new DatabaseManager(bhApp).setLeaderboardChanges(leaderboardChanges);
+        // GLOBAL
 
-			new DatabaseManager(bhApp).resetWeeklyLeaderboardChanges();
-			new DatabaseManager(bhApp).setWeeklyLeaderboardChanges(weeklyLeaderboardChanges);
-		} catch (SQLiteDatabaseLockedException e) {
-			Toast.makeText(bhApp, "Could not save Leaderboard changes.", Toast.LENGTH_SHORT).show();
-		}
+        SparseArray<Integer[]> leaderboardChanges = new SparseArray<>();
 
-		bhApp.synchronizeFoundDevices.saveChanges();
+        for (int i = 0; i < LeaderboardLayout.completeLbList.size(); i++) {
+            LBAdapterData leaderboardEntry = LeaderboardLayout.completeLbList.get(i);
 
-		bhApp.netMananger.cancelAllTasks();
-		DatabaseManager.cancelAllTasks();
-		FoundDevicesLayout.cancelAllTasks();
-		LeaderboardLayout.cancelAllTasks();
-		AchievementSystem.cancelAllTasks();
+            leaderboardChanges.put(leaderboardEntry.getId(), new Integer[]{
+                    i + 1, leaderboardEntry.getExp(), leaderboardEntry.getDevNum()});
 
-		super.onDestroy();
-	}
+        }
 
-	public BlueHunter getBlueHunter() {
+        // WEEKLY
 
-		return bhApp;
-	}
+        SparseArray<Integer[]> weeklyLeaderboardChanges = new SparseArray<>();
 
-	@SuppressWarnings("deprecation")
-	public void updateNotification() {
+        for (int i = 0; i < WeeklyLeaderboardLayout.completeLbList.size(); i++) {
+            com.maksl5.bl_hunt.custom_ui.fragment.WeeklyLeaderboardLayout.LBAdapterData weeklyLeaderboardEntry = WeeklyLeaderboardLayout.completeLbList
+                    .get(i);
 
-		if (PreferenceManager.getPref(this, "pref_showNotification", true)) {
+            weeklyLeaderboardChanges.put(weeklyLeaderboardEntry.getId(), new Integer[]{
+                    i + 1, weeklyLeaderboardEntry.getDevNum()});
 
-			int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
+        }
 
-			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
-						LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
+        try {
+            new DatabaseManager(bhApp).resetLeaderboardChanges();
+            new DatabaseManager(bhApp).setLeaderboardChanges(leaderboardChanges);
 
-			DecimalFormat df = new DecimalFormat(",###");
+            new DatabaseManager(bhApp).resetWeeklyLeaderboardChanges();
+            new DatabaseManager(bhApp).setWeeklyLeaderboardChanges(weeklyLeaderboardChanges);
+        } catch (SQLiteDatabaseLockedException e) {
+            Toast.makeText(bhApp, "Could not save Leaderboard changes.", Toast.LENGTH_SHORT).show();
+        }
 
-			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
-					getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
-					df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+        bhApp.synchronizeFoundDevices.saveChanges();
 
-			if (VERSION.SDK_INT >= 16) {
-				notificationManager.notify(1, stateNotificationBuilder.build());
-			} else {
-				notificationManager.notify(1, stateNotificationBuilder.getNotification());
-			}
-		}
-	}
+        bhApp.netMananger.cancelAllTasks();
+        DatabaseManager.cancelAllTasks();
+        FoundDevicesLayout.cancelAllTasks();
+        LeaderboardLayout.cancelAllTasks();
+        AchievementSystem.cancelAllTasks();
 
-	@SuppressWarnings("deprecation")
-	public void alterNotification(boolean show) {
+        super.onDestroy();
+    }
 
-		if (show) {
+    public BlueHunter getBlueHunter() {
 
-			int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
+        return bhApp;
+    }
 
-			if (VERSION.SDK_INT >= 14)
-				stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
-						LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
+    @SuppressWarnings("deprecation")
+    public void updateNotification() {
 
-			DecimalFormat df = new DecimalFormat(",###");
+        if (PreferenceManager.getPref(this, "pref_showNotification", true)) {
 
-			stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
-					getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
-					df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+            int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
-			if (VERSION.SDK_INT >= 16) {
-				notificationManager.notify(1, stateNotificationBuilder.build());
-			} else {
-				notificationManager.notify(1, stateNotificationBuilder.getNotification());
-			}
+            if (VERSION.SDK_INT >= 14)
+                stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
+                        LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
 
-		} else {
-			notificationManager.cancel(1);
-		}
+            DecimalFormat df = new DecimalFormat(",###");
 
-	}
+            stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
+                    getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
+                    df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * android.support.v4.app.FragmentActivity#onConfigurationChanged(android
-	 * .content.res.Configuration)
-	 */
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+            if (VERSION.SDK_INT >= 16) {
+                notificationManager.notify(1, stateNotificationBuilder.build());
+            } else {
+                notificationManager.notify(1, stateNotificationBuilder.getNotification());
+            }
+        }
+    }
 
-		// TODO Auto-generated method stub
-		super.onConfigurationChanged(newConfig);
+    @SuppressWarnings("deprecation")
+    public void alterNotification(boolean show) {
 
-		if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
-			try {
-				getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-			} catch (Exception | OutOfMemoryError e) {
-				PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
-				getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-			}
+        if (show) {
 
-		}
+            int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
-		// Bundle params = new Bundle();
-		// params.putInt(CustomSectionFragment.ARG_SECTION_NUMBER,
-		// FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
-		//
-		// View view = FragmentLayoutManager.getSpecificView(params,
-		// getLayoutInflater(), viewGroup, this);
+            if (VERSION.SDK_INT >= 14)
+                stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
+                        LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
 
-		mSectionsPagerAdapter.notifyDataSetChanged();
+            DecimalFormat df = new DecimalFormat(",###");
 
-		disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
-		bhApp.disMan.supplyNewTextView(disStateTextView);
+            stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
+                    getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
+                    df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
 
-		DeviceDiscoveryLayout.updateIndicatorViews(this);
-		ProfileLayout.initializeView(this);
-		StatisticsFragment.initializeStatisticsView(this);
-		AchievementsLayout.initializeAchievements(bhApp);
+            if (VERSION.SDK_INT >= 16) {
+                notificationManager.notify(1, stateNotificationBuilder.build());
+            } else {
+                notificationManager.notify(1, stateNotificationBuilder.getNotification());
+            }
 
-		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
-		final int oldHeight = progressBar.getHeight();
-		final int oldWidth = progressBar.getWidth();
+        } else {
+            notificationManager.cancel(1);
+        }
 
-		Log.d("onConfigurationChanged", "oldHeight=" + oldHeight);
-		Log.d("onConfigurationChanged", "oldWidth=" + oldWidth);
+    }
 
-		ViewTreeObserver observer = progressBar.getViewTreeObserver();
-		observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * android.support.v4.app.FragmentActivity#onConfigurationChanged(android
+     * .content.res.Configuration)
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
 
-			@Override
-			public void onGlobalLayout() {
+        // TODO Auto-generated method stub
+        super.onConfigurationChanged(newConfig);
 
-				Log.d("onGlobalLayout", "height=" + progressBar.getHeight());
-				Log.d("onGlobalLayout", "width=" + progressBar.getWidth());
+        if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
+            try {
+                getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+            } catch (Exception | OutOfMemoryError e) {
+                PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
+                getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            }
 
-				if (progressBar.getHeight() != oldHeight && progressBar.getWidth() != oldWidth) {
-					progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        }
 
-					DeviceDiscoveryLayout.updateNextRankIndicator(MainActivity.this, DeviceDiscoveryLayout.expToUpdate);
+        // Bundle params = new Bundle();
+        // params.putInt(CustomSectionFragment.ARG_SECTION_NUMBER,
+        // FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
+        //
+        // View view = FragmentLayoutManager.getSpecificView(params,
+        // getLayoutInflater(), viewGroup, this);
 
-				}
-			}
-		});
+        mSectionsPagerAdapter.notifyDataSetChanged();
 
-		LeaderboardLayout.initTabs(bhApp);
-		LeaderboardLayout.refreshLeaderboard(bhApp, true);
-		FoundDevicesLayout.refreshFoundDevicesList(bhApp);
+        disStateTextView = (TextView) findViewById(R.id.txt_discoveryState);
+        bhApp.disMan.supplyNewTextView(disStateTextView);
 
-	}
+        DeviceDiscoveryLayout.updateIndicatorViews(this);
+        ProfileLayout.initializeView(this);
+        StatisticsFragment.initializeStatisticsView(this);
+        AchievementsLayout.initializeAchievements(bhApp);
 
-	public static class CustomSectionFragment extends Fragment {
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+        final int oldHeight = progressBar.getHeight();
+        final int oldWidth = progressBar.getWidth();
 
-		public static final String ARG_SECTION_NUMBER = "section_number";
+        Log.d("onConfigurationChanged", "oldHeight=" + oldHeight);
+        Log.d("onConfigurationChanged", "oldWidth=" + oldWidth);
 
-		public CustomSectionFragment() {
+        ViewTreeObserver observer = progressBar.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
-		}
+            @Override
+            public void onGlobalLayout() {
 
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+                Log.d("onGlobalLayout", "height=" + progressBar.getHeight());
+                Log.d("onGlobalLayout", "width=" + progressBar.getWidth());
 
-			Bundle args = getArguments();
+                if (progressBar.getHeight() != oldHeight && progressBar.getWidth() != oldWidth) {
+                    progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-			return FragmentLayoutManager.getSpecificView(args, inflater, container, container.getContext());
+                    DeviceDiscoveryLayout.updateNextRankIndicator(MainActivity.this, DeviceDiscoveryLayout.expToUpdate);
 
-		}
+                }
+            }
+        });
 
-	}
+        LeaderboardLayout.initTabs(bhApp);
+        LeaderboardLayout.refreshLeaderboard(bhApp, true);
+        FoundDevicesLayout.refreshFoundDevicesList(bhApp);
 
-	/**
-	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-	 * one of the primary sections of the app.
-	 */
-	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    }
 
-		public SectionsPagerAdapter(FragmentManager fm) {
+    public static class CustomSectionFragment extends Fragment {
 
-			super(fm);
-		}
+        public static final String ARG_SECTION_NUMBER = "section_number";
 
-		@Override
-		public int getItemPosition(Object object) {
-			return POSITION_NONE;
-		}
+        public CustomSectionFragment() {
 
-		@Override
-		public Fragment getItem(int i) {
+        }
 
-			Fragment fragment = new CustomSectionFragment();
-			Bundle args = new Bundle();
-			args.putInt(CustomSectionFragment.ARG_SECTION_NUMBER, i);
-			fragment.setArguments(args);
-			return fragment;
-		}
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		@Override
-		public int getCount() {
+            Bundle args = getArguments();
 
-			return 6;
-		}
+            return FragmentLayoutManager.getSpecificView(args, inflater, container, container.getContext());
 
-		@Override
-		public CharSequence getPageTitle(int position) {
+        }
 
-			switch (position) {
-				case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
-					return getString(R.string.str_pageTitle_main).toUpperCase();
-				case FragmentLayoutManager.PAGE_LEADERBOARD:
-					return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
-				case FragmentLayoutManager.PAGE_FOUND_DEVICES:
-					return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
-				case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
-					return getString(R.string.str_pageTitle_achievements).toUpperCase();
-				case FragmentLayoutManager.PAGE_PROFILE:
-					return getString(R.string.str_pageTitle_profile).toUpperCase();
-				case FragmentLayoutManager.PAGE_STATISTICS:
-					return getString(R.string.str_pageTitle_statistics).toUpperCase();
-			}
-			return null;
-		}
-	}
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the primary sections of the app.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+
+            super(fm);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+
+            Fragment fragment = new CustomSectionFragment();
+            Bundle args = new Bundle();
+            args.putInt(CustomSectionFragment.ARG_SECTION_NUMBER, i);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+
+            return 6;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+
+            switch (position) {
+                case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
+                    return getString(R.string.str_pageTitle_main).toUpperCase();
+                case FragmentLayoutManager.PAGE_LEADERBOARD:
+                    return getString(R.string.str_pageTitle_leaderboard).toUpperCase();
+                case FragmentLayoutManager.PAGE_FOUND_DEVICES:
+                    return getString(R.string.str_pageTitle_foundDevices).toUpperCase();
+                case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
+                    return getString(R.string.str_pageTitle_achievements).toUpperCase();
+                case FragmentLayoutManager.PAGE_PROFILE:
+                    return getString(R.string.str_pageTitle_profile).toUpperCase();
+                case FragmentLayoutManager.PAGE_STATISTICS:
+                    return getString(R.string.str_pageTitle_statistics).toUpperCase();
+            }
+            return null;
+        }
+    }
 
 }

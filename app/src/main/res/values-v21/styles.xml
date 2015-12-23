@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.Material.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/bhActionBar</item>
+        <!--<item name="android:windowBackground"></item>-->
+        <item name="android:actionOverflowButtonStyle">@style/OverflowButton</item>
+        <item name="android:statusBarColor">@color/primary_material_dark</item>
+        <item name="android:colorAccent">@color/accentColor</item>
+        <item name="android:colorPrimary">@color/primary_material_dark</item>
+    </style>
+
+    <style name="bhActionBar" parent="android:Widget.Material.Light.ActionBar.Solid">
+        <item name="android:background">@drawable/bg_actionbar_tiled</item>
+        <item name="android:backgroundSplit">@drawable/bg_actionbar_tiled</item>
+        <item name="android:titleTextStyle">@style/NoTitleText</item>
+        <item name="android:subtitleTextStyle">@style/NoTitleText</item>
+    </style>
+
+    <style name="EnableBluetoothTheme" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorAccent">@color/accentColor</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+    </style>
+
+
+</resources>

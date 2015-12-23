@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="text_holo_light_blue">#ff33b5e5</color>
+    <color name="text_holo_light_blue">@color/accentColor</color>
     <color name="text_discovery_state_old">#ff777777</color>
+    <color name="accentColor">#288eb4</color>
+    <color name="primary_material_dark">#6D6D6D</color>
+    <color name="actionbar_gradient_start">#6D6D6D</color>
+    <color name="actionbar_gradient_end">#505050</color>
 
 </resources>
