@@ -4,7 +4,6 @@
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/bhActionBar</item>
         <!--<item name="android:windowBackground"></item>-->
-        <item name="android:actionOverflowButtonStyle">@style/OverflowButton</item>
     </style>
 
     <style name="bhActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
@@ -20,10 +19,6 @@
     <style name="NoTitleText">
         <item name="android:textSize">0sp</item>
         <item name="android:textColor">#00000000</item>
-    </style>
-
-    <style name="OverflowButton" parent="@android:style/Widget.Holo.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
 </resources>

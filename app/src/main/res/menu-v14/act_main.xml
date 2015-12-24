@@ -19,7 +19,7 @@
         android:showAsAction="always|collapseActionView" />
     <item
         android:id="@+id/menu_info"
-        android:icon="@drawable/ic_action_about"
+        android:icon="@drawable/ic_action_info"
         android:showAsAction="always" />
     <item
         android:id="@+id/menu_settings"
