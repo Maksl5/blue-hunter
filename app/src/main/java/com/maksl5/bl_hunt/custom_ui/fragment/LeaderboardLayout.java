@@ -756,6 +756,7 @@ public class LeaderboardLayout {
                         container.setVisibility(View.VISIBLE);
 
                         refreshUserRow(bhApp.mainActivity);
+                        bhApp.mainActivity.updateNotification();
 
                     }
 

@@ -2,7 +2,6 @@ package com.maksl5.bl_hunt.activity;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog.Builder;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -14,13 +13,13 @@ import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.view.ViewPager.PageTransformer;
@@ -86,7 +85,7 @@ public class MainActivity extends FragmentActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     public ViewPager mViewPager;
-    public Notification.Builder stateNotificationBuilder;
+    public NotificationCompat.Builder stateNotificationBuilder;
     public TextView userInfoTextView;
     public boolean passSet = false;
     public int oldVersion = 0;
@@ -151,14 +150,6 @@ public class MainActivity extends FragmentActivity {
         registerListener();
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        stateNotificationBuilder = new Notification.Builder(this);
-
-        stateNotificationBuilder.setOngoing(true);
-        stateNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
-        stateNotificationBuilder.setAutoCancel(false);
-        stateNotificationBuilder.setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, this));
-        stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
 
         if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
             try {
@@ -628,28 +619,76 @@ public class MainActivity extends FragmentActivity {
         return bhApp;
     }
 
-    @SuppressWarnings("deprecation")
+
     public void updateNotification() {
 
         if (PreferenceManager.getPref(this, "pref_showNotification", true)) {
 
+            stateNotificationBuilder = new NotificationCompat.Builder(this);
+
+            int discoveryStateInt = bhApp.disMan.getCurDiscoveryState();
+
+            boolean stopped = discoveryStateInt != DiscoveryState.DISCOVERY_STATE_RUNNING && discoveryStateInt != DiscoveryState.DISCOVERY_STATE_FINISHED;
+
+            stateNotificationBuilder.setOngoing(true);
+            stateNotificationBuilder.setSmallIcon((stopped) ? R.drawable.ic_bluetooth : R.drawable.ic_bluetooth_searching);
+            stateNotificationBuilder.setAutoCancel(false);
+            stateNotificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0,
+                    new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0));
+
+
             int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
-            if (VERSION.SDK_INT >= 14)
-                stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
-                        LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
+            stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
+                    LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
 
             DecimalFormat df = new DecimalFormat(",###");
 
-            stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
-                    getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
-                    df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
+            String discoveryState = DiscoveryState.getUnformatedDiscoveryState(bhApp.disMan.getCurDiscoveryState(), this);
 
-            if (VERSION.SDK_INT >= 16) {
-                notificationManager.notify(1, stateNotificationBuilder.build());
-            } else {
-                notificationManager.notify(1, stateNotificationBuilder.getNotification());
-            }
+
+            String userExpForm = df.format(LevelSystem.getCachedUserExp(bhApp));
+            String levelEndExpForm = df.format(LevelSystem.getLevelEndExp(level));
+
+            String expString = String.format("%s / %s %s", userExpForm, levelEndExpForm, getString(R.string.str_foundDevices_exp_abbreviation));
+            String levelString = String.format("%s: %d", getString(R.string.str_foundDevices_level), level);
+            String devicesString = String.format("%s %d", getString(R.string.str_discovery_devices), new DatabaseManager(bhApp).getDeviceNum());
+            String rankString = String.format("%s: %d", getString(R.string.str_leaderboard_rank), LeaderboardLayout.userRank);
+
+            String notificationText = String.format("%s%n%s%n%s%n%s", expString, levelString, devicesString, rankString);
+
+            stateNotificationBuilder.setContentTitle(discoveryState);
+            stateNotificationBuilder.setContentText(expString);
+
+
+            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+
+            inboxStyle.setBigContentTitle(discoveryState);
+            inboxStyle.addLine(expString);
+            inboxStyle.addLine(levelString);
+            inboxStyle.addLine(devicesString);
+
+            if (LeaderboardLayout.userRank > 0)
+                inboxStyle.addLine(rankString);
+
+
+            stateNotificationBuilder.setStyle(inboxStyle);
+
+
+            int iconId = (stopped) ? R.drawable.ic_play_circle : R.drawable.ic_pause_circle;
+            String actionString = (stopped) ? getString(R.string.str_notification_start) : getString(R.string.str_notification_pause);
+
+            int requestCode = (stopped) ? 1 : 2;
+
+            Intent actionIntent = new Intent("notification.userinput");
+            actionIntent.putExtra("MODE", requestCode);
+            PendingIntent pendingActionIntent = PendingIntent.getBroadcast(this, 1, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            stateNotificationBuilder.addAction(iconId, actionString, pendingActionIntent);
+
+
+            notificationManager.notify(1, stateNotificationBuilder.build());
+
         }
     }
 
@@ -658,23 +697,7 @@ public class MainActivity extends FragmentActivity {
 
         if (show) {
 
-            int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
-
-            if (VERSION.SDK_INT >= 14)
-                stateNotificationBuilder.setProgress(LevelSystem.getLevelEndExp(level) - LevelSystem.getLevelStartExp(level),
-                        LevelSystem.getCachedUserExp(bhApp) - LevelSystem.getLevelStartExp(level), false);
-
-            DecimalFormat df = new DecimalFormat(",###");
-
-            stateNotificationBuilder.setContentText(String.format("%s %d" + (char) 9 + "%s / %s %s",
-                    getString(R.string.str_foundDevices_level), level, df.format(LevelSystem.getCachedUserExp(bhApp)),
-                    df.format(LevelSystem.getLevelEndExp(level)), getString(R.string.str_foundDevices_exp_abbreviation)));
-
-            if (VERSION.SDK_INT >= 16) {
-                notificationManager.notify(1, stateNotificationBuilder.build());
-            } else {
-                notificationManager.notify(1, stateNotificationBuilder.getNotification());
-            }
+            updateNotification();
 
         } else {
             notificationManager.cancel(1);

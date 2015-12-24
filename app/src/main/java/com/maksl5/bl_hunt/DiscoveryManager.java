@@ -106,6 +106,7 @@ public class DiscoveryManager {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        filter.addAction("notification.userinput");
 
         bhApp.registerReceiver(btHandler, filter);
     }
@@ -501,8 +502,7 @@ public class DiscoveryManager {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
 
                 disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING);
-                bhApp.mainActivity.stateNotificationBuilder
-                        .setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_RUNNING, bhApp));
+
                 bhApp.mainActivity.updateNotification();
 
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -531,8 +531,6 @@ public class DiscoveryManager {
                     runDiscovery();
                 } else {
                     disState.setDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED);
-                    bhApp.mainActivity.stateNotificationBuilder
-                            .setContentTitle(DiscoveryState.getUnformatedDiscoveryState(DiscoveryState.DISCOVERY_STATE_STOPPED, bhApp));
                     bhApp.mainActivity.updateNotification();
                 }
 
@@ -542,8 +540,16 @@ public class DiscoveryManager {
                 short RSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);
                 onDeviceFound(tempDevice, RSSI);
 
-            }
+            } else if (action.equals("notification.userinput")) {
 
+                int mode = intent.getIntExtra("MODE", 0);
+
+                if (mode == 1) {
+                    discoveryButton.setChecked(true);
+                } else {
+                    discoveryButton.setChecked(false);
+                }
+            }
         }
 
         public void onDeviceFound(BluetoothDevice btDevice, short rssi) {
