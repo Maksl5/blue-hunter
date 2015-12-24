@@ -391,11 +391,14 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 
     public void setDiscoverySwitchEnabled(boolean enabled) {
         if (disSwitch != null) {
-            disSwitch.setEnabled(enabled);
+            if (bhApp.disMan.btHandler.isBluetoothSupported())
+                disSwitch.setEnabled(enabled);
+
         } else {
             disSwitch = (Switch) getActionView(R.id.menu_switch);
             disSwitch.setPadding(5, 0, 5, 0);
-            disSwitch.setEnabled(enabled);
+            if (bhApp.disMan.btHandler.isBluetoothSupported())
+                disSwitch.setEnabled(enabled);
         }
 
     }

@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.Vibrator;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
@@ -39,8 +40,8 @@ public class DiscoveryManager {
 
     private final BlueHunter bhApp;
     public int newDevicesInCurDiscoverySession = 0;
+    public BluetoothDiscoveryHandler btHandler;
     private TextView stateTextView;
-    private BluetoothDiscoveryHandler btHandler;
 
     public DiscoveryManager(BlueHunter application) {
 
@@ -297,10 +298,10 @@ public class DiscoveryManager {
      *
      * @author Maksl5[Markus Bensing]
      */
-    private class BluetoothDiscoveryHandler extends BroadcastReceiver {
+    public class BluetoothDiscoveryHandler extends BroadcastReceiver {
 
         private final BluetoothAdapter btAdapter;
-        private final CompoundButton discoveryButton;
+        private final Switch discoveryButton;
         private DiscoveryState disState;
         private List<FoundDevice> foundDevices;
         private List<BluetoothDevice> foundDevicesInCurDiscovery;
@@ -315,7 +316,7 @@ public class DiscoveryManager {
             foundDevicesInCurDiscovery = new ArrayList<>();
             fDListCurDiscoverySession = new ArrayList<>();
 
-            discoveryButton = (CompoundButton) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
+            discoveryButton = (Switch) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
 
             requestBtEnable(false);
 
@@ -396,7 +397,7 @@ public class DiscoveryManager {
             }
         }
 
-        private boolean isBluetoothSupported() {
+        public boolean isBluetoothSupported() {
 
             if (btAdapter == null) {
                 discoveryButton.setEnabled(false);
