@@ -418,7 +418,7 @@ public class WeeklyLeaderboardLayout {
 
             try {
 
-                while (bhApp.loginManager.getUid() == -1) Thread.sleep(500);
+                int i = 1;
 
                 URL httpUri = new URL(AuthentificationSecure.SERVER_GET_WEEKLY_LEADERBOARD + "?s=" + startIndex + "&l=" + length + "&uid=" + bhApp.loginManager.getUid());
 
@@ -461,9 +461,6 @@ public class WeeklyLeaderboardLayout {
                 return "Error=5\n" + e.getMessage();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
-                return "Error=1\n" + e.getMessage();
-            } catch (InterruptedException e) {
                 e.printStackTrace();
                 return "Error=1\n" + e.getMessage();
             }
@@ -516,8 +513,16 @@ public class WeeklyLeaderboardLayout {
                 long nextCycleTStamp = Long.parseLong(rootElement.getAttribute("until"));
                 timeOffset = System.currentTimeMillis() - Long.parseLong(rootElement.getAttribute("now"));
 
-                weeklyPlace = Integer.parseInt(rootElement.getAttribute("lastRank"));
-                weeklyCount = Integer.parseInt(rootElement.getAttribute("lastCount"));
+                String weeklyPlaceStr = rootElement.getAttribute("lastRank");
+                String weeklyCountStr = rootElement.getAttribute("lastCount");
+
+                try {
+                    weeklyPlace = Integer.parseInt(weeklyPlaceStr);
+                    weeklyCount = Integer.parseInt(weeklyCountStr);
+                } catch (NumberFormatException exception) {
+                    weeklyPlace = 0;
+                    weeklyCount = 0;
+                }
 
                 NodeList nodes = document.getElementsByTagName("user");
 

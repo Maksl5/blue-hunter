@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
 import com.maksl5.bl_hunt.LevelSystem;
+import com.maksl5.bl_hunt.custom_ui.fragment.WeeklyLeaderboardLayout;
 import com.maksl5.bl_hunt.net.Authentification.OnLoginChangeListener;
 import com.maksl5.bl_hunt.net.Authentification.OnNetworkResultAvailableListener;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
@@ -417,7 +418,8 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 		if (loggedIn) {
 			if (!needForceOverrideUp) {
 				start();
-			}
+                WeeklyLeaderboardLayout.refreshLeaderboard(blueHunter);
+            }
 			else {
 				startSyncing(MODE_INIT, true);
 			}

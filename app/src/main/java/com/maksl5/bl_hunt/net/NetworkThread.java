@@ -93,8 +93,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 			URL httpUri = new URL(remoteFile);
 
 			HttpURLConnection conn = (HttpURLConnection) httpUri.openConnection();
-			conn.setReadTimeout(120000);
-			conn.setConnectTimeout(15000);
+			conn.setReadTimeout(30000);
+			conn.setConnectTimeout(5000);
 			conn.setRequestMethod("POST");
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
