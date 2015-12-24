@@ -68,8 +68,8 @@ public class WeeklyLeaderboardLayout {
     public static SparseArray<Integer[]> changeList = new SparseArray<>();
     public static long timeOffset = 0;
     public static TextView timerTextView = null;
-    public static int weeklyPlace = 0;
-    public static int weeklyCount = 0;
+    public static int lastWeeklyRank = 0;
+    public static int lastWeeklyCount = 0;
     private static int userRank = -1;
     private volatile static ArrayList<LBAdapterData> showedLbList = new ArrayList<>();
     private static ThreadManager threadManager = null;
@@ -258,6 +258,8 @@ public class WeeklyLeaderboardLayout {
         ImageView changeDEVImgView = (ImageView) container.findViewById(R.id.changeDEVImgView);
         TextView changeDEVTxtView = (TextView) container.findViewById(R.id.changeDEVTxtView);
 
+        TextView estimatedBoostTxt = (TextView) container.findViewById(R.id.estimatedBoostTxt);
+
         DecimalFormat decimalFormat = new DecimalFormat(",###");
 
         rankView.setText("" + userRank + ".");
@@ -265,6 +267,11 @@ public class WeeklyLeaderboardLayout {
         nameView.setTag(id);
 
         devicesView.setText(decimalFormat.format(num) + " Devices");
+
+        NumberFormat percentage = NumberFormat.getPercentInstance();
+        String boostString = mainActivity.getString(R.string.str_leaderboard_estimatedExp, "+" + percentage.format(weeklyBoostAllocation(completeLbList.size(), userRank)));
+        estimatedBoostTxt.setText(boostString);
+        estimatedBoostTxt.setVisibility(View.VISIBLE);
 
         Integer[] changes = changeList.get(id);
 
@@ -320,6 +327,38 @@ public class WeeklyLeaderboardLayout {
 
     }
 
+    public static float weeklyBoostAllocation() {
+        return weeklyBoostAllocation(lastWeeklyCount, lastWeeklyRank);
+    }
+
+    public static float weeklyBoostAllocation(int count, int forRank) {
+
+        switch (forRank) {
+            case 1:
+                return 1f;
+            case 2:
+                return 0.75f;
+            case 3:
+                return 0.5f;
+        }
+
+        float boost = 0f;
+
+        if (count > 3) {
+
+            int weeklyPlaceSub3 = forRank - 3;
+            int weeklyCountSub3 = count - 3;
+
+            int tempBonus = (int) (-(25 / (float) weeklyCountSub3) * (weeklyPlaceSub3 - 1) + 25);
+
+            boost = tempBonus / (float) 100;
+
+
+        }
+
+        return boost;
+    }
+
     static class ViewHolder {
 
         TextView rank;
@@ -336,6 +375,8 @@ public class WeeklyLeaderboardLayout {
         RelativeLayout prgTableRow;
         TableRow expTableRow;
         LinearLayout devLL;
+
+        TextView estimatedBoostTxt;
 
     }
 
@@ -477,7 +518,7 @@ public class WeeklyLeaderboardLayout {
 
             try {
 
-                weeklyPlace = 0;
+                lastWeeklyRank = 0;
 
                 Pattern pattern = Pattern.compile("Error=(\\d+)");
                 Matcher matcher = pattern.matcher(result);
@@ -517,11 +558,11 @@ public class WeeklyLeaderboardLayout {
                 String weeklyCountStr = rootElement.getAttribute("lastCount");
 
                 try {
-                    weeklyPlace = Integer.parseInt(weeklyPlaceStr);
-                    weeklyCount = Integer.parseInt(weeklyCountStr);
+                    lastWeeklyRank = Integer.parseInt(weeklyPlaceStr);
+                    lastWeeklyCount = Integer.parseInt(weeklyCountStr);
                 } catch (NumberFormatException exception) {
-                    weeklyPlace = 0;
-                    weeklyCount = 0;
+                    lastWeeklyRank = 0;
+                    lastWeeklyCount = 0;
                 }
 
                 NodeList nodes = document.getElementsByTagName("user");
@@ -576,7 +617,7 @@ public class WeeklyLeaderboardLayout {
                     // store new cycleTS as cache
                     PreferenceManager.setPref(bhApp, "cachedNextCycle", nextCycleTStamp);
 
-                    if (weeklyPlace != 0) {
+                    if (lastWeeklyRank != 0) {
 
 
                         if (cachedNextCycleTS != nextCycleTStamp) {
@@ -584,42 +625,19 @@ public class WeeklyLeaderboardLayout {
                             Builder builder = new Builder(bhApp.mainActivity);
                             builder.setTitle("Congratulations!");
 
-                            float boost = 0f;
-
-                            switch (weeklyPlace) {
-                                case 1:
-                                    boost = 1f;
-                                    break;
-                                case 2:
-                                    boost = 0.75f;
-                                    break;
-                                case 3:
-                                    boost = 0.5f;
-                                    break;
-                            }
-
-                            if (weeklyPlace > 3) {
-
-                                int weeklyPlaceSub3 = weeklyPlace - 3;
-                                int weeklyCountSub3 = weeklyCount - 3;
-
-                                int tempBonus = (int) (-(25 / (float) weeklyCountSub3) * (weeklyPlaceSub3 - 1) + 25);
-
-                                boost = tempBonus / (float) 100;
-
-                            }
+                            float boost = weeklyBoostAllocation();
 
 
                             NumberFormat percentage = NumberFormat.getPercentInstance();
                             String boostString = percentage.format(boost);
 
-                            if (weeklyPlace > 3) {
+                            if (lastWeeklyRank > 3) {
 
-                                Toast.makeText(bhApp.mainActivity, "You got place " + weeklyPlace + " in the weekly leaderboard. Reward for 7 days: " + boostString + " boost!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(bhApp.mainActivity, "You got place " + lastWeeklyRank + " in the weekly leaderboard. Reward for 7 days: " + boostString + " boost!", Toast.LENGTH_LONG).show();
 
                             } else {
                                 builder.setMessage(
-                                        "You managed to get place " + weeklyPlace + " in the last weekly leaderboard!!! You will gain an extra "
+                                        "You managed to get place " + lastWeeklyRank + " in the last weekly leaderboard!!! You will gain an extra "
                                                 + boostString + " boost as reward until the current cycle ends. Congratulations!!!");
 
                                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -818,6 +836,8 @@ public class WeeklyLeaderboardLayout {
                 viewHolder.expTableRow = (TableRow) rowView.findViewById(R.id.LDRTableRow01);
                 viewHolder.devLL = (LinearLayout) rowView.findViewById(R.id.LDRtableRow4).getParent();
 
+                viewHolder.estimatedBoostTxt = (TextView) rowView.findViewById(R.id.estimatedBoostTxt);
+
                 rowView.setTag(viewHolder);
             }
 
@@ -851,6 +871,11 @@ public class WeeklyLeaderboardLayout {
                 holder.prgTableRow.setVisibility(View.GONE);
                 holder.expTableRow.setVisibility(View.GONE);
                 holder.devLL.setGravity(Gravity.CENTER);
+
+                NumberFormat percentage = NumberFormat.getPercentInstance();
+                String boostString = getContext().getString(R.string.str_leaderboard_estimatedExp, "+" + percentage.format(weeklyBoostAllocation(dataList.size(), rankNow)));
+                holder.estimatedBoostTxt.setText(boostString);
+                holder.estimatedBoostTxt.setVisibility(View.VISIBLE);
 
                 int devNow = user.getDevNum();
 

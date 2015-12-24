@@ -667,32 +667,8 @@ public class AchievementSystem {
 
         }
 
-        // weekly boost addition
+        bonus += WeeklyLeaderboardLayout.weeklyBoostAllocation();
 
-        switch (WeeklyLeaderboardLayout.weeklyPlace) {
-            case 1:
-                bonus += 1f;
-                break;
-            case 2:
-                bonus += 0.75f;
-                break;
-            case 3:
-                bonus += 0.5f;
-                break;
-        }
-
-        //Partial bonus calculation for places over rd
-
-        if (WeeklyLeaderboardLayout.weeklyPlace > 3) {
-
-            int weeklyPlaceSub3 = WeeklyLeaderboardLayout.weeklyPlace - 3;
-            int weeklyCountSub3 = WeeklyLeaderboardLayout.weeklyCount - 3;
-
-            int tempBonus = (int) (-(25 / (float) weeklyCountSub3) * (weeklyPlaceSub3 - 1) + 25);
-
-            bonus += tempBonus / (float) 100;
-
-        }
         return bonus;
 
     }
@@ -720,40 +696,15 @@ public class AchievementSystem {
 
         boostList.add(emptyHashMap);
 
-        if (WeeklyLeaderboardLayout.weeklyPlace != 0) {
+        if (WeeklyLeaderboardLayout.lastWeeklyRank != 0) {
 
             HashMap<String, String> weeklyBoostHash = new HashMap<>();
 
-            float weeklyBoost = 0f;
+            float weeklyBoost = WeeklyLeaderboardLayout.weeklyBoostAllocation();
 
-            switch (WeeklyLeaderboardLayout.weeklyPlace) {
-                case 1:
-                    weeklyBoost = 1f;
-
-                    break;
-                case 2:
-                    weeklyBoost = 0.75f;
-
-                    break;
-                case 3:
-                    weeklyBoost = 0.5f;
-
-                    break;
-            }
-
-            if (WeeklyLeaderboardLayout.weeklyPlace > 3) {
-
-                int weeklyPlaceSub3 = WeeklyLeaderboardLayout.weeklyPlace - 3;
-                int weeklyCountSub3 = WeeklyLeaderboardLayout.weeklyCount - 3;
-
-                int tempBonus = (int) (-(25 / (float) weeklyCountSub3) * (weeklyPlaceSub3 - 1) + 25);
-
-                weeklyBoost = tempBonus / (float) 100;
-
-            }
 
             weeklyBoostHash.put("description",
-                    bhApp.getString(R.string.str_boostComposition_weeklyBoost, WeeklyLeaderboardLayout.weeklyPlace));
+                    bhApp.getString(R.string.str_boostComposition_weeklyBoost, WeeklyLeaderboardLayout.lastWeeklyRank));
             weeklyBoostHash.put("boost", "+" + percentage.format(weeklyBoost));
 
             boostList.add(weeklyBoostHash);
