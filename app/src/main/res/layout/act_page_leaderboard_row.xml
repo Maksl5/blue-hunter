@@ -226,6 +226,8 @@
         android:layout_centerVertical="true"
         android:text="Estimated\n+0%"
         android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="10sp"
+        android:textStyle="italic"
         android:visibility="gone" />
 
 </RelativeLayout>
