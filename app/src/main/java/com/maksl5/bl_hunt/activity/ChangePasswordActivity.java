@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package com.maksl5.bl_hunt.activity;
 
 
@@ -306,3 +304,4 @@ public class ChangePasswordActivity extends Activity {
 	}
 
 }
+

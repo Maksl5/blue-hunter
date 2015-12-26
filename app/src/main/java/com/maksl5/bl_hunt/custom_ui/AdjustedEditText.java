@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package com.maksl5.bl_hunt.custom_ui;
 
 
