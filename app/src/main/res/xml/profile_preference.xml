@@ -11,9 +11,9 @@
         android:summary="@string/str_Preferences_localPass_sum"
         android:title="@string/str_Preferences_localPass_title" />
 
-    <CheckBoxPreference android:key="pref_syncingActivated" android:title="@string/str_Preferences_activateSync_title" android:summary="@string/str_Preferences_activateSync_sum" android:persistent="true"/>
-    <Preference android:summary="@string/str_Preferences_syncInterval_sum" android:key="pref_syncInterval" android:title="@string/str_Preferences_syncInterval_title" android:dependency="pref_syncingActivated" android:persistent="true"/>
-    <Preference android:summary="@string/str_Preferences_forceUpSync_sum" android:key="pref_forceUpSync" android:title="@string/str_Preferences_forceUpSync_title" android:dependency="pref_syncingActivated"/>
-    <Preference android:summary="@string/str_Preferences_forceDownSync_sum" android:key="pref_forceDownSync" android:title="@string/str_Preferences_forceDownSync_title" android:dependency="pref_syncingActivated"/>
+    <CheckBoxPreference android:key="pref_syncingActivated" android:persistent="true" android:summary="@string/str_Preferences_activateSync_sum" android:title="@string/str_Preferences_activateSync_title"/>
+    <Preference android:dependency="pref_syncingActivated" android:key="pref_syncInterval" android:persistent="true" android:summary="@string/str_Preferences_syncInterval_sum" android:title="@string/str_Preferences_syncInterval_title"/>
+    <Preference android:dependency="pref_syncingActivated" android:key="pref_forceUpSync" android:summary="@string/str_Preferences_forceUpSync_sum" android:title="@string/str_Preferences_forceUpSync_title"/>
+    <Preference android:dependency="pref_syncingActivated" android:key="pref_forceDownSync" android:summary="@string/str_Preferences_forceDownSync_sum" android:title="@string/str_Preferences_forceDownSync_title"/>
 
 </PreferenceScreen>

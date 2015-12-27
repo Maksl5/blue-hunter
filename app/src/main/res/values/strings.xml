@@ -39,8 +39,8 @@
     
     <string name="str_discovery_devices">Devices:</string>
     <string name="str_discovery_devExpPerDay">Devices / Exp per day:</string>
-    <string name="str_discovery_devExpToday">Devices / Exp last 24\nhours:</string>
-    <string name="str_discovery_devInSession">New / Old devices in\ndiscovery session:</string>
+    <string name="str_discovery_devExpToday">Devices / Exp last 24 hours:</string>
+    <string name="str_discovery_devInSession">Current New / Old devices:</string>
     <string name="str_discovery_loading">Loading&#8230;</string>
     <string name="str_discovery_state_old">OLD</string>
     <string name="str_discovery_state_new">NEW</string>
