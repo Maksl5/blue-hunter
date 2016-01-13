@@ -7,6 +7,7 @@
         <item name="android:statusBarColor">@color/primary_material_dark</item>
         <item name="android:colorAccent">@color/accentColor</item>
         <item name="android:colorPrimary">@color/primary_material_dark</item>
+        <item name="android:navigationBarColor">@color/primary_material_dark</item>
     </style>
 
     <style name="bhActionBar" parent="android:Widget.Material.Light.ActionBar.Solid">

@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author Maksl5[Markus Bensing]
- *
  */
 public class Authentification {
 
@@ -86,6 +85,21 @@ public class Authentification {
         if (serial == null || serial.equals("") || serial.equalsIgnoreCase("NULL") || serial.equalsIgnoreCase("unknown")) {
             serial = Build.SERIAL;
         }
+
+
+        if (serial == null || serial.equals("") || serial.equalsIgnoreCase("NULL") || serial.equalsIgnoreCase("unknown")) {
+            try {
+                Class<?> c = Class.forName("android.os.SystemProperties");
+                Method get = c.getMethod("get", String.class, String.class);
+                serial = (String) get.invoke(c, "sys.serialnumber", "NULL");
+                if (serial.equals("NULL")) {
+                    serial = (String) get.invoke(c, "ril.serialnumber", "NULL");
+                }
+            } catch (Exception ignored) {
+                serial = "NULL";
+            }
+        }
+
 
         if (serial == null || serial.equals("") || serial.equalsIgnoreCase("unknown")) {
             serial = "NULL";
@@ -348,12 +362,13 @@ public class Authentification {
         loginChangeListeners.remove(onLoginChangeListener);
     }
 
-    private void checkInternetConnection() {
+    public boolean checkInternetConnection() {
 
         ConnectivityManager connectivityManager = (ConnectivityManager) bhApp.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         internetIsAvailable = networkInfo != null && networkInfo.isConnected();
+        return internetIsAvailable;
     }
 
     private boolean isInternetAvailable() {
