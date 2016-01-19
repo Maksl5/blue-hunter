@@ -1002,7 +1002,11 @@ public class LeaderboardLayout {
 
                 int rankNow = (completeLbList.indexOf(user) + 1);
 
-                holder.rank.setText("" + rankNow + ".");
+                if (rankNow == 0)
+                    holder.rank.setText("");
+                else
+                    holder.rank.setText("" + rankNow + ".");
+
                 holder.name.setText(nameString);
                 holder.name.setTag(user.getId());
                 holder.level.setText("" + user.getLevel());

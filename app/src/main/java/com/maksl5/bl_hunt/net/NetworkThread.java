@@ -26,12 +26,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
- *
  * Call execute(String remoteFile, String requestID, String params...);
  *
  * @author Maksl5[Markus Bensing]
- *
  */
 
 public class NetworkThread extends AsyncTask<String, Integer, String> {
@@ -179,7 +176,11 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
     @Override
     protected void onPreExecute() {
 
-        if (bhApp.authentification.checkInternetConnection()) cancel(false);
+        if (!bhApp.authentification.checkInternetConnection()) {
+            cancel(false);
+            bhApp.netMananger.threadFinished(this);
+        }
+
 
         MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
         if (!progressBar.isVisible()) progressBar.setVisible(true);
