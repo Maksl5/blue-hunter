@@ -650,7 +650,7 @@ public class LeaderboardLayout {
 
                     listView.setSelectionFromTop(scrollIndex, scrollTop);
 
-                    threadManager.finished(this);
+                    threadManager.finished(this, true);
 
                     return;
                 }
@@ -708,7 +708,7 @@ public class LeaderboardLayout {
 
                 }
 
-                threadManager.finished(this);
+                threadManager.finished(this, last);
 
                 if (last) {
 
@@ -721,6 +721,10 @@ public class LeaderboardLayout {
                         for (int i = 0; i < completeLbList.size(); i++) {
 
                             LBAdapterData data = completeLbList.get(i);
+
+                            if (i == 0 && currentExp >= data.getExp()) {
+                                break;
+                            }
 
                             if (currentExp >= data.getExp() && (i - 1) >= 0) {
 
@@ -816,30 +820,31 @@ public class LeaderboardLayout {
             }
 
             this.refreshThread = refreshThread;
-            setRunning(true);
+            setRunning(true, false);
             return true;
         }
 
-        public void finished(RefreshThread refreshThread) {
+        public void finished(RefreshThread refreshThread, boolean last) {
 
             if (this.refreshThread.equals(refreshThread)) {
-                setRunning(false);
+                setRunning(false, last);
                 return;
             }
         }
 
-        private void setRunning(boolean running) {
+        private void setRunning(boolean running, boolean last) {
 
             this.running = running;
 
-            if (!running) {
+            if (!running && last) {
                 if (!refreshThread.bhApp.netMananger.areThreadsRunning()) {
                     MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
                     progressBar.setVisible(false);
                 }
             } else {
                 MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-                progressBar.setVisible(true);
+                if (!progressBar.isVisible())
+                    progressBar.setVisible(true);
             }
 
         }

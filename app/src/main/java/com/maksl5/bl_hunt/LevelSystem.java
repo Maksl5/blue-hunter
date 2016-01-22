@@ -56,7 +56,9 @@ public class LevelSystem {
 
 		cachedExp = exp;
 
-		return exp;
+        //return exp;
+
+        return 1200000;
 
 	}
 
@@ -79,7 +81,8 @@ public class LevelSystem {
 
 		cachedExp = exp;
 
-		return exp;
+        //return exp;
+        return 1200000;
 
 	}
 
@@ -87,7 +90,8 @@ public class LevelSystem {
 		if (cachedExp == -1) {
 			getUserExp(bhApp);
 		}
-		return cachedExp;
+        //return cachedExp;
+        return 1200000;
 
 	}
 
