@@ -532,7 +532,7 @@ public class WeeklyLeaderboardLayout {
 
                     listView.setSelectionFromTop(scrollIndex, scrollTop);
 
-                    threadManager.finished(this);
+                    threadManager.finished(this, true);
 
                     return;
                 }
@@ -601,7 +601,7 @@ public class WeeklyLeaderboardLayout {
 
                 }
 
-                threadManager.finished(this);
+                threadManager.finished(this, last);
 
                 if (last || (startIndex == 1 && nodes.getLength() == 0)) {
 
@@ -719,29 +719,31 @@ public class WeeklyLeaderboardLayout {
             }
 
             this.refreshThread = refreshThread;
-            setRunning(true);
+            setRunning(true, false);
             return true;
         }
 
-        public void finished(RefreshThread refreshThread) {
+        public void finished(RefreshThread refreshThread, boolean last) {
 
             if (this.refreshThread.equals(refreshThread)) {
-                setRunning(false);
+                setRunning(false, last);
+                return;
             }
         }
 
-        private void setRunning(boolean running) {
+        private void setRunning(boolean running, boolean last) {
 
             this.running = running;
 
-            if (!running) {
+            if (!running && last) {
                 if (!refreshThread.bhApp.netMananger.areThreadsRunning()) {
                     MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
                     progressBar.setVisible(false);
                 }
             } else {
                 MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-                progressBar.setVisible(true);
+                if (!progressBar.isVisible())
+                    progressBar.setVisible(true);
             }
 
         }
