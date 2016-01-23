@@ -1,6 +1,6 @@
 /**
- *  NetworkMananger.java in com.maksl5.bl_hunt
- *  © Maksl5[Markus Bensing] 2012
+ * NetworkMananger.java in com.maksl5.bl_hunt
+ * © Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt.net;
 
@@ -14,55 +14,56 @@ import java.util.List;
 
 /**
  * @author Maksl5[Markus Bensing]
- * 
+ *
  */
 public class NetworkManager {
 
-	private final BlueHunter bhApp;
-	private final List<NetworkThread> curRunningThreads;
+    private final BlueHunter bhApp;
+    private final List<NetworkThread> curRunningThreads;
 
-	public NetworkManager(BlueHunter app) {
+    public NetworkManager(BlueHunter app) {
 
-		bhApp = app;
-		curRunningThreads = new ArrayList<>();
-	}
+        bhApp = app;
+        curRunningThreads = new ArrayList<>();
+    }
 
-	public void addRunningThread(NetworkThread netThread) {
+    public void addRunningThread(NetworkThread netThread) {
 
-		curRunningThreads.add(netThread);
-	}
+        curRunningThreads.add(netThread);
+    }
 
-	public synchronized void threadFinished(NetworkThread netThread) {
+    public synchronized void threadFinished(NetworkThread netThread) {
 
-		curRunningThreads.remove(netThread);
-		checkList();
-	}
+        curRunningThreads.remove(netThread);
+        checkList();
+    }
 
-	public boolean areThreadsRunning() {
+    public boolean areThreadsRunning() {
 
-		return curRunningThreads.size() != 0;
+        return curRunningThreads.size() != 0;
 
-	}
+    }
 
-	/**
-	 * 
-	 */
-	private void checkList() {
+    /**
+     *
+     */
+    private void checkList() {
 
-		if (curRunningThreads.size() == 0) {
+        if (curRunningThreads.size() == 0) {
 
-			MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-			if (progressBar.isVisible()) progressBar.setVisible(false);
+            MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
+            if (progressBar != null)
+                if (progressBar.isVisible()) progressBar.setVisible(false);
 
-		}
+        }
 
-	}
+    }
 
-	public void cancelAllTasks() {
-		for (NetworkThread networkThread : curRunningThreads) {
-			if (networkThread != null) networkThread.cancel(true);
-		}
+    public void cancelAllTasks() {
+        for (NetworkThread networkThread : curRunningThreads) {
+            if (networkThread != null) networkThread.cancel(true);
+        }
 
-	}
+    }
 
 }

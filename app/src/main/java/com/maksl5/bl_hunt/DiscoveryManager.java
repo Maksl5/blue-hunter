@@ -539,7 +539,7 @@ public class DiscoveryManager {
 
                 BluetoothDevice tempDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 short RSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);
-                onDeviceFound(tempDevice, RSSI);
+                if (tempDevice != null) onDeviceFound(tempDevice, RSSI);
 
             } else if (action.equals("notification.userinput")) {
 

@@ -461,10 +461,10 @@ public class MainActivity extends FragmentActivity {
             }
 
             justStarted = false;
+            updateNotification();
 
         }
 
-        updateNotification();
 
         // Debug.stopMethodTracing();
 

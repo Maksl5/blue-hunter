@@ -183,7 +183,8 @@ public class NetworkThread extends AsyncTask<String, Integer, String> {
 
 
         MenuItem progressBar = bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-        if (!progressBar.isVisible()) progressBar.setVisible(true);
+        if (progressBar != null)
+            if (!progressBar.isVisible()) progressBar.setVisible(true);
 
 
     }

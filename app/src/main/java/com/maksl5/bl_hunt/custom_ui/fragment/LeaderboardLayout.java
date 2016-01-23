@@ -839,12 +839,18 @@ public class LeaderboardLayout {
             if (!running && last) {
                 if (!refreshThread.bhApp.netMananger.areThreadsRunning()) {
                     MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-                    progressBar.setVisible(false);
+                    if (progressBar != null) {
+                        progressBar.setVisible(false);
+                    }
                 }
             } else {
                 MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-                if (!progressBar.isVisible())
-                    progressBar.setVisible(true);
+                if (progressBar != null) {
+                    ;
+                    if (!progressBar.isVisible())
+                        progressBar.setVisible(false);
+                }
+
             }
 
         }

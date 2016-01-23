@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -738,12 +739,18 @@ public class WeeklyLeaderboardLayout {
             if (!running && last) {
                 if (!refreshThread.bhApp.netMananger.areThreadsRunning()) {
                     MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-                    progressBar.setVisible(false);
+                    if (progressBar != null) {
+                        progressBar.setVisible(false);
+                    }
                 }
             } else {
                 MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
-                if (!progressBar.isVisible())
-                    progressBar.setVisible(true);
+                if (progressBar != null) {
+                    ;
+                    if (!progressBar.isVisible())
+                        progressBar.setVisible(false);
+                }
+
             }
 
         }
@@ -855,14 +862,16 @@ public class WeeklyLeaderboardLayout {
 
                 int rankNow = (completeLbList.indexOf(user) + 1);
 
-                if (rankNow == 1) {
-                    rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xd4, 0xaf, 0x37)));
-                } else if (rankNow == 2) {
-                    rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xdd, 0xdd, 0xdd)));
-                } else if (rankNow == 3) {
-                    rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xcd, 0x7f, 0x32)));
-                } else {
-                    rowView.setBackground(null);
+                if (Build.VERSION.SDK_INT >= 16) {
+                    if (rankNow == 1) {
+                        rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xd4, 0xaf, 0x37)));
+                    } else if (rankNow == 2) {
+                        rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xdd, 0xdd, 0xdd)));
+                    } else if (rankNow == 3) {
+                        rowView.setBackground(new ColorDrawable(Color.argb(0xcc, 0xcd, 0x7f, 0x32)));
+                    } else {
+                        rowView.setBackground(null);
+                    }
                 }
 
                 holder.rank.setText("" + rankNow + ".");

@@ -300,13 +300,13 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
     public View getActionView(int resourceId) {
 
         checkMenuNull();
-        return menu.findItem(resourceId).getActionView();
+        return menu != null ? menu.findItem(resourceId).getActionView() : null;
     }
 
     public MenuItem getMenuItem(int resourceId) {
 
         checkMenuNull();
-        return menu.findItem(resourceId);
+        return menu != null ? menu.findItem(resourceId) : null;
     }
 
     /*
