@@ -1,6 +1,6 @@
 /**
- *  LevelSystem.java in com.maksl5.bl_hunt
- *  © Maksl5[Markus Bensing] 2012
+ * LevelSystem.java in com.maksl5.bl_hunt
+ * © Maksl5[Markus Bensing] 2012
  */
 package com.maksl5.bl_hunt;
 
@@ -21,169 +21,164 @@ import java.util.List;
 
 /**
  * @author Maksl5[Markus Bensing]
- * 
+ *
  */
 public class LevelSystem {
 
-	private static int cachedExp = -1;
+    private static int cachedExp = -1;
 
-	public static int getUserExp(BlueHunter bhApp) {
+    public static int getUserExp(BlueHunter bhApp) {
 
-		int exp = 0;
+        int exp = 0;
 
-		List<FoundDevice> allDevices = DatabaseManager.getCachedList();
+        List<FoundDevice> allDevices = DatabaseManager.getCachedList();
 
-		if (allDevices == null) {
+        if (allDevices == null) {
 
-			new DatabaseManager(bhApp).loadAllDevices();
-			return (cachedExp != -1) ? cachedExp : 0;
+            new DatabaseManager(bhApp).loadAllDevices();
+            return (cachedExp != -1) ? cachedExp : 0;
 
-		}
+        }
 
-		int size = allDevices.size();
+        int size = allDevices.size();
 
-		for (int i = 0; i < size; i++) {
-			FoundDevice foundDevice = allDevices.get(i);
+        for (int i = 0; i < size; i++) {
+            FoundDevice foundDevice = allDevices.get(i);
 
-			int manufacturerId = foundDevice.getManufacturer();
-			float bonus = foundDevice.getBoost();
+            int manufacturerId = foundDevice.getManufacturer();
+            float bonus = foundDevice.getBoost();
 
-			if (bonus == -1f) bonus = 0f;
+            if (bonus == -1f) bonus = 0f;
 
-			exp += (int) (ManufacturerList.getExp(manufacturerId) * (1 + bonus));
+            exp += (int) (ManufacturerList.getExp(manufacturerId) * (1 + bonus));
 
-		}
+        }
 
-		cachedExp = exp;
+        cachedExp = exp;
 
-        //return exp;
+        return exp;
 
-		return 12000000;
+    }
 
-	}
+    public static int getUserExp(List<FoundDevice> listToUse) {
 
-	public static int getUserExp(List<FoundDevice> listToUse) {
+        int exp = 0;
 
-		int exp = 0;
+        List<FoundDevice> tempList = new ArrayList<>(listToUse);
 
-		List<FoundDevice> tempList = new ArrayList<>(listToUse);
+        for (FoundDevice foundDevice : tempList) {
 
-		for (FoundDevice foundDevice : tempList) {
+            int manufacturerId = foundDevice.getManufacturer();
+            float bonus = foundDevice.getBoost();
 
-			int manufacturerId = foundDevice.getManufacturer();
-			float bonus = foundDevice.getBoost();
+            if (bonus == -1f) bonus = 0f;
 
-			if (bonus == -1f) bonus = 0f;
+            exp += Math.floor(ManufacturerList.getExp(manufacturerId) * (1 + bonus));
 
-			exp += Math.floor(ManufacturerList.getExp(manufacturerId) * (1 + bonus));
+        }
 
-		}
+        cachedExp = exp;
 
-		cachedExp = exp;
+        return exp;
 
-        //return exp;
-		return 12000000;
+    }
 
-	}
+    public static int getCachedUserExp(BlueHunter bhApp) {
+        if (cachedExp == -1) {
+            getUserExp(bhApp);
+        }
+        return cachedExp;
+    }
 
-	public static int getCachedUserExp(BlueHunter bhApp) {
-		if (cachedExp == -1) {
-			getUserExp(bhApp);
-		}
-        //return cachedExp;
-		return 12000000;
+    public static int getExpWoBonus(BlueHunter bhApp) {
 
-	}
+        int exp = 0;
 
-	public static int getExpWoBonus(BlueHunter bhApp) {
+        List<FoundDevice> allDevices = DatabaseManager.getCachedList();
 
-		int exp = 0;
+        if (allDevices == null) {
 
-		List<FoundDevice> allDevices = DatabaseManager.getCachedList();
+            new DatabaseManager(bhApp).loadAllDevices();
+            return exp;
 
-		if (allDevices == null) {
+        }
 
-			new DatabaseManager(bhApp).loadAllDevices();
-			return exp;
+        for (FoundDevice foundDevice : allDevices) {
 
-		}
+            int manufacturer = foundDevice.getManufacturer();
 
-		for (FoundDevice foundDevice : allDevices) {
+            exp += ManufacturerList.getExp(manufacturer);
 
-			int manufacturer = foundDevice.getManufacturer();
+        }
 
-			exp += ManufacturerList.getExp(manufacturer);
+        return exp;
 
-		}
+    }
 
-		return exp;
+    public static int getLevel(int exp) {
 
-	}
+        int level = 1;
 
-	public static int getLevel(int exp) {
+        int compareExp = 50;
 
-		int level = 1;
+        while (compareExp < exp) {
+            compareExp = compareExp + level * level * 50;
+            level++;
+        }
 
-		int compareExp = 50;
+        return level;
+    }
 
-		while (compareExp < exp) {
-			compareExp = compareExp + level * level * 50;
-			level++;
-		}
+    public static int getLevelStartExp(int level) {
 
-		return level;
-	}
+        if (level == 1) return 0;
 
-	public static int getLevelStartExp(int level) {
+        int exp = 50;
 
-		if (level == 1) return 0;
+        for (int i = 1; i < level - 1; i++) {
+            exp = exp + i * i * 50;
+        }
 
-		int exp = 50;
+        return exp;
+    }
 
-		for (int i = 1; i < level - 1; i++) {
-			exp = exp + i * i * 50;
-		}
+    public static int getLevelEndExp(int level) {
 
-		return exp;
-	}
+        int exp = 50;
 
-	public static int getLevelEndExp(int level) {
+        for (int i = 1; i < level; i++) {
+            exp = exp + i * i * 50;
+        }
 
-		int exp = 50;
+        return exp;
+    }
 
-		for (int i = 1; i < level; i++) {
-			exp = exp + i * i * 50;
-		}
+    public static AlertDialog getBoostCompositionDialog(BlueHunter bhApp) {
 
-		return exp;
-	}
+        int[] to = new int[]{
+                R.id.descriptionTxt, R.id.boostTxt};
+        String[] from = new String[]{
+                "description", "boost"};
 
-	public static AlertDialog getBoostCompositionDialog(BlueHunter bhApp) {
+        List<HashMap<String, String>> adapterList = AchievementSystem.getBoostList(bhApp);
 
-		int[] to = new int[] {
-				R.id.descriptionTxt, R.id.boostTxt };
-		String[] from = new String[] {
-				"description", "boost" };
+        SimpleAdapter boostAdapater = new SimpleAdapter(bhApp, adapterList, R.layout.dlg_boost_composite_row, from, to);
 
-		List<HashMap<String, String>> adapterList = AchievementSystem.getBoostList(bhApp);
+        AlertDialog.Builder builder = new Builder(bhApp.mainActivity);
+        builder.setTitle(R.string.str_boostComposition_title);
 
-		SimpleAdapter boostAdapater = new SimpleAdapter(bhApp, adapterList, R.layout.dlg_boost_composite_row, from, to);
+        builder.setAdapter(boostAdapater, null);
+        builder.setPositiveButton("Ok", new OnClickListener() {
 
-		AlertDialog.Builder builder = new Builder(bhApp.mainActivity);
-		builder.setTitle(R.string.str_boostComposition_title);
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
 
-		builder.setAdapter(boostAdapater, null);
-		builder.setPositiveButton("Ok", new OnClickListener() {
+            }
+        });
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
+        return builder.create();
 
-			}
-		});
-
-		return builder.create();
-
-	}
+    }
 
 }

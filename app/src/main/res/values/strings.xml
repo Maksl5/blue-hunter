@@ -28,6 +28,9 @@
     <string name="str_actBar_userInfo">User Information</string>
     <string name="str_mainActTitle">Blue Hunter</string>
 
+    <string name="str_Toast_adTip">Tip: Clicking on the ad will reward you with a +20% boost for 24hrs.</string>
+    <string name="str_Toast_adClick">You got rewarded with +20% boost for clicking the ad.</string>
+
     <string name="str_discoveryState_running">Discovery running.</string>
     <string name="str_discoveryState_stopped">Discovery stopped.</string>
     <string name="str_discoveryState_btOff">Bluetooth off.</string>
@@ -152,6 +155,7 @@
     <string name="str_boostComposition_achievementBoost">Achievement &quot;%s&quot; boost:</string>
     <string name="str_boostComposition_title">Boost Composition</string>
     <string name="str_boostComposition_weeklyBoost">Weekly leaderboard boost for rank %d:</string>
+    <string name="str_boostComposition_adBoost">Boost from clicking ad:</string>
     
     
     <string name="str_statistics_manufacturerCount_title">Manufacturer Count</string>

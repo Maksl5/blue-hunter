@@ -52,6 +52,7 @@ import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer;
 import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer.ParallaxTransformInformation;
+import com.maksl5.bl_hunt.custom_ui.RandomToast;
 import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
@@ -186,6 +187,8 @@ public class MainActivity extends FragmentActivity {
             PreferenceManager.setPref(this, "pref_showAd", false);
 
 
+        PreferenceManager.setPref(MainActivity.this, "pref_lastAdClicked", 0L);
+
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.ad_id));
 
@@ -199,7 +202,35 @@ public class MainActivity extends FragmentActivity {
                     mInterstitialAd.show();
                 }
             }
+
+            @Override
+            public void onAdLeftApplication() {
+                Log.d("debug", "onAdLeftApplication()");
+
+                long lastClicked = PreferenceManager.getPref(MainActivity.this, "pref_lastAdClicked", 0L);
+                boolean isNewBoost = lastClicked + 86400000 < System.currentTimeMillis();
+
+                PreferenceManager.setPref(MainActivity.this, "pref_lastAdClicked", System.currentTimeMillis());
+
+                AchievementsLayout.updateBoostIndicator(bhApp);
+
+                if (isNewBoost) {
+                    Toast.makeText(MainActivity.this, getString(R.string.str_Toast_adClick), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+
+            @Override
+            public void onAdClosed() {
+                long lastClicked = PreferenceManager.getPref(MainActivity.this, "pref_lastAdClicked", 0L);
+
+                if (lastClicked + 86400000 < System.currentTimeMillis()) {
+                    RandomToast.create(MainActivity.this, getString(R.string.str_Toast_adTip), 0.5D).show();
+                }
+
+            }
         });
+
 
     }
 
@@ -471,8 +502,8 @@ public class MainActivity extends FragmentActivity {
         upgrade();
 
 
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
+        if (!PreferenceManager.getPref(MainActivity.this, "pref_showAd", true) && !BlueHunter.isSupport) {
+            RandomToast.create(MainActivity.this, getString(R.string.str_Toast_adTip), 0.2D).show();
         }
 
 

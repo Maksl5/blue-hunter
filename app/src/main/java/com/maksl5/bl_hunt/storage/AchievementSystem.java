@@ -654,22 +654,28 @@ public class AchievementSystem {
 
     public static float getBoost(BlueHunter bhApp) {
 
-        float bonus = 0.0f;
+        float boost = 0.0f;
 
-        bonus += getLevelBoost(bhApp);
+        boost += getLevelBoost(bhApp);
 
 
         for (Achievement achievement : achievements) {
 
             if (achievementStates.get(achievement.getId(), false)) {
-                bonus += achievement.getBoost();
+                boost += achievement.getBoost();
             }
 
         }
 
-        bonus += WeeklyLeaderboardLayout.weeklyBoostAllocation();
 
-        return bonus;
+        //Weekly Boost
+        boost += WeeklyLeaderboardLayout.weeklyBoostAllocation();
+
+
+        //Potential ad click boost
+        boost += (PreferenceManager.getPref(bhApp, "pref_lastAdClicked", 0L) + 86400000 > System.currentTimeMillis()) ? 0.2f : 0f;
+
+        return boost;
 
     }
 
@@ -710,6 +716,18 @@ public class AchievementSystem {
             boostList.add(weeklyBoostHash);
             boostList.add(emptyHashMap);
 
+        }
+
+
+        if (PreferenceManager.getPref(bhApp, "pref_lastAdClicked", 0L) + 86400000 > System.currentTimeMillis()) {
+
+            HashMap<String, String> adHashMap = new HashMap<>();
+
+            adHashMap.put("description", bhApp.getString(R.string.str_boostComposition_adBoost));
+            adHashMap.put("boost", "+" + percentage.format(0.2d));
+
+            boostList.add(adHashMap);
+            boostList.add(emptyHashMap);
         }
 
         for (Achievement achievement : achievements) {
