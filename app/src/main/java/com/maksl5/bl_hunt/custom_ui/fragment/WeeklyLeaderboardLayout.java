@@ -747,7 +747,7 @@ public class WeeklyLeaderboardLayout {
                 MenuItem progressBar = refreshThread.bhApp.actionBarHandler.getMenuItem(R.id.menu_progress);
                 if (progressBar != null) {
                     if (!progressBar.isVisible())
-                        progressBar.setVisible(false);
+                        progressBar.setVisible(true);
                 }
 
             }

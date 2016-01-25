@@ -848,7 +848,7 @@ public class LeaderboardLayout {
                 if (progressBar != null) {
                     ;
                     if (!progressBar.isVisible())
-                        progressBar.setVisible(false);
+                        progressBar.setVisible(true);
                 }
 
             }

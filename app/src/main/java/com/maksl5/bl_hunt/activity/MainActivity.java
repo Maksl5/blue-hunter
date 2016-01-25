@@ -187,8 +187,6 @@ public class MainActivity extends FragmentActivity {
             PreferenceManager.setPref(this, "pref_showAd", false);
 
 
-        PreferenceManager.setPref(MainActivity.this, "pref_lastAdClicked", 0L);
-
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.ad_id));
 
