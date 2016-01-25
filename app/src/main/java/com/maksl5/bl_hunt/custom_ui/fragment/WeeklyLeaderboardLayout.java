@@ -335,6 +335,8 @@ public class WeeklyLeaderboardLayout {
     public static float weeklyBoostAllocation(int count, int forRank) {
 
         switch (forRank) {
+            case 0:
+                return 0f;
             case 1:
                 return 1f;
             case 2:
@@ -352,7 +354,7 @@ public class WeeklyLeaderboardLayout {
 
             int tempBonus = (int) (-(25 / (float) weeklyCountSub3) * (weeklyPlaceSub3 - 1) + 25);
 
-            boost = tempBonus / (float) 100;
+            boost = tempBonus / 100f;
 
 
         }
