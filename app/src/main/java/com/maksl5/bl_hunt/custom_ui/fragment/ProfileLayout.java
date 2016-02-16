@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
 import android.view.View;
@@ -17,7 +18,6 @@ import android.widget.EditText;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
@@ -127,7 +127,7 @@ public class ProfileLayout {
 
 								setName(mainActivity.getBlueHunter(), backUpName);
 
-								Toast.makeText(mainActivity, errorMsg, Toast.LENGTH_LONG).show();
+								Snackbar.make(mainActivity.parentView, errorMsg, Snackbar.LENGTH_LONG).show();
 							}
 							else if (resultString.equals("<done />")) {
 								setName(mainActivity.getBlueHunter(), userName);

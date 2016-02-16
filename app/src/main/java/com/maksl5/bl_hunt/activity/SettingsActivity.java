@@ -4,15 +4,13 @@
  */
 package com.maksl5.bl_hunt.activity;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -25,10 +23,21 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -78,6 +87,18 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
     private List<Header> headers;
     private boolean isDestroyed = false;
 
+    private View parentView;
+
+    private AppCompatDelegate mDelegate;
+
+    private AppCompatDelegate getDelegate() {
+        if (mDelegate == null) {
+            mDelegate = AppCompatDelegate.create(this, null);
+        }
+        return mDelegate;
+    }
+
+
     /*
      * (non-Javadoc)
      *
@@ -86,6 +107,9 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        getDelegate().installViewFactory();
+        getDelegate().onCreate(savedInstanceState);
+
         super.onCreate(savedInstanceState);
 
         bhApp = (BlueHunter) getApplication();
@@ -93,7 +117,7 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
 
         netManager = new PrefNetManager(this);
 
-        ActionBar actionBar = this.getActionBar();
+        ActionBar actionBar = this.getSupportActionBar();
 
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -107,6 +131,73 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
 
         }
 
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        getDelegate().onPostCreate(savedInstanceState);
+    }
+
+    public ActionBar getSupportActionBar() {
+        return getDelegate().getSupportActionBar();
+    }
+
+    public void setSupportActionBar(@Nullable Toolbar toolbar) {
+        getDelegate().setSupportActionBar(toolbar);
+    }
+
+    @Override
+    public MenuInflater getMenuInflater() {
+        return getDelegate().getMenuInflater();
+    }
+
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        getDelegate().setContentView(layoutResID);
+    }
+
+    @Override
+    public void setContentView(View view) {
+        getDelegate().setContentView(view);
+    }
+
+    @Override
+    public void setContentView(View view, ViewGroup.LayoutParams params) {
+        getDelegate().setContentView(view, params);
+    }
+
+    @Override
+    public void addContentView(View view, ViewGroup.LayoutParams params) {
+        getDelegate().addContentView(view, params);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        getDelegate().onPostResume();
+    }
+
+    @Override
+    protected void onTitleChanged(CharSequence title, int color) {
+        super.onTitleChanged(title, color);
+        getDelegate().setTitle(title);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        getDelegate().onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        getDelegate().onStop();
+    }
+
+    public void invalidateOptionsMenu() {
+        getDelegate().invalidateOptionsMenu();
     }
 
     @Override
@@ -130,6 +221,8 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
         super.onResume();
 
         bhApp.currentActivity = this;
+
+        parentView = findViewById(android.R.id.content);
 
         //overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
@@ -269,11 +362,11 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
                         break;
                 }
 
-                Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
+                Snackbar.make(parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
             }
 
             if (resultString.equals("<SUCCESS>")) {
-                Toast.makeText(bhApp, getString(R.string.str_Preferences_changePass_success), Toast.LENGTH_LONG).show();
+                Snackbar.make(parentView, R.string.str_Preferences_changePass_success, Snackbar.LENGTH_LONG).show();
 
                 if (ProfileFragment.changeLoginPass != null) {
                     ProfileFragment.changeLoginPass.setEnabled(true);
@@ -298,6 +391,7 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
         isDestroyed = true;
 
         super.onDestroy();
+        getDelegate().onDestroy();
     }
 
     @Override

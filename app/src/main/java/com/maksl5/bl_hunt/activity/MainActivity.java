@@ -1,7 +1,6 @@
 package com.maksl5.bl_hunt.activity;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog.Builder;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,14 +14,16 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.view.ViewPager.PageTransformer;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog.Builder;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -37,11 +38,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.DiscoveryManager;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
@@ -52,7 +49,6 @@ import com.maksl5.bl_hunt.custom_ui.CustomPagerTransformer;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer;
 import com.maksl5.bl_hunt.custom_ui.ParallaxPageTransformer.ParallaxTransformInformation;
-import com.maksl5.bl_hunt.custom_ui.RandomToast;
 import com.maksl5.bl_hunt.custom_ui.fragment.AchievementsLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
@@ -79,7 +75,7 @@ import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends ActionBarActivity {
 
     public static final int REQ_PICK_USER_IMAGE = 32;
     /**
@@ -93,6 +89,7 @@ public class MainActivity extends FragmentActivity {
     public int newVersion = 0;
     public boolean justStarted = true;
     public boolean destroyed = false;
+    public View parentView;
     private NotificationManager notificationManager;
     private TextView disStateTextView;
     /**
@@ -107,7 +104,7 @@ public class MainActivity extends FragmentActivity {
     private BlueHunter bhApp;
 
 
-    private InterstitialAd mInterstitialAd;
+    // private InterstitialAd mInterstitialAd;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,6 +118,8 @@ public class MainActivity extends FragmentActivity {
         bhApp.currentActivity = this;
 
         setContentView(R.layout.act_main);
+
+        parentView = findViewById(R.id.reLayout);
 
         ManufacturerList.setContext(this);
 
@@ -154,7 +153,7 @@ public class MainActivity extends FragmentActivity {
 
         if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
             try {
-                getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+                getWindow().setBackgroundDrawableResource(R.drawable.activity_bg);
             } catch (Exception | OutOfMemoryError e) {
                 PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
                 getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
@@ -183,51 +182,53 @@ public class MainActivity extends FragmentActivity {
 
         }
 
-        if (BlueHunter.isSupport)
-            PreferenceManager.setPref(this, "pref_showAd", false);
+        PreferenceManager.setPref(this, "pref_showAd", false);
 
-
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId(getString(R.string.ad_id));
-
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("50EB319D6AF558CA9DE12A51A68E7A2E").build();
-        mInterstitialAd.loadAd(adRequest);
-
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                if (!destroyed && PreferenceManager.getPref(MainActivity.this, "pref_showAd", true) && !BlueHunter.isSupport) {
-                    mInterstitialAd.show();
-                }
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                Log.d("debug", "onAdLeftApplication()");
-
-                long lastClicked = PreferenceManager.getPref(MainActivity.this, "pref_lastAdClicked", 0L);
-                boolean isNewBoost = lastClicked + 86400000 < System.currentTimeMillis();
-
-                PreferenceManager.setPref(MainActivity.this, "pref_lastAdClicked", System.currentTimeMillis());
-
-                AchievementsLayout.updateBoostIndicator(bhApp);
-
-                if (isNewBoost) {
-                    Toast.makeText(MainActivity.this, getString(R.string.str_Toast_adClick), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-
-            @Override
-            public void onAdClosed() {
-                long lastClicked = PreferenceManager.getPref(MainActivity.this, "pref_lastAdClicked", 0L);
-
-                if (lastClicked + 86400000 < System.currentTimeMillis()) {
-                    RandomToast.create(MainActivity.this, getString(R.string.str_Toast_adTip), 0.5D).show();
-                }
-
-            }
-        });
+//        if (BlueHunter.isSupport)
+//            PreferenceManager.setPref(this, "pref_showAd", false);
+//
+//
+//        mInterstitialAd = new InterstitialAd(this);
+//        mInterstitialAd.setAdUnitId(getString(R.string.ad_id));
+//
+//        AdRequest adRequest = new AdRequest.Builder().addTestDevice("50EB319D6AF558CA9DE12A51A68E7A2E").build();
+//        mInterstitialAd.loadAd(adRequest);
+//
+//        mInterstitialAd.setAdListener(new AdListener() {
+//            @Override
+//            public void onAdLoaded() {
+//                if (!destroyed && PreferenceManager.getPref(MainActivity.this, "pref_showAd", true) && !BlueHunter.isSupport) {
+//                    mInterstitialAd.show();
+//                }
+//            }
+//
+//            @Override
+//            public void onAdLeftApplication() {
+//                Log.d("debug", "onAdLeftApplication()");
+//
+//                long lastClicked = PreferenceManager.getPref(MainActivity.this, "pref_lastAdClicked", 0L);
+//                boolean isNewBoost = lastClicked + 86400000 < System.currentTimeMillis();
+//
+//                PreferenceManager.setPref(MainActivity.this, "pref_lastAdClicked", System.currentTimeMillis());
+//
+//                AchievementsLayout.updateBoostIndicator(bhApp);
+//
+//                if (isNewBoost) {
+//                    Toast.makeText(MainActivity.this, getString(R.string.str_Toast_adClick), Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//
+//            @Override
+//            public void onAdClosed() {
+//                long lastClicked = PreferenceManager.getPref(MainActivity.this, "pref_lastAdClicked", 0L);
+//
+//                if (lastClicked + 86400000 < System.currentTimeMillis()) {
+//                    RandomSnackbar.create(MainActivity.this, getString(R.string.str_Toast_adTip), 0.5D).show();
+//                }
+//
+//            }
+//        });
 
 
     }
@@ -335,7 +336,7 @@ public class MainActivity extends FragmentActivity {
                             String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
                             ProfileLayout.setName(bhApp, errorMsg);
 
-                            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                            Snackbar.make(bhApp.mainActivity.parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
                             break;
                         }
 
@@ -424,6 +425,7 @@ public class MainActivity extends FragmentActivity {
 
         bhApp.currentActivity = this;
 
+
         getMenuInflater().inflate(R.menu.act_main, menu);
         bhApp.actionBarHandler.supplyMenu(menu);
         bhApp.actionBarHandler.initialize();
@@ -500,9 +502,9 @@ public class MainActivity extends FragmentActivity {
         upgrade();
 
 
-        if (!PreferenceManager.getPref(MainActivity.this, "pref_showAd", true) && !BlueHunter.isSupport) {
-            RandomToast.create(MainActivity.this, getString(R.string.str_Toast_adTip), 0.2D).show();
-        }
+//        if (!PreferenceManager.getPref(MainActivity.this, "pref_showAd", true) && !BlueHunter.isSupport) {
+//            RandomSnackbar.create(MainActivity.this, getString(R.string.str_Toast_adTip), 0.2D).show();
+//        }
 
 
         return true;
@@ -629,7 +631,7 @@ public class MainActivity extends FragmentActivity {
             new DatabaseManager(bhApp).resetWeeklyLeaderboardChanges();
             new DatabaseManager(bhApp).setWeeklyLeaderboardChanges(weeklyLeaderboardChanges);
         } catch (SQLiteDatabaseLockedException e) {
-            Toast.makeText(bhApp, "Could not save Leaderboard changes.", Toast.LENGTH_SHORT).show();
+            Snackbar.make(bhApp.mainActivity.parentView, "Could not save Leaderboard changes.", Snackbar.LENGTH_LONG).show();
         }
 
         bhApp.synchronizeFoundDevices.saveChanges();

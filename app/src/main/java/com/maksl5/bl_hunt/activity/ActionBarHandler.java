@@ -4,24 +4,23 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
-import android.widget.Switch;
-import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
-import com.maksl5.bl_hunt.custom_ui.RandomToast;
+import com.maksl5.bl_hunt.custom_ui.RandomSnackbar;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.LeaderboardLayout;
@@ -41,21 +40,21 @@ import com.maksl5.bl_hunt.util.MacAddress;
  * will throw a NullMenuException.
  */
 
-public class ActionBarHandler implements OnQueryTextListener, OnActionExpandListener {
+public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuItemCompat.OnActionExpandListener {
 
     private final BlueHunter bhApp;
-    private final android.app.ActionBar actBar;
+    private final android.support.v7.app.ActionBar actBar;
     public ActionMode.Callback actionModeCallback;
     public int temporaryCurPage = -1;
     private Menu menu;
-    private Switch disSwitch;
+    private SwitchCompat disSwitch;
     private int currentPage = -1;
     private View menuContainer;
 
     public ActionBarHandler(BlueHunter app) {
 
         bhApp = app;
-        actBar = bhApp.mainActivity.getActionBar();
+        actBar = bhApp.mainActivity.getSupportActionBar();
 
         if (actBar != null) {
             if (Build.VERSION.SDK_INT < 21) {
@@ -81,7 +80,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 
         final ViewPager viewPager = (ViewPager) bhApp.mainActivity.findViewById(R.id.pager);
 
-        disSwitch = (Switch) getActionView(R.id.menu_switch);
+        disSwitch = (SwitchCompat) getActionView(R.id.menu_switch);
         disSwitch.setPadding(5, 0, 5, 0);
 
         ProgressBar progressBar = new ProgressBar(bhApp, null, android.R.attr.progressBarStyleSmall);
@@ -92,7 +91,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
         SearchView srchView = (SearchView) getActionView(R.id.menu_search);
         srchView.setOnQueryTextListener(this);
 
-        getMenuItem(R.id.menu_search).setOnActionExpandListener(this);
+        MenuItemCompat.setOnActionExpandListener(getMenuItem(R.id.menu_search), this);
 
         getMenuItem(R.id.menu_boostIndicator).setTitleCondensed(bhApp.getString(R.string.str_discovery_loading));
 
@@ -131,18 +130,19 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
 
                                 MacAddress macAddress = FoundDevicesLayout.getSelectedMac();
                                 if (macAddress == null) {
-                                    Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
+                                    Snackbar.make(bhApp.mainActivity.parentView, "Error removing device.", Snackbar.LENGTH_LONG).show();
                                     mode.finish();
                                 }
 
                                 if (!new DatabaseManager(bhApp).deleteDevice(macAddress)) {
-                                    Toast.makeText(bhApp, "Error removing device.", Toast.LENGTH_LONG).show();
+                                    Snackbar.make(bhApp.mainActivity.parentView, "Error removing device.", Snackbar.LENGTH_LONG).show();
                                 } else {
                                     FoundDevicesLayout.refreshFoundDevicesList(bhApp);
                                     DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
                                     bhApp.mainActivity.updateNotification();
-                                    Toast.makeText(bhApp, "Successfully removed device.", Toast.LENGTH_LONG).show();
+
+                                    Snackbar.make(bhApp.mainActivity.parentView, "Successfully removed device.", Snackbar.LENGTH_LONG).show();
                                 }
                                 mode.finish();
                                 return true;
@@ -225,7 +225,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
                     menu.findItem(R.id.menu_search).collapseActionView();
 
                     if (!PreferenceManager.getPref(bhApp, "pref_syncingActivated", false))
-                        RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_leaderboard), 0.25).show();
+                        RandomSnackbar.create(bhApp.mainActivity.parentView, bhApp.getString(R.string.str_tip_leaderboard), 0.25).show();
 
                     break;
                 case FragmentLayoutManager.PAGE_FOUND_DEVICES:
@@ -262,7 +262,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
                     break;
                 case FragmentLayoutManager.PAGE_PROFILE:
                     if (ProfileLayout.userName.startsWith("Player")) {
-                        RandomToast.create(bhApp, bhApp.getString(R.string.str_tip_changeName), 0.25).show();
+                        RandomSnackbar.create(bhApp.mainActivity.parentView, bhApp.getString(R.string.str_tip_changeName), 0.25).show();
                     }
                     break;
             }
@@ -300,7 +300,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
     public View getActionView(int resourceId) {
 
         checkMenuNull();
-        return menu != null ? menu.findItem(resourceId).getActionView() : null;
+        return menu != null ? MenuItemCompat.getActionView(menu.findItem(resourceId)) : null;
     }
 
     public MenuItem getMenuItem(int resourceId) {
@@ -395,7 +395,7 @@ public class ActionBarHandler implements OnQueryTextListener, OnActionExpandList
                 disSwitch.setEnabled(enabled);
 
         } else {
-            disSwitch = (Switch) getActionView(R.id.menu_switch);
+            disSwitch = (SwitchCompat) getActionView(R.id.menu_switch);
             disSwitch.setPadding(5, 0, 5, 0);
             if (bhApp.disMan.btHandler.isBluetoothSupported())
                 disSwitch.setEnabled(enabled);

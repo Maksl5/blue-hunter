@@ -4,8 +4,6 @@
  */
 package com.maksl5.bl_hunt.net;
 
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,13 +13,15 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager.BadTokenException;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.ErrorHandler;
@@ -243,7 +243,7 @@ public class Authentification {
                         String updateMsg = ErrorHandler.getErrorString(context, requestId, error);
                         updateMsg = String.format(updateMsg, bhApp.getVersionName());
 
-                        Toast.makeText(bhApp, updateMsg, Toast.LENGTH_LONG).show();
+                        Snackbar.make(bhApp.mainActivity.parentView, updateMsg, Snackbar.LENGTH_INDEFINITE).show();
                     } else {
 
                         Builder builder = new Builder(bhApp.currentActivity);
@@ -467,7 +467,7 @@ public class Authentification {
         private void internalLogin(String resultFromPreLogin) {
 
             if (resultFromPreLogin != null && !resultFromPreLogin.equalsIgnoreCase("")) {
-                Toast.makeText(getContext(), resultFromPreLogin, Toast.LENGTH_LONG).show();
+                Snackbar.make(bhApp.mainActivity.parentView, resultFromPreLogin, Snackbar.LENGTH_LONG).show();
 
                 NetworkThread login = new NetworkThread(bhApp);
 
@@ -559,7 +559,7 @@ public class Authentification {
 
                         String errorMsg = ErrorHandler.getErrorString(context, requestId, error);
 
-                        Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
+                        Snackbar.make(bhApp.mainActivity.parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
                         return true;
                     }
 
@@ -578,11 +578,11 @@ public class Authentification {
 
                         String errorMsg = ErrorHandler.getErrorString(context, requestId, error);
 
-                        Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
+                        Snackbar.make(bhApp.mainActivity.parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
                         return true;
                     }
 
-                    Toast.makeText(getContext(), resultString, Toast.LENGTH_LONG).show();
+                    Snackbar.make(bhApp.mainActivity.parentView, resultString, Snackbar.LENGTH_LONG).show();
 
                     Pattern loginTokenPattern = Pattern.compile("<token>(s_[0-9a-f]{14}\\.[0-9]{8})</token><passExists>([0-1])</passExists>");
                     Matcher loginTokenMatcher = loginTokenPattern.matcher(resultString);
@@ -598,16 +598,14 @@ public class Authentification {
                         setLoginState(true);
 
                         if (!passExists) {
-                            Toast.makeText(bhApp, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess),
-                                    bhApp.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
-                            Toast.makeText(bhApp, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess),
-                                    bhApp.getString(R.string.str_auth_securityMsg)), Toast.LENGTH_LONG).show();
+                            Snackbar.make(bhApp.mainActivity.parentView, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess),
+                                    bhApp.getString(R.string.str_auth_securityMsg)), Snackbar.LENGTH_INDEFINITE).show();
                         } else {
-                            Toast.makeText(bhApp, bhApp.getString(R.string.str_auth_loginSuccess), Toast.LENGTH_LONG).show();
+                            Snackbar.make(bhApp.mainActivity.parentView, bhApp.getString(R.string.str_auth_loginSuccess), Snackbar.LENGTH_LONG).show();
                         }
 
                     } else {
-                        Toast.makeText(bhApp, bhApp.getString(R.string.str_auth_storeTokenFailed), Toast.LENGTH_LONG).show();
+                        Snackbar.make(bhApp.mainActivity.parentView, bhApp.getString(R.string.str_auth_storeTokenFailed), Snackbar.LENGTH_SHORT).show();
                     }
 
                     return true;
@@ -631,7 +629,7 @@ public class Authentification {
                                 break;
                         }
 
-                        Toast.makeText(bhApp, errorMsg, Toast.LENGTH_LONG).show();
+                        Snackbar.make(bhApp.mainActivity.parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
                         return true;
                     }
 

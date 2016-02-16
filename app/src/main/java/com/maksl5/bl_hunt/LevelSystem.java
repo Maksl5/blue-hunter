@@ -4,10 +4,10 @@
  */
 package com.maksl5.bl_hunt;
 
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.widget.SimpleAdapter;
 
 import com.maksl5.bl_hunt.storage.AchievementSystem;

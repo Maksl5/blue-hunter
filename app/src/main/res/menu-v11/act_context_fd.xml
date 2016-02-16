@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_context_remove"
         android:icon="@drawable/ic_context_remove"
-        android:showAsAction="always|withText"
-        android:title="@string/str_menu_context_remove" />
+        android:title="@string/str_menu_context_remove"
+        app:showAsAction="always|withText" />
     
 
 </menu>

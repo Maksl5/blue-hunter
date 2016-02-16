@@ -43,7 +43,8 @@
         android:title="@string/str_Preferences_deleteRemember_title" />
 
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
+        android:enabled="false"
         android:key="pref_showAd"
         android:summary="@string/str_Preferences_showAd_sum"
         android:title="@string/str_Preferences_showAd_title" />

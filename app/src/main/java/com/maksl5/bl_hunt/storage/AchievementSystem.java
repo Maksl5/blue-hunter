@@ -5,10 +5,10 @@
 package com.maksl5.bl_hunt.storage;
 
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.LevelSystem;
@@ -846,8 +846,7 @@ public class AchievementSystem {
 
             Achievement achievement = values[0];
 
-            Toast.makeText(bhApp, bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Toast.LENGTH_LONG)
-                    .show();
+            Snackbar.make(bhApp.mainActivity.parentView, bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Snackbar.LENGTH_LONG).show();
 
         }
 

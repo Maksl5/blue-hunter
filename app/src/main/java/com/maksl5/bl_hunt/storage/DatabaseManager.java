@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -1045,7 +1046,7 @@ public class DatabaseManager {
         @Override
         protected void onPreExecute() {
 
-            Toast.makeText(bhApp, "Loading found devices from database...", Toast.LENGTH_SHORT).show();
+            Snackbar.make(bhApp.mainActivity.parentView, "Loading found devices from database...", Snackbar.LENGTH_SHORT).show();
 
             bhApp.actionBarHandler.setDiscoverySwitchEnabled(false);
 

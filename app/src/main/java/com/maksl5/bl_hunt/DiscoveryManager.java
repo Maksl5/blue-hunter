@@ -7,9 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Vibrator;
+import android.support.v7.widget.SwitchCompat;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
@@ -301,7 +301,7 @@ public class DiscoveryManager {
     public class BluetoothDiscoveryHandler extends BroadcastReceiver {
 
         private final BluetoothAdapter btAdapter;
-        private final Switch discoveryButton;
+        private final SwitchCompat discoveryButton;
         private DiscoveryState disState;
         private List<FoundDevice> foundDevices;
         private List<BluetoothDevice> foundDevicesInCurDiscovery;
@@ -316,7 +316,7 @@ public class DiscoveryManager {
             foundDevicesInCurDiscovery = new ArrayList<>();
             fDListCurDiscoverySession = new ArrayList<>();
 
-            discoveryButton = (Switch) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
+            discoveryButton = (SwitchCompat) bhApp.actionBarHandler.getActionView(R.id.menu_switch);
 
             requestBtEnable(false);
 

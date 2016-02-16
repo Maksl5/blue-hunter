@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
@@ -355,7 +355,7 @@ public class FoundDevicesLayout {
                         ClipboardManager clipboardManager = (ClipboardManager) bhApp.getSystemService(Context.CLIPBOARD_SERVICE);
                         clipboardManager.setPrimaryClip(ClipData.newPlainText("Mac Address", macString));
 
-                        Toast.makeText(bhApp, "Copied Mac Address " + macString + " into clipboard", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(bhApp.mainActivity.parentView, "Copied Mac Address " + macString + " into clipboard", Snackbar.LENGTH_SHORT).show();
 
                     }
 
@@ -561,7 +561,7 @@ public class FoundDevicesLayout {
         @Override
         protected void onPreExecute() {
             if (needManuCheck) {
-                Toast.makeText(bhApp, "Require Manufacturer Check...", Toast.LENGTH_SHORT).show();
+                Snackbar.make(bhApp.mainActivity.parentView, "Require Manufacturer Check...", Snackbar.LENGTH_LONG).show();
                 Log.d("FD Thread", "Require Manufacturer Check...");
             }
         }

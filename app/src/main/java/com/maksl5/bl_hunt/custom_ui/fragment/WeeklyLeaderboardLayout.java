@@ -1,13 +1,14 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
-import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog.Builder;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,7 +23,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.maksl5.bl_hunt.BlueHunter;
 import com.maksl5.bl_hunt.R;
@@ -636,7 +636,7 @@ public class WeeklyLeaderboardLayout {
 
                             if (lastWeeklyRank > 3) {
 
-                                Toast.makeText(bhApp.mainActivity, "You got place " + lastWeeklyRank + " in the weekly leaderboard. Reward for 7 days: " + boostString + " boost!", Toast.LENGTH_LONG).show();
+                                Snackbar.make(bhApp.mainActivity.parentView, "You got place " + lastWeeklyRank + " in the weekly leaderboard. Reward for 7 days: " + boostString + " boost!", Snackbar.LENGTH_LONG).show();
 
                             } else {
                                 builder.setMessage(
