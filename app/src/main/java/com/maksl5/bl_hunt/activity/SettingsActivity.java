@@ -123,7 +123,7 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
 
         if (PreferenceManager.getPref(bhApp, "pref_enableBackground", true)) {
             try {
-                getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+                getWindow().setBackgroundDrawableResource(R.drawable.activity_bg);
             } catch (Exception | OutOfMemoryError e) {
                 PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
                 getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
@@ -362,11 +362,11 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
                         break;
                 }
 
-                Snackbar.make(parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
+                Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_LONG).show();
             }
 
             if (resultString.equals("<SUCCESS>")) {
-                Snackbar.make(parentView, R.string.str_Preferences_changePass_success, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), R.string.str_Preferences_changePass_success, Snackbar.LENGTH_LONG).show();
 
                 if (ProfileFragment.changeLoginPass != null) {
                     ProfileFragment.changeLoginPass.setEnabled(true);

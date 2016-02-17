@@ -127,7 +127,7 @@ public class ProfileLayout {
 
 								setName(mainActivity.getBlueHunter(), backUpName);
 
-								Snackbar.make(mainActivity.parentView, errorMsg, Snackbar.LENGTH_LONG).show();
+								Snackbar.make(mainActivity.getBlueHunter().currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_LONG).show();
 							}
 							else if (resultString.equals("<done />")) {
 								setName(mainActivity.getBlueHunter(), userName);

@@ -636,7 +636,7 @@ public class WeeklyLeaderboardLayout {
 
                             if (lastWeeklyRank > 3) {
 
-                                Snackbar.make(bhApp.mainActivity.parentView, "You got place " + lastWeeklyRank + " in the weekly leaderboard. Reward for 7 days: " + boostString + " boost!", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), "You got place " + lastWeeklyRank + " in the weekly leaderboard. Reward for 7 days: " + boostString + " boost!", Snackbar.LENGTH_LONG).show();
 
                             } else {
                                 builder.setMessage(

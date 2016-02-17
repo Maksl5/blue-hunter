@@ -1046,7 +1046,7 @@ public class DatabaseManager {
         @Override
         protected void onPreExecute() {
 
-            Snackbar.make(bhApp.mainActivity.parentView, "Loading found devices from database...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), "Loading found devices from database...", Snackbar.LENGTH_SHORT).show();
 
             bhApp.actionBarHandler.setDiscoverySwitchEnabled(false);
 

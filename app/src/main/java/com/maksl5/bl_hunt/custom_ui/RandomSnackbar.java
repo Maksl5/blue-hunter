@@ -55,7 +55,7 @@ public class RandomSnackbar {
 
         if (new Random().nextDouble() <= probability) {
 
-            Snackbar.make(parentView, message, Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.make(parentView, message, Snackbar.LENGTH_LONG).show();
 
         }
     }

@@ -336,7 +336,7 @@ public class MainActivity extends ActionBarActivity {
                             String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
                             ProfileLayout.setName(bhApp, errorMsg);
 
-                            Snackbar.make(bhApp.mainActivity.parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
+                            Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_LONG).show();
                             break;
                         }
 
@@ -631,7 +631,7 @@ public class MainActivity extends ActionBarActivity {
             new DatabaseManager(bhApp).resetWeeklyLeaderboardChanges();
             new DatabaseManager(bhApp).setWeeklyLeaderboardChanges(weeklyLeaderboardChanges);
         } catch (SQLiteDatabaseLockedException e) {
-            Snackbar.make(bhApp.mainActivity.parentView, "Could not save Leaderboard changes.", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), "Could not save Leaderboard changes.", Snackbar.LENGTH_LONG).show();
         }
 
         bhApp.synchronizeFoundDevices.saveChanges();

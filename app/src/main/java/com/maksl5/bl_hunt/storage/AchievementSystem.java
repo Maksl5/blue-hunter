@@ -846,7 +846,7 @@ public class AchievementSystem {
 
             Achievement achievement = values[0];
 
-            Snackbar.make(bhApp.mainActivity.parentView, bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), bhApp.getString(R.string.str_achievement_accomplish, achievement.getName(bhApp)), Snackbar.LENGTH_LONG).show();
 
         }
 

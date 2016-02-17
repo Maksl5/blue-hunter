@@ -2,7 +2,6 @@ package com.maksl5.bl_hunt.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
@@ -57,15 +56,9 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
         actBar = bhApp.mainActivity.getSupportActionBar();
 
         if (actBar != null) {
-            if (Build.VERSION.SDK_INT < 21) {
 
-                actBar.setDisplayShowTitleEnabled(false);
-                actBar.setDisplayUseLogoEnabled(true);
-                actBar.setDisplayShowHomeEnabled(true);
-                actBar.setIcon(R.drawable.logo);
-            } else {
                 actBar.setTitle("BlueHunter");
-            }
+
         }
 
 
@@ -130,19 +123,19 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
 
                                 MacAddress macAddress = FoundDevicesLayout.getSelectedMac();
                                 if (macAddress == null) {
-                                    Snackbar.make(bhApp.mainActivity.parentView, "Error removing device.", Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), "Error removing device.", Snackbar.LENGTH_LONG).show();
                                     mode.finish();
                                 }
 
                                 if (!new DatabaseManager(bhApp).deleteDevice(macAddress)) {
-                                    Snackbar.make(bhApp.mainActivity.parentView, "Error removing device.", Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), "Error removing device.", Snackbar.LENGTH_LONG).show();
                                 } else {
                                     FoundDevicesLayout.refreshFoundDevicesList(bhApp);
                                     DeviceDiscoveryLayout.updateIndicatorViews(bhApp.mainActivity);
 
                                     bhApp.mainActivity.updateNotification();
 
-                                    Snackbar.make(bhApp.mainActivity.parentView, "Successfully removed device.", Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), "Successfully removed device.", Snackbar.LENGTH_LONG).show();
                                 }
                                 mode.finish();
                                 return true;

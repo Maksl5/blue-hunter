@@ -251,7 +251,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 				String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
 
-				Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_INDEFINITE).show();
+				Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_LONG).show();
 
 				return false;
 			}
@@ -303,7 +303,7 @@ public class SynchronizeFoundDevices implements OnNetworkResultAvailableListener
 
 				String errorMsg = ErrorHandler.getErrorString(bhApp, requestId, error);
 
-				Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_INDEFINITE).show();
+				Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_LONG).show();
 
 				if (changesToSync.isEmpty()) {
 					changesToSync = new ArrayList<>(backupList);

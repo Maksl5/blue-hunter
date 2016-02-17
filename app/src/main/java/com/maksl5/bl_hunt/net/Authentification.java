@@ -243,7 +243,7 @@ public class Authentification {
                         String updateMsg = ErrorHandler.getErrorString(context, requestId, error);
                         updateMsg = String.format(updateMsg, bhApp.getVersionName());
 
-                        Snackbar.make(bhApp.mainActivity.parentView, updateMsg, Snackbar.LENGTH_INDEFINITE).show();
+                        Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), updateMsg, Snackbar.LENGTH_LONG).show();
                     } else {
 
                         Builder builder = new Builder(bhApp.currentActivity);
@@ -467,7 +467,7 @@ public class Authentification {
         private void internalLogin(String resultFromPreLogin) {
 
             if (resultFromPreLogin != null && !resultFromPreLogin.equalsIgnoreCase("")) {
-                Snackbar.make(bhApp.mainActivity.parentView, resultFromPreLogin, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), resultFromPreLogin, Snackbar.LENGTH_LONG).show();
 
                 NetworkThread login = new NetworkThread(bhApp);
 
@@ -559,7 +559,7 @@ public class Authentification {
 
                         String errorMsg = ErrorHandler.getErrorString(context, requestId, error);
 
-                        Snackbar.make(bhApp.mainActivity.parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
+                        Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_LONG).show();
                         return true;
                     }
 
@@ -578,11 +578,11 @@ public class Authentification {
 
                         String errorMsg = ErrorHandler.getErrorString(context, requestId, error);
 
-                        Snackbar.make(bhApp.mainActivity.parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
+                        Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_LONG).show();
                         return true;
                     }
 
-                    Snackbar.make(bhApp.mainActivity.parentView, resultString, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), resultString, Snackbar.LENGTH_LONG).show();
 
                     Pattern loginTokenPattern = Pattern.compile("<token>(s_[0-9a-f]{14}\\.[0-9]{8})</token><passExists>([0-1])</passExists>");
                     Matcher loginTokenMatcher = loginTokenPattern.matcher(resultString);
@@ -598,14 +598,14 @@ public class Authentification {
                         setLoginState(true);
 
                         if (!passExists) {
-                            Snackbar.make(bhApp.mainActivity.parentView, String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess),
-                                    bhApp.getString(R.string.str_auth_securityMsg)), Snackbar.LENGTH_INDEFINITE).show();
+                            Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), String.format("%s%n%s", bhApp.getString(R.string.str_auth_loginSuccess),
+                                    bhApp.getString(R.string.str_auth_securityMsg)), Snackbar.LENGTH_LONG).show();
                         } else {
-                            Snackbar.make(bhApp.mainActivity.parentView, bhApp.getString(R.string.str_auth_loginSuccess), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), bhApp.getString(R.string.str_auth_loginSuccess), Snackbar.LENGTH_LONG).show();
                         }
 
                     } else {
-                        Snackbar.make(bhApp.mainActivity.parentView, bhApp.getString(R.string.str_auth_storeTokenFailed), Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), bhApp.getString(R.string.str_auth_storeTokenFailed), Snackbar.LENGTH_SHORT).show();
                     }
 
                     return true;
@@ -629,7 +629,7 @@ public class Authentification {
                                 break;
                         }
 
-                        Snackbar.make(bhApp.mainActivity.parentView, errorMsg, Snackbar.LENGTH_INDEFINITE).show();
+                        Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), errorMsg, Snackbar.LENGTH_LONG).show();
                         return true;
                     }
 

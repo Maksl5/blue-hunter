@@ -355,7 +355,7 @@ public class FoundDevicesLayout {
                         ClipboardManager clipboardManager = (ClipboardManager) bhApp.getSystemService(Context.CLIPBOARD_SERVICE);
                         clipboardManager.setPrimaryClip(ClipData.newPlainText("Mac Address", macString));
 
-                        Snackbar.make(bhApp.mainActivity.parentView, "Copied Mac Address " + macString + " into clipboard", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), "Copied Mac Address " + macString + " into clipboard", Snackbar.LENGTH_SHORT).show();
 
                     }
 
@@ -561,7 +561,7 @@ public class FoundDevicesLayout {
         @Override
         protected void onPreExecute() {
             if (needManuCheck) {
-                Snackbar.make(bhApp.mainActivity.parentView, "Require Manufacturer Check...", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(bhApp.currentActivity.getWindow().getDecorView(), "Require Manufacturer Check...", Snackbar.LENGTH_LONG).show();
                 Log.d("FD Thread", "Require Manufacturer Check...");
             }
         }
