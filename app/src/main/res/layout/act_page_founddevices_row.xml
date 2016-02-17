@@ -3,9 +3,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
+    android:animateLayoutChanges="true"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="@dimen/padding_medium" >
+    android:padding="@dimen/padding_medium">
 
     <CheckBox
         android:id="@+id/selectCheckbox"
@@ -18,10 +19,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/selectCheckbox"
+        android:animateLayoutChanges="true"
         android:background="@color/bg_transparent_grey"
         android:gravity="center"
         android:padding="@dimen/padding_small"
-        android:visibility="visible" >
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/nameTxtView"

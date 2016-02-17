@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
 
     <ListView
         android:id="@+id/listView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="false"
+        android:animateLayoutChanges="true"
         android:fastScrollEnabled="true"
         android:scrollingCache="true"
         android:smoothScrollbar="true"

@@ -247,12 +247,15 @@ public class DeviceDiscoveryLayout {
     public static void updateNextRankIndicator(final MainActivity mainActivity, int exp) {
 
         TextView nextRankIndicator = (TextView) mainActivity.findViewById(R.id.nextRankIndicator);
+        TableRow nextRankIndicatorTR = (TableRow) mainActivity.findViewById(R.id.nextRankIndicatorTR);
 
-        int oldVisible = nextRankIndicator.getVisibility();
+        int oldVisible = nextRankIndicatorTR.getVisibility();
 
         if (exp == -1) {
 
             nextRankIndicator.setVisibility(TextView.GONE);
+            nextRankIndicatorTR.setVisibility(TextView.GONE);
+
 
         } else {
 
@@ -292,7 +295,8 @@ public class DeviceDiscoveryLayout {
 
             TableRow tableRow = (TableRow) nextRankIndicator.getParent();
 
-            nextRankIndicator.setVisibility(View.VISIBLE);
+            nextRankIndicatorTR.setVisibility(View.VISIBLE);
+            nextRankIndicator.setVisibility(TextView.VISIBLE);
 
             DecimalFormat df = new DecimalFormat(",###");
 
@@ -322,7 +326,7 @@ public class DeviceDiscoveryLayout {
 
         }
 
-        int newVisible = nextRankIndicator.getVisibility();
+        int newVisible = nextRankIndicatorTR.getVisibility();
 
         if (oldVisible != newVisible) updateIndicatorViews(mainActivity);
 

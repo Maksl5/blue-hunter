@@ -21,7 +21,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_gravity="center"
-        android:animateLayoutChanges="false"
+        android:animateLayoutChanges="true"
         android:gravity="center"
         android:padding="@dimen/padding_xsmall">
 
@@ -29,6 +29,7 @@
             android:id="@+id/DDtableRow5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:gravity="center"
             android:padding="@dimen/padding_medium">
 
@@ -43,11 +44,13 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/TableRow01"
+            android:id="@+id/nextRankIndicatorTR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-9dp"
-            android:gravity="center">
+            android:animateLayoutChanges="true"
+            android:gravity="center"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/nextRankIndicator"
@@ -59,8 +62,7 @@
                 android:gravity="center"
                 android:text="Next Rank"
                 android:textColor="@android:color/white"
-                android:textSize="9sp"
-                android:visibility="visible" />
+                android:textSize="9sp" />
 
         </TableRow>
 
@@ -69,6 +71,7 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 android:gravity="center">
 
                 <ProgressBar
@@ -98,6 +101,7 @@
             android:id="@+id/DDtableRow2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:gravity="center">
 
             <TextView
@@ -110,13 +114,15 @@
 
         <TableLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true">
 
             <TableRow
                 android:id="@+id/DDTableRow02"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_large"
+                android:animateLayoutChanges="true"
                 android:gravity="center">
 
                 <TextView
@@ -143,6 +149,7 @@
                 android:id="@+id/DDtableRow4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 android:gravity="center">
 
                 <TextView
@@ -170,6 +177,7 @@
                 android:id="@+id/DDTableRow01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 android:gravity="center">
 
                 <TextView
@@ -197,6 +205,7 @@
                 android:id="@+id/DDtableRow3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 android:gravity="center">
 
                 <TextView
@@ -245,7 +254,7 @@
         android:background="@color/bg_transparent_grey"
         android:fastScrollEnabled="true"
         android:scrollingCache="true"
-        android:visibility="visible"
+        android:visibility="gone"
         tools:listitem="@layout/act_page_discovery_row">
 
     </ListView>
