@@ -3,6 +3,7 @@ package com.maksl5.bl_hunt.custom_ui.fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -75,6 +76,10 @@ public class LeaderboardLayout {
         ViewPager pager = bhApp.mainActivity.mViewPager;
 
         TabHost tabHost = (TabHost) pager.findViewById(android.R.id.tabhost);
+
+
+        initSwipeRefresh(bhApp, pager);
+
 
         tabHost.setup();
 
@@ -179,6 +184,35 @@ public class LeaderboardLayout {
 
         refreshLeaderboard(bhApp, false);
     }
+
+    public static void initSwipeRefresh(final BlueHunter bhApp, View leaderboardParent) {
+
+        final SwipeRefreshLayout globalSwipeRefresh = (SwipeRefreshLayout) leaderboardParent.findViewById(R.id.globalSwipeRefresh);
+        final SwipeRefreshLayout weeklySwipeRefresh = (SwipeRefreshLayout) leaderboardParent.findViewById(R.id.weeklySwipeRefresh);
+
+
+        globalSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLeaderboard(bhApp);
+                globalSwipeRefresh.setRefreshing(true);
+                weeklySwipeRefresh.setRefreshing(true);
+            }
+        });
+
+
+        weeklySwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLeaderboard(bhApp);
+                globalSwipeRefresh.setRefreshing(true);
+                weeklySwipeRefresh.setRefreshing(true);
+            }
+        });
+
+
+    }
+
 
     public static void refreshLeaderboard(final BlueHunter bhApp, boolean orientationChanged) {
 
@@ -772,6 +806,13 @@ public class LeaderboardLayout {
                     ldAdapter.refreshList(showedLbList);
 
                     listView.setSelectionFromTop(scrollIndex, scrollTop);
+
+                    final SwipeRefreshLayout globalSwipeRefresh = (SwipeRefreshLayout) bhApp.mainActivity.findViewById(R.id.globalSwipeRefresh);
+
+                    if (globalSwipeRefresh != null)
+                        globalSwipeRefresh.setRefreshing(false);
+
+
                 } else {
 
                     ldAdapter.notifyDataSetChanged();

@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog.Builder;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -666,6 +667,11 @@ public class WeeklyLeaderboardLayout {
                     ldAdapter.refreshList(showedLbList);
 
                     listView.setSelectionFromTop(scrollIndex, scrollTop);
+
+                    final SwipeRefreshLayout weeklySwipeRefresh = (SwipeRefreshLayout) bhApp.mainActivity.findViewById(R.id.weeklySwipeRefresh);
+                    if (weeklySwipeRefresh != null)
+                        weeklySwipeRefresh.setRefreshing(false);
+
                 } else {
 
                     ldAdapter.notifyDataSetChanged();
