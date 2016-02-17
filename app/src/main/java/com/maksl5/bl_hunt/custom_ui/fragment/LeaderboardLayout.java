@@ -86,6 +86,10 @@ public class LeaderboardLayout {
         tabHost.addTab(globalTab);
         tabHost.addTab(weeklyTab);
 
+        for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
+            tabHost.getTabWidget().getChildAt(i).getLayoutParams().height /= 1.6f;
+        }
+
         tabHost.setCurrentTab(currentSelectedTab);
 
         WeeklyLeaderboardLayout.timerTextView = (TextView) pager.findViewById(R.id.weeklyTimerTxt);

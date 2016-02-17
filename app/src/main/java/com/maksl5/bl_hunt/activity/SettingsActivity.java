@@ -638,8 +638,8 @@ public class SettingsActivity extends PreferenceActivity implements OnNetworkRes
                         if (newValue.equals(true)) {
 
                             try {
-                                bhApp.mainActivity.getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
-                                getActivity().getWindow().setBackgroundDrawableResource(R.drawable.bg_main);
+                                bhApp.mainActivity.getWindow().setBackgroundDrawableResource(R.drawable.activity_bg);
+                                getActivity().getWindow().setBackgroundDrawableResource(R.drawable.activity_bg);
                             } catch (Exception | OutOfMemoryError e) {
                                 PreferenceManager.setPref(bhApp, "pref_enableBackground", false);
                                 bhApp.mainActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
