@@ -656,7 +656,7 @@ public class AchievementSystem {
 
         float boost = 0.0f;
 
-        boost += getLevelBoost(bhApp);
+        boost += getLevelBoost(LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp)));
 
 
         for (Achievement achievement : achievements) {
@@ -685,7 +685,8 @@ public class AchievementSystem {
         if (achievementStates == null) return boostList;
 
         int level = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
-        float levelBoost = getLevelBoost(bhApp);
+        float levelBoost = getLevelBoost(LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp)));
+        ;
 
         NumberFormat percentage = NumberFormat.getPercentInstance();
 
@@ -763,16 +764,15 @@ public class AchievementSystem {
 
     }
 
-    private static float getLevelBoost(BlueHunter bhApp) {
+    public static float getLevelBoost(int level) {
 
         float levelBoost;
-        int curLevel = LevelSystem.getLevel(LevelSystem.getCachedUserExp(bhApp));
 
         // for (int level = 0; level <= curLevel; level++) {
         // levelBoost += (float) level / (float) 100;
         // }
 
-        levelBoost = (float) curLevel / (float) 100;
+        levelBoost = (float) (level * level) / (float) 500;
 
         return levelBoost;
 

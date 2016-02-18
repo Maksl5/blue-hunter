@@ -267,6 +267,8 @@ public class LeaderboardLayout {
         if (refreshThread.canRun()) {
             showedLbList.clear();
             completeLbList.clear();
+
+
             bhApp.actionBarHandler.getMenuItem(R.id.menu_search).collapseActionView();
             refreshThread.execute(1, 5, 0);
         }
@@ -850,6 +852,8 @@ public class LeaderboardLayout {
 
             View container = bhApp.mainActivity.findViewById(R.id.globalLdUserRL);
             container.setVisibility(View.GONE);
+
+            ldAdapter.notifyDataSetChanged();
         }
     }
 

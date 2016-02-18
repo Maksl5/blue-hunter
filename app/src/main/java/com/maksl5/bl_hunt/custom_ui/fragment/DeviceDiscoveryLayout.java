@@ -3,6 +3,7 @@ package com.maksl5.bl_hunt.custom_ui.fragment;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
+import com.maksl5.bl_hunt.storage.AchievementSystem;
 import com.maksl5.bl_hunt.storage.DatabaseManager;
 import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.util.FoundDevice;
@@ -43,6 +45,8 @@ public class DeviceDiscoveryLayout {
     public static ListView lv;
 
     public static int expToUpdate = 0;
+
+    public static int currentLevel = 0;
 
     public static void updateIndicatorViews(MainActivity mainActivity) {
 
@@ -78,6 +82,28 @@ public class DeviceDiscoveryLayout {
         Log.d("getUserExp", "" + (expTimeB - expTimeA) + "ms");
 
         int level = LevelSystem.getLevel(exp);
+
+        if (currentLevel == 0)
+            currentLevel = level;
+
+        if (currentLevel < level) {
+            float oldLevelBoost = AchievementSystem.getLevelBoost(currentLevel);
+            float newLevelBoost = AchievementSystem.getLevelBoost(level);
+
+            final int increase = (int) ((newLevelBoost - oldLevelBoost) * 100);
+
+            final Snackbar increaseNotification = Snackbar.make(mainActivity.getBlueHunter().currentActivity.getWindow().getDecorView(), "Congratulations, you got a level up! Your level boost increased by " + increase + "%.", Snackbar.LENGTH_INDEFINITE);
+
+            increaseNotification.setAction("Close", new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    increaseNotification.dismiss();
+                }
+            }).show();
+
+            currentLevel = level;
+        }
+
 
         DecimalFormat df = new DecimalFormat(",###");
 

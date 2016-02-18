@@ -21,7 +21,6 @@ import java.util.List;
 
 /**
  * @author Maksl5[Markus Bensing]
- *
  */
 public class LevelSystem {
 
@@ -119,10 +118,10 @@ public class LevelSystem {
 
         int level = 1;
 
-        int compareExp = 50;
+        int compareExp = 100;
 
         while (compareExp < exp) {
-            compareExp = compareExp + level * level * 50;
+            compareExp = (compareExp - 100) + level * level * 500;
             level++;
         }
 
@@ -133,10 +132,10 @@ public class LevelSystem {
 
         if (level == 1) return 0;
 
-        int exp = 50;
+        int exp = 100;
 
         for (int i = 1; i < level - 1; i++) {
-            exp = exp + i * i * 50;
+            exp = (exp - 100) + i * i * 500;
         }
 
         return exp;
@@ -144,10 +143,10 @@ public class LevelSystem {
 
     public static int getLevelEndExp(int level) {
 
-        int exp = 50;
+        int exp = 100;
 
         for (int i = 1; i < level; i++) {
-            exp = exp + i * i * 50;
+            exp = (exp - 100) + i * i * 500;
         }
 
         return exp;

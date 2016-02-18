@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/changePass_layout_margin"
     android:orientation="vertical"
-    tools:context=".activity.ChangePasswordActivity" >
+    tools:context=".activity.ChangePasswordActivity">
 
     <TableRow
         android:id="@+id/CLPtableRow1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/txtName"
@@ -28,14 +28,14 @@
         android:columnCount="2"
         android:orientation="vertical"
         android:padding="@dimen/padding_medium"
-        android:rowCount="4" >
+        android:rowCount="4">
 
         <TableRow
             android:id="@+id/CLPtableRow3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:gravity="bottom" >
+            android:gravity="bottom">
 
             <TableRow
                 android:id="@+id/CLPtableRow4"
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <Button
                     android:id="@+id/cancelButton"
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <Button
                     android:id="@+id/confirmButton"
@@ -74,18 +74,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/CLPtableRow3"
-            android:layout_alignParentTop="true" >
+            android:layout_alignParentTop="true">
 
-            <EditText
-                android:id="@+id/newPassEdit"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:hint="@string/str_changePass_newPass"
-                android:imeOptions="actionNext|actionPrevious"
-                android:inputType="textPassword" />
+                android:layout_centerVertical="true">
+
+                <EditText
+                    android:id="@+id/newPassEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/str_changePass_newPass"
+                    android:imeOptions="actionNext|actionPrevious"
+                    android:inputType="textPassword" />
+            </android.support.design.widget.TextInputLayout>
 
         </RelativeLayout>
     </RelativeLayout>

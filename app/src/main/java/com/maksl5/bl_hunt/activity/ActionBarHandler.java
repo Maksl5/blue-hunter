@@ -57,8 +57,7 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
 
         if (actBar != null) {
 
-                actBar.setTitle("BlueHunter");
-
+            actBar.setTitle("BlueHunter");
         }
 
 

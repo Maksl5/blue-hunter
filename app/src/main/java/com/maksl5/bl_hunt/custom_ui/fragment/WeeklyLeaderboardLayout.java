@@ -713,6 +713,8 @@ public class WeeklyLeaderboardLayout {
                 container.setVisibility(View.GONE);
 
 
+            ldAdapter.notifyDataSetChanged();
+
         }
     }
 
