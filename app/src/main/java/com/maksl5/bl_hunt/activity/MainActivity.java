@@ -539,6 +539,9 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(intent);
                 break;
             case R.id.menu_info:
+                if (bhApp.actionBarHandler.getCurrentPage() == FragmentLayoutManager.PAGE_FOUND_DEVICES) {
+                    FoundDevicesLayout.showManufacturerAllocation(this);
+                }
 
                 break;
             case R.id.menu_refresh:

@@ -28,8 +28,8 @@ import java.util.TreeMap;
 
 public class StatisticsFragment {
 
-    private final static String DIALOG_ENTRY_NAME = "name";
-    private final static String DIALOG_ENTRY_COUNT = "count";
+    public final static String DIALOG_ENTRY_NAME = "name";
+    public final static String DIALOG_ENTRY_COUNT = "count";
 
     public static void initializeStatisticsView(final MainActivity mainActivity) {
 
@@ -140,7 +140,7 @@ public class StatisticsFragment {
         }
     }
 
-    private static void showDialog(MainActivity mainActivity, List<HashMap<String, String>> dialogMappings, int titleResource) {
+    public static void showDialog(MainActivity mainActivity, List<HashMap<String, String>> dialogMappings, int titleResource) {
 
         int[] to = new int[]{
                 R.id.descriptionTxt, R.id.boostTxt};

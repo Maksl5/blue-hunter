@@ -29,12 +29,16 @@ import com.maksl5.bl_hunt.storage.ManufacturerList;
 import com.maksl5.bl_hunt.storage.PreferenceManager;
 import com.maksl5.bl_hunt.util.FoundDevice;
 import com.maksl5.bl_hunt.util.MacAddress;
+import com.maksl5.bl_hunt.util.Manufacturer;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -79,6 +83,12 @@ public class FoundDevicesLayout {
             }
         }
 
+    };
+    static Comparator<HashMap<String, String>> comparator = new Comparator<HashMap<String, String>>() {
+        @Override
+        public int compare(HashMap<String, String> lhs, HashMap<String, String> rhs) {
+            return lhs.get(StatisticsFragment.DIALOG_ENTRY_NAME).compareTo(rhs.get(StatisticsFragment.DIALOG_ENTRY_NAME));
+        }
     };
     private static ArrayList<FDAdapterData> showedFdList = new ArrayList<>();
     private static ArrayList<FDAdapterData> completeFdList = new ArrayList<>();
@@ -283,6 +293,29 @@ public class FoundDevicesLayout {
     public static void cancelAllTasks() {
         if (threadManager != null && threadManager.refreshThread != null)
             threadManager.refreshThread.cancel(true);
+    }
+
+    public static void showManufacturerAllocation(MainActivity mainActivity) {
+
+        List<HashMap<String, String>> allocations = new ArrayList<>();
+
+        for (Manufacturer manufacturer :
+                ManufacturerList.getManufacturerList()
+                ) {
+
+            HashMap<String, String> entry = new HashMap<>();
+
+            entry.put(StatisticsFragment.DIALOG_ENTRY_NAME, manufacturer.getName());
+            entry.put(StatisticsFragment.DIALOG_ENTRY_COUNT, "" + manufacturer.getExp() + " " + mainActivity.getString(R.string.str_foundDevices_exp_abbreviation));
+
+            allocations.add(entry);
+
+        }
+
+        Collections.sort(allocations, comparator);
+
+        StatisticsFragment.showDialog(mainActivity, allocations, R.string.str_foundDevices_experienceList_title);
+
     }
 
     static class ViewHolder {

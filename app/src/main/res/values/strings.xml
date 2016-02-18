@@ -310,9 +310,7 @@
     <string name="str_Error_applyName_100_8">Not logged in. Wrong login token.</string>
     <string name="str_Error_applyName_100_9">Not logged in.</string>
     <string name="str_Error_applyName_100_10">Not logged in. More than one login token found.</string>
-    
-    
+    <string name="str_foundDevices_experienceList_title">Experience List</string>
 
 
-    
 </resources>
