@@ -381,7 +381,7 @@ public class DeviceDiscoveryLayout {
 
         int orientation = main.getResources().getConfiguration().orientation;
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (orientation == Configuration.ORIENTATION_UNDEFINED) {
 
             TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
             TranslateAnimation animation2 = new TranslateAnimation(0, 0, discoveryInfo.getTop(), 0);
@@ -414,6 +414,8 @@ public class DeviceDiscoveryLayout {
             lv.startAnimation(animation2);
 
         }
+
+        lv.setVisibility(View.VISIBLE);
 
         lv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -448,7 +450,7 @@ public class DeviceDiscoveryLayout {
 
         int orientation = main.getResources().getConfiguration().orientation;
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (orientation == Configuration.ORIENTATION_UNDEFINED) {
 
             RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
             TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
@@ -487,6 +489,8 @@ public class DeviceDiscoveryLayout {
             discoveryInfo.startAnimation(animation);
 
         }
+
+        lv.setVisibility(View.GONE);
 
     }
 
