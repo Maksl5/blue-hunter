@@ -544,11 +544,6 @@ public class MainActivity extends ActionBarActivity {
                 }
 
                 break;
-            case R.id.menu_refresh:
-                if (bhApp.actionBarHandler.getCurrentPage() == FragmentLayoutManager.PAGE_LEADERBOARD) {
-                    LeaderboardLayout.refreshLeaderboard(bhApp);
-                }
-                break;
             case R.id.menu_submit_mac:
                 Intent intentSubmit = new Intent(Intent.ACTION_VIEW, Uri.parse("http://bluehunter.mac.maks-dev.com"));
                 startActivity(intentSubmit);

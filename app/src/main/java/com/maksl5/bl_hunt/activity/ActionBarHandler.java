@@ -187,7 +187,6 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
                 case FragmentLayoutManager.PAGE_DEVICE_DISCOVERY:
                     menu.findItem(R.id.menu_search).setVisible(false);
                     menu.findItem(R.id.menu_info).setVisible(false);
-                    menu.findItem(R.id.menu_refresh).setVisible(false);
 
                     menu.findItem(R.id.menu_boostIndicator).setVisible(true);
                     menu.findItem(R.id.menu_switch).setVisible(true);
@@ -213,7 +212,6 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
                 case FragmentLayoutManager.PAGE_LEADERBOARD:
                     menu.findItem(R.id.menu_search).setVisible(true);
                     menu.findItem(R.id.menu_info).setVisible(false);
-                    menu.findItem(R.id.menu_refresh).setVisible(true);
 
                     menu.findItem(R.id.menu_boostIndicator).setVisible(false);
                     menu.findItem(R.id.menu_switch).setVisible(false);
@@ -235,7 +233,6 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
                 case FragmentLayoutManager.PAGE_FOUND_DEVICES:
                     menu.findItem(R.id.menu_search).setVisible(true);
                     menu.findItem(R.id.menu_info).setVisible(true);
-                    menu.findItem(R.id.menu_refresh).setVisible(false);
 
                     menu.findItem(R.id.menu_boostIndicator).setVisible(true);
                     menu.findItem(R.id.menu_switch).setVisible(false);
@@ -253,7 +250,6 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
                 case FragmentLayoutManager.PAGE_ACHIEVEMENTS:
                     menu.findItem(R.id.menu_search).setVisible(false);
                     menu.findItem(R.id.menu_info).setVisible(false);
-                    menu.findItem(R.id.menu_refresh).setVisible(false);
 
                     menu.findItem(R.id.menu_boostIndicator).setVisible(true);
                     menu.findItem(R.id.menu_switch).setVisible(false);
@@ -369,9 +365,7 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
             menu.findItem(R.id.menu_info).setVisible(true);
             menu.findItem(R.id.menu_boostIndicator).setVisible(true);
         }
-        if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) {
-            menu.findItem(R.id.menu_refresh).setVisible(true);
-        }
+
         return true;
     }
 
@@ -387,9 +381,6 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
         if (currentPage == FragmentLayoutManager.PAGE_FOUND_DEVICES) {
             menu.findItem(R.id.menu_info).setVisible(false);
             menu.findItem(R.id.menu_boostIndicator).setVisible(false);
-        }
-        if (currentPage == FragmentLayoutManager.PAGE_LEADERBOARD) {
-            menu.findItem(R.id.menu_refresh).setVisible(false);
         }
 
         return true;
