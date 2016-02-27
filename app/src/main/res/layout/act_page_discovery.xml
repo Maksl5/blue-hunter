@@ -23,7 +23,8 @@
         android:layout_gravity="center"
         android:animateLayoutChanges="true"
         android:gravity="center"
-        android:padding="@dimen/padding_xsmall">
+        android:padding="@dimen/padding_xsmall"
+        android:visibility="visible">
 
         <TableRow
             android:id="@+id/DDtableRow5"
@@ -67,34 +68,33 @@
         </TableRow>
 
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:gravity="center">
 
-            <RelativeLayout
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:gravity="center">
+                android:layout_centerInParent="true"
+                android:indeterminate="false"
+                android:minHeight="1dip"
+                android:minWidth="250dip"
+                android:progress="35" />
 
-                <ProgressBar
-                    android:id="@+id/progressBar1"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:indeterminate="false"
-                    android:minHeight="1dip"
-                    android:minWidth="250dip"
-                    android:progress="35" />
+            <TextView
+                android:id="@+id/lvlIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="7"
+                android:textSize="@dimen/levelIndicator_text"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/lvlIndicator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="7"
-                    android:textSize="@dimen/levelIndicator_text"
-                    android:textStyle="bold" />
-
-            </RelativeLayout>
+        </RelativeLayout>
 
 
         <TableRow
@@ -238,10 +238,13 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_centerInParent="true" />
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="false"
+        android:layout_centerInParent="true"
+        android:visibility="visible" />
 
-    <ListView
-        android:id="@+id/discoveryListView"
+    <RelativeLayout
+        android:id="@+id/discoveryListParent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
@@ -252,11 +255,31 @@
         android:layout_below="@+id/view"
         android:animateLayoutChanges="true"
         android:background="@color/bg_transparent_grey"
-        android:fastScrollEnabled="true"
-        android:scrollingCache="true"
-        android:visibility="gone"
-        tools:listitem="@layout/act_page_discovery_row">
+        android:visibility="visible">
 
-    </ListView>
+        <ListView
+            android:id="@+id/discoveryListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:fastScrollEnabled="true"
+            android:scrollingCache="true"
+            android:visibility="gone"
+            tools:listitem="@layout/act_page_discovery_row">
+
+        </ListView>
+
+        <ImageView
+            android:id="@+id/expandButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:clickable="true"
+            android:src="@drawable/ic_arrow_drop_up_black_48dp" />
+
+    </RelativeLayout>
+
 
 </RelativeLayout>

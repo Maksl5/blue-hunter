@@ -1,7 +1,6 @@
 package com.maksl5.bl_hunt.custom_ui.fragment;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -10,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -194,14 +192,16 @@ public class DeviceDiscoveryLayout {
             lv.setAdapter(dAdapter);
         }
 
+        RelativeLayout relativeView = (RelativeLayout) mainActivity.findViewById(R.id.discoveryListParent);
+
         if (lv != null && mainActivity.getBlueHunter() != null && mainActivity.getBlueHunter().disMan != null && mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != -2) {
 
             if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() == DiscoveryState.DISCOVERY_STATE_RUNNING
-                    && lv.getVisibility() != View.VISIBLE) {
+                    && relativeView.getVisibility() != View.VISIBLE) {
                 startShowLV(mainActivity);
             } else if (mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_RUNNING
                     && mainActivity.getBlueHunter().disMan.getCurDiscoveryState() != DiscoveryState.DISCOVERY_STATE_FINISHED
-                    && lv.getVisibility() == View.VISIBLE) {
+                    && relativeView.getVisibility() == View.VISIBLE) {
                 stopShowLV(mainActivity);
             }
         }
@@ -376,46 +376,12 @@ public class DeviceDiscoveryLayout {
         // lv.startAnimation(animation);
 
         if (lv == null) lv = (ListView) main.findViewById(R.id.discoveryListView);
+        RelativeLayout relativeView = (RelativeLayout) main.findViewById(R.id.discoveryListParent);
 
         if (lv == null) return;
 
-        int orientation = main.getResources().getConfiguration().orientation;
 
-        if (orientation == Configuration.ORIENTATION_UNDEFINED) {
-
-            TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
-            TranslateAnimation animation2 = new TranslateAnimation(0, 0, discoveryInfo.getTop(), 0);
-            animation2.setDuration(1000);
-
-            discoveryInfo.startAnimation(animation2);
-
-            RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
-
-            lv.setVisibility(View.VISIBLE);
-            animation2 = new TranslateAnimation(0, 0, relativeLayout.getHeight() - discoveryInfo.getHeight(), 0);
-            animation2.setDuration(1000);
-
-            lv.startAnimation(animation2);
-
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-            TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
-            RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
-
-            TranslateAnimation animation2 = new TranslateAnimation(discoveryInfo.getLeft(), 0, 0, 0);
-            animation2.setDuration(1000);
-
-            discoveryInfo.startAnimation(animation2);
-
-            lv.setVisibility(View.VISIBLE);
-            animation2 = new TranslateAnimation(relativeLayout.getWidth() - discoveryInfo.getWidth(), 0, 0, 0);
-            animation2.setDuration(1000);
-
-            lv.startAnimation(animation2);
-
-        }
-
-        lv.setVisibility(View.VISIBLE);
+        relativeView.setVisibility(View.VISIBLE);
 
         lv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -440,57 +406,54 @@ public class DeviceDiscoveryLayout {
             }
         });
 
+        final ImageView expandButton = (ImageView) main.findViewById(R.id.expandButton);
+        final View separator = main.findViewById(R.id.view);
+        final TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
+
+        expandButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int visible = discoveryInfo.getVisibility();
+
+                if (visible == View.VISIBLE) {
+
+                    discoveryInfo.setVisibility(View.GONE);
+                    separator.setVisibility(View.GONE);
+
+                    expandButton.setImageResource(R.drawable.ic_arrow_drop_down_black_48dp);
+
+                }
+
+                if (visible == View.GONE) {
+
+                    separator.setVisibility(View.VISIBLE);
+                    discoveryInfo.setVisibility(View.VISIBLE);
+
+                    expandButton.setImageResource(R.drawable.ic_arrow_drop_up_black_48dp);
+
+                }
+
+
+            }
+        });
+
     }
 
     public static void stopShowLV(MainActivity main) {
 
-        if (lv == null) lv = (ListView) main.findViewById(R.id.discoveryListView);
 
-        if (lv == null) return;
+        RelativeLayout relativeView = (RelativeLayout) main.findViewById(R.id.discoveryListParent);
+        final ImageView expandButton = (ImageView) main.findViewById(R.id.expandButton);
+        final View separator = main.findViewById(R.id.view);
+        final TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
 
-        int orientation = main.getResources().getConfiguration().orientation;
 
-        if (orientation == Configuration.ORIENTATION_UNDEFINED) {
+        separator.setVisibility(View.VISIBLE);
+        discoveryInfo.setVisibility(View.VISIBLE);
 
-            RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
-            TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
-
-            TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, relativeLayout.getHeight() - discoveryInfo.getHeight());
-            animation2.setDuration(750);
-
-            lv.startAnimation(animation2);
-
-            lv.setVisibility(View.GONE);
-
-            float topOfDiscoveryInfo = relativeLayout.getHeight() / (float) 2 - discoveryInfo.getHeight() / (float) 2;
-
-            TranslateAnimation animation = new TranslateAnimation(0, 0, -topOfDiscoveryInfo, 0);
-            animation.setDuration(750);
-
-            discoveryInfo.startAnimation(animation);
-
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-            RelativeLayout relativeLayout = (RelativeLayout) lv.getParent();
-            TableLayout discoveryInfo = (TableLayout) main.findViewById(R.id.discoveryInfoTable);
-
-            TranslateAnimation animation2 = new TranslateAnimation(0, relativeLayout.getWidth() - discoveryInfo.getWidth(), 0, 0);
-            animation2.setDuration(750);
-
-            lv.startAnimation(animation2);
-
-            lv.setVisibility(View.GONE);
-
-            float leftOfDiscoveryInfo = relativeLayout.getWidth() / (float) 2 - discoveryInfo.getWidth() / (float) 2;
-
-            TranslateAnimation animation = new TranslateAnimation(-leftOfDiscoveryInfo, 0, 0, 0);
-            animation.setDuration(750);
-
-            discoveryInfo.startAnimation(animation);
-
-        }
-
-        lv.setVisibility(View.GONE);
+        relativeView.setVisibility(View.GONE);
+        expandButton.setImageResource(R.drawable.ic_arrow_drop_up_black_48dp);
 
     }
 
