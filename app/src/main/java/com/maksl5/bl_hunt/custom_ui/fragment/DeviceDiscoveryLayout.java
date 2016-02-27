@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.maksl5.bl_hunt.DiscoveryManager.DiscoveryState;
 import com.maksl5.bl_hunt.LevelSystem;
 import com.maksl5.bl_hunt.R;
+import com.maksl5.bl_hunt.activity.ActionBarHandler;
 import com.maksl5.bl_hunt.activity.MainActivity;
 import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
@@ -174,6 +175,9 @@ public class DeviceDiscoveryLayout {
         if (mainActivity == null || mainActivity.destroyed) return;
 
         ArrayList<FoundDevice> curList = new ArrayList<>(mainActivity.getBlueHunter().disMan.getFDInCurDiscoverySession());
+
+        ArrayList<FoundDevice> showedList = selectListOldNew(curList, mainActivity.getBlueHunter().actionBarHandler.oldNewSelectorManager.getCurrentState());
+
         int curNewDevices = mainActivity.getBlueHunter().disMan.newDevicesInCurDiscoverySession;
 
         TextView devInCurDisTxt = (TextView) mainActivity.findViewById(R.id.txt_discovery_devInSession_value);
@@ -185,7 +189,7 @@ public class DeviceDiscoveryLayout {
         }
 
         if (dAdapter == null) {
-            dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, curList);
+            dAdapter = new DeviceDiscoveryLayout().new DiscoveryAdapter(mainActivity, showedList);
 
             if (lv == null) lv = (ListView) mainActivity.findViewById(R.id.discoveryListView);
 
@@ -206,12 +210,41 @@ public class DeviceDiscoveryLayout {
             }
         }
 
-        if (dAdapter.values.equals(curList)) {
+        if (dAdapter.values.equals(showedList)) {
             dAdapter.notifyDataSetChanged();
         } else {
             dAdapter.clear();
-            dAdapter.addAll(curList);
+            dAdapter.addAll(showedList);
         }
+
+    }
+
+    private static ArrayList<FoundDevice> selectListOldNew(ArrayList<FoundDevice> completeList, int state) {
+
+        ArrayList<FoundDevice> showedList = new ArrayList<>();
+
+        switch (state) {
+            case ActionBarHandler.OldNewSelectorManager.STATE_NEW_OLD:
+                showedList = new ArrayList<>(completeList);
+                break;
+            case ActionBarHandler.OldNewSelectorManager.STATE_NEW:
+                for (FoundDevice foundDevice : completeList) {
+                    if (!foundDevice.isOld()) {
+                        showedList.add(foundDevice);
+                    }
+                }
+                break;
+            case ActionBarHandler.OldNewSelectorManager.STATE_OLD:
+                for (FoundDevice foundDevice : completeList) {
+                    if (foundDevice.isOld()) {
+                        showedList.add(foundDevice);
+                    }
+                }
+                break;
+        }
+
+
+        return showedList;
 
     }
 

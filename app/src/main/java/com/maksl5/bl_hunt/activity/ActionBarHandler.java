@@ -45,6 +45,7 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
     private final android.support.v7.app.ActionBar actBar;
     public ActionMode.Callback actionModeCallback;
     public int temporaryCurPage = -1;
+    public OldNewSelectorManager oldNewSelectorManager;
     private Menu menu;
     private SwitchCompat disSwitch;
     private int currentPage = -1;
@@ -86,6 +87,8 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
         MenuItemCompat.setOnActionExpandListener(getMenuItem(R.id.menu_search), this);
 
         getMenuItem(R.id.menu_boostIndicator).setTitleCondensed(bhApp.getString(R.string.str_discovery_loading));
+
+        oldNewSelectorManager = new OldNewSelectorManager();
 
         changePage(FragmentLayoutManager.PAGE_DEVICE_DISCOVERY);
 
@@ -190,6 +193,14 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
                     menu.findItem(R.id.menu_switch).setVisible(true);
                     menu.findItem(R.id.menu_submit_mac).setVisible(false);
 
+
+                    if (((SwitchCompat) getActionView(R.id.menu_switch)).isChecked()) {
+                        menu.findItem(R.id.menu_oldNewSelector).setVisible(true);
+                    } else {
+                        menu.findItem(R.id.menu_oldNewSelector).setVisible(false);
+                    }
+
+
                     if (bhApp.isTablet()) {
                         menu.findItem(R.id.menu_boostIndicator).setVisible(true);
                         menu.findItem(R.id.menu_switch).setVisible(true);
@@ -207,6 +218,7 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
                     menu.findItem(R.id.menu_boostIndicator).setVisible(false);
                     menu.findItem(R.id.menu_switch).setVisible(false);
                     menu.findItem(R.id.menu_submit_mac).setVisible(false);
+                    menu.findItem(R.id.menu_oldNewSelector).setVisible(false);
 
                     if (bhApp.isTablet()) {
                         menu.findItem(R.id.menu_boostIndicator).setVisible(true);
@@ -228,6 +240,7 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
                     menu.findItem(R.id.menu_boostIndicator).setVisible(true);
                     menu.findItem(R.id.menu_switch).setVisible(false);
                     menu.findItem(R.id.menu_submit_mac).setVisible(true);
+                    menu.findItem(R.id.menu_oldNewSelector).setVisible(false);
 
                     if (bhApp.isTablet()) {
                         menu.findItem(R.id.menu_boostIndicator).setVisible(true);
@@ -245,6 +258,7 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
                     menu.findItem(R.id.menu_boostIndicator).setVisible(true);
                     menu.findItem(R.id.menu_switch).setVisible(false);
                     menu.findItem(R.id.menu_submit_mac).setVisible(false);
+                    menu.findItem(R.id.menu_oldNewSelector).setVisible(false);
 
                     if (bhApp.isTablet()) {
                         menu.findItem(R.id.menu_boostIndicator).setVisible(true);
@@ -422,5 +436,55 @@ public class ActionBarHandler implements SearchView.OnQueryTextListener, MenuIte
 
 
     }
+
+    public class OldNewSelectorManager {
+
+        public static final int STATE_NEW_OLD = 0;
+        public static final int STATE_NEW = 1;
+        public static final int STATE_OLD = 2;
+
+        int currentState = 0;
+        MenuItem oldNewSelector;
+
+        public OldNewSelectorManager() {
+
+            oldNewSelector = getMenuItem(R.id.menu_oldNewSelector);
+            setText(currentState);
+        }
+
+        public void onClick() {
+
+            currentState++;
+            if (currentState > STATE_OLD) currentState = STATE_NEW_OLD;
+
+            setText(currentState);
+
+            DeviceDiscoveryLayout.onlyCurListUpdate(bhApp.mainActivity);
+
+        }
+
+        private void setText(int state) {
+
+            switch (state) {
+                case STATE_NEW_OLD:
+                    oldNewSelector.setTitle(R.string.str_menu_newOld);
+                    break;
+                case STATE_NEW:
+                    oldNewSelector.setTitle(R.string.str_menu_new);
+                    break;
+                case STATE_OLD:
+                    oldNewSelector.setTitle(R.string.str_menu_old);
+                    break;
+            }
+
+
+        }
+
+        public int getCurrentState() {
+            return currentState;
+        }
+
+    }
+
 
 }

@@ -255,7 +255,7 @@
         android:layout_below="@+id/view"
         android:animateLayoutChanges="true"
         android:background="@color/bg_transparent_grey"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ListView
             android:id="@+id/discoveryListView"
@@ -264,7 +264,7 @@
             android:animateLayoutChanges="true"
             android:fastScrollEnabled="true"
             android:scrollingCache="true"
-            android:visibility="gone"
+            android:visibility="visible"
             tools:listitem="@layout/act_page_discovery_row">
 
         </ListView>

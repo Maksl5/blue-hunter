@@ -6,6 +6,10 @@
         android:actionViewClass="android.widget.ProgressBar"
         app:showAsAction="always" />
     <item
+        android:id="@+id/menu_oldNewSelector"
+        android:title="@string/str_menu_newOld"
+        app:showAsAction="always|withText" />
+    <item
         android:id="@+id/menu_boostIndicator"
         android:title="@string/str_achievement_totalBoost"
         app:showAsAction="always|withText" />

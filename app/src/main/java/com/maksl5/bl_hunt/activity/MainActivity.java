@@ -556,6 +556,9 @@ public class MainActivity extends ActionBarActivity {
             case R.id.menu_boostIndicator:
                 LevelSystem.getBoostCompositionDialog(bhApp).show();
                 break;
+            case R.id.menu_oldNewSelector:
+                getBlueHunter().actionBarHandler.oldNewSelectorManager.onClick();
+                break;
             default:
                 break;
         }

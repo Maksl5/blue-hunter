@@ -13,6 +13,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.maksl5.bl_hunt.activity.EnableBluetoothActivity;
+import com.maksl5.bl_hunt.custom_ui.FragmentLayoutManager;
 import com.maksl5.bl_hunt.custom_ui.fragment.DeviceDiscoveryLayout;
 import com.maksl5.bl_hunt.custom_ui.fragment.FoundDevicesLayout;
 import com.maksl5.bl_hunt.storage.AchievementSystem;
@@ -334,6 +335,10 @@ public class DiscoveryManager {
 
                             DeviceDiscoveryLayout.startShowLV(bhApp.mainActivity);
 
+                            if (bhApp.actionBarHandler.getCurrentPage() == FragmentLayoutManager.PAGE_DEVICE_DISCOVERY) {
+                                bhApp.actionBarHandler.getMenuItem(R.id.menu_oldNewSelector).setVisible(true);
+                            }
+
                             runDiscovery();
                         } else {
                             requestBtEnable(true);
@@ -348,6 +353,8 @@ public class DiscoveryManager {
                             newDevicesInCurDiscoverySession = 0;
 
                             DeviceDiscoveryLayout.stopShowLV(bhApp.mainActivity);
+
+                            bhApp.actionBarHandler.getMenuItem(R.id.menu_oldNewSelector).setVisible(false);
 
                             if (PreferenceManager.getPref(bhApp, "pref_disBtSrchOff", false)) {
                                 disableBluetooth();
